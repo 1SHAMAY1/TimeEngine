@@ -3,6 +3,7 @@
 #include "PreRequisites.h"
 #include "spdlog/spdlog.h"
 #include <memory>
+#include "spdlog/fmt/ostr.h"
 
 namespace TimeEngine
 {

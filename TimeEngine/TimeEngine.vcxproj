@@ -155,8 +155,13 @@ IF EXIST "..\Bin\Dist-windows-x86_64\TimeEngine\TimeEngine.dll"\ (xcopy /Q /E /Y
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Core.h" />
     <ClInclude Include="src\Core\EntryPoint.h" />
+    <ClInclude Include="src\Core\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Core\Events\Event.h" />
+    <ClInclude Include="src\Core\Events\KeyEvent.h" />
+    <ClInclude Include="src\Core\Events\MouseEvent.h" />
+    <ClInclude Include="src\Core\KeyCodes.h" />
     <ClInclude Include="src\Core\Log.h" />
+    <ClInclude Include="src\Core\MouseCodes.h" />
     <ClInclude Include="src\Core\PreRequisites.h" />
     <ClInclude Include="src\TimeEngine.h" />
   </ItemGroup>

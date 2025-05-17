@@ -21,6 +21,7 @@ project "TimeEngine"
     }
 
     includedirs {
+        --"%{prj.name}/TimeEngine/src",
         "%{prj.name}/vendor/Log/include"
     }
 

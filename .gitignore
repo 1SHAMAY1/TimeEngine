@@ -47,6 +47,5 @@
 *.opensdf
 
 # Submodules compiled locally
-TimeEngine/vendor/**/build/
-TimeEngine/vendor/**/bin/
-TimeEngine/vendor/**/bin-int/
+TimeEngine//bin/
+TimeEngine//bin-int/
