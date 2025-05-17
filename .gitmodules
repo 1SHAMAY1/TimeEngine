@@ -1,0 +1,3 @@
+[submodule "TimeEngine/vendor/Log"]
+	path = TimeEngine/vendor/Log
+	url = https://github.com/gabime/spdlog.git
