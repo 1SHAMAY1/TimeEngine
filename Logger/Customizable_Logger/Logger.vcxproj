@@ -92,8 +92,8 @@
       <ImportLibrary>..\..\Bin\Debug-windows-x86_64\Logger\Logger.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Logger\$(ProjectName).dll" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul
-xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Logger\$(ProjectName).lib" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul</Command>
+      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Logger\Logger.dll" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Logger\Logger.lib" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -118,8 +118,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Logger\$(ProjectName).lib
       <ImportLibrary>..\..\Bin\Release-windows-x86_64\Logger\Logger.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Logger\$(ProjectName).dll" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul
-xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Logger\$(ProjectName).lib" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul</Command>
+      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Logger\Logger.dll" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Logger\Logger.lib" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -144,8 +144,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Logger\$(ProjectName).l
       <ImportLibrary>..\..\Bin\Dist-windows-x86_64\Logger\Logger.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Logger\$(ProjectName).dll" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul
-xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Logger\$(ProjectName).lib" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul</Command>
+      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Logger\Logger.dll" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Logger\Logger.lib" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

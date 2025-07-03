@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include <string>
-#include <functional>
+#include "Core/PreRequisites.h"
 
-#pragma once
+#define BIT(x) (1 << x)
 
 namespace TE
 {
@@ -33,24 +32,24 @@ namespace TE
         MouseMoved,
         MouseScrolled
     };
+
     enum EventCategory
     {
         None = 0,
         EventCategoryApplication = BIT(0),
-        EventCategoryinput = BIT(1),
-        EventCategorykeyboard = BIT(2),
-        EventCategorymouse = BIT(3),
-        EventCategoryMousebutton = BIT(4)
+        EventCategoryInput        = BIT(1),
+        EventCategoryKeyboard     = BIT(2),
+        EventCategoryMouse        = BIT(3),
+        EventCategoryMouseButton  = BIT(4)
     };
 
-
-    #define EVENT_CLASS_TYPE(type)                                                   \
-    static TE::EventType GetStaticType() { return TE::EventType::type; } \
-    virtual TE::EventType GetEventType() const override { return GetStaticType(); } \
-    virtual const char* GetName() const override { return #type; }
+    #define EVENT_CLASS_TYPE(type) \
+        static TE::EventType GetStaticType() { return TE::EventType::type; } \
+        virtual TE::EventType GetEventType() const override { return GetStaticType(); } \
+        virtual const char* GetName() const override { return #type; }
 
     #define EVENT_CLASS_CATEGORY(category) \
-    virtual int GetCategoryFlags() const override { return category; }
+        virtual int GetCategoryFlags() const override { return category; }
 
     class TE_API Event 
     {
@@ -59,49 +58,45 @@ namespace TE
         virtual EventType GetEventType() const = 0;
         virtual const char* GetName() const = 0;
         virtual int GetCategoryFlags() const = 0;
-        virtual std::string ToString() const { return GetName();}
+        virtual std::string ToString() const { return GetName(); }
 
-        inline bool IsIncategory(EventCategory Category)
+        inline bool IsInCategory(EventCategory category)
         {
-            return GetCategoryFlags()&Category;
+            return GetCategoryFlags() & category;
         }
+
+        bool Handled() const { return m_Handled; }
+
     protected:
         bool m_Handled = false;
-
     };
 
-class EventDispatcher
-	{
-	public:
-		EventDispatcher(Event& event)
-			: m_Event(event)
-		{
-		}
-		
-		template<typename T, typename F>
-		bool Dispatch(const F& func)
-		{
-			if (m_Event.GetEventType() == T::GetStaticType())
-			{
-				m_Event.Handled |= func(static_cast<T&>(m_Event));
-				return true;
-			}
-			return false;
-		}
-	private:
-		Event& m_Event;
-	};
+    class EventDispatcher
+    {
+    public:
+        EventDispatcher(Event& event)
+            : m_Event(event)
+        {
+        }
 
-	inline std::ostream& operator<<(std::ostream& os, const Event& e)
-	{
-		return os << e.ToString();
-	}
+        template<typename T, typename F>
+        bool Dispatch(const F& func)
+        {
+            if (m_Event.GetEventType() == T::GetStaticType())
+            {
+                m_Event.m_Handled |= func(static_cast<T&>(m_Event));
+                return true;
+            }
+            return false;
+        }
 
+    private:
+        Event& m_Event;
+    };
 
-
+    inline std::ostream& operator<<(std::ostream& os, const Event& e)
+    {
+        return os << e.ToString();
+    }
 
 }
-
-
-
-

@@ -1,0 +1,10 @@
+^E:\TIMEENGINE\VENDOR\GLFW\BUILD\CMAKEFILES\360B4E41BD9668658E8D5964E41AC7C9\GENERATE.STAMP.RULE
+setlocal
+D:\CMake\bin\cmake.exe -SE:/TimeEngine/Vendor/GLFW/glfw -BE:/TimeEngine/Vendor/GLFW/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/TimeEngine/Vendor/GLFW/build/GLFW.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

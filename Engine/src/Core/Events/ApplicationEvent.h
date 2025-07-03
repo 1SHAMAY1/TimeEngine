@@ -63,4 +63,21 @@ namespace TE {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
+	class TE_API WindowFocusEvent : public Event {
+	public:
+		WindowFocusEvent() = default;
+
+		EVENT_CLASS_TYPE(WindowFocus)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class TE_API WindowLostFocusEvent : public Event {
+	public:
+		WindowLostFocusEvent() = default;
+
+		EVENT_CLASS_TYPE(WindowLostFocus)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+
 } // namespace TE

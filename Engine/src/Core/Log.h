@@ -23,14 +23,16 @@ namespace TE
 
 // ======= Logging Macros using your logger =======
 
-#define TE_CORE_INFO(msg)      TE::Log::GetCoreLogger().log("Core", msg, "INFO")
-#define TE_CORE_WARN(msg)      TE::Log::GetCoreLogger().log("Core", msg, "WARNING")
-#define TE_CORE_ERROR(msg)     TE::Log::GetCoreLogger().log("Core", msg, "ERROR")
-#define TE_CORE_DEBUG(msg)     TE::Log::GetCoreLogger().log("Core", msg, "DEBUG")
-#define TE_CORE_CRITICAL(msg)  TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL")
+// -------- Core Logger Macros with File/Line --------
+#define TE_CORE_INFO(msg)      TE::Log::GetCoreLogger().log("Core", msg, "INFO",     __FILE__, __LINE__)
+#define TE_CORE_WARN(msg)      TE::Log::GetCoreLogger().log("Core", msg, "WARNING",  __FILE__, __LINE__)
+#define TE_CORE_ERROR(msg)     TE::Log::GetCoreLogger().log("Core", msg, "ERROR",    __FILE__, __LINE__)
+#define TE_CORE_DEBUG(msg)     TE::Log::GetCoreLogger().log("Core", msg, "DEBUG",    __FILE__, __LINE__)
+#define TE_CORE_CRITICAL(msg)  TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL", __FILE__, __LINE__)
 
-#define TE_CLIENT_INFO(msg)     TE::Log::GetClientLogger().log("Client", msg, "INFO")
-#define TE_CLIENT_WARN(msg)     TE::Log::GetClientLogger().log("Client", msg, "WARNING")
-#define TE_CLIENT_ERROR(msg)    TE::Log::GetClientLogger().log("Client", msg, "ERROR")
-#define TE_CLIENT_DEBUG(msg)    TE::Log::GetClientLogger().log("Client", msg, "DEBUG")
-#define TE_CLIENT_CRITICAL(msg) TE::Log::GetClientLogger().log("Client", msg, "CRITICAL")
+// -------- Client Logger Macros with File/Line --------
+#define TE_CLIENT_INFO(msg)     TE::Log::GetClientLogger().log("Client", msg, "INFO",     __FILE__, __LINE__)
+#define TE_CLIENT_WARN(msg)     TE::Log::GetClientLogger().log("Client", msg, "WARNING",  __FILE__, __LINE__)
+#define TE_CLIENT_ERROR(msg)    TE::Log::GetClientLogger().log("Client", msg, "ERROR",    __FILE__, __LINE__)
+#define TE_CLIENT_DEBUG(msg)    TE::Log::GetClientLogger().log("Client", msg, "DEBUG",    __FILE__, __LINE__)
+#define TE_CLIENT_CRITICAL(msg) TE::Log::GetClientLogger().log("Client", msg, "CRITICAL", __FILE__, __LINE__)
