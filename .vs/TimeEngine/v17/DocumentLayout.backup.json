@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "E:\\TimeEngine\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}|Engine\\Engine.vcxproj|E:\\TimeEngine\\Engine\\src\\Core\\Application.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}|Engine\\Engine.vcxproj|solutionrelative:Engine\\src\\Core\\Application.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}|Sandbox\\Sandbox.vcxproj|E:\\TimeEngine\\Sandbox\\src\\SandboxApplication.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}|Sandbox\\Sandbox.vcxproj|solutionrelative:Sandbox\\src\\SandboxApplication.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Application.cpp",
+              "DocumentMoniker": "E:\\TimeEngine\\Engine\\src\\Core\\Application.cpp",
+              "RelativeDocumentMoniker": "Engine\\src\\Core\\Application.cpp",
+              "ToolTip": "E:\\TimeEngine\\Engine\\src\\Core\\Application.cpp",
+              "RelativeToolTip": "Engine\\src\\Core\\Application.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-07-03T05:49:17.007Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SandboxApplication.cpp",
+              "DocumentMoniker": "E:\\TimeEngine\\Sandbox\\src\\SandboxApplication.cpp",
+              "RelativeDocumentMoniker": "Sandbox\\src\\SandboxApplication.cpp",
+              "ToolTip": "E:\\TimeEngine\\Sandbox\\src\\SandboxApplication.cpp",
+              "RelativeToolTip": "Sandbox\\src\\SandboxApplication.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-07-03T05:49:05.611Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

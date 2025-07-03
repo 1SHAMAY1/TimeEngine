@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PreRequisites.h"
-#include "Customizable_Logger/Include/CustomizableLogger.hpp"
+#include "CustomizableLogger.hpp"
 #include <memory>
 #include <string>
 

@@ -1,0 +1,67 @@
+﻿  CustomizableLogger.cpp
+E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(59,50): warning C4251: 'CustomizableLogger::logLevelColors': 'std::unordered_map<std::string,std::string,std::hash<std::string>,std::equal_to<std::string>,std::allocator<std::pair<const std::string,std::string>>>' needs to have dll-interface to be used by clients of 'CustomizableLogger'
+  (compiling source file 'Source/CustomizableLogger.cpp')
+      D:\Installed\VisualStudio\VisualStudioIDE\VC\Tools\MSVC\14.42.34433\include\unordered_map(61,7):
+      see declaration of 'std::unordered_map<std::string,std::string,std::hash<std::string>,std::equal_to<std::string>,std::allocator<std::pair<const std::string,std::string>>>'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(61,19): warning C4251: 'CustomizableLogger::logFile': 'std::basic_ofstream<char,std::char_traits<char>>' needs to have dll-interface to be used by clients of 'CustomizableLogger'
+  (compiling source file 'Source/CustomizableLogger.cpp')
+      D:\Installed\VisualStudio\VisualStudioIDE\VC\Tools\MSVC\14.42.34433\include\fstream(177,7):
+      see declaration of 'std::basic_ofstream<char,std::char_traits<char>>'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(62,30): warning C4251: 'CustomizableLogger::filterLevels': 'std::vector<std::string,std::allocator<std::string>>' needs to have dll-interface to be used by clients of 'CustomizableLogger'
+  (compiling source file 'Source/CustomizableLogger.cpp')
+      D:\Installed\VisualStudio\VisualStudioIDE\VC\Tools\MSVC\14.42.34433\include\vector(429,7):
+      see declaration of 'std::vector<std::string,std::allocator<std::string>>'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(63,30): warning C4251: 'CustomizableLogger::filterCategories': 'std::vector<std::string,std::allocator<std::string>>' needs to have dll-interface to be used by clients of 'CustomizableLogger'
+  (compiling source file 'Source/CustomizableLogger.cpp')
+      D:\Installed\VisualStudio\VisualStudioIDE\VC\Tools\MSVC\14.42.34433\include\vector(429,7):
+      see declaration of 'std::vector<std::string,std::allocator<std::string>>'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(7,21): warning C4273: 'CustomizableLogger::CustomizableLogger': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(26,5):
+      see previous definition of 'CustomizableLogger::CustomizableLogger'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(18,22): warning C4273: 'CustomizableLogger::~CustomizableLogger': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(31,6):
+      see previous definition of 'CustomizableLogger::~CustomizableLogger'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(22,26): warning C4273: 'CustomizableLogger::registerLevel': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(38,10):
+      see previous definition of 'CustomizableLogger::registerLevel'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(26,26): warning C4273: 'CustomizableLogger::setFilterLevels': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(43,10):
+      see previous definition of 'CustomizableLogger::setFilterLevels'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(29,26): warning C4273: 'CustomizableLogger::setFilterCategories': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(48,10):
+      see previous definition of 'CustomizableLogger::setFilterCategories'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(33,33): warning C4273: 'CustomizableLogger::getColor': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(65,17):
+      see previous definition of 'CustomizableLogger::getColor'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(38,33): warning C4273: 'CustomizableLogger::getResetCode': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(66,17):
+      see previous definition of 'CustomizableLogger::getResetCode'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(42,33): warning C4273: 'CustomizableLogger::getTimestamp': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(67,17):
+      see previous definition of 'CustomizableLogger::getTimestamp'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(62,26): warning C4273: 'CustomizableLogger::passesFilter': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(68,10):
+      see previous definition of 'CustomizableLogger::passesFilter'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(71,33): warning C4273: 'CustomizableLogger::toJsonLine': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(69,17):
+      see previous definition of 'CustomizableLogger::toJsonLine'
+  
+E:\TimeEngine\Logger\Customizable_Logger\Source\CustomizableLogger.cpp(82,26): warning C4273: 'CustomizableLogger::log': inconsistent dll linkage
+      E:\TimeEngine\Logger\Customizable_Logger\Include\CustomizableLogger.hpp(56,10):
+      see previous definition of 'CustomizableLogger::log'
+  
+     Creating library ..\..\Bin\Debug-windows-x86_64\Logger\Logger.lib and object ..\..\Bin\Debug-windows-x86_64\Logger\Logger.exp
+  Logger.vcxproj -> E:\TimeEngine\Bin\Debug-windows-x86_64\Logger\Logger.dll

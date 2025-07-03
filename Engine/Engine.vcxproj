@@ -78,11 +78,11 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;_WINDLL;TE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\Log;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;TE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;..\Logger\Customizable_Logger\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -93,22 +93,22 @@
       <ImportLibrary>..\Bin\Debug-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "../Bin/Debug-windows-x86_64/Sandbox" mkdir "../Bin/Debug-windows-x86_64/Sandbox"
-IF EXIST "..\Bin\Debug-windows-x86_64\Engine\Engine.dll"\ (xcopy /Q /E /Y /I "..\Bin\Debug-windows-x86_64\Engine\Engine.dll" "..\Bin\Debug-windows-x86_64\Sandbox" &gt; nul) ELSE (xcopy /Q /Y /I "..\Bin\Debug-windows-x86_64\Engine\Engine.dll" "..\Bin\Debug-windows-x86_64\Sandbox" &gt; nul)</Command>
+      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\$(ProjectName).dll" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\$(ProjectName).lib" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;_WINDLL;TE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\Log;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;TE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;..\Logger\Customizable_Logger\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -120,22 +120,22 @@ IF EXIST "..\Bin\Debug-windows-x86_64\Engine\Engine.dll"\ (xcopy /Q /E /Y /I "..
       <ImportLibrary>..\Bin\Release-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "../Bin/Release-windows-x86_64/Sandbox" mkdir "../Bin/Release-windows-x86_64/Sandbox"
-IF EXIST "..\Bin\Release-windows-x86_64\Engine\Engine.dll"\ (xcopy /Q /E /Y /I "..\Bin\Release-windows-x86_64\Engine\Engine.dll" "..\Bin\Release-windows-x86_64\Sandbox" &gt; nul) ELSE (xcopy /Q /Y /I "..\Bin\Release-windows-x86_64\Engine\Engine.dll" "..\Bin\Release-windows-x86_64\Sandbox" &gt; nul)</Command>
+      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\$(ProjectName).dll" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\$(ProjectName).lib" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;_WINDLL;TE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\Log;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;TE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;..\Logger\Customizable_Logger\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -147,8 +147,8 @@ IF EXIST "..\Bin\Release-windows-x86_64\Engine\Engine.dll"\ (xcopy /Q /E /Y /I "
       <ImportLibrary>..\Bin\Dist-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "../Bin/Dist-windows-x86_64/Sandbox" mkdir "../Bin/Dist-windows-x86_64/Sandbox"
-IF EXIST "..\Bin\Dist-windows-x86_64\Engine\Engine.dll"\ (xcopy /Q /E /Y /I "..\Bin\Dist-windows-x86_64\Engine\Engine.dll" "..\Bin\Dist-windows-x86_64\Sandbox" &gt; nul) ELSE (xcopy /Q /Y /I "..\Bin\Dist-windows-x86_64\Engine\Engine.dll" "..\Bin\Dist-windows-x86_64\Sandbox" &gt; nul)</Command>
+      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\$(ProjectName).dll" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\$(ProjectName).lib" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -169,8 +169,11 @@ IF EXIST "..\Bin\Dist-windows-x86_64\Engine\Engine.dll"\ (xcopy /Q /E /Y /I "..\
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Core.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
-    <ClCompile Include="src\Log\Customizable_Logger\Demo.cpp" />
-    <ClCompile Include="src\Log\Customizable_Logger\Source\CustomizableLogger.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logger\Customizable_Logger\Logger.vcxproj">
+      <Project>{25F339C1-1195-6497-FA4F-78EBE690EBE7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

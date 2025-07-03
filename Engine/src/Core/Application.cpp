@@ -6,6 +6,9 @@ namespace TE
 {
     Application::Application()
     {
+        // Initialize the logging system here (once)
+        TE::Log::Init(true, "TimeEngineLog.json");
+
         TE_CORE_INFO("Application Constructor called.");
     }
 
