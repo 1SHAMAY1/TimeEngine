@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TimeEngine
+namespace TE
 {
 	using KeyCode = uint16_t;
 	

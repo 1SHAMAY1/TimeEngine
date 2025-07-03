@@ -2,13 +2,16 @@
 
 #include "Core/Events/Event.h"
 #include "Core/MouseCodes.h"
+#include <sstream>
 
-namespace TimeEngine {
+#include "Event.h"
 
-	class TIMEENGINE_API MouseMovedEvent : public Event
+namespace TE {
+
+	class TE_API MouseMovedEvent : public Event
 	{
 	public:
-		MouseMovedEvent(const float x, const float y)
+		MouseMovedEvent(float x, float y)
 			: m_MouseX(x), m_MouseY(y) {}
 
 		float GetX() const { return m_MouseX; }
@@ -23,14 +26,15 @@ namespace TimeEngine {
 
 		EVENT_CLASS_TYPE(MouseMoved)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
 	private:
 		float m_MouseX, m_MouseY;
 	};
 
-	class TIMEENGINE_API MouseScrolledEvent : public Event
+	class TE_API MouseScrolledEvent : public Event
 	{
 	public:
-		MouseScrolledEvent(const float xOffset, const float yOffset)
+		MouseScrolledEvent(float xOffset, float yOffset)
 			: m_XOffset(xOffset), m_YOffset(yOffset) {}
 
 		float GetXOffset() const { return m_XOffset; }
@@ -39,59 +43,61 @@ namespace TimeEngine {
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseScrolledEvent: " << GetXOffset() << ", " << GetYOffset();
+			ss << "MouseScrolledEvent: " << m_XOffset << ", " << m_YOffset;
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(MouseScrolled)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
 	private:
 		float m_XOffset, m_YOffset;
 	};
 
-	class TIMEENGINE_API MouseButtonEvent : public Event
+	class TE_API MouseButtonEvent : public Event
 	{
 	public:
 		MouseCode GetMouseButton() const { return m_Button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton)
+
 	protected:
-		MouseButtonEvent(const MouseCode button)
+		explicit MouseButtonEvent(MouseCode button)
 			: m_Button(button) {}
 
 		MouseCode m_Button;
 	};
 
-	class TIMEENGINE_API MouseButtonPressedEvent : public MouseButtonEvent
+	class TE_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(const MouseCode button)
+		explicit MouseButtonPressedEvent(MouseCode button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonPressedEvent: " << m_Button;
+			ss << "MouseButtonPressedEvent: " << static_cast<int>(m_Button);
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class TIMEENGINE_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class TE_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(const MouseCode button)
+		explicit MouseButtonReleasedEvent(MouseCode button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent: " << m_Button;
+			ss << "MouseButtonReleasedEvent: " << static_cast<int>(m_Button);
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 
-}
+} // namespace TE

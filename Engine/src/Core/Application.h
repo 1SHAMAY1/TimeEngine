@@ -1,10 +1,10 @@
 #pragma once
 #include "PreRequisites.h"
 
-namespace TimeEngine
+namespace TE
 {
 
-    class TIMEENGINE_API  Application
+    class TE_API  Application
     {
     public:
         Application();

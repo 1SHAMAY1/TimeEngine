@@ -4,9 +4,9 @@ workspace "TimeEngine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
--- TimeEngine Shared Library
-project "TimeEngine"
-    location "TimeEngine"
+-- Engine Shared Library
+project "Engine"
+    location "Engine"
     kind "SharedLib"
     language "C++"
     cppdialect "C++17"
@@ -21,8 +21,8 @@ project "TimeEngine"
     }
 
     includedirs {
-        --"%{prj.name}/TimeEngine/src",
-        "%{prj.name}/vendor/Log/include"
+        --"%{prj.name}/Engine/src",
+        "%{prj.name}/src/Log"
     }
 
     filter "system:windows"
@@ -51,7 +51,7 @@ project "TimeEngine"
         defines "TE_DIST"
         optimize "On"
 
--- SideScroller Console App
+-- Sandbox Console App
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
@@ -68,12 +68,12 @@ project "Sandbox"
     }
 
     includedirs {
-        "TimeEngine/vendor/Log/include",
-        "TimeEngine/src"
+        "Engine/Src/Log",
+        "Engine/src"
     }
 
     links {
-        "TimeEngine"
+        "Engine"
     }
 
     buildoptions

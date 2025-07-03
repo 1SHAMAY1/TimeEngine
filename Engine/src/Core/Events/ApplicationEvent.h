@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Events/Event.h"
+#include "Event.h"
+#include <sstream>
 
-namespace TimeEngine {
+namespace TE {
 
-	class TIMEENGINE_API WindowResizeEvent : public Event
+	class TE_API WindowResizeEvent : public Event
 	{
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height)
@@ -26,7 +27,7 @@ namespace TimeEngine {
 		unsigned int m_Width, m_Height;
 	};
 
-	class TIMEENGINE_API WindowCloseEvent : public Event
+	class TE_API WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() = default;
@@ -35,7 +36,7 @@ namespace TimeEngine {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class TIMEENGINE_API AppTickEvent : public Event
+	class TE_API AppTickEvent : public Event
 	{
 	public:
 		AppTickEvent() = default;
@@ -44,7 +45,7 @@ namespace TimeEngine {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class TIMEENGINE_API AppUpdateEvent : public Event
+	class TE_API AppUpdateEvent : public Event
 	{
 	public:
 		AppUpdateEvent() = default;
@@ -53,7 +54,7 @@ namespace TimeEngine {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class TIMEENGINE_API AppRenderEvent : public Event
+	class TE_API AppRenderEvent : public Event
 	{
 	public:
 		AppRenderEvent() = default;
@@ -61,4 +62,5 @@ namespace TimeEngine {
 		EVENT_CLASS_TYPE(AppRender)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
-}
+
+} // namespace TE

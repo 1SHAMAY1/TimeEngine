@@ -1,6 +1,6 @@
-#include <TimeEngine.h>
+#include <Engine.h>
 
-class Project : public TimeEngine::Application
+class Project : public TE::Application
 {
 
 public:
@@ -15,7 +15,7 @@ public:
 
 
 
-TimeEngine::Application* TimeEngine::CreateApplication()
+TE::Application* TE::CreateApplication()
 {
 	return new Project();
 }

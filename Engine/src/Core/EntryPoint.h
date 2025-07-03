@@ -3,12 +3,12 @@
 
 #ifdef TE_PLATFORM_WINDOWS
 
-extern TimeEngine::Application* TimeEngine::CreateApplication();
+extern TE::Application* TE::CreateApplication();
 
 int main(int argc, char** argv)
 {
-    auto project = TimeEngine::CreateApplication();
-    TimeEngine::Log::Init();
+    auto project = TE::CreateApplication();
+    TE::Log::Init();
     TE_CORE_INFO("Log Initialized!");
     TE_CLIENT_INFO("Welcome to Time Engine.");
     project->Run();

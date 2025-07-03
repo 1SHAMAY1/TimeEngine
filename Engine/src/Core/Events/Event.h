@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace TimeEngine
+namespace TE
 {
     enum class EventType
     {
@@ -45,14 +45,14 @@ namespace TimeEngine
 
 
     #define EVENT_CLASS_TYPE(type)                                                   \
-    static TimeEngine::EventType GetStaticType() { return TimeEngine::EventType::type; } \
-    virtual TimeEngine::EventType GetEventType() const override { return GetStaticType(); } \
+    static TE::EventType GetStaticType() { return TE::EventType::type; } \
+    virtual TE::EventType GetEventType() const override { return GetStaticType(); } \
     virtual const char* GetName() const override { return #type; }
 
     #define EVENT_CLASS_CATEGORY(category) \
     virtual int GetCategoryFlags() const override { return category; }
 
-    class TIMEENGINE_API Event 
+    class TE_API Event 
     {
         friend class EventDispatcher;
     public:
@@ -68,7 +68,7 @@ namespace TimeEngine
     protected:
         bool m_Handled = false;
 
-    }
+    };
 
 class EventDispatcher
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TimeEngine
+namespace TE
 {
 	using MouseCode = uint16_t;
 
