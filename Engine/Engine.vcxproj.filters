@@ -54,9 +54,6 @@
     <ClInclude Include="src\Core\Events\MouseEvent.h">
       <Filter>src\Core\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\Events\WindowEvent.h">
-      <Filter>src\Core\Events</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\KeyCodes.h">
       <Filter>src\Core</Filter>
     </ClInclude>

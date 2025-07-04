@@ -2,9 +2,6 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>E:\TimeEngine\Bin\Debug-windows-x86_64\Logger\Logger.dll</FullPath>
-    </ProjectOutput>
-    <ProjectOutput>
       <FullPath>E:\TimeEngine\Bin\Debug-windows-x86_64\Engine\Engine.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>

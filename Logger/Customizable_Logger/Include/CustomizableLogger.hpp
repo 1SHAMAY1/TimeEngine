@@ -4,8 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <fstream>
-#include <mutex>  // Added for thread safety
-#include "LoggerAPI.hpp"
+#include <mutex> 
 
 /**
  * Customizable Logger System
@@ -14,7 +13,7 @@
  * - Filter logs by level/category
  * - Console + optional JSON file output
  */
-class LOGGER_API CustomizableLogger {
+class  CustomizableLogger {
 public:
     CustomizableLogger(bool toFile = false, const std::string& fileName = "log.json");
     ~CustomizableLogger();

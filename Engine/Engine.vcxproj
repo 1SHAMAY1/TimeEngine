@@ -90,8 +90,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Vendor\GLFW\build\src\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Debug;..\Vendor\GLFW\build\src\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\Bin\Debug-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -119,8 +119,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\Engine.lib" "$(Sol
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Vendor\GLFW\build\src\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Release;..\Vendor\GLFW\build\src\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\Bin\Release-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -148,8 +148,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\Engine.lib" "$(S
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Vendor\GLFW\build\src\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Dist;..\Vendor\GLFW\build\src\Dist;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\Bin\Dist-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -179,11 +179,6 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\Window\IWindow.cpp" />
     <ClCompile Include="src\Window\WindowsWindow.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Logger\Customizable_Logger\Logger.vcxproj">
-      <Project>{25F339C1-1195-6497-FA4F-78EBE690EBE7}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
