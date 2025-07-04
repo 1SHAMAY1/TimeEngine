@@ -6,26 +6,32 @@ workspace "TimeEngine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
--- Include directories relative to root
+-- ========== Include Directories ==========
+
 IncludeDir = {}
 IncludeDir["Engine"]         = "Engine/src"
 IncludeDir["Engine_Include"] = "Engine/Include"
 IncludeDir["Logger"]         = "Logger/Customizable_Logger/Include"
 IncludeDir["GLFW"]           = "Vendor/GLFW/glfw/include"
+IncludeDir["GLAD"]           = "Vendor/GLAD/include"
+
+-- ========== Vendor Group ==========
 
 group "Vendor"
-    -- GLFW is built via CMake
+    -- GLFW is built via CMake, GLAD is integrated manually
 group ""
 
--- Logger Project (only for headers and dependency tracking)
+-- ========== Logger Project ==========
+
 project "Logger"
     location "Logger/Customizable_Logger"
-    kind "None" -- Do not compile anything
+    kind "None" -- Only for dependency tracking
     language "C++"
-    files { } -- No source files
+    files { }
     includedirs { "%{IncludeDir.Logger}" }
 
--- Engine Project
+-- ========== Engine Project ==========
+
 project "Engine"
     location "Engine"
     kind "SharedLib"
@@ -40,25 +46,29 @@ project "Engine"
         "Engine/src/**.h",
         "Engine/src/**.cpp",
         "Engine/Include/**.h",
-        "Engine/Include/**.hpp"
+        "Engine/Include/**.hpp",
+
+        -- GLAD source
+        "Vendor/GLAD/src/glad.c"
     }
 
     vpaths {
         ["Header Files/*"] = { "Engine/Include/**.h", "Engine/Include/**.hpp" },
-        ["Source Files/*"] = { "Engine/src/**.cpp" }
+        ["Source Files/*"] = { "Engine/src/**.cpp", "Vendor/GLAD/src/glad.c" }
     }
 
     includedirs {
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
         "%{IncludeDir.Logger}",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.GLAD}"
     }
 
-   libdirs {
-    "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-    "Vendor/GLFW/build/src/%{cfg.buildcfg}"
-}
+    libdirs {
+        "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+        "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+    }
 
     links {
         "Customizable_Logger",
@@ -76,6 +86,7 @@ project "Engine"
             "TE_PLATFORM_WINDOWS",
             "TE_BUILD_DLL"
         }
+
         postbuildcommands {
             'xcopy /Y /D /Q "%{wks.location}Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "%{wks.location}Bin\\' .. outputdir .. '\\Sandbox\\" > nul',
             'xcopy /Y /D /Q "%{wks.location}Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "%{wks.location}Bin\\' .. outputdir .. '\\Sandbox\\" > nul'
@@ -93,7 +104,8 @@ project "Engine"
         defines { "TE_DIST" }
         optimize "On"
 
--- Sandbox Project
+-- ========== Sandbox Project ==========
+
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
@@ -112,13 +124,13 @@ project "Sandbox"
     includedirs {
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
-        "%{IncludeDir.Logger}",
-        
+        "%{IncludeDir.Logger}"
     }
 
     libdirs {
-       "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}"
+        "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}"
     }
+
     links {
         "Engine",
         "Customizable_Logger"

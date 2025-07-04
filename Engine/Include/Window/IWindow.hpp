@@ -31,5 +31,8 @@ public:
 
     virtual void* GetNativeWindow() const = 0;
 
+    virtual void* GetGLLoaderFunction() const = 0;
+
+
     static IWindow* Create(const WindowProps& props = WindowProps());
 };

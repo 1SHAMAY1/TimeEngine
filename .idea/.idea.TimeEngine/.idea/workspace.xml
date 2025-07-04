@@ -10,64 +10,13 @@
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Application.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Application.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Core.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Core.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.ilk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.read.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/IWindow.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/IWindow.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Log.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Log.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/WindowsWindow.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/WindowsWindow.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.idb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.idb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Engine/Engine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Engine/Engine.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Engine/Engine.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Engine/Engine.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Engine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Engine.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GenerateProjectFiles.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/CompilerIdCXX.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/CompilerIdCXX.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/Debug/CMakeCXXCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/Debug/CMakeCXXCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/CMakeConfigureLog.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Premake5.lua" beforeDir="false" afterPath="$PROJECT_DIR$/Premake5.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/CMakeConfigureLog.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.lib" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/context.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/context.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/egl_context.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/egl_context.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/init.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/init.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/input.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/input.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/monitor.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/monitor.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_init.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_init.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_joystick.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_joystick.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_monitor.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_monitor.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_window.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/null_window.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/osmesa_context.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/osmesa_context.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/platform.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/platform.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/vulkan.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/vulkan.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/wgl_context.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/wgl_context.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_init.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_init.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_joystick.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_joystick.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_module.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_module.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_monitor.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_monitor.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_thread.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_thread.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_time.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_time.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_window.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/win32_window.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/window.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/glfw.dir/Debug/window.obj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +42,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Application.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -182,6 +132,7 @@
       <workItem from="1751597471430" duration="1027000" />
       <workItem from="1751598530832" duration="1921000" />
       <workItem from="1751602529038" duration="452000" />
+      <workItem from="1751603708785" duration="696000" />
     </task>
     <servers />
   </component>

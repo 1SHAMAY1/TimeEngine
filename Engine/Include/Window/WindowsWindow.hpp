@@ -19,6 +19,10 @@ public:
 
     void* GetNativeWindow() const override { return m_Window; }
 
+    void* GetGLLoaderFunction() const;
+ 
+
+
 private:
     virtual void Init(const WindowProps& props);
     virtual void Shutdown();

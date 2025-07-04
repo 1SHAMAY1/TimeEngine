@@ -1,0 +1,6 @@
+E:\TimeEngine\Vendor\GLAD\src\glad.c;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\glad.obj
+E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
+E:\TimeEngine\Engine\src\Core\Core.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Core.obj
+E:\TimeEngine\Engine\src\Core\Log.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Log.obj
+E:\TimeEngine\Engine\src\Window\IWindow.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\IWindow.obj
+E:\TimeEngine\Engine\src\Window\WindowsWindow.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\WindowsWindow.obj

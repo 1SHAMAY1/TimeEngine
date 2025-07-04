@@ -1,0 +1,10 @@
+^E:\TIMEENGINE\VENDOR\GLFW\GLFW\CMAKELISTS.TXT
+setlocal
+D:\CMake\bin\cmake.exe -SE:/TimeEngine/Vendor/GLFW/glfw -BE:/TimeEngine/Vendor/GLFW/build --check-stamp-file E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

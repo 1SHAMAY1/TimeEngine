@@ -15,6 +15,11 @@ WindowsWindow::~WindowsWindow() {
     Shutdown();
 }
 
+void* WindowsWindow::GetGLLoaderFunction() const
+{
+    return (void*)glfwGetProcAddress;
+}
+
 void WindowsWindow::Init(const WindowProps& props) {
     m_Data.Title = props.Title;
     m_Data.Width = props.Width;
