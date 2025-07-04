@@ -6,3 +6,11 @@
 {"timestamp":"2025-07-04 09:05:13.500","level":"INFO","category":"Core","message":"Application Run ended."}
 {"timestamp":"2025-07-04 09:05:13.500","level":"INFO","category":"Core","message":"Application Destructor called."}
 {"timestamp":"2025-07-04 09:05:13.599","level":"INFO","category":"Core","message":"GLFW window destroyed."}
+{"timestamp":"2025-07-04 09:52:46.770","level":"INFO","category":"Core","message":"Application Constructor called."}
+{"timestamp":"2025-07-04 09:52:46.782","level":"INFO","category":"Core","message":"GLFW initialized successfully."}
+{"timestamp":"2025-07-04 09:52:46.907","level":"INFO","category":"Core","message":"Window successfully created: {0} ({1}x{2})"}
+{"timestamp":"2025-07-04 09:52:46.907","level":"INFO","category":"Core","message":"Log Initialized!"}
+{"timestamp":"2025-07-04 09:52:46.909","level":"INFO","category":"Core","message":"Application Run started."}
+{"timestamp":"2025-07-04 09:52:53.694","level":"INFO","category":"Core","message":"Application Run ended."}
+{"timestamp":"2025-07-04 09:52:53.695","level":"INFO","category":"Core","message":"Application Destructor called."}
+{"timestamp":"2025-07-04 09:52:53.795","level":"INFO","category":"Core","message":"GLFW window destroyed."}
