@@ -3,4 +3,4 @@
 	url = https://github.com/glfw/glfw
 [submodule "Vendor/GLFW/glfw"]
 	path = Vendor/GLFW/glfw
-	url = https://github.com/glfw/glfw
+	url = https://github.com/glfw/glfw.git
