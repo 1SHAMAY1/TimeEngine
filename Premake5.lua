@@ -17,7 +17,6 @@ IncludeDir["GLAD"]           = "Vendor/GLAD/include"
 IncludeDir["ImGui"]          = "Vendor/IMGUI/ImGui"
 IncludeDir["GLM"]            = "Vendor/GLM"
 
-
 -- ========== Vendor Group ==========
 
 group "Vendor"
@@ -46,10 +45,15 @@ project "Engine"
     objdir ("Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
 
     files {
+        -- Core Engine
         "Engine/src/**.h",
         "Engine/src/**.cpp",
         "Engine/Include/**.h",
         "Engine/Include/**.hpp",
+
+        -- Editor Layer
+        "Engine/Include/Layers/**.hpp",
+        "Engine/src/Core/Layers/**.cpp",
 
         -- GLAD
         "Vendor/GLAD/src/glad.c",
@@ -66,8 +70,18 @@ project "Engine"
     }
 
     vpaths {
-        ["Header Files/*"] = { "Engine/Include/**.h", "Engine/Include/**.hpp" },
-        ["Source Files/*"] = { "Engine/src/**.cpp", "Vendor/GLAD/src/glad.c" }
+        ["Header Files/*"] = {
+            "Engine/Include/**.h",
+            "Engine/Include/**.hpp"
+        },
+        ["Source Files/*"] = {
+            "Engine/src/**.cpp",
+            "Vendor/GLAD/src/glad.c"
+        },
+        ["Editor Layer/*"] = {
+            "Engine/src/Core/Layers/**.cpp",
+            "Engine/Include/Layers/**.hpp"
+        }
     }
 
     includedirs {
@@ -78,7 +92,6 @@ project "Engine"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}"
-
     }
 
     libdirs {
@@ -100,10 +113,12 @@ project "Engine"
         systemversion "latest"
         defines {
             "TE_PLATFORM_WINDOWS",
-            "TE_BUILD_DLL"
+            "TE_BUILD_DLL",
+            "IMGUI_IMPL_OPENGL_LOADER_GLAD"
         }
 
         postbuildcommands {
+            -- Copy DLL and LIB to Sandbox
             'xcopy /Y /D /Q "%{wks.location}Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "%{wks.location}Bin\\' .. outputdir .. '\\Sandbox\\" > nul',
             'xcopy /Y /D /Q "%{wks.location}Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "%{wks.location}Bin\\' .. outputdir .. '\\Sandbox\\" > nul'
         }
@@ -134,7 +149,9 @@ project "Sandbox"
 
     files {
         "Sandbox/src/**.h",
-        "Sandbox/src/**.cpp"
+        "Sandbox/src/**.cpp",
+        "Sandbox/Include/Layers/**.h",
+        "Sandbox/src/Core/Layers/**.cpp"
     }
 
     includedirs {

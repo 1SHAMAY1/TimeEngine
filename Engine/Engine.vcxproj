@@ -78,7 +78,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;TE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;src;Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLFW\glfw\include;..\Vendor\GLAD\include;..\Vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -103,7 +103,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\Engine.lib" "$(Sol
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;TE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;src;Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLFW\glfw\include;..\Vendor\GLAD\include;..\Vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -132,7 +132,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\Engine.lib" "$(S
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;TE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;src;Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLFW\glfw\include;..\Vendor\GLAD\include;..\Vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -168,8 +168,11 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h" />
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp" />
     <ClInclude Include="Include\Input\Input.hpp" />
+    <ClInclude Include="Include\Layers\EditorLayer.hpp" />
     <ClInclude Include="Include\Layers\Layer.hpp" />
     <ClInclude Include="Include\Layers\LayerStack.hpp" />
+    <ClInclude Include="Include\Layers\LogoLayer.hpp" />
+    <ClInclude Include="Include\Utility\MathUtils.hpp" />
     <ClInclude Include="Include\Window\IWindow.hpp" />
     <ClInclude Include="Include\Window\WindowsWindow.hpp" />
     <ClInclude Include="src\Core\Application.h" />
@@ -195,8 +198,10 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Core.cpp" />
     <ClCompile Include="src\Core\Input\Input.cpp" />
+    <ClCompile Include="src\Core\Layers\EditorLayer.cpp" />
     <ClCompile Include="src\Core\Layers\Layer.cpp" />
     <ClCompile Include="src\Core\Layers\LayerStack.cpp" />
+    <ClCompile Include="src\Core\Layers\LogoLayer.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\Window\IWindow.cpp" />

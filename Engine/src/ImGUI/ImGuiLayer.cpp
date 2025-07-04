@@ -14,10 +14,11 @@
 
 namespace TE {
 
-    ImGuiLayer::ImGuiLayer()
-        : Layer("ImGuiLayer")
+    ImGuiLayer::ImGuiLayer(const std::string& name)
+        : Layer(name) 
     {
     }
+
 
     ImGuiLayer::~ImGuiLayer()
     {
@@ -25,43 +26,52 @@ namespace TE {
 
     void ImGuiLayer::OnAttach()
     {
+        if (m_Initialized) {
+            TE_CORE_WARN("ImGuiLayer already initialized. Skipping.");
+            return;
+        }
+        m_Initialized = true;
+
         TE_CORE_INFO("Creating ImGui context...");
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
-        TE_CORE_INFO("Initializing ImGuiIO...");
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        ImGuiIO& io = ImGui::GetIO();
 
-        // Enable docking and viewport support
+        TE_CORE_INFO("Initializing ImGuiIO...");
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-        // Setup ImGui style
         ImGui::StyleColorsDark();
-
-        // Apply viewport style fixes
         ImGuiStyle& style = ImGui::GetStyle();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
             style.WindowRounding = 0.0f;
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
-        // Initialize platform/renderer backends
+        TE_CORE_INFO("Fetching application window...");
         Application& app = Application::Get();
         GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
-        if (!window)
-        {
+        if (!window) {
             TE_CORE_CRITICAL("GLFW window is null!");
             return;
         }
 
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 410");
+        TE_CORE_INFO("Initializing ImGui platform/renderer backends...");
+        if (!ImGui_ImplGlfw_InitForOpenGL(window, true)) {
+            TE_CORE_CRITICAL("ImGui_ImplGlfw_InitForOpenGL failed!");
+            return;
+        }
 
-        TE_CORE_INFO("ImGui initialized.");
+        if (!ImGui_ImplOpenGL3_Init("#version 410")) {
+            TE_CORE_CRITICAL("ImGui_ImplOpenGL3_Init failed!");
+            return;
+        }
+
+        TE_CORE_INFO("ImGui initialized successfully.");
     }
+
 
     void ImGuiLayer::OnDetach()
     {
@@ -102,8 +112,8 @@ namespace TE {
 
     void ImGuiLayer::OnImGuiRender()
     {
-        static bool show = true;
-        ImGui::ShowDemoWindow(&show); // Demonstrates docking + viewports
+        /*static bool showDemo = true;
+        ImGui::ShowDemoWindow(&showDemo);*/
     }
 
 }

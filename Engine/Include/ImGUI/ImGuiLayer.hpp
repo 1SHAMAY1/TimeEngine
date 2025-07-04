@@ -4,10 +4,10 @@
 
 namespace TE {
 
-    class ImGuiLayer : public Layer
+    class TE_API ImGuiLayer : public Layer
     {
     public:
-        ImGuiLayer();
+        ImGuiLayer(const std::string& name = "Editor Layer");
         ~ImGuiLayer();
 
         virtual void OnAttach() override;
@@ -16,6 +16,10 @@ namespace TE {
 
         void Begin();
         void End();
+
+    private:
+        bool m_Initialized = false;
+
     };
 
 }

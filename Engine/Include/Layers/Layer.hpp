@@ -16,6 +16,8 @@ namespace TE {
         virtual void OnImGuiRender();
         virtual void OnEvent(class Event& event);
 
+        void DockTo(bool padding = false);
+
         inline const std::string& GetName() const { return m_DebugName; }
 
     protected:

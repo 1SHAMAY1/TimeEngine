@@ -9,8 +9,10 @@ E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_widgets.cpp;E:\TimeEngine\Bin-Intermediat
 E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
 E:\TimeEngine\Engine\src\Core\Core.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Core.obj
 E:\TimeEngine\Engine\src\Core\Input\Input.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Input.obj
+E:\TimeEngine\Engine\src\Core\Layers\EditorLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\EditorLayer.obj
 E:\TimeEngine\Engine\src\Core\Layers\Layer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Layer.obj
 E:\TimeEngine\Engine\src\Core\Layers\LayerStack.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\LayerStack.obj
+E:\TimeEngine\Engine\src\Core\Layers\LogoLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\LogoLayer.obj
 E:\TimeEngine\Engine\src\Core\Log.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Log.obj
 E:\TimeEngine\Engine\src\ImGUI\ImGuiLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\ImGuiLayer.obj
 E:\TimeEngine\Engine\src\Window\IWindow.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\IWindow.obj

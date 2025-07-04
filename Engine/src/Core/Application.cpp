@@ -73,12 +73,7 @@ namespace TE
 
         while (m_Running)
         {
-            // Background animation
-            time += 0.01f;
-            float blue  = 0.5f + 0.5f * sin(time);
-            float red   = 0.2f + 0.2f * sin(time + 2);
-            float green = 0.2f + 0.2f * sin(time + 4);
-            glClearColor(red, green, blue, 1.0f);
+            glClearColor(0, 0, 0, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             // Logic update
@@ -109,5 +104,11 @@ namespace TE
     {
         m_LayerStack.PushOverlay(overlay);
         overlay->OnAttach();
+    }
+
+    void Application::PopLayer(Layer* overlay)
+    {
+        m_LayerStack.PopOverlay(overlay);
+        overlay->OnDetach();
     }
 }

@@ -87,6 +87,9 @@
     <ClInclude Include="Include\Input\Input.hpp">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Layers\EditorLayer.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
       <Filter>Header Files\Layers</Filter>
     </ClInclude>
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="src\Core\Input\Input.cpp">
       <Filter>Source Files\Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
       <Filter>Source Files\Core\Layers</Filter>
