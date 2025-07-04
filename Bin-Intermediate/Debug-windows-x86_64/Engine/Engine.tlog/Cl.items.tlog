@@ -1,6 +1,17 @@
 E:\TimeEngine\Vendor\GLAD\src\glad.c;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\glad.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_impl_glfw.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_impl_opengl3.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\imgui.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_demo.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_demo.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_draw.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_draw.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_tables.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_tables.obj
+E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_widgets.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_widgets.obj
 E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
 E:\TimeEngine\Engine\src\Core\Core.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Core.obj
+E:\TimeEngine\Engine\src\Core\Input\Input.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Input.obj
+E:\TimeEngine\Engine\src\Core\Layers\Layer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Layer.obj
+E:\TimeEngine\Engine\src\Core\Layers\LayerStack.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\LayerStack.obj
 E:\TimeEngine\Engine\src\Core\Log.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Log.obj
+E:\TimeEngine\Engine\src\ImGUI\ImGuiLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\ImGuiLayer.obj
 E:\TimeEngine\Engine\src\Window\IWindow.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\IWindow.obj
 E:\TimeEngine\Engine\src\Window\WindowsWindow.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\WindowsWindow.obj

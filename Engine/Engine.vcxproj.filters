@@ -7,14 +7,44 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{E145AD0A-4D5C-ABA0-96D3-36C202297C28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Input">
+      <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Layers">
+      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImGUI">
+      <UniqueIdentifier>{93C3C060-7FA7-81B6-E807-7C09D40A6C38}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Window">
       <UniqueIdentifier>{B0B44E99-1C16-2CA7-A583-725911E46266}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{21EB8090-0D4E-1035-B6D3-48EBA215DCB7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ImGUI">
+      <UniqueIdentifier>{CB708F05-B754-505B-20B5-4AAE0CB83ADD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Layers">
+      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor">
+      <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\IMGUI">
+      <UniqueIdentifier>{9D660FD0-89C9-9E74-324F-D72A1E916AF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\IMGUI\ImGui">
+      <UniqueIdentifier>{879D03BC-7381-C411-DCE1-BE64C8E4AE93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\IMGUI\ImGui\backends">
+      <UniqueIdentifier>{913F8C79-FD4C-BA5F-8633-B64AF23F8616}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
@@ -27,6 +57,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.h">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.h">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imconfig.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imgui.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imgui_internal.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_rectpack.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_textedit.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Input\Input.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\Layer.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\LayerStack.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Window\IWindow.hpp">
       <Filter>Header Files\Window</Filter>
     </ClInclude>
@@ -54,13 +120,7 @@
     <ClInclude Include="src\Core\Events\MouseEvent.h">
       <Filter>src\Core\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\KeyCodes.h">
-      <Filter>src\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\Log.h">
-      <Filter>src\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\MouseCodes.h">
       <Filter>src\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\PreRequisites.h">
@@ -74,14 +134,47 @@
     <ClCompile Include="..\Vendor\GLAD\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.cpp">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_demo.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_draw.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_tables.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_widgets.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Application.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Core.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Input\Input.cpp">
+      <Filter>Source Files\Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layers\Layer.cpp">
+      <Filter>Source Files\Core\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layers\LayerStack.cpp">
+      <Filter>Source Files\Core\Layers</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGUI\ImGuiLayer.cpp">
+      <Filter>Source Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="src\Window\IWindow.cpp">
       <Filter>Source Files\Window</Filter>

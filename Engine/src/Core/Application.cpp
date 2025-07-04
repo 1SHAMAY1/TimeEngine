@@ -1,25 +1,27 @@
 #include "Application.h"
 
-#include <glad/glad.h> // Only need GLAD, NOT <GL/gl.h>
+#include <glad/glad.h>
 
 #include "Events/ApplicationEvent.h"
 #include "Log.h"
 #include "Window/IWindow.hpp"
+#include "ImGUI/ImGuiLayer.hpp"
 
 namespace TE
 {
+    Application* Application::s_Instance = nullptr;
+
     Application::Application()
         : m_Running(true)
     {
-        // Initialize the logging system once
-        TE::Log::Init(true, "TimeEngineLog.json");
+        TE_CORE_ASSERT(!s_Instance, "Application already exists!");
+        s_Instance = this;
 
+        TE::Log::Init(true, "TimeEngineLog.json");
         TE_CORE_INFO("Application Constructor called.");
 
-        // Create a window instance via abstraction
         m_Window = std::unique_ptr<IWindow>(IWindow::Create());
 
-        // Initialize GLAD after window + OpenGL context is created
         if (!gladLoadGLLoader((GLADloadproc)m_Window->GetGLLoaderFunction()))
         {
             TE_CORE_ERROR("Failed to initialize GLAD!");
@@ -28,7 +30,6 @@ namespace TE
 
         TE_CORE_INFO("OpenGL Version: {0}", (const char*)glGetString(GL_VERSION));
 
-        // Set up event callback and dispatch relevant events
         m_Window->SetEventCallback([this](Event& e) {
             EventDispatcher dispatcher(e);
 
@@ -53,6 +54,10 @@ namespace TE
                 return false;
             });
         });
+
+        // === ImGui Layer Setup ===
+        m_ImGuiLayer = new ImGuiLayer();
+        PushOverlay(m_ImGuiLayer);
     }
 
     Application::~Application()
@@ -68,20 +73,41 @@ namespace TE
 
         while (m_Running)
         {
-            time += 0.01f; // Adjust speed here
-
-            float blue   = 0.5f + 0.5f * sin(time);     // oscillates between 0 and 1
-            float red    = 0.2f + 0.2f * sin(time + 2); // slight red shift
-            float green  = 0.2f + 0.2f * sin(time + 4); // slight green shift
-            float alpha  = 1.0f; // Or use 0.5f + 0.5f * sin(time + offset) for transparent waves
-
-            glClearColor(red, green, blue, alpha);
+            // Background animation
+            time += 0.01f;
+            float blue  = 0.5f + 0.5f * sin(time);
+            float red   = 0.2f + 0.2f * sin(time + 2);
+            float green = 0.2f + 0.2f * sin(time + 4);
+            glClearColor(red, green, blue, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (m_Window)
-                m_Window->OnUpdate();
+            // Logic update
+            for (Layer* layer : m_LayerStack)
+                if (layer)
+                    layer->OnUpdate();
+
+            // ImGui Rendering
+            m_ImGuiLayer->Begin();
+            for (Layer* layer : m_LayerStack)
+                if (layer)
+                    layer->OnImGuiRender();
+            m_ImGuiLayer->End();
+
+            m_Window->OnUpdate();
         }
 
         TE_CORE_INFO("Application Run ended.");
+    }
+
+    void Application::PushLayer(Layer* layer)
+    {
+        m_LayerStack.PushLayer(layer);
+        layer->OnAttach();
+    }
+
+    void Application::PushOverlay(Layer* overlay)
+    {
+        m_LayerStack.PushOverlay(overlay);
+        overlay->OnAttach();
     }
 }

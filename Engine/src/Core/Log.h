@@ -28,6 +28,8 @@ namespace TE
 #define TE_CORE_ERROR(msg)     ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR",    __FILE__, __LINE__)
 #define TE_CORE_DEBUG(msg)     ::TE::Log::GetCoreLogger().log("Core", msg, "DEBUG",    __FILE__, __LINE__)
 #define TE_CORE_CRITICAL(msg)  ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL", __FILE__, __LINE__)
+#define TE_CORE_ASSERT(x, msg) if (!(x)) { TE_CORE_CRITICAL(msg); __debugbreak(); }
+
 
 // -------- Client Logger Macros with File/Line --------
 #define TE_CLIENT_INFO(msg)     ::TE::Log::GetClientLogger().log("Client", msg, "INFO",     __FILE__, __LINE__)
@@ -35,3 +37,4 @@ namespace TE
 #define TE_CLIENT_ERROR(msg)    ::TE::Log::GetClientLogger().log("Client", msg, "ERROR",    __FILE__, __LINE__)
 #define TE_CLIENT_DEBUG(msg)    ::TE::Log::GetClientLogger().log("Client", msg, "DEBUG",    __FILE__, __LINE__)
 #define TE_CLIENT_CRITICAL(msg) ::TE::Log::GetClientLogger().log("Client", msg, "CRITICAL", __FILE__, __LINE__)
+#define TE_CLIENT_ASSERT(x, msg) if (!(x)) { TE_CLIENT_CRITICAL(msg); __debugbreak(); }

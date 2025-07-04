@@ -1,11 +1,8 @@
 #pragma once
 
-#include "KeyCodes.h"
-#include "Core/Engine.h"
-#include "Events/Event.h"
-#include "PreRequisites.h"
-
-#include "Event.h"
+#include "Core/KeyCodes.hpp"
+#include "Core/Events/Event.h"
+#include "Core/PreRequisites.h"
 
 namespace TE {
 
@@ -76,4 +73,4 @@ namespace TE {
 		EVENT_CLASS_TYPE(KeyTyped)
 	};
 
-} // namespace TE
+} 

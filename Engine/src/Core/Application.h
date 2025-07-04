@@ -2,7 +2,9 @@
 
 #include "PreRequisites.h"
 #include "Window/IWindow.hpp"
-#include <memory>
+#include "Layers/LayerStack.hpp"
+#include "ImGUI/ImGuiLayer.hpp"
+
 
 namespace TE
 {
@@ -14,9 +16,20 @@ namespace TE
 
         void Run();
 
+        void PushLayer(Layer* layer);
+        void PushOverlay(Layer* overlay);
+
+        static Application& Get() { return *s_Instance; }
+        IWindow& GetWindow() const { return *m_Window; }
+
     private:
-        std::unique_ptr<IWindow> m_Window;  // Window abstraction pointer
+        std::unique_ptr<IWindow> m_Window;
         bool m_Running;
+
+        LayerStack m_LayerStack;
+        ImGuiLayer* m_ImGuiLayer = nullptr;
+
+        static Application* s_Instance;
     };
 
     // To be defined by the client (e.g., Sandbox app)

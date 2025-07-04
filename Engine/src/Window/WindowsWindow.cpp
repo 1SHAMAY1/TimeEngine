@@ -3,11 +3,14 @@
 
 #include "Core/Log.h"
 #include "Core/Events/ApplicationEvent.h"
+#include "Core/Events/KeyEvent.h"
+#include "Core/Events/MouseEvent.h"
+#include "Input/Input.hpp"
 
 static bool s_GLFWInitialized = false;
 
 WindowsWindow::WindowsWindow(const WindowProps& props) {
-    m_Window = nullptr; // ✅ Always null-init pointer
+    m_Window = nullptr;
     Init(props);
 }
 
@@ -15,8 +18,7 @@ WindowsWindow::~WindowsWindow() {
     Shutdown();
 }
 
-void* WindowsWindow::GetGLLoaderFunction() const
-{
+void* WindowsWindow::GetGLLoaderFunction() const {
     return (void*)glfwGetProcAddress;
 }
 
@@ -44,37 +46,98 @@ void WindowsWindow::Init(const WindowProps& props) {
     glfwMakeContextCurrent(m_Window);
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
+    TE::Input::Init(m_Window); // Register window with input system
+
     SetVSync(true);
 
     // === EVENT CALLBACKS ===
-
-    // Resize
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         data.Width = width;
         data.Height = height;
-
         TE::WindowResizeEvent event(width, height);
+        TE_CORE_DEBUG(event.ToString());
         data.EventCallback(event);
     });
 
-    // Close
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         TE::WindowCloseEvent event;
+        TE_CORE_DEBUG(event.ToString());
         data.EventCallback(event);
     });
 
-    // Minimize (via focus lost/gain)
     glfwSetWindowIconifyCallback(m_Window, [](GLFWwindow* window, int iconified) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         if (iconified) {
             TE::WindowLostFocusEvent event;
+            TE_CORE_DEBUG(event.ToString());
             data.EventCallback(event);
         } else {
             TE::WindowFocusEvent event;
+            TE_CORE_DEBUG(event.ToString());
             data.EventCallback(event);
         }
+    });
+
+    glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+        switch (action) {
+            case GLFW_PRESS: {
+                TE::KeyPressedEvent event((TE::KeyCode)key, false);
+                TE_CORE_DEBUG(event.ToString());
+                data.EventCallback(event);
+                break;
+            }
+            case GLFW_RELEASE: {
+                TE::KeyReleasedEvent event((TE::KeyCode)key);
+                TE_CORE_DEBUG(event.ToString());
+                data.EventCallback(event);
+                break;
+            }
+            case GLFW_REPEAT: {
+                TE::KeyPressedEvent event((TE::KeyCode)key, true);
+                TE_CORE_DEBUG(event.ToString());
+                data.EventCallback(event);
+                break;
+            }
+        }
+    });
+
+    glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        TE::KeyTypedEvent event((TE::KeyCode)codepoint);
+        TE_CORE_DEBUG(event.ToString());
+        data.EventCallback(event);
+    });
+
+    glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+        if (action == GLFW_PRESS) {
+            TE::MouseButtonPressedEvent event((TE::MouseCode)button);
+            TE_CORE_DEBUG(event.ToString());
+            data.EventCallback(event);
+        } else if (action == GLFW_RELEASE) {
+            TE::MouseButtonReleasedEvent event((TE::MouseCode)button);
+            TE_CORE_DEBUG(event.ToString());
+            data.EventCallback(event);
+        }
+    });
+
+    glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        TE::MouseScrolledEvent event((float)xOffset, (float)yOffset);
+        TE_CORE_DEBUG(event.ToString());
+        data.EventCallback(event);
+    });
+
+    glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        TE::MouseMovedEvent event((float)xpos, (float)ypos);
+        TE_CORE_DEBUG(event.ToString());
+        data.EventCallback(event);
     });
 
     TE_CORE_INFO("Window successfully created: {0} ({1}x{2})", m_Data.Title, m_Data.Width, m_Data.Height);

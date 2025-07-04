@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Core/Events/Event.h"
-#include "Core/MouseCodes.h"
-#include "PreRequisites.h"
-
-#include "Event.h"
+#include "Core/MouseCodes.hpp"
+#include "Core/PreRequisites.h"
 
 namespace TE {
 

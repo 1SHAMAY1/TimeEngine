@@ -14,18 +14,21 @@ IncludeDir["Engine_Include"] = "Engine/Include"
 IncludeDir["Logger"]         = "Logger/Customizable_Logger/Include"
 IncludeDir["GLFW"]           = "Vendor/GLFW/glfw/include"
 IncludeDir["GLAD"]           = "Vendor/GLAD/include"
+IncludeDir["ImGui"]          = "Vendor/IMGUI/ImGui"
+IncludeDir["GLM"]            = "Vendor/GLM"
+
 
 -- ========== Vendor Group ==========
 
 group "Vendor"
-    -- GLFW is built via CMake, GLAD is integrated manually
+    -- GLFW is built via CMake
 group ""
 
 -- ========== Logger Project ==========
 
 project "Logger"
     location "Logger/Customizable_Logger"
-    kind "None" -- Only for dependency tracking
+    kind "None"
     language "C++"
     files { }
     includedirs { "%{IncludeDir.Logger}" }
@@ -48,8 +51,18 @@ project "Engine"
         "Engine/Include/**.h",
         "Engine/Include/**.hpp",
 
-        -- GLAD source
-        "Vendor/GLAD/src/glad.c"
+        -- GLAD
+        "Vendor/GLAD/src/glad.c",
+
+        -- ImGui core
+        "Vendor/IMGUI/ImGui/*.cpp",
+        "Vendor/IMGUI/ImGui/*.h",
+
+        -- ImGui backends
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h"
     }
 
     vpaths {
@@ -58,11 +71,14 @@ project "Engine"
     }
 
     includedirs {
+        "%{IncludeDir.ImGui}",
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
         "%{IncludeDir.Logger}",
         "%{IncludeDir.GLFW}",
-        "%{IncludeDir.GLAD}"
+        "%{IncludeDir.GLAD}",
+        "%{IncludeDir.GLM}"
+
     }
 
     libdirs {
