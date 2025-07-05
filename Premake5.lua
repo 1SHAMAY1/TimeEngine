@@ -151,23 +151,38 @@ project "Sandbox"
         "Sandbox/src/**.h",
         "Sandbox/src/**.cpp",
         "Sandbox/Include/Layers/**.h",
-        "Sandbox/src/Core/Layers/**.cpp"
+        "Sandbox/src/Core/Layers/**.cpp",
+        -- ImGui core
+        "Vendor/IMGUI/ImGui/*.cpp",
+        "Vendor/IMGUI/ImGui/*.h",
+        -- ImGui backends
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
+        "Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h"
     }
 
     includedirs {
+        "%{IncludeDir.ImGui}",
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
         "%{IncludeDir.Logger}",
-        "%{IncludeDir.GLM}"
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.GLFW}"
+
     }
 
     libdirs {
-        "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}"
+        "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+        "Vendor/GLFW/build/src/%{cfg.buildcfg}",
+        
     }
 
     links {
         "Engine",
-        "Customizable_Logger"
+        "Customizable_Logger",
+        "glfw3",                 
+        "opengl32.lib" 
     }
 
     dependson { "Engine", "Logger" }

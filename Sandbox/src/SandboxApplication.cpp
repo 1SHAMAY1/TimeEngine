@@ -1,7 +1,7 @@
 #include <Engine.h>
 #include "Layers/EditorLayer.hpp"
 #include "Layers/LogoLayer.hpp"
-#include "Layers/TestTriangleLayer.hpp"
+#include "Layers/CameraLayer.hpp"
 
 class Project : public TE::Application
 {
@@ -13,26 +13,23 @@ public:
 		PushLayer(m_LogoLayer);
 	}
 
-
-
 	void OnLogoComplete()
 	{
-		TE_CORE_INFO("Logo animation finished. Adding EditorLayer after logo removal.");
-		TE::TestTriangleLayer* editorLayer = new TE::TestTriangleLayer();
-		if (editorLayer)
+		TE_CORE_INFO("Logo animation finished. Adding CameraLayer after logo removal.");
+		TE::CameraLayer* cameraLayer = new TE::CameraLayer();
+		if (cameraLayer)
 		{
-			MarkLayerForAddition(editorLayer);
+			MarkLayerForAddition(cameraLayer);
 		}
 		else
 		{
-			TE_CORE_ERROR("Failed to create EditorLayer!");
+			TE_CORE_ERROR("Failed to create CameraLayer!");
 		}
 	}
 
 private:
 	TE::LogoLayer* m_LogoLayer = nullptr;
-	TE::EditorLayer* m_EditorLayer = nullptr;
-
+	TE::CameraLayer* m_CameraLayer = nullptr;
 };
 
 TE::Application* TE::CreateApplication()

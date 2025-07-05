@@ -172,6 +172,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Camera\PerspectiveCamera.hpp" />
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp" />
     <ClInclude Include="Include\Input\Input.hpp" />
+    <ClInclude Include="Include\Layers\CameraLayer.hpp" />
     <ClInclude Include="Include\Layers\EditorLayer.hpp" />
     <ClInclude Include="Include\Layers\Layer.hpp" />
     <ClInclude Include="Include\Layers\LayerStack.hpp" />
@@ -222,12 +223,15 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Core.cpp" />
     <ClCompile Include="src\Core\Input\Input.cpp" />
+    <ClCompile Include="src\Core\Layers\CameraLayer.cpp" />
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp" />
     <ClCompile Include="src\Core\Layers\Layer.cpp" />
     <ClCompile Include="src\Core\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp" />
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
+    <ClCompile Include="src\Core\Time\Ticker.cpp" />
+    <ClCompile Include="src\Core\Time\Timer.cpp" />
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp" />

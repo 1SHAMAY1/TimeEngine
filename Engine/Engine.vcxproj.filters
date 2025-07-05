@@ -13,8 +13,8 @@
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\Layers">
-      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
+    <Filter Include="Source Files\Core\Time">
+      <UniqueIdentifier>{1F771BC3-0B71-4415-F4DD-DA25E076AA81}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\ImGUI">
       <UniqueIdentifier>{93C3C060-7FA7-81B6-E807-7C09D40A6C38}</UniqueIdentifier>
@@ -40,9 +40,6 @@
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Layers">
-      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,9 @@
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor Layer">
+      <UniqueIdentifier>{E96E601B-D5D1-EFBF-7E57-28766A99BB42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -105,6 +105,9 @@
     <ClInclude Include="Include\Camera\Camera.hpp">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Camera\CameraController.hpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Camera\OrthographicCamera.hpp">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
@@ -117,20 +120,23 @@
     <ClInclude Include="Include\Input\Input.hpp">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Layers\CameraLayer.hpp">
+      <Filter>Editor Layer</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp">
       <Filter>Header Files\Renderer</Filter>
@@ -245,6 +251,9 @@
     <ClCompile Include="src\Camera\Camera.cpp">
       <Filter>Source Files\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="src\Camera\CameraController.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
     <ClCompile Include="src\Camera\OrthographicCamera.cpp">
       <Filter>Source Files\Camera</Filter>
     </ClCompile>
@@ -260,23 +269,32 @@
     <ClCompile Include="src\Core\Input\Input.cpp">
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Layers\CameraLayer.cpp">
+      <Filter>Editor Layer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LayerStack.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Time\Ticker.cpp">
+      <Filter>Source Files\Core\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Time\Timer.cpp">
+      <Filter>Source Files\Core\Time</Filter>
     </ClCompile>
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp">
       <Filter>Source Files\ImGUI</Filter>

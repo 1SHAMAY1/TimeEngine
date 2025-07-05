@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Vendor">
+      <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\IMGUI">
+      <UniqueIdentifier>{9D660FD0-89C9-9E74-324F-D72A1E916AF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\IMGUI\ImGui">
+      <UniqueIdentifier>{879D03BC-7381-C411-DCE1-BE64C8E4AE93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\IMGUI\ImGui\backends">
+      <UniqueIdentifier>{913F8C79-FD4C-BA5F-8633-B64AF23F8616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.h">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.h">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imconfig.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imgui.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imgui_internal.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_rectpack.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_textedit.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.cpp">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Vendor\IMGUI\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_demo.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_draw.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_tables.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_widgets.cpp">
+      <Filter>Vendor\IMGUI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SandboxApplication.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

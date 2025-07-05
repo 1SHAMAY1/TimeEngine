@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Engine\src;..\Engine\Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;..\Engine\src;..\Engine\Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLM;..\Vendor\GLFW\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -90,8 +90,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Customizable_Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Debug;..\Vendor\GLFW\build\src\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Engine\src;..\Engine\Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;..\Engine\src;..\Engine\Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLM;..\Vendor\GLFW\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -114,8 +114,8 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Customizable_Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Release;..\Vendor\GLFW\build\src\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -123,7 +123,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Engine\src;..\Engine\Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;..\Engine\src;..\Engine\Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLM;..\Vendor\GLFW\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -138,11 +138,28 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Customizable_Logger.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Dist;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Dist;..\Vendor\GLFW\build\src\Dist;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imconfig.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imgui.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imgui_internal.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_textedit.h" />
+    <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui.cpp" />
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\SandboxApplication.cpp" />
   </ItemGroup>
   <ItemGroup>

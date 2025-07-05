@@ -13,12 +13,15 @@ E:\TimeEngine\Engine\src\Camera\PerspectiveCamera.cpp;E:\TimeEngine\Bin-Intermed
 E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
 E:\TimeEngine\Engine\src\Core\Core.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Core.obj
 E:\TimeEngine\Engine\src\Core\Input\Input.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Input.obj
+E:\TimeEngine\Engine\src\Core\Layers\CameraLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\CameraLayer.obj
 E:\TimeEngine\Engine\src\Core\Layers\EditorLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\EditorLayer.obj
 E:\TimeEngine\Engine\src\Core\Layers\Layer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Layer.obj
 E:\TimeEngine\Engine\src\Core\Layers\LayerStack.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\LayerStack.obj
 E:\TimeEngine\Engine\src\Core\Layers\LogoLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\LogoLayer.obj
 E:\TimeEngine\Engine\src\Core\Layers\TestTriangleLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\TestTriangleLayer.obj
 E:\TimeEngine\Engine\src\Core\Log.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Log.obj
+E:\TimeEngine\Engine\src\Core\Time\Ticker.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Ticker.obj
+E:\TimeEngine\Engine\src\Core\Time\Timer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Timer.obj
 E:\TimeEngine\Engine\src\ImGUI\ImGuiLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\ImGuiLayer.obj
 E:\TimeEngine\Engine\src\Renderer\IndexBuffer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\IndexBuffer.obj
 E:\TimeEngine\Engine\src\Renderer\OpenGL\OpenGLIndexBuffer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OpenGLIndexBuffer.obj
