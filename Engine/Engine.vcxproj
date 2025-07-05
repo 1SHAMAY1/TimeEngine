@@ -166,6 +166,9 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Include\Camera\Camera.hpp" />
+    <ClInclude Include="Include\Camera\OrthographicCamera.hpp" />
+    <ClInclude Include="Include\Camera\PerspectiveCamera.hpp" />
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp" />
     <ClInclude Include="Include\Input\Input.hpp" />
     <ClInclude Include="Include\Layers\EditorLayer.hpp" />
@@ -211,6 +214,9 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_draw.cpp" />
     <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Camera\Camera.cpp" />
+    <ClCompile Include="src\Camera\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Core.cpp" />
     <ClCompile Include="src\Core\Input\Input.cpp" />

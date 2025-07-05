@@ -6,6 +6,9 @@ E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_demo.cpp;E:\TimeEngine\Bin-Intermediate\D
 E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_draw.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_draw.obj
 E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_tables.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_tables.obj
 E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_widgets.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_widgets.obj
+E:\TimeEngine\Engine\src\Camera\Camera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Camera.obj
+E:\TimeEngine\Engine\src\Camera\OrthographicCamera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OrthographicCamera.obj
+E:\TimeEngine\Engine\src\Camera\PerspectiveCamera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\PerspectiveCamera.obj
 E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
 E:\TimeEngine\Engine\src\Core\Core.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Core.obj
 E:\TimeEngine\Engine\src\Core\Input\Input.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Input.obj

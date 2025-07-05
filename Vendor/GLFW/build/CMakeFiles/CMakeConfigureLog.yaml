@@ -75,7 +75,7 @@ events:
       The output was:
       0
       MSBuild version 17.12.12+1cce77968 for .NET Framework
-      Build started 7/5/2025 11:19:08 AM.
+      Build started 7/5/2025 1:14:58 PM.
       
       Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\4.1.0-rc1\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -104,7 +104,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:01.52
+      Time Elapsed 00:00:01.12
       
       
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -846,8 +846,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-6ewo0v"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-6ewo0v"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-8mnwo6"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-8mnwo6"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
@@ -856,40 +856,40 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-6ewo0v'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-8mnwo6'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_77b9e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_cc4c1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/5/2025 11:19:10 AM.
+        Build started 7/5/2025 1:14:59 PM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6ewo0v\\cmTC_77b9e.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mnwo6\\cmTC_cc4c1.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_77b9e.dir\\Debug\\".
+          Creating directory "cmTC_cc4c1.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6ewo0v\\Debug\\".
-          Creating directory "cmTC_77b9e.dir\\Debug\\cmTC_77b9e.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mnwo6\\Debug\\".
+          Creating directory "cmTC_cc4c1.dir\\Debug\\cmTC_cc4c1.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_77b9e.dir\\Debug\\cmTC_77b9e.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_77b9e.dir\\Debug\\cmTC_77b9e.tlog\\unsuccessfulbuild".
+          Creating "cmTC_cc4c1.dir\\Debug\\cmTC_cc4c1.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_cc4c1.dir\\Debug\\cmTC_cc4c1.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_77b9e.dir\\Debug\\\\" /Fd"cmTC_77b9e.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_cc4c1.dir\\Debug\\\\" /Fd"cmTC_cc4c1.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_77b9e.dir\\Debug\\\\" /Fd"cmTC_77b9e.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_cc4c1.dir\\Debug\\\\" /Fd"cmTC_cc4c1.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
           CMakeCCompilerABI.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6ewo0v\\Debug\\cmTC_77b9e.exe" /INCREMENTAL /ILK:"cmTC_77b9e.dir\\Debug\\cmTC_77b9e.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-6ewo0v/Debug/cmTC_77b9e.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-6ewo0v/Debug/cmTC_77b9e.lib" /MACHINE:X64  /machine:x64 cmTC_77b9e.dir\\Debug\\CMakeCCompilerABI.obj
-          cmTC_77b9e.vcxproj -> E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6ewo0v\\Debug\\cmTC_77b9e.exe
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mnwo6\\Debug\\cmTC_cc4c1.exe" /INCREMENTAL /ILK:"cmTC_cc4c1.dir\\Debug\\cmTC_cc4c1.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-8mnwo6/Debug/cmTC_cc4c1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-8mnwo6/Debug/cmTC_cc4c1.lib" /MACHINE:X64  /machine:x64 cmTC_cc4c1.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_cc4c1.vcxproj -> E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mnwo6\\Debug\\cmTC_cc4c1.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_77b9e.dir\\Debug\\cmTC_77b9e.tlog\\unsuccessfulbuild".
-          Touching "cmTC_77b9e.dir\\Debug\\cmTC_77b9e.tlog\\cmTC_77b9e.lastbuildstate".
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6ewo0v\\cmTC_77b9e.vcxproj" (default targets).
+          Deleting file "cmTC_cc4c1.dir\\Debug\\cmTC_cc4c1.tlog\\unsuccessfulbuild".
+          Touching "cmTC_cc4c1.dir\\Debug\\cmTC_cc4c1.tlog\\cmTC_cc4c1.lastbuildstate".
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mnwo6\\cmTC_cc4c1.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:01.57
+        Time Elapsed 00:00:01.25
         
       exitCode: 0
   -
@@ -931,8 +931,8 @@ events:
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-064aw5"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-064aw5"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pdr99t"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pdr99t"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
@@ -942,40 +942,40 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-064aw5'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pdr99t'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4d3d1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_549ab.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/5/2025 11:19:12 AM.
+        Build started 7/5/2025 1:15:01 PM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\cmTC_4d3d1.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\cmTC_549ab.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_4d3d1.dir\\Debug\\".
+          Creating directory "cmTC_549ab.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\Debug\\".
-          Creating directory "cmTC_4d3d1.dir\\Debug\\cmTC_4d3d1.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\Debug\\".
+          Creating directory "cmTC_549ab.dir\\Debug\\cmTC_549ab.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_4d3d1.dir\\Debug\\cmTC_4d3d1.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_4d3d1.dir\\Debug\\cmTC_4d3d1.tlog\\unsuccessfulbuild".
+          Creating "cmTC_549ab.dir\\Debug\\cmTC_549ab.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_549ab.dir\\Debug\\cmTC_549ab.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_4d3d1.dir\\Debug\\\\" /Fd"cmTC_4d3d1.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\src.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_549ab.dir\\Debug\\\\" /Fd"cmTC_549ab.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\src.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_4d3d1.dir\\Debug\\\\" /Fd"cmTC_4d3d1.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\src.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_549ab.dir\\Debug\\\\" /Fd"cmTC_549ab.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\src.c"
           src.c
-        E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\cmTC_4d3d1.vcxproj]
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\cmTC_4d3d1.vcxproj" (default targets) -- FAILED.
+        E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\cmTC_549ab.vcxproj]
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\cmTC_549ab.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\cmTC_4d3d1.vcxproj" (default target) (1) ->
+        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\cmTC_549ab.vcxproj" (default target) (1) ->
         (ClCompile target) -> 
-          E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-064aw5\\cmTC_4d3d1.vcxproj]
+          E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pdr99t\\cmTC_549ab.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.58
+        Time Elapsed 00:00:00.44
         
       exitCode: 1
   -
@@ -988,8 +988,8 @@ events:
     checks:
       - "Looking for pthread_create in pthreads"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-t2tfon"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-t2tfon"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-396npo"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-396npo"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
@@ -999,42 +999,42 @@ events:
       variable: "CMAKE_HAVE_PTHREADS_CREATE"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-t2tfon'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-396npo'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_df41b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_87451.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/5/2025 11:19:13 AM.
+        Build started 7/5/2025 1:15:02 PM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\cmTC_df41b.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\cmTC_87451.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_df41b.dir\\Debug\\".
+          Creating directory "cmTC_87451.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\Debug\\".
-          Creating directory "cmTC_df41b.dir\\Debug\\cmTC_df41b.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\Debug\\".
+          Creating directory "cmTC_87451.dir\\Debug\\cmTC_87451.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_df41b.dir\\Debug\\cmTC_df41b.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_df41b.dir\\Debug\\cmTC_df41b.tlog\\unsuccessfulbuild".
+          Creating "cmTC_87451.dir\\Debug\\cmTC_87451.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_87451.dir\\Debug\\cmTC_87451.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_df41b.dir\\Debug\\\\" /Fd"cmTC_df41b.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\CheckFunctionExists.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_87451.dir\\Debug\\\\" /Fd"cmTC_87451.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_df41b.dir\\Debug\\\\" /Fd"cmTC_df41b.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\CheckFunctionExists.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_87451.dir\\Debug\\\\" /Fd"cmTC_87451.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\CheckFunctionExists.c"
           CheckFunctionExists.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\Debug\\cmTC_df41b.exe" /INCREMENTAL /ILK:"cmTC_df41b.dir\\Debug\\cmTC_df41b.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-t2tfon/Debug/cmTC_df41b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-t2tfon/Debug/cmTC_df41b.lib" /MACHINE:X64  /machine:x64 cmTC_df41b.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\cmTC_df41b.vcxproj]
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\cmTC_df41b.vcxproj" (default targets) -- FAILED.
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\Debug\\cmTC_87451.exe" /INCREMENTAL /ILK:"cmTC_87451.dir\\Debug\\cmTC_87451.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-396npo/Debug/cmTC_87451.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-396npo/Debug/cmTC_87451.lib" /MACHINE:X64  /machine:x64 cmTC_87451.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\cmTC_87451.vcxproj]
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\cmTC_87451.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\cmTC_df41b.vcxproj" (default target) (1) ->
+        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\cmTC_87451.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tfon\\cmTC_df41b.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-396npo\\cmTC_87451.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:01.29
+        Time Elapsed 00:00:00.78
         
       exitCode: 1
   -
@@ -1047,8 +1047,8 @@ events:
     checks:
       - "Looking for pthread_create in pthread"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-056hgx"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-056hgx"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-sbsvcr"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-sbsvcr"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
@@ -1058,42 +1058,42 @@ events:
       variable: "CMAKE_HAVE_PTHREAD_CREATE"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-056hgx'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-sbsvcr'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_859fe.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_698d3.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/5/2025 11:19:15 AM.
+        Build started 7/5/2025 1:15:03 PM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\cmTC_859fe.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\cmTC_698d3.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_859fe.dir\\Debug\\".
+          Creating directory "cmTC_698d3.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\Debug\\".
-          Creating directory "cmTC_859fe.dir\\Debug\\cmTC_859fe.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\Debug\\".
+          Creating directory "cmTC_698d3.dir\\Debug\\cmTC_698d3.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_859fe.dir\\Debug\\cmTC_859fe.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_859fe.dir\\Debug\\cmTC_859fe.tlog\\unsuccessfulbuild".
+          Creating "cmTC_698d3.dir\\Debug\\cmTC_698d3.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_698d3.dir\\Debug\\cmTC_698d3.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_859fe.dir\\Debug\\\\" /Fd"cmTC_859fe.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\CheckFunctionExists.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_698d3.dir\\Debug\\\\" /Fd"cmTC_698d3.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_859fe.dir\\Debug\\\\" /Fd"cmTC_859fe.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\CheckFunctionExists.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_698d3.dir\\Debug\\\\" /Fd"cmTC_698d3.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\CheckFunctionExists.c"
           CheckFunctionExists.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\Debug\\cmTC_859fe.exe" /INCREMENTAL /ILK:"cmTC_859fe.dir\\Debug\\cmTC_859fe.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-056hgx/Debug/cmTC_859fe.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-056hgx/Debug/cmTC_859fe.lib" /MACHINE:X64  /machine:x64 cmTC_859fe.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\cmTC_859fe.vcxproj]
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\cmTC_859fe.vcxproj" (default targets) -- FAILED.
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\Debug\\cmTC_698d3.exe" /INCREMENTAL /ILK:"cmTC_698d3.dir\\Debug\\cmTC_698d3.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-sbsvcr/Debug/cmTC_698d3.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-sbsvcr/Debug/cmTC_698d3.lib" /MACHINE:X64  /machine:x64 cmTC_698d3.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\cmTC_698d3.vcxproj]
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\cmTC_698d3.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\cmTC_859fe.vcxproj" (default target) (1) ->
+        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\cmTC_698d3.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-056hgx\\cmTC_859fe.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-sbsvcr\\cmTC_698d3.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:01.08
+        Time Elapsed 00:00:00.93
         
       exitCode: 1
 ...

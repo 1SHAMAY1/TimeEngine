@@ -4,14 +4,14 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{E9C7FDCE-D52A-8D73-7EB0-C5296AF258F6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{413C166A-AD9D-F377-360B-3A2AA26B2A37}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{E145AD0A-4D5C-ABA0-96D3-36C202297C28}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core\Layers">
-      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\ImGUI">
       <UniqueIdentifier>{93C3C060-7FA7-81B6-E807-7C09D40A6C38}</UniqueIdentifier>
@@ -28,14 +28,14 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{21EB8090-0D4E-1035-B6D3-48EBA215DCB7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{7990BAA8-E5F1-97B6-6E5F-DE68DABFCE75}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\ImGUI">
       <UniqueIdentifier>{CB708F05-B754-505B-20B5-4AAE0CB83ADD}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Layers">
-      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
@@ -48,6 +48,9 @@
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor Layer">
+      <UniqueIdentifier>{E96E601B-D5D1-EFBF-7E57-28766A99BB42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -96,6 +99,15 @@
     <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h">
       <Filter>Vendor\IMGUI\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Camera\Camera.hpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Camera\OrthographicCamera.hpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Camera\PerspectiveCamera.hpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
@@ -103,19 +115,19 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp">
       <Filter>Header Files\Renderer</Filter>
@@ -123,7 +135,13 @@
     <ClInclude Include="Include\Renderer\IndexBuffer.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Renderer\MColor.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp">
+      <Filter>Header Files\Renderer\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\OpenGL\OpenGLMColor.hpp">
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShader.hpp">
@@ -221,6 +239,15 @@
     <ClCompile Include="..\Vendor\IMGUI\ImGui\imgui_widgets.cpp">
       <Filter>Vendor\IMGUI\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Camera\Camera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera\OrthographicCamera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera\PerspectiveCamera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Application.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -231,19 +258,19 @@
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LayerStack.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
@@ -254,7 +281,13 @@
     <ClCompile Include="src\Renderer\IndexBuffer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\MColor.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp">
+      <Filter>Source Files\Renderer\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLMColor.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShader.cpp">

@@ -22,7 +22,46 @@ namespace TE {
         }
     }
 
-    // (same for Green, Blue, etc...)
+    const glm::vec4& MColor::Green()
+    {
+        switch (RendererContext::GetAPI()) {
+        case GraphicsAPI::OpenGL: return OpenGLMColor::Green;
+        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        }
+    }
+
+    const glm::vec4& MColor::Blue()
+    {
+        switch (RendererContext::GetAPI()) {
+        case GraphicsAPI::OpenGL: return OpenGLMColor::Blue;
+        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        }
+    }
+
+    const glm::vec4& MColor::White()
+    {
+        switch (RendererContext::GetAPI()) {
+        case GraphicsAPI::OpenGL: return OpenGLMColor::White;
+        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        }
+    }
+
+    const glm::vec4& MColor::Black()
+    {
+        switch (RendererContext::GetAPI()) {
+        case GraphicsAPI::OpenGL: return OpenGLMColor::Black;
+        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        }
+    }
+
+    const glm::vec4& MColor::Transparent()
+    {
+        switch (RendererContext::GetAPI()) {
+        case GraphicsAPI::OpenGL: return OpenGLMColor::Transparent;
+        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        }
+    }
+
 
     glm::vec4 MColor::ToLinear(const glm::vec4& srgb) {
         glm::vec3 linear = glm::pow(glm::vec3(srgb), glm::vec3(2.2f));
