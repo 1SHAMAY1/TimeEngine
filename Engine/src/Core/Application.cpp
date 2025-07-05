@@ -6,7 +6,7 @@
 #include "Log.h"
 #include "Window/IWindow.hpp"
 #include "ImGUI/ImGuiLayer.hpp"
-#include "Renderer/MColor.hpp"
+#include "Renderer/TEColor.hpp"
 #include "Renderer/RenderCommand.hpp"
 
 
@@ -80,7 +80,7 @@ namespace TE
 
         while (m_Running)
         {
-            RenderCommand::SetClearColor(MColor::Black());
+            RenderCommand::SetClearColor(TEColor::Black());
             RenderCommand::Clear();
             
             // Application update

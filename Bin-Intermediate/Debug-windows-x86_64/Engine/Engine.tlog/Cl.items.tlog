@@ -7,6 +7,7 @@ E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_draw.cpp;E:\TimeEngine\Bin-Intermediate\D
 E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_tables.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_tables.obj
 E:\TimeEngine\Vendor\IMGUI\ImGui\imgui_widgets.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\imgui_widgets.obj
 E:\TimeEngine\Engine\src\Camera\Camera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Camera.obj
+E:\TimeEngine\Engine\src\Camera\CameraController.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\CameraController.obj
 E:\TimeEngine\Engine\src\Camera\OrthographicCamera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OrthographicCamera.obj
 E:\TimeEngine\Engine\src\Camera\PerspectiveCamera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\PerspectiveCamera.obj
 E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
@@ -20,15 +21,15 @@ E:\TimeEngine\Engine\src\Core\Layers\TestTriangleLayer.cpp;E:\TimeEngine\Bin-Int
 E:\TimeEngine\Engine\src\Core\Log.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Log.obj
 E:\TimeEngine\Engine\src\ImGUI\ImGuiLayer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\ImGuiLayer.obj
 E:\TimeEngine\Engine\src\Renderer\IndexBuffer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\IndexBuffer.obj
-E:\TimeEngine\Engine\src\Renderer\MColor.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\MColor.obj
 E:\TimeEngine\Engine\src\Renderer\OpenGL\OpenGLIndexBuffer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OpenGLIndexBuffer.obj
-E:\TimeEngine\Engine\src\Renderer\OpenGL\OpenGLMColor.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OpenGLMColor.obj
 E:\TimeEngine\Engine\src\Renderer\OpenGL\OpenGLShader.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OpenGLShader.obj
 E:\TimeEngine\Engine\src\Renderer\OpenGL\OpenGLVertexArray.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OpenGLVertexArray.obj
 E:\TimeEngine\Engine\src\Renderer\OpenGL\OpenGLVertexBuffer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OpenGLVertexBuffer.obj
+E:\TimeEngine\Engine\src\Renderer\OpenGL\TEOpenGLColor.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\TEOpenGLColor.obj
 E:\TimeEngine\Engine\src\Renderer\RenderCommand.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\RenderCommand.obj
 E:\TimeEngine\Engine\src\Renderer\RendererContext.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\RendererContext.obj
 E:\TimeEngine\Engine\src\Renderer\Shader.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Shader.obj
+E:\TimeEngine\Engine\src\Renderer\TEColor.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\TEColor.obj
 E:\TimeEngine\Engine\src\Renderer\VertexArray.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\VertexArray.obj
 E:\TimeEngine\Engine\src\Renderer\VertexBuffer.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\VertexBuffer.obj
 E:\TimeEngine\Engine\src\Window\IWindow.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\IWindow.obj

@@ -13,6 +13,9 @@
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Layers">
+      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\ImGUI">
       <UniqueIdentifier>{93C3C060-7FA7-81B6-E807-7C09D40A6C38}</UniqueIdentifier>
     </Filter>
@@ -37,6 +40,9 @@
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Layers">
+      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
     </Filter>
@@ -48,9 +54,6 @@
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Editor Layer">
-      <UniqueIdentifier>{E96E601B-D5D1-EFBF-7E57-28766A99BB42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -115,19 +118,19 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp">
       <Filter>Header Files\Renderer</Filter>
@@ -135,13 +138,7 @@
     <ClInclude Include="Include\Renderer\IndexBuffer.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Renderer\MColor.hpp">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp">
-      <Filter>Header Files\Renderer\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Renderer\OpenGL\OpenGLMColor.hpp">
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShader.hpp">
@@ -151,6 +148,9 @@
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexBuffer.hpp">
+      <Filter>Header Files\Renderer\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\OpenGL\TEOpenGLColor.hpp">
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\RenderCommand.hpp">
@@ -163,6 +163,9 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\Shader.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\TEColor.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\Texture.hpp">
@@ -258,19 +261,19 @@
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LayerStack.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
@@ -281,13 +284,7 @@
     <ClCompile Include="src\Renderer\IndexBuffer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\MColor.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp">
-      <Filter>Source Files\Renderer\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\OpenGL\OpenGLMColor.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShader.cpp">
@@ -299,6 +296,9 @@
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexBuffer.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\TEOpenGLColor.cpp">
+      <Filter>Source Files\Renderer\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\RenderCommand.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -306,6 +306,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Shader.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\TEColor.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\VertexArray.cpp">

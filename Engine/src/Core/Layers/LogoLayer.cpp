@@ -7,7 +7,6 @@
 
 namespace TE {
 
-    using namespace Math;
 
     // Constructor
     LogoLayer::LogoLayer(const std::string& name)

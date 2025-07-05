@@ -79,26 +79,15 @@ namespace TE {
     }
 
     void TestTriangleLayer::OnDetach() {
-
-        /*delete m_VertexArray;
-        m_VertexArray = nullptr;
-
-        delete m_Shader;
-        m_Shader = nullptr;*/
     }
 
     void TestTriangleLayer::OnUpdate() {
-
-        // Use abstract rendering system
-        
-
-    }
-
-    void TestTriangleLayer::OnImGuiRender() {
-        // Optional: Add GUI logs later
-
         m_Shader->Bind();
         m_VertexArray->Bind();
         RenderCommand::DrawIndexed(m_VertexArray->GetRendererID(), m_IndexBuffer->GetCount());
+    }
+
+    void TestTriangleLayer::OnImGuiRender() {
+        
     }
 }

@@ -75,7 +75,7 @@ events:
       The output was:
       0
       MSBuild version 17.12.12+1cce77968 for .NET Framework
-      Build started 7/5/2025 1:14:46 PM.
+      Build started 7/5/2025 1:50:27 PM.
       
       Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\4.1.0-rc1\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -104,7 +104,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:02.38
+      Time Elapsed 00:00:02.45
       
       
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -703,7 +703,7 @@ events:
       The output was:
       0
       MSBuild version 17.12.12+1cce77968 for .NET Framework
-      Build started 7/5/2025 1:14:49 PM.
+      Build started 7/5/2025 1:50:30 PM.
       
       Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\4.1.0-rc1\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -732,7 +732,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:01.19
+      Time Elapsed 00:00:00.88
       
       
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -1102,8 +1102,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-ypjbc8"
-      binary: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-ypjbc8"
+      source: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-6jagfu"
+      binary: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-6jagfu"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
       CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -1112,40 +1112,40 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-ypjbc8'
+        Change Dir: 'E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-6jagfu'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_e5f9d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_7a83d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/5/2025 1:14:51 PM.
+        Build started 7/5/2025 1:50:31 PM.
         
-        Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ypjbc8\\cmTC_e5f9d.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6jagfu\\cmTC_7a83d.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_e5f9d.dir\\Debug\\".
+          Creating directory "cmTC_7a83d.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ypjbc8\\Debug\\".
-          Creating directory "cmTC_e5f9d.dir\\Debug\\cmTC_e5f9d.tlog\\".
+          Creating directory "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6jagfu\\Debug\\".
+          Creating directory "cmTC_7a83d.dir\\Debug\\cmTC_7a83d.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_e5f9d.dir\\Debug\\cmTC_e5f9d.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_e5f9d.dir\\Debug\\cmTC_e5f9d.tlog\\unsuccessfulbuild".
+          Creating "cmTC_7a83d.dir\\Debug\\cmTC_7a83d.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_7a83d.dir\\Debug\\cmTC_7a83d.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_e5f9d.dir\\Debug\\\\" /Fd"cmTC_e5f9d.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_7a83d.dir\\Debug\\\\" /Fd"cmTC_7a83d.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_e5f9d.dir\\Debug\\\\" /Fd"cmTC_e5f9d.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_7a83d.dir\\Debug\\\\" /Fd"cmTC_7a83d.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
           CMakeCCompilerABI.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ypjbc8\\Debug\\cmTC_e5f9d.exe" /INCREMENTAL /ILK:"cmTC_e5f9d.dir\\Debug\\cmTC_e5f9d.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-ypjbc8/Debug/cmTC_e5f9d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-ypjbc8/Debug/cmTC_e5f9d.lib" /MACHINE:X64  /machine:x64 cmTC_e5f9d.dir\\Debug\\CMakeCCompilerABI.obj
-          cmTC_e5f9d.vcxproj -> E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ypjbc8\\Debug\\cmTC_e5f9d.exe
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6jagfu\\Debug\\cmTC_7a83d.exe" /INCREMENTAL /ILK:"cmTC_7a83d.dir\\Debug\\cmTC_7a83d.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-6jagfu/Debug/cmTC_7a83d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-6jagfu/Debug/cmTC_7a83d.lib" /MACHINE:X64  /machine:x64 cmTC_7a83d.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_7a83d.vcxproj -> E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6jagfu\\Debug\\cmTC_7a83d.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_e5f9d.dir\\Debug\\cmTC_e5f9d.tlog\\unsuccessfulbuild".
-          Touching "cmTC_e5f9d.dir\\Debug\\cmTC_e5f9d.tlog\\cmTC_e5f9d.lastbuildstate".
-        Done Building Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ypjbc8\\cmTC_e5f9d.vcxproj" (default targets).
+          Deleting file "cmTC_7a83d.dir\\Debug\\cmTC_7a83d.tlog\\unsuccessfulbuild".
+          Touching "cmTC_7a83d.dir\\Debug\\cmTC_7a83d.tlog\\cmTC_7a83d.lastbuildstate".
+        Done Building Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6jagfu\\cmTC_7a83d.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:01.09
+        Time Elapsed 00:00:01.50
         
       exitCode: 0
   -
@@ -1185,8 +1185,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-cp6dfv"
-      binary: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-cp6dfv"
+      source: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-c2dwin"
+      binary: "E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-c2dwin"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -1196,40 +1196,40 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-cp6dfv'
+        Change Dir: 'E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-c2dwin'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_dd9b6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_57439.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/5/2025 1:14:53 PM.
+        Build started 7/5/2025 1:50:33 PM.
         
-        Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cp6dfv\\cmTC_dd9b6.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c2dwin\\cmTC_57439.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_dd9b6.dir\\Debug\\".
+          Creating directory "cmTC_57439.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cp6dfv\\Debug\\".
-          Creating directory "cmTC_dd9b6.dir\\Debug\\cmTC_dd9b6.tlog\\".
+          Creating directory "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c2dwin\\Debug\\".
+          Creating directory "cmTC_57439.dir\\Debug\\cmTC_57439.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_dd9b6.dir\\Debug\\cmTC_dd9b6.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_dd9b6.dir\\Debug\\cmTC_dd9b6.tlog\\unsuccessfulbuild".
+          Creating "cmTC_57439.dir\\Debug\\cmTC_57439.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_57439.dir\\Debug\\cmTC_57439.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /GR /Fo"cmTC_dd9b6.dir\\Debug\\\\" /Fd"cmTC_dd9b6.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /GR /Fo"cmTC_57439.dir\\Debug\\\\" /Fd"cmTC_57439.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /GR /Fo"cmTC_dd9b6.dir\\Debug\\\\" /Fd"cmTC_dd9b6.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /GR /Fo"cmTC_57439.dir\\Debug\\\\" /Fd"cmTC_57439.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp"
           CMakeCXXCompilerABI.cpp
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cp6dfv\\Debug\\cmTC_dd9b6.exe" /INCREMENTAL /ILK:"cmTC_dd9b6.dir\\Debug\\cmTC_dd9b6.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-cp6dfv/Debug/cmTC_dd9b6.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-cp6dfv/Debug/cmTC_dd9b6.lib" /MACHINE:X64  /machine:x64 cmTC_dd9b6.dir\\Debug\\CMakeCXXCompilerABI.obj
-          cmTC_dd9b6.vcxproj -> E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cp6dfv\\Debug\\cmTC_dd9b6.exe
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c2dwin\\Debug\\cmTC_57439.exe" /INCREMENTAL /ILK:"cmTC_57439.dir\\Debug\\cmTC_57439.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-c2dwin/Debug/cmTC_57439.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Logger/Customizable_Logger/build/CMakeFiles/CMakeScratch/TryCompile-c2dwin/Debug/cmTC_57439.lib" /MACHINE:X64  /machine:x64 cmTC_57439.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_57439.vcxproj -> E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c2dwin\\Debug\\cmTC_57439.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_dd9b6.dir\\Debug\\cmTC_dd9b6.tlog\\unsuccessfulbuild".
-          Touching "cmTC_dd9b6.dir\\Debug\\cmTC_dd9b6.tlog\\cmTC_dd9b6.lastbuildstate".
-        Done Building Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cp6dfv\\cmTC_dd9b6.vcxproj" (default targets).
+          Deleting file "cmTC_57439.dir\\Debug\\cmTC_57439.tlog\\unsuccessfulbuild".
+          Touching "cmTC_57439.dir\\Debug\\cmTC_57439.tlog\\cmTC_57439.lastbuildstate".
+        Done Building Project "E:\\TimeEngine\\Logger\\Customizable_Logger\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c2dwin\\cmTC_57439.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:01.13
+        Time Elapsed 00:00:01.10
         
       exitCode: 0
   -

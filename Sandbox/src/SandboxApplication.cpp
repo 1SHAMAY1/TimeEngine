@@ -18,7 +18,7 @@ public:
 	void OnLogoComplete()
 	{
 		TE_CORE_INFO("Logo animation finished. Adding EditorLayer after logo removal.");
-		TE::EditorLayer* editorLayer = new TE::EditorLayer();
+		TE::TestTriangleLayer* editorLayer = new TE::TestTriangleLayer();
 		if (editorLayer)
 		{
 			MarkLayerForAddition(editorLayer);
