@@ -39,5 +39,13 @@ namespace TE {
         float m_MovementSpeed = 2.0f; // units per second
         float m_RotationSpeed = 90.0f; // degrees per second
         float m_LastFrameTime = 0.0f;
+        
+        // Input tracking for visual feedback
+        bool m_WPressed = false;
+        bool m_SPressed = false;
+        bool m_APressed = false;
+        bool m_DPressed = false;
+        bool m_QPressed = false;
+        bool m_EPressed = false;
     };
 } 

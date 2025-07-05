@@ -42,6 +42,24 @@ namespace TE {
 		glDeleteShader(fragmentShader);
 	}
 
+	OpenGLShader::OpenGLShader(const std::string& computeSrc) {
+		uint32_t computeShader = CompileShader(GL_COMPUTE_SHADER, computeSrc);
+
+		m_RendererID = glCreateProgram();
+		glAttachShader(m_RendererID, computeShader);
+		glLinkProgram(m_RendererID);
+
+		int success;
+		glGetProgramiv(m_RendererID, GL_LINK_STATUS, &success);
+		if (!success) {
+			char infoLog[512];
+			glGetProgramInfoLog(m_RendererID, 512, nullptr, infoLog);
+			std::cerr << "Compute shader linking failed:\n" << infoLog << std::endl;
+		}
+
+		glDeleteShader(computeShader);
+	}
+
 	OpenGLShader::~OpenGLShader() {
 		glDeleteProgram(m_RendererID);
 	}

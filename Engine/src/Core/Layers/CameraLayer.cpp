@@ -128,53 +128,86 @@ namespace TE {
     void CameraLayer::OnImGuiRender() {
         ImGui::Begin("Camera Controls");
         
-        ImGui::Text("Camera Position: (%.2f, %.2f, %.2f)", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
-        ImGui::Text("Camera Rotation: %.2f degrees", m_CameraRotation);
+        // Title and instructions
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "🎮 Camera Controls");
+        ImGui::Separator();
+        
+        // Movement controls
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Movement Controls:");
+        ImGui::TextColored(m_WPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "W - Move Up %s", m_WPressed ? " [ACTIVE]" : "");
+        ImGui::TextColored(m_SPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "S - Move Down %s", m_SPressed ? " [ACTIVE]" : "");
+        ImGui::TextColored(m_APressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "A - Move Left %s", m_APressed ? " [ACTIVE]" : "");
+        ImGui::TextColored(m_DPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "D - Move Right %s", m_DPressed ? " [ACTIVE]" : "");
+        ImGui::Separator();
+        
+        // Rotation controls
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Rotation Controls:");
+        ImGui::TextColored(m_QPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Q - Rotate Left %s", m_QPressed ? " [ACTIVE]" : "");
+        ImGui::TextColored(m_EPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "E - Rotate Right %s", m_EPressed ? " [ACTIVE]" : "");
+        ImGui::Separator();
+        
+        // Current status
+        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Current Status:");
+        ImGui::Text("Position: (%.2f, %.2f, %.2f)", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
+        ImGui::Text("Rotation: %.2f degrees", m_CameraRotation);
         ImGui::Text("Movement Speed: %.2f units/s", m_MovementSpeed);
         ImGui::Text("Rotation Speed: %.2f deg/s", m_RotationSpeed);
+        ImGui::Separator();
         
-        if (ImGui::Button("Reset Camera")) {
+        // Reset button
+        if (ImGui::Button("🔄 Reset Camera", ImVec2(120, 30))) {
             m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
             m_CameraRotation = 0.0f;
             m_Camera->SetPosition(m_CameraPosition);
             m_Camera->SetRotation(m_CameraRotation);
         }
         
-        ImGui::SliderFloat("Movement Speed", &m_MovementSpeed, 0.5f, 10.0f);
-        ImGui::SliderFloat("Rotation Speed", &m_RotationSpeed, 10.0f, 200.0f);
+        // Speed controls
+        ImGui::Separator();
+        ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Speed Settings:");
+        ImGui::SliderFloat("Movement Speed", &m_MovementSpeed, 0.5f, 10.0f, "%.2f");
+        ImGui::SliderFloat("Rotation Speed", &m_RotationSpeed, 10.0f, 200.0f, "%.1f");
         
         ImGui::End();
     }
 
     void CameraLayer::HandleInput(float deltaTime) {
+        // Track key states for visual feedback
+        m_WPressed = Input::IsKeyPressed(Key::W);
+        m_SPressed = Input::IsKeyPressed(Key::S);
+        m_APressed = Input::IsKeyPressed(Key::A);
+        m_DPressed = Input::IsKeyPressed(Key::D);
+        m_QPressed = Input::IsKeyPressed(Key::Q);
+        m_EPressed = Input::IsKeyPressed(Key::E);
+        
         // Handle WASD movement
-        if (Input::IsKeyPressed(Key::W)) {
+        if (m_WPressed) {
             m_CameraPosition.y += m_MovementSpeed * deltaTime;
             TE_CORE_INFO("W key pressed - moving up. New position: ({0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
         }
         
-        if (Input::IsKeyPressed(Key::S)) {
+        if (m_SPressed) {
             m_CameraPosition.y -= m_MovementSpeed * deltaTime;
             TE_CORE_INFO("S key pressed - moving down. New position: ({0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
         }
         
-        if (Input::IsKeyPressed(Key::A)) {
+        if (m_APressed) {
             m_CameraPosition.x -= m_MovementSpeed * deltaTime;
             TE_CORE_INFO("A key pressed - moving left. New position: ({0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
         }
         
-        if (Input::IsKeyPressed(Key::D)) {
+        if (m_DPressed) {
             m_CameraPosition.x += m_MovementSpeed * deltaTime;
             TE_CORE_INFO("D key pressed - moving right. New position: ({0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
         }
         
         // Handle QE rotation
-        if (Input::IsKeyPressed(Key::Q)) {
+        if (m_QPressed) {
             m_CameraRotation -= m_RotationSpeed * deltaTime;
             TE_CORE_INFO("Q key pressed - rotating left. New rotation: {0}", m_CameraRotation);
         }
         
-        if (Input::IsKeyPressed(Key::E)) {
+        if (m_EPressed) {
             m_CameraRotation += m_RotationSpeed * deltaTime;
             TE_CORE_INFO("E key pressed - rotating right. New rotation: {0}", m_CameraRotation);
         }

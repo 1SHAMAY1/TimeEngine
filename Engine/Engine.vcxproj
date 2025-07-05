@@ -177,11 +177,14 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Layers\Layer.hpp" />
     <ClInclude Include="Include\Layers\LayerStack.hpp" />
     <ClInclude Include="Include\Layers\LogoLayer.hpp" />
+    <ClInclude Include="Include\Layers\ProfilingButtonLayer.hpp" />
+    <ClInclude Include="Include\Layers\ProfilingLayer.hpp" />
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp" />
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp" />
     <ClInclude Include="Include\Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShader.hpp" />
+    <ClInclude Include="Include\Renderer\OpenGL\OpenGLShaderLibrary.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexArray.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexBuffer.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\TEOpenGLColor.hpp" />
@@ -189,6 +192,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Renderer\Renderer.hpp" />
     <ClInclude Include="Include\Renderer\RendererContext.hpp" />
     <ClInclude Include="Include\Renderer\Shader.hpp" />
+    <ClInclude Include="Include\Renderer\ShaderLibrary.hpp" />
+    <ClInclude Include="Include\Renderer\ShaderLibraryExample.hpp" />
     <ClInclude Include="Include\Renderer\TEColor.hpp" />
     <ClInclude Include="Include\Renderer\Texture.hpp" />
     <ClInclude Include="Include\Renderer\VertexArray.hpp" />
@@ -228,6 +233,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Layers\Layer.cpp" />
     <ClCompile Include="src\Core\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp" />
+    <ClCompile Include="src\Core\Layers\ProfilingButtonLayer.cpp" />
+    <ClCompile Include="src\Core\Layers\ProfilingLayer.cpp" />
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\Core\Time\Ticker.cpp" />
@@ -236,12 +243,14 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLShaderLibrary.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\TEOpenGLColor.cpp" />
     <ClCompile Include="src\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Renderer\RendererContext.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\ShaderLibrary.cpp" />
     <ClCompile Include="src\Renderer\TEColor.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />

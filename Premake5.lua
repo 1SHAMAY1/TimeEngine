@@ -51,10 +51,11 @@ project "Engine"
         "Engine/Include/**.h",
         "Engine/Include/**.hpp",
 
-        -- Editor Layer
+        -- Editor & Profiling Layers
         "Engine/Include/Layers/**.hpp",
         "Engine/src/Core/Layers/**.cpp",
-
+        "Engine/src/Layers/**.cpp",        
+        
         -- GLAD
         "Vendor/GLAD/src/glad.c",
 
@@ -80,6 +81,7 @@ project "Engine"
         },
         ["Editor Layer/*"] = {
             "Engine/src/Core/Layers/**.cpp",
+            "Engine/src/Layers/**.cpp",
             "Engine/Include/Layers/**.hpp"
         }
     }
@@ -152,9 +154,11 @@ project "Sandbox"
         "Sandbox/src/**.cpp",
         "Sandbox/Include/Layers/**.h",
         "Sandbox/src/Core/Layers/**.cpp",
+
         -- ImGui core
         "Vendor/IMGUI/ImGui/*.cpp",
         "Vendor/IMGUI/ImGui/*.h",
+
         -- ImGui backends
         "Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
         "Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
@@ -169,20 +173,18 @@ project "Sandbox"
         "%{IncludeDir.Logger}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.GLFW}"
-
     }
 
     libdirs {
         "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-        "Vendor/GLFW/build/src/%{cfg.buildcfg}",
-        
+        "Vendor/GLFW/build/src/%{cfg.buildcfg}"
     }
 
     links {
         "Engine",
         "Customizable_Logger",
-        "glfw3",                 
-        "opengl32.lib" 
+        "glfw3",
+        "opengl32.lib"
     }
 
     dependson { "Engine", "Logger" }

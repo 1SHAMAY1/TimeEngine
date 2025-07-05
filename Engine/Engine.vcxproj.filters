@@ -40,6 +40,9 @@
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Layers">
+      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
     </Filter>
@@ -121,22 +124,31 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\CameraLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\ProfilingButtonLayer.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\ProfilingLayer.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\ProfilingWindowManager.hpp">
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp">
       <Filter>Header Files\Renderer</Filter>
@@ -148,6 +160,9 @@
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShader.hpp">
+      <Filter>Header Files\Renderer\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\OpenGL\OpenGLShaderLibrary.hpp">
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexArray.hpp">
@@ -169,6 +184,12 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\Shader.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\ShaderLibrary.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\ShaderLibraryExample.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\TEColor.hpp">
@@ -284,6 +305,12 @@
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
       <Filter>Editor Layer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Layers\ProfilingButtonLayer.cpp">
+      <Filter>Editor Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layers\ProfilingLayer.cpp">
+      <Filter>Editor Layer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
       <Filter>Editor Layer</Filter>
     </ClCompile>
@@ -308,6 +335,9 @@
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShader.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLShaderLibrary.cpp">
+      <Filter>Source Files\Renderer\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexArray.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
@@ -324,6 +354,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Shader.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\ShaderLibrary.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\TEColor.cpp">
