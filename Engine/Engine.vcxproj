@@ -175,7 +175,9 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp" />
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp" />
     <ClInclude Include="Include\Renderer\IndexBuffer.hpp" />
+    <ClInclude Include="Include\Renderer\MColor.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp" />
+    <ClInclude Include="Include\Renderer\OpenGL\OpenGLMColor.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShader.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexArray.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexBuffer.hpp" />
@@ -220,7 +222,9 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\MColor.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLMColor.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexBuffer.cpp" />
