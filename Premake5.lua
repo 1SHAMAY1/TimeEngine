@@ -157,7 +157,8 @@ project "Sandbox"
     includedirs {
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
-        "%{IncludeDir.Logger}"
+        "%{IncludeDir.Logger}",
+        "%{IncludeDir.GLM}"
     }
 
     libdirs {

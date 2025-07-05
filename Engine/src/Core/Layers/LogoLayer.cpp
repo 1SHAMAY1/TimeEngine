@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "Utility/MathUtils.hpp"
 #include "Core/Application.h"
+#include "Core/Log.h"
 
 namespace TE {
 
@@ -22,7 +23,7 @@ namespace TE {
     {
         LogoFinishedDelegate.Broadcast();
 
-        m_ShouldClose = true; // Request the application to remove this layer
+        m_ShouldClose = true;
     }
 
 
@@ -45,7 +46,7 @@ namespace TE {
         if (!m_AnimationStarted || m_AnimationFinished)
         {
             if (m_ShouldClose)
-                Application::Get().PopLayer(this);
+                Application::Get().MarkLayerForRemoval(this);
             return;
         }
 
@@ -91,7 +92,8 @@ namespace TE {
         // Layer removal check
         if (m_ShouldClose)
         {
-            Application::Get().PopLayer(this);
+            TE_CORE_INFO("Removing Logo.");
+            Application::Get().MarkLayerForRemoval(this);
         }
     }
 

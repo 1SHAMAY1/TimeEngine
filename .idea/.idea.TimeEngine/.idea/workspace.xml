@@ -9,14 +9,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Include/Layers/LogoLayer.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Include/Layers/TestTriangleLayer.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/IndexBuffer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLVertexArray.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/Shader.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/VertexArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Application.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Application.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Core.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Core.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/EditorLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/EditorLayer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.ilk" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.command.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.command.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.read.1.tlog" afterDir="false" />
@@ -32,6 +34,7 @@
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Layer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Layer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LayerStack.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LayerStack.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Log.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Log.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LogoLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LogoLayer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/WindowsWindow.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/WindowsWindow.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/glad.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/glad.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/imgui.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/imgui.obj" afterDir="false" />
@@ -44,8 +47,8 @@
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.idb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.command.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.command.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.read.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/link.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.idb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.pdb" afterDir="false" />
@@ -59,22 +62,17 @@
       <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/ImGUI/ImGuiLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/ImGUI/ImGuiLayer.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/Layer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/Layer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/LayerStack.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/LayerStack.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/Layer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/Layer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/LayerStack.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/LayerStack.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/PreRequisites.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/PreRequisites.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/ImGUI/ImGuiLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/ImGUI/ImGuiLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CompilerIdC.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CompilerIdC.tlog/link.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/CompilerIdCXX.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/CompilerIdCXX.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/Debug/CMakeCXXCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/Debug/CMakeCXXCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/CMakeConfigureLog.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" afterDir="false" />
@@ -82,13 +80,11 @@
       <change beforePath="$PROJECT_DIR$/Premake5.lua" beforeDir="false" afterPath="$PROJECT_DIR$/Premake5.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sandbox/Sandbox.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Sandbox.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scripts/GenerateProjectFiles.bat" beforeDir="false" afterPath="$PROJECT_DIR$/Scripts/GenerateProjectFiles.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CompilerIdC.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CompilerIdC.tlog/link.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/CMakeConfigureLog.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/CMakeConfigureLog.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.lib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/src/Debug/glfw3.pdb" afterDir="false" />
@@ -138,15 +134,36 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://3" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://4" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/cmath" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/memory" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/vector" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/ImGUI/ImGuiLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Input/Input.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/Layer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/LayerStack.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/LogoLayer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/TestTriangleLayer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/GraphicsAPI.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/IndexBuffer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLIndexBuffer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLVertexArray.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLVertexBuffer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/RenderCommand.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/RendererContext.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Texture.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/VertexArray.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/VertexBuffer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Application.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -162,11 +179,22 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/Layer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/LayerStack.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Log.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Log.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/PreRequisites.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Engine.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/ImGUI/ImGuiLayer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/IndexBuffer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLIndexBuffer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLVertexArray.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLVertexBuffer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/RenderCommand.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/RendererContext.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/Shader.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/VertexArray.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/VertexBuffer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Window/IWindow.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Logger/Customizable_Logger/Include/CustomizableLogger.hpp" root0="SKIP_HIGHLIGHTING" />
@@ -244,7 +272,10 @@
       <workItem from="1751598530832" duration="1921000" />
       <workItem from="1751602529038" duration="452000" />
       <workItem from="1751603708785" duration="8371000" />
-      <workItem from="1751617012194" duration="15208000" />
+      <workItem from="1751617012194" duration="15230000" />
+      <workItem from="1751633757509" duration="1878000" />
+      <workItem from="1751638814799" duration="11335000" />
+      <workItem from="1751684365065" duration="951000" />
     </task>
     <servers />
   </component>

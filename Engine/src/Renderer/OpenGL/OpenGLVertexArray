@@ -1,0 +1,38 @@
+﻿#include "Renderer/OpenGL/OpenGLVertexArray.hpp"
+#include "Renderer/OpenGL/OpenGLVertexBuffer.hpp"
+#include "Renderer/OpenGL/OpenGLIndexBuffer.hpp"
+#include <glad/glad.h>
+
+namespace TE {
+	OpenGLVertexArray::OpenGLVertexArray() {
+		glGenVertexArrays(1, &m_RendererID);
+	}
+
+	OpenGLVertexArray::~OpenGLVertexArray() {
+		glDeleteVertexArrays(1, &m_RendererID);
+	}
+
+	void OpenGLVertexArray::Bind() const {
+		glBindVertexArray(m_RendererID);
+	}
+
+	void OpenGLVertexArray::Unbind() const {
+		glBindVertexArray(0);
+	}
+
+	void OpenGLVertexArray::AddVertexBuffer(VertexBuffer* vertexBuffer) {
+		m_VertexBuffer = vertexBuffer;
+		Bind();
+		vertexBuffer->Bind();
+
+		// Simple layout: assume each vertex is 3 floats (position)
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	}
+
+	void OpenGLVertexArray::SetIndexBuffer(IndexBuffer* indexBuffer) {
+		m_IndexBuffer = indexBuffer;
+		Bind();
+		indexBuffer->Bind();
+	}
+}

@@ -45,4 +45,40 @@ namespace TE {
             m_Layers.erase(it);
         }
     }
+
+    void LayerStack::MarkLayerForRemoval(Layer* layer)
+    {
+        // Check if layer is already marked for removal
+        auto it = std::find(m_LayersToRemove.begin(), m_LayersToRemove.end(), layer);
+        if (it == m_LayersToRemove.end()) {
+            m_LayersToRemove.push_back(layer);
+        }
+    }
+
+    void LayerStack::MarkOverlayForRemoval(Layer* overlay)
+    {
+        // Check if overlay is already marked for removal
+        auto it = std::find(m_LayersToRemove.begin(), m_LayersToRemove.end(), overlay);
+        if (it == m_LayersToRemove.end()) {
+            m_LayersToRemove.push_back(overlay);
+        }
+    }
+
+    void LayerStack::ProcessDeferredRemovals()
+    {
+        for (Layer* layer : m_LayersToRemove) {
+            // Determine if it's a layer or overlay based on position
+            auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
+            if (it != m_Layers.end()) {
+                if (it < m_Layers.begin() + m_LayerInsertIndex) {
+                    // It's a layer
+                    PopLayer(layer);
+                } else {
+                    // It's an overlay
+                    PopOverlay(layer);
+                }
+            }
+        }
+        m_LayersToRemove.clear();
+    }
 }
