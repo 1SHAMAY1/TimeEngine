@@ -3,6 +3,7 @@
 #include "Layers/LogoLayer.hpp"
 #include "Layers/CameraLayer.hpp"
 #include "Layers/ProfilingButtonLayer.hpp"
+#include "Layers/EngineSettingsButtonLayer.hpp"
 
 class Project : public TE::Application
 {
@@ -39,12 +40,24 @@ public:
 		{
 			TE_CORE_ERROR("Failed to create ProfilingButtonLayer!");
 		}
+		
+		// Add engine settings button layer
+		TE::EngineSettingsButtonLayer* engineSettingsButtonLayer = new TE::EngineSettingsButtonLayer();
+		if (engineSettingsButtonLayer)
+		{
+			MarkLayerForAddition(engineSettingsButtonLayer);
+		}
+		else
+		{
+			TE_CORE_ERROR("Failed to create EngineSettingsButtonLayer!");
+		}
 	}
 
 private:
 	TE::LogoLayer* m_LogoLayer = nullptr;
 	TE::CameraLayer* m_CameraLayer = nullptr;
 	TE::ProfilingButtonLayer* m_ProfilingButtonLayer = nullptr;
+	TE::EngineSettingsButtonLayer* m_EngineSettingsButtonLayer = nullptr;
 };
 
 TE::Application* TE::CreateApplication()

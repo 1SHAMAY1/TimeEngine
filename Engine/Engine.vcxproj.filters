@@ -13,6 +13,9 @@
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Layers">
+      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Core\Time">
       <UniqueIdentifier>{1F771BC3-0B71-4415-F4DD-DA25E076AA81}</UniqueIdentifier>
     </Filter>
@@ -34,6 +37,9 @@
     <Filter Include="Header Files\Camera">
       <UniqueIdentifier>{7990BAA8-E5F1-97B6-6E5F-DE68DABFCE75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{192C3F5D-8542-3DF3-CEB9-C8143A0F0E7B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\ImGUI">
       <UniqueIdentifier>{CB708F05-B754-505B-20B5-4AAE0CB83ADD}</UniqueIdentifier>
     </Filter>
@@ -54,9 +60,6 @@
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Editor Layer">
-      <UniqueIdentifier>{E96E601B-D5D1-EFBF-7E57-28766A99BB42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -117,6 +120,12 @@
     <ClInclude Include="Include\Camera\PerspectiveCamera.hpp">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\EngineSettings.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\EngineSettings_Example.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
@@ -127,6 +136,12 @@
       <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\EngineSettingsButtonLayer.hpp">
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\EngineSettingsLayer.hpp">
       <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
@@ -287,32 +302,41 @@
     <ClCompile Include="src\Core\Core.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\EngineSettings.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Input\Input.cpp">
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\CameraLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layers\EngineSettingsButtonLayer.cpp">
+      <Filter>Source Files\Core\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layers\EngineSettingsLayer.cpp">
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LayerStack.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProfilingButtonLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProfilingLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Source Files\Core\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>

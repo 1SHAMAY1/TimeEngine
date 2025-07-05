@@ -6,6 +6,7 @@
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Input/Input.hpp"
+#include "Core/EngineSettings.hpp"
 
 static bool s_GLFWInitialized = false;
 

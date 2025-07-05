@@ -35,13 +35,17 @@
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LogoLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LogoLayer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLIndexBuffer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLIndexBuffer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLShader.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLShader.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLShaderLibrary.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLShaderLibrary.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexArray.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexArray.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexBuffer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexBuffer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OrthographicCamera.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OrthographicCamera.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/PerspectiveCamera.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/PerspectiveCamera.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ProfilingButtonLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ProfilingButtonLayer.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ProfilingLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ProfilingLayer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RenderCommand.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RenderCommand.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RendererContext.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RendererContext.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Shader.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Shader.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ShaderLibrary.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ShaderLibrary.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TEColor.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TEColor.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TEOpenGLColor.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TEOpenGLColor.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TestTriangleLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TestTriangleLayer.obj" afterDir="false" />
@@ -62,6 +66,7 @@
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.read.1.tlog" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.write.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.write.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/link.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/imgui.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/imgui.obj" afterDir="false" />
@@ -83,14 +88,23 @@
       <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/EntryPoint.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/EntryPoint.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/CameraLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/CameraLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLShader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLShader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Camera/CameraController.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Camera/CameraController.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/ProfilingLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/ProfilingLayer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/ProfilingWindowManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/ProfilingWindowManager.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/IndexBuffer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/IndexBuffer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/RenderCommand.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/RenderCommand.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/RendererContext.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/RendererContext.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/VertexArray.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/VertexArray.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/VertexBuffer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/VertexBuffer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Log.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Log.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Log.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Log.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Time/Ticker.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Time/Ticker.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Time/Timer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Time/Timer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
@@ -101,11 +115,11 @@
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Premake5.lua" beforeDir="false" afterPath="$PROJECT_DIR$/Premake5.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeEngine.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/TimeEngine.sln.DotSettings.user" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/Debug/CMakeCCompilerId.obj" afterDir="false" />
@@ -158,7 +172,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://5" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/cmath" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/memory" root0="SKIP_HIGHLIGHTING" />
@@ -169,11 +184,14 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/PerspectiveCamera.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/ImGUI/ImGuiLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Input/Input.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/CameraLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/Layer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/LayerStack.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/LogoLayer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/ProfilingButtonLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/ProfilingLayer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/ProfilingWindowManager.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Layers/TestTriangleLayer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/GraphicsAPI.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/IndexBuffer.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -207,10 +225,13 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Events/KeyEvent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Events/MouseEvent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Input/Input.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/CameraLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/EngineSettingsButtonLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/Layer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/LayerStack.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/ProfilingButtonLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/ProfilingLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Log.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -240,6 +261,7 @@
     <setting file="file://$PROJECT_DIR$/Logger/Customizable_Logger/Source/CustomizableLogger.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vendor/GLAD/include/glad/glad.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Vendor/GLAD/src/glad.c" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vendor/GLFW/glfw/include/GLFW/glfw3.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vendor/GLM/glm/gtx/euler_angles.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vendor/IMGUI/ImGui/imgui.h" root0="SKIP_HIGHLIGHTING" />
@@ -253,20 +275,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ Project.Sandbox.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C/C++ Project.Sandbox.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ Project.Sandbox">
     <configuration name="Logger" type="CppProject" factoryName="C++ Project">
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Logger/Customizable_Logger/Logger.vcxproj" />
@@ -318,6 +340,8 @@
       <workItem from="1751684365065" duration="951000" />
       <workItem from="1751692116583" duration="2319000" />
       <workItem from="1751714637754" duration="7652000" />
+      <workItem from="1751727647014" duration="3546000" />
+      <workItem from="1751731884179" duration="53000" />
     </task>
     <servers />
   </component>
