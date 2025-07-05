@@ -16,6 +16,8 @@ namespace TE {
 
     void LayerStack::PushLayer(Layer* layer)
     {
+        if (!layer) return;
+        
         m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
         m_LayerInsertIndex++;
         layer->OnAttach();
@@ -23,12 +25,16 @@ namespace TE {
 
     void LayerStack::PushOverlay(Layer* overlay)
     {
+        if (!overlay) return;
+        
         m_Layers.emplace_back(overlay);
         overlay->OnAttach();
     }
 
     void LayerStack::PopLayer(Layer* layer)
     {
+        if (!layer) return;
+        
         auto it = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, layer);
         if (it != m_Layers.begin() + m_LayerInsertIndex) {
             layer->OnDetach();
@@ -39,6 +45,8 @@ namespace TE {
 
     void LayerStack::PopOverlay(Layer* overlay)
     {
+        if (!overlay) return;
+        
         auto it = std::find(m_Layers.begin() + m_LayerInsertIndex, m_Layers.end(), overlay);
         if (it != m_Layers.end()) {
             overlay->OnDetach();
@@ -48,6 +56,8 @@ namespace TE {
 
     void LayerStack::MarkLayerForRemoval(Layer* layer)
     {
+        if (!layer) return;
+        
         // Check if layer is already marked for removal
         auto it = std::find(m_LayersToRemove.begin(), m_LayersToRemove.end(), layer);
         if (it == m_LayersToRemove.end()) {
@@ -57,6 +67,8 @@ namespace TE {
 
     void LayerStack::MarkOverlayForRemoval(Layer* overlay)
     {
+        if (!overlay) return;
+        
         // Check if overlay is already marked for removal
         auto it = std::find(m_LayersToRemove.begin(), m_LayersToRemove.end(), overlay);
         if (it == m_LayersToRemove.end()) {
@@ -67,6 +79,8 @@ namespace TE {
     void LayerStack::ProcessDeferredRemovals()
     {
         for (Layer* layer : m_LayersToRemove) {
+            if (!layer) continue;
+            
             // Determine if it's a layer or overlay based on position
             auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
             if (it != m_Layers.end()) {

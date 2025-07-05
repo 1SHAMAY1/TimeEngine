@@ -21,8 +21,8 @@ namespace TE {
     // Called when welcome animation is done
     void LogoLayer::OnWelcomeAnimationComplete()
     {
-        LogoFinishedDelegate.Broadcast();
-
+        // Don't broadcast immediately - defer to next frame
+        m_ShouldBroadcast = true;
         m_ShouldClose = true;
     }
 
@@ -89,10 +89,18 @@ namespace TE {
             OnWelcomeAnimationComplete();
         }
 
-        // Layer removal check
-        if (m_ShouldClose)
+        // Broadcast completion on next frame to avoid modifying layer stack during render
+        if (m_ShouldBroadcast)
+        {
+            m_ShouldBroadcast = false;
+            LogoFinishedDelegate.Broadcast();
+        }
+        
+        // Layer removal check - only after broadcasting is done
+        if (m_ShouldClose && !m_ShouldBroadcast && !m_IsBeingRemoved)
         {
             TE_CORE_INFO("Removing Logo.");
+            m_IsBeingRemoved = true;
             Application::Get().MarkLayerForRemoval(this);
         }
     }
@@ -107,6 +115,8 @@ namespace TE {
         m_AnimationStarted = false;
         m_AnimationFinished = false;
         m_ShouldClose = false;
+        m_ShouldBroadcast = false;
+        m_IsBeingRemoved = false;
     }
 
     // === Draw the animated TimeEngine Logo ===

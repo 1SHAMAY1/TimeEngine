@@ -9,12 +9,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Engine/Include/Layers/TestTriangleLayer.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/IndexBuffer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLVertexArray.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/Shader.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/src/Renderer/VertexArray.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Application.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Application.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Core.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Core.obj" afterDir="false" />
@@ -23,18 +17,24 @@
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.command.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.command.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.write.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/CL.write.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/Cl.items.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/Cl.items.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.command.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.command.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.read.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.secondary.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.secondary.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.write.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Engine.tlog/link.write.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/IWindow.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/IWindow.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ImGuiLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/ImGuiLayer.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/IndexBuffer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/IndexBuffer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Input.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Input.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Layer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Layer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LayerStack.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LayerStack.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Log.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Log.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LogoLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/LogoLayer.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLIndexBuffer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLIndexBuffer.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLShader.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLShader.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexArray.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexArray.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexBuffer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/OpenGLVertexBuffer.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RenderCommand.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RenderCommand.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RendererContext.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/RendererContext.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Shader.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/Shader.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TestTriangleLayer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/TestTriangleLayer.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/VertexArray.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/VertexArray.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/VertexBuffer.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/VertexBuffer.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/WindowsWindow.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/WindowsWindow.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/glad.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/glad.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/imgui.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/imgui.obj" afterDir="false" />
@@ -47,8 +47,6 @@
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.idb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Engine/vc143.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.ilk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.command.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.command.1.tlog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/Sandbox.tlog/CL.read.1.tlog" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/SandboxApplication.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.idb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin-Intermediate/Debug-windows-x86_64/Sandbox/vc143.pdb" afterDir="false" />
@@ -60,13 +58,17 @@
       <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Engine.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Engine.lib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Bin/Debug-windows-x86_64/Sandbox/Sandbox.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/LayerStack.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/LayerStack.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/LogoLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/LogoLayer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/TestTriangleLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/TestTriangleLayer.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/Layer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/Layer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/LayerStack.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/LayerStack.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/LogoLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
@@ -77,10 +79,8 @@
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/Customizable_Logger.dir/Debug/CustomizableLogger.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.lib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Customizable_Logger/build/lib/Debug/Customizable_Logger.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Premake5.lua" beforeDir="false" afterPath="$PROJECT_DIR$/Premake5.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sandbox/Sandbox.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Sandbox.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/GLFW/build/CMakeFiles/4.1.0-rc1/CompilerIdC/CompilerIdC.exe" afterDir="false" />
@@ -134,11 +134,6 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="cidr-memory-view://4" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/cmath" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/memory" root0="SKIP_HIGHLIGHTING" />
@@ -276,6 +271,7 @@
       <workItem from="1751633757509" duration="1878000" />
       <workItem from="1751638814799" duration="11335000" />
       <workItem from="1751684365065" duration="951000" />
+      <workItem from="1751692116583" duration="2319000" />
     </task>
     <servers />
   </component>

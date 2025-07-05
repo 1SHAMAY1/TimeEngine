@@ -15,64 +15,90 @@ namespace TE {
     }
 
     void TestTriangleLayer::OnAttach() {
+ // Initialize RenderCommand system
+        RenderCommand::Init();
 
+        // Create Vertex Array
+        m_VertexArray.reset(VertexArray::Create());
+
+        // Vertex data: 3 vertices, each with x, y, z
         float vertices[] = {
-             0.0f,  0.5f, 0.0f,  // Top
-            -0.5f, -0.5f, 0.0f,  // Left
-             0.5f, -0.5f, 0.0f   // Right
-        };
+            0.0f,  0.5f, 0.0f,  // Top
+           -0.5f, -0.5f, 0.0f,  // Bottom Left
+            0.5f, -0.5f, 0.0f   // Bottom Right
+       };
 
-        uint32_t indices[] = { 0, 1, 2 };
+        // Create Vertex Buffer
+        m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-        m_VertexArray = VertexArray::Create();
+        // Bind VAO and set vertex attributes
+        m_VertexArray->Bind();
+        m_VertexBuffer->Bind();
 
-        auto vb = VertexBuffer::Create(vertices, sizeof(vertices));
-        m_VertexArray->AddVertexBuffer(vb);
+        m_VertexArray->AddVertexBuffer(m_VertexBuffer.get());
 
-        auto ib = IndexBuffer::Create(indices, 3);
-        m_VertexArray->SetIndexBuffer(ib);
+        // Create Index Buffer
+        unsigned int indices[] = { 0, 1, 2 };
+        m_IndexBuffer.reset(IndexBuffer::Create(indices, 3));
 
+        // Attach IBO to VAO
+        m_VertexArray->Bind();          // Must bind VAO first
+        m_IndexBuffer->Bind();          // Then bind IBO while VAO is active
+        m_VertexArray->SetIndexBuffer(m_IndexBuffer.get());
+
+        // Create Shader
         std::string vertexSrc = R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
+            out vec3 v_Position;
             void main() {
+                v_Position = a_Position;
                 gl_Position = vec4(a_Position, 1.0);
             }
         )";
 
         std::string fragmentSrc = R"(
             #version 330 core
+            in vec3 v_Position;
             out vec4 FragColor;
             void main() {
-                FragColor = vec4(0.9, 0.3, 0.2, 1.0);
+                // Convert from [-0.5, 0.5] to [0, 1]
+                vec2 coord = v_Position.xy + vec2(0.5);
+                float dist = length(coord - vec2(0.5));
+                
+                // Low alpha at center (dist = 0), high at edge (dist ≈ 0.7)
+                float alpha = smoothstep(0.1, 0.5, dist);
+                
+                vec3 color = vec3(coord.x, 1.0 - coord.y, 0.6);
+                FragColor = vec4(color, alpha);
             }
         )";
 
-        m_Shader = Shader::Create(vertexSrc, fragmentSrc);
+        m_Shader.reset(Shader::Create(vertexSrc, fragmentSrc));
 
     }
 
     void TestTriangleLayer::OnDetach() {
 
-        delete m_VertexArray;
+        /*delete m_VertexArray;
         m_VertexArray = nullptr;
 
         delete m_Shader;
-        m_Shader = nullptr;
+        m_Shader = nullptr;*/
     }
 
     void TestTriangleLayer::OnUpdate() {
 
-        RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-        RenderCommand::Clear();
-
-        m_Shader->Bind();
-        m_VertexArray->Bind();
-        RenderCommand::DrawIndexed(0, 3);
+        // Use abstract rendering system
+        
 
     }
 
     void TestTriangleLayer::OnImGuiRender() {
         // Optional: Add GUI logs later
+
+        m_Shader->Bind();
+        m_VertexArray->Bind();
+        RenderCommand::DrawIndexed(m_VertexArray->GetRendererID(), m_IndexBuffer->GetCount());
     }
 }

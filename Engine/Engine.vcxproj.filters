@@ -28,9 +28,6 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{21EB8090-0D4E-1035-B6D3-48EBA215DCB7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{192C3F5D-8542-3DF3-CEB9-C8143A0F0E7B}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ImGUI">
       <UniqueIdentifier>{CB708F05-B754-505B-20B5-4AAE0CB83ADD}</UniqueIdentifier>
     </Filter>
@@ -98,9 +95,6 @@
     </ClInclude>
     <ClInclude Include="..\Vendor\IMGUI\ImGui\imstb_truetype.h">
       <Filter>Vendor\IMGUI\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\Application.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp">
       <Filter>Header Files\ImGUI</Filter>

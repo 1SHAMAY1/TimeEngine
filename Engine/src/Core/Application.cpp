@@ -170,7 +170,7 @@ namespace TE
 
 #else
 
-        // Initialize RenderCommand system
+       /* // Initialize RenderCommand system
         RenderCommand::Init();
 
         // Create Vertex Array
@@ -229,7 +229,7 @@ namespace TE
             }
         )";
 
-        m_Shader.reset(Shader::Create(vertexSrc, fragmentSrc));
+        m_Shader.reset(Shader::Create(vertexSrc, fragmentSrc));*/
 
 #endif
 
@@ -257,27 +257,37 @@ namespace TE
             glBindVertexArray(I_VertexArray);
             glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 #else
-            // Use abstract rendering system
+            /*// Use abstract rendering system
             m_Shader->Bind();
             m_VertexArray->Bind();
-            RenderCommand::DrawIndexed(m_VertexArray->GetRendererID(), m_IndexBuffer->GetCount());
+            RenderCommand::DrawIndexed(m_VertexArray->GetRendererID(), m_IndexBuffer->GetCount());*/
 #endif
 
 
+            // Application update
+            OnUpdate();
+            
             // Logic update
             for (Layer* layer : m_LayerStack)
+            {
                 if (layer)
                     layer->OnUpdate();
+            }
 
             // ImGui Rendering
             m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack)
+            {
                 if (layer)
                     layer->OnImGuiRender();
+            }
             m_ImGuiLayer->End();
 
             // Process any deferred layer removals after all layer operations are complete
             m_LayerStack.ProcessDeferredRemovals();
+            
+            // Process any deferred layer additions
+            ProcessDeferredAdditions();
 
             m_Window->OnUpdate();
         }
@@ -288,25 +298,21 @@ namespace TE
     void Application::PushLayer(Layer* layer)
     {
         m_LayerStack.PushLayer(layer);
-        //layer->OnAttach();
     }
 
     void Application::PushOverlay(Layer* overlay)
     {
         m_LayerStack.PushOverlay(overlay);
-        //overlay->OnAttach();
     }
 
     void Application::PopLayer(Layer* layer)
     {
         m_LayerStack.PopLayer(layer);
-        //layer->OnDetach();
     }
 
     void Application::PopOverlay(Layer* overlay)
     {
         m_LayerStack.PopOverlay(overlay);
-        //overlay->OnDetach();
     }
 
     void Application::MarkLayerForRemoval(Layer* layer)
@@ -318,5 +324,36 @@ namespace TE
     void Application::MarkOverlayForRemoval(Layer* overlay)
     {
         m_LayerStack.MarkOverlayForRemoval(overlay);
+    }
+
+    void Application::MarkLayerForAddition(Layer* layer)
+    {
+        if (layer)
+            m_LayersToAdd.push_back(layer);
+    }
+
+    void Application::MarkOverlayForAddition(Layer* overlay)
+    {
+        if (overlay)
+            m_OverlaysToAdd.push_back(overlay);
+    }
+
+    void Application::ProcessDeferredAdditions()
+    {
+        // Process layers to add
+        for (Layer* layer : m_LayersToAdd)
+        {
+            if (layer)
+                PushLayer(layer);
+        }
+        m_LayersToAdd.clear();
+        
+        // Process overlays to add
+        for (Layer* overlay : m_OverlaysToAdd)
+        {
+            if (overlay)
+                PushOverlay(overlay);
+        }
+        m_OverlaysToAdd.clear();
     }
 }

@@ -36,5 +36,7 @@ namespace TE {
         float m_LetterInterval = 0.1f;
         float m_TextClearDelay = 1.0f;
         bool m_ShouldClose = false;
+        bool m_ShouldBroadcast = false;
+        bool m_IsBeingRemoved = false;
     };
 }

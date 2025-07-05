@@ -19,12 +19,19 @@ namespace TE
 
         void Run();
 
+        virtual void OnUpdate() {}
+
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* overlay);
         void PopLayer(Layer* layer);
         void PopOverlay(Layer* overlay);
         void MarkLayerForRemoval(Layer* layer);
         void MarkOverlayForRemoval(Layer* layer);
+        
+        // Deferred layer addition methods
+        void MarkLayerForAddition(Layer* layer);
+        void MarkOverlayForAddition(Layer* overlay);
+        void ProcessDeferredAdditions();
 
 
         static Application& Get() { return *s_Instance; }
@@ -37,6 +44,10 @@ namespace TE
 
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer = nullptr;
+        
+        // Deferred layer addition
+        std::vector<Layer*> m_LayersToAdd;
+        std::vector<Layer*> m_OverlaysToAdd;
 
         static Application* s_Instance;
 
