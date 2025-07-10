@@ -10,9 +10,9 @@ class Project : public TE::Application
 public:
 	Project()
 	{
-		m_LogoLayer = new TE::LogoLayer();
-		BIND_FN_MULTI(m_LogoLayer->LogoFinishedDelegate, this, Project::OnLogoComplete);
-		PushLayer(m_LogoLayer);
+		auto* logoLayer = new TE::LogoLayer();
+		BIND_FN_MULTI(logoLayer->LogoFinishedDelegate, this, Project::OnLogoComplete);
+		PushLayer(logoLayer);
 	}
 
 	void OnLogoComplete()
@@ -20,7 +20,7 @@ public:
 		TE_CORE_INFO("Logo animation finished. Adding CameraLayer and ProfilingButtonLayer after logo removal.");
 		
 		// Add camera layer
-		TE::CameraLayer* cameraLayer = new TE::CameraLayer();
+		auto* cameraLayer = new TE::CameraLayer();
 		if (cameraLayer)
 		{
 			MarkLayerForAddition(cameraLayer);
@@ -31,7 +31,7 @@ public:
 		}
 		
 		// Add profiling button layer
-		TE::ProfilingButtonLayer* profilingButtonLayer = new TE::ProfilingButtonLayer();
+		auto* profilingButtonLayer = new TE::ProfilingButtonLayer();
 		if (profilingButtonLayer)
 		{
 			MarkLayerForAddition(profilingButtonLayer);
@@ -42,7 +42,7 @@ public:
 		}
 		
 		// Add engine settings button layer
-		TE::EngineSettingsButtonLayer* engineSettingsButtonLayer = new TE::EngineSettingsButtonLayer();
+		auto* engineSettingsButtonLayer = new TE::EngineSettingsButtonLayer();
 		if (engineSettingsButtonLayer)
 		{
 			MarkLayerForAddition(engineSettingsButtonLayer);
@@ -54,10 +54,7 @@ public:
 	}
 
 private:
-	TE::LogoLayer* m_LogoLayer = nullptr;
-	TE::CameraLayer* m_CameraLayer = nullptr;
-	TE::ProfilingButtonLayer* m_ProfilingButtonLayer = nullptr;
-	TE::EngineSettingsButtonLayer* m_EngineSettingsButtonLayer = nullptr;
+	// No raw layer pointers needed; engine manages layer lifetimes
 };
 
 TE::Application* TE::CreateApplication()

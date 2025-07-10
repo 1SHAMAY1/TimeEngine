@@ -123,3 +123,31 @@ struct Name { \
 // Add lambda or static function (no args)
 #define BIND_LAMBDA_MULTI(delegate, lambda) \
     delegate.Add(std::function<void()>(lambda))
+
+
+#pragma once
+
+// === [Meta Marker Macros for Classes, Structs, Enums] ===
+// NOTE: Parameters like Category, Name, Description, Tooltip are for future parsing
+
+#define TE_CLASS(...)                                          \
+static constexpr const char* TEClassCategory    = "DefaultClass"; \
+static constexpr const char* TEClassName        = "UnnamedClass"; \
+static constexpr const char* TEClassDescription = "No description provided."; \
+static constexpr const char* TEClassTooltip     = "No tooltip provided.";
+
+#define TE_STRUCT(...)                                          \
+static constexpr const char* TEStructCategory    = "DefaultStruct"; \
+static constexpr const char* TEStructName        = "UnnamedStruct"; \
+static constexpr const char* TEStructDescription = "No description provided."; \
+static constexpr const char* TEStructTooltip     = "No tooltip provided."
+
+#define TE_ENUM(...)                                          \
+static constexpr const char* TEEnumCategory    = "DefaultEnum"; \
+static constexpr const char* TEEnumName        = "UnnamedEnum"; \
+static constexpr const char* TEEnumDescription = "No description provided."; \
+static constexpr const char* TEEnumTooltip     = "No tooltip provided."
+
+// === [Property Marker Macro] ===
+// Marker only (zero runtime overhead)
+#define TEPROPERTY(...) [[maybe_unused]]

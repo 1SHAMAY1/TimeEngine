@@ -6,8 +6,12 @@
 #include <glm/glm.hpp>
 #include "Renderer/ShaderLibrary.hpp"
 #include "Renderer/TEColor.hpp"
+#include "Renderer/Renderer2D.hpp"
+#include "Renderer/Material.hpp"
 
 namespace TE {
+
+std::shared_ptr<Renderer2D> s_Renderer2D;
 
     TestTriangleLayer::TestTriangleLayer() {
         TE_CORE_INFO("TestTriangleLayer: Constructor called.");
@@ -20,6 +24,9 @@ namespace TE {
     void TestTriangleLayer::OnAttach() {
         // Initialize RenderCommand system
         RenderCommand::Init();
+
+        // Create Renderer2D instance
+        s_Renderer2D = Renderer2D::Create();
 
         // Create Vertex Array
         m_VertexArray.reset(VertexArray::Create());
@@ -50,26 +57,26 @@ namespace TE {
 
         // Use ShaderLibrary for shader
         m_Shader = ShaderLibrary::CreateColorShader();
+
+        // Create a material for batching
+        m_Material = std::make_shared<Material>(m_Shader);
+        m_Material->SetColor(TEColor::Red());
     }
 
     void TestTriangleLayer::OnDetach() {
     }
 
     void TestTriangleLayer::OnUpdate() {
-        m_Shader->Bind();
-        // Set color using TEColor
-        ShaderLibrary::SetColor(m_Shader.get(), TEColor::Red());
-        // Set transform (identity)
-        glm::mat4 transform = glm::mat4(1.0f);
-        ShaderLibrary::SetTransform(m_Shader.get(), transform);
-        // Set view-projection (orthographic for 2D)
-        glm::mat4 viewProj = ShaderLibrary::CreateOrthographicMatrix(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-        ShaderLibrary::SetViewProjection(m_Shader.get(), viewProj);
-        m_VertexArray->Bind();
-        RenderCommand::DrawIndexed(m_VertexArray->GetRendererID(), m_IndexBuffer->GetCount());
+        s_Renderer2D->BeginFrame();
+        // Submit a quad at the triangle's position for demonstration
+        s_Renderer2D->SubmitQuad(glm::vec2(-0.5f, -0.5f), glm::vec2(1.0f, 1.0f), m_Material);
+        s_Renderer2D->EndFrame();
+        s_Renderer2D->Flush();
     }
 
     void TestTriangleLayer::OnImGuiRender() {
         
     }
+
+    std::shared_ptr<Material> m_Material;
 }

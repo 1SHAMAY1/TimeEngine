@@ -875,3 +875,372 @@
 {"timestamp":"2025-07-10 15:20:36.294","level":"INFO","category":"Client","message":"Window close event received."}
 {"timestamp":"2025-07-10 15:21:03.009","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
 {"timestamp":"2025-07-10 15:21:10.996","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 15:24:05.247","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 15:24:07.210","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1279, 720"}
+{"timestamp":"2025-07-10 15:24:07.223","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1278, 720"}
+{"timestamp":"2025-07-10 15:24:07.253","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1277, 720"}
+{"timestamp":"2025-07-10 15:24:07.284","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1276, 720"}
+{"timestamp":"2025-07-10 15:24:07.294","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1275, 720"}
+{"timestamp":"2025-07-10 15:24:07.314","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1273, 720"}
+{"timestamp":"2025-07-10 15:24:07.329","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1271, 720"}
+{"timestamp":"2025-07-10 15:24:07.346","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1264, 720"}
+{"timestamp":"2025-07-10 15:24:07.362","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1251, 720"}
+{"timestamp":"2025-07-10 15:24:07.374","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1234, 720"}
+{"timestamp":"2025-07-10 15:24:07.385","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1225, 720"}
+{"timestamp":"2025-07-10 15:24:07.401","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1203, 720"}
+{"timestamp":"2025-07-10 15:24:07.408","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1188, 720"}
+{"timestamp":"2025-07-10 15:24:07.420","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1158, 720"}
+{"timestamp":"2025-07-10 15:24:07.429","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1139, 720"}
+{"timestamp":"2025-07-10 15:24:07.435","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1120, 720"}
+{"timestamp":"2025-07-10 15:24:07.444","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1097, 720"}
+{"timestamp":"2025-07-10 15:24:07.452","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1081, 720"}
+{"timestamp":"2025-07-10 15:24:07.465","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1065, 720"}
+{"timestamp":"2025-07-10 15:24:07.472","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1054, 720"}
+{"timestamp":"2025-07-10 15:24:07.479","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1040, 720"}
+{"timestamp":"2025-07-10 15:24:07.496","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1016, 720"}
+{"timestamp":"2025-07-10 15:24:07.504","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1003, 720"}
+{"timestamp":"2025-07-10 15:24:07.526","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 994, 720"}
+{"timestamp":"2025-07-10 15:24:07.542","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 975, 720"}
+{"timestamp":"2025-07-10 15:24:07.549","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 957, 720"}
+{"timestamp":"2025-07-10 15:24:07.563","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 951, 720"}
+{"timestamp":"2025-07-10 15:24:07.571","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 948, 720"}
+{"timestamp":"2025-07-10 15:24:07.584","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 945, 720"}
+{"timestamp":"2025-07-10 15:24:07.600","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 944, 720"}
+{"timestamp":"2025-07-10 15:24:07.607","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 943, 720"}
+{"timestamp":"2025-07-10 15:24:07.701","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 720"}
+{"timestamp":"2025-07-10 15:24:15.703","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 716"}
+{"timestamp":"2025-07-10 15:24:15.711","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 711"}
+{"timestamp":"2025-07-10 15:24:15.718","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 701"}
+{"timestamp":"2025-07-10 15:24:15.724","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 691"}
+{"timestamp":"2025-07-10 15:24:15.732","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 679"}
+{"timestamp":"2025-07-10 15:24:15.738","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 667"}
+{"timestamp":"2025-07-10 15:24:15.744","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 653"}
+{"timestamp":"2025-07-10 15:24:15.753","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 640"}
+{"timestamp":"2025-07-10 15:24:15.762","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 627"}
+{"timestamp":"2025-07-10 15:24:15.769","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 612"}
+{"timestamp":"2025-07-10 15:24:15.775","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 597"}
+{"timestamp":"2025-07-10 15:24:15.783","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 582"}
+{"timestamp":"2025-07-10 15:24:15.792","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 568"}
+{"timestamp":"2025-07-10 15:24:15.799","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 555"}
+{"timestamp":"2025-07-10 15:24:15.805","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 542"}
+{"timestamp":"2025-07-10 15:24:15.821","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 529"}
+{"timestamp":"2025-07-10 15:24:15.830","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 515"}
+{"timestamp":"2025-07-10 15:24:15.836","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 504"}
+{"timestamp":"2025-07-10 15:24:15.844","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 492"}
+{"timestamp":"2025-07-10 15:24:15.852","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 482"}
+{"timestamp":"2025-07-10 15:24:15.859","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 472"}
+{"timestamp":"2025-07-10 15:24:15.866","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 465"}
+{"timestamp":"2025-07-10 15:24:15.873","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 457"}
+{"timestamp":"2025-07-10 15:24:15.882","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 450"}
+{"timestamp":"2025-07-10 15:24:15.890","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 443"}
+{"timestamp":"2025-07-10 15:24:15.895","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 438"}
+{"timestamp":"2025-07-10 15:24:15.903","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 434"}
+{"timestamp":"2025-07-10 15:24:15.913","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 432"}
+{"timestamp":"2025-07-10 15:24:15.921","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 431"}
+{"timestamp":"2025-07-10 15:24:15.925","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 430"}
+{"timestamp":"2025-07-10 15:24:16.038","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 942, 429"}
+{"timestamp":"2025-07-10 15:24:18.157","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 940, 429"}
+{"timestamp":"2025-07-10 15:24:18.164","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 939, 429"}
+{"timestamp":"2025-07-10 15:24:18.171","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 936, 429"}
+{"timestamp":"2025-07-10 15:24:18.176","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 933, 429"}
+{"timestamp":"2025-07-10 15:24:18.183","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 930, 429"}
+{"timestamp":"2025-07-10 15:24:18.189","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 925, 429"}
+{"timestamp":"2025-07-10 15:24:18.196","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 921, 429"}
+{"timestamp":"2025-07-10 15:24:18.206","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 916, 429"}
+{"timestamp":"2025-07-10 15:24:18.213","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 908, 429"}
+{"timestamp":"2025-07-10 15:24:18.218","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 899, 429"}
+{"timestamp":"2025-07-10 15:24:18.236","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 889, 429"}
+{"timestamp":"2025-07-10 15:24:18.244","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 877, 429"}
+{"timestamp":"2025-07-10 15:24:18.248","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 863, 429"}
+{"timestamp":"2025-07-10 15:24:18.258","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 851, 429"}
+{"timestamp":"2025-07-10 15:24:18.266","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 839, 429"}
+{"timestamp":"2025-07-10 15:24:18.274","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 827, 429"}
+{"timestamp":"2025-07-10 15:24:18.282","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 815, 429"}
+{"timestamp":"2025-07-10 15:24:18.290","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 805, 429"}
+{"timestamp":"2025-07-10 15:24:18.296","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 793, 429"}
+{"timestamp":"2025-07-10 15:24:18.304","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 784, 429"}
+{"timestamp":"2025-07-10 15:24:18.309","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 773, 429"}
+{"timestamp":"2025-07-10 15:24:18.318","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 765, 429"}
+{"timestamp":"2025-07-10 15:24:18.325","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 756, 429"}
+{"timestamp":"2025-07-10 15:24:18.334","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 747, 429"}
+{"timestamp":"2025-07-10 15:24:18.339","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 738, 429"}
+{"timestamp":"2025-07-10 15:24:18.349","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 729, 429"}
+{"timestamp":"2025-07-10 15:24:18.356","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 724, 429"}
+{"timestamp":"2025-07-10 15:24:18.364","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 720, 429"}
+{"timestamp":"2025-07-10 15:24:18.371","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 716, 429"}
+{"timestamp":"2025-07-10 15:24:18.377","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 714, 429"}
+{"timestamp":"2025-07-10 15:24:18.395","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 713, 429"}
+{"timestamp":"2025-07-10 15:24:18.400","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 712, 429"}
+{"timestamp":"2025-07-10 15:24:18.410","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 711, 429"}
+{"timestamp":"2025-07-10 15:24:18.449","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 710, 429"}
+{"timestamp":"2025-07-10 15:24:18.470","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 709, 429"}
+{"timestamp":"2025-07-10 15:24:18.517","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 708, 429"}
+{"timestamp":"2025-07-10 15:24:23.342","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 15:24:24.106","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 15:24:28.153","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1278, 720"}
+{"timestamp":"2025-07-10 15:24:28.164","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1271, 720"}
+{"timestamp":"2025-07-10 15:24:28.168","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1258, 720"}
+{"timestamp":"2025-07-10 15:24:28.174","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1241, 720"}
+{"timestamp":"2025-07-10 15:24:28.183","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1213, 720"}
+{"timestamp":"2025-07-10 15:24:28.190","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1186, 720"}
+{"timestamp":"2025-07-10 15:24:28.201","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1152, 720"}
+{"timestamp":"2025-07-10 15:24:28.206","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1115, 720"}
+{"timestamp":"2025-07-10 15:24:28.215","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1082, 720"}
+{"timestamp":"2025-07-10 15:24:28.221","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1048, 720"}
+{"timestamp":"2025-07-10 15:24:28.229","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1019, 720"}
+{"timestamp":"2025-07-10 15:24:28.236","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 989, 720"}
+{"timestamp":"2025-07-10 15:24:28.243","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 966, 720"}
+{"timestamp":"2025-07-10 15:24:28.258","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 943, 720"}
+{"timestamp":"2025-07-10 15:24:28.265","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 924, 720"}
+{"timestamp":"2025-07-10 15:24:28.273","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 905, 720"}
+{"timestamp":"2025-07-10 15:24:28.280","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 890, 720"}
+{"timestamp":"2025-07-10 15:24:28.289","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 878, 720"}
+{"timestamp":"2025-07-10 15:24:28.294","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 868, 720"}
+{"timestamp":"2025-07-10 15:24:28.304","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 859, 720"}
+{"timestamp":"2025-07-10 15:24:28.310","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 847, 720"}
+{"timestamp":"2025-07-10 15:24:28.319","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 835, 720"}
+{"timestamp":"2025-07-10 15:24:28.324","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 822, 720"}
+{"timestamp":"2025-07-10 15:24:28.334","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 807, 720"}
+{"timestamp":"2025-07-10 15:24:28.341","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 791, 720"}
+{"timestamp":"2025-07-10 15:24:28.349","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 776, 720"}
+{"timestamp":"2025-07-10 15:24:28.355","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 760, 720"}
+{"timestamp":"2025-07-10 15:24:28.363","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 743, 720"}
+{"timestamp":"2025-07-10 15:24:28.371","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 726, 720"}
+{"timestamp":"2025-07-10 15:24:28.379","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 707, 720"}
+{"timestamp":"2025-07-10 15:24:28.385","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 688, 720"}
+{"timestamp":"2025-07-10 15:24:28.393","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 665, 720"}
+{"timestamp":"2025-07-10 15:24:28.402","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 646, 720"}
+{"timestamp":"2025-07-10 15:24:28.409","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 627, 720"}
+{"timestamp":"2025-07-10 15:24:28.415","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 610, 720"}
+{"timestamp":"2025-07-10 15:24:28.423","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 595, 720"}
+{"timestamp":"2025-07-10 15:24:28.431","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 580, 720"}
+{"timestamp":"2025-07-10 15:24:28.446","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 567, 720"}
+{"timestamp":"2025-07-10 15:24:28.456","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 557, 720"}
+{"timestamp":"2025-07-10 15:24:28.461","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 550, 720"}
+{"timestamp":"2025-07-10 15:24:28.470","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 545, 720"}
+{"timestamp":"2025-07-10 15:24:28.475","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 543, 720"}
+{"timestamp":"2025-07-10 15:24:28.485","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 541, 720"}
+{"timestamp":"2025-07-10 15:24:28.525","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 540, 720"}
+{"timestamp":"2025-07-10 15:24:28.538","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 539, 720"}
+{"timestamp":"2025-07-10 15:24:28.545","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 535, 720"}
+{"timestamp":"2025-07-10 15:24:28.553","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 532, 720"}
+{"timestamp":"2025-07-10 15:24:28.560","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 530, 720"}
+{"timestamp":"2025-07-10 15:24:28.566","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 526, 720"}
+{"timestamp":"2025-07-10 15:24:28.573","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 522, 720"}
+{"timestamp":"2025-07-10 15:24:28.581","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 520, 720"}
+{"timestamp":"2025-07-10 15:24:28.589","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 516, 720"}
+{"timestamp":"2025-07-10 15:24:28.595","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 514, 720"}
+{"timestamp":"2025-07-10 15:24:28.603","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 513, 720"}
+{"timestamp":"2025-07-10 15:24:28.611","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 512, 720"}
+{"timestamp":"2025-07-10 15:24:28.617","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 511, 720"}
+{"timestamp":"2025-07-10 15:24:28.732","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 510, 720"}
+{"timestamp":"2025-07-10 15:24:28.786","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 508, 720"}
+{"timestamp":"2025-07-10 15:24:28.792","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 505, 720"}
+{"timestamp":"2025-07-10 15:24:28.800","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 498, 720"}
+{"timestamp":"2025-07-10 15:24:28.814","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 488, 720"}
+{"timestamp":"2025-07-10 15:24:28.821","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 475, 720"}
+{"timestamp":"2025-07-10 15:24:28.828","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 458, 720"}
+{"timestamp":"2025-07-10 15:24:28.836","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 442, 720"}
+{"timestamp":"2025-07-10 15:24:28.843","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 424, 720"}
+{"timestamp":"2025-07-10 15:24:28.851","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 405, 720"}
+{"timestamp":"2025-07-10 15:24:28.858","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 387, 720"}
+{"timestamp":"2025-07-10 15:24:28.865","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 372, 720"}
+{"timestamp":"2025-07-10 15:24:28.874","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 361, 720"}
+{"timestamp":"2025-07-10 15:24:28.882","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 351, 720"}
+{"timestamp":"2025-07-10 15:24:28.888","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 345, 720"}
+{"timestamp":"2025-07-10 15:24:28.895","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 342, 720"}
+{"timestamp":"2025-07-10 15:24:28.904","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 339, 720"}
+{"timestamp":"2025-07-10 15:24:28.911","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 338, 720"}
+{"timestamp":"2025-07-10 15:24:28.980","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 337, 720"}
+{"timestamp":"2025-07-10 15:24:29.040","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 336, 720"}
+{"timestamp":"2025-07-10 15:24:32.548","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 15:24:45.017","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 15:24:50.782","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 719"}
+{"timestamp":"2025-07-10 15:24:50.800","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 714"}
+{"timestamp":"2025-07-10 15:24:50.814","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 701"}
+{"timestamp":"2025-07-10 15:24:50.819","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 694"}
+{"timestamp":"2025-07-10 15:24:50.832","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 674"}
+{"timestamp":"2025-07-10 15:24:50.839","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 661"}
+{"timestamp":"2025-07-10 15:24:50.847","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 649"}
+{"timestamp":"2025-07-10 15:24:50.853","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 637"}
+{"timestamp":"2025-07-10 15:24:50.862","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 624"}
+{"timestamp":"2025-07-10 15:24:50.869","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 612"}
+{"timestamp":"2025-07-10 15:24:50.877","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 599"}
+{"timestamp":"2025-07-10 15:24:50.883","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 585"}
+{"timestamp":"2025-07-10 15:24:50.891","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 572"}
+{"timestamp":"2025-07-10 15:24:50.907","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 560"}
+{"timestamp":"2025-07-10 15:24:50.913","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 547"}
+{"timestamp":"2025-07-10 15:24:50.922","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 534"}
+{"timestamp":"2025-07-10 15:24:50.929","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 522"}
+{"timestamp":"2025-07-10 15:24:50.937","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 509"}
+{"timestamp":"2025-07-10 15:24:50.943","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 499"}
+{"timestamp":"2025-07-10 15:24:50.951","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 487"}
+{"timestamp":"2025-07-10 15:24:50.959","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 479"}
+{"timestamp":"2025-07-10 15:24:50.967","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 468"}
+{"timestamp":"2025-07-10 15:24:50.973","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 460"}
+{"timestamp":"2025-07-10 15:24:50.980","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 453"}
+{"timestamp":"2025-07-10 15:24:50.989","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 445"}
+{"timestamp":"2025-07-10 15:24:50.996","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 438"}
+{"timestamp":"2025-07-10 15:24:51.003","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 431"}
+{"timestamp":"2025-07-10 15:24:51.011","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 424"}
+{"timestamp":"2025-07-10 15:24:51.019","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 419"}
+{"timestamp":"2025-07-10 15:24:51.027","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 412"}
+{"timestamp":"2025-07-10 15:24:51.033","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 407"}
+{"timestamp":"2025-07-10 15:24:51.041","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 400"}
+{"timestamp":"2025-07-10 15:24:51.050","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 395"}
+{"timestamp":"2025-07-10 15:24:51.057","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 390"}
+{"timestamp":"2025-07-10 15:24:51.063","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 386"}
+{"timestamp":"2025-07-10 15:24:51.072","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 382"}
+{"timestamp":"2025-07-10 15:24:51.080","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 377"}
+{"timestamp":"2025-07-10 15:24:51.092","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 373"}
+{"timestamp":"2025-07-10 15:24:51.101","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 367"}
+{"timestamp":"2025-07-10 15:24:51.110","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 359"}
+{"timestamp":"2025-07-10 15:24:51.116","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 350"}
+{"timestamp":"2025-07-10 15:24:51.123","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 342"}
+{"timestamp":"2025-07-10 15:24:51.131","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 332"}
+{"timestamp":"2025-07-10 15:24:51.139","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 323"}
+{"timestamp":"2025-07-10 15:24:51.146","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 315"}
+{"timestamp":"2025-07-10 15:24:51.153","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 306"}
+{"timestamp":"2025-07-10 15:24:51.161","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 298"}
+{"timestamp":"2025-07-10 15:24:51.169","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 291"}
+{"timestamp":"2025-07-10 15:24:51.177","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 283"}
+{"timestamp":"2025-07-10 15:24:51.183","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 277"}
+{"timestamp":"2025-07-10 15:24:51.190","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 272"}
+{"timestamp":"2025-07-10 15:24:51.200","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 269"}
+{"timestamp":"2025-07-10 15:24:51.207","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 268"}
+{"timestamp":"2025-07-10 15:24:51.213","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 267"}
+{"timestamp":"2025-07-10 15:24:51.221","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 266"}
+{"timestamp":"2025-07-10 15:24:53.525","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2025-07-10 15:25:08.962","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 15:37:14.105","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 15:37:19.025","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 15:38:22.659","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 15:38:24.815","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2025-07-10 15:38:26.269","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1280, 720"}
+{"timestamp":"2025-07-10 15:38:28.550","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1279, 720"}
+{"timestamp":"2025-07-10 15:38:28.575","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1278, 720"}
+{"timestamp":"2025-07-10 15:38:28.584","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1277, 720"}
+{"timestamp":"2025-07-10 15:38:28.589","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1274, 720"}
+{"timestamp":"2025-07-10 15:38:28.598","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1270, 720"}
+{"timestamp":"2025-07-10 15:38:28.603","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1265, 719"}
+{"timestamp":"2025-07-10 15:38:28.612","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1256, 715"}
+{"timestamp":"2025-07-10 15:38:28.620","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1246, 710"}
+{"timestamp":"2025-07-10 15:38:28.626","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1233, 704"}
+{"timestamp":"2025-07-10 15:38:28.632","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1221, 697"}
+{"timestamp":"2025-07-10 15:38:28.640","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1209, 691"}
+{"timestamp":"2025-07-10 15:38:28.649","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1196, 682"}
+{"timestamp":"2025-07-10 15:38:28.657","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1186, 676"}
+{"timestamp":"2025-07-10 15:38:28.663","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1175, 669"}
+{"timestamp":"2025-07-10 15:38:28.671","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1166, 664"}
+{"timestamp":"2025-07-10 15:38:28.679","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1157, 657"}
+{"timestamp":"2025-07-10 15:38:28.686","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1147, 651"}
+{"timestamp":"2025-07-10 15:38:28.693","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1138, 644"}
+{"timestamp":"2025-07-10 15:38:28.700","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1129, 636"}
+{"timestamp":"2025-07-10 15:38:28.708","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1118, 627"}
+{"timestamp":"2025-07-10 15:38:28.717","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1107, 617"}
+{"timestamp":"2025-07-10 15:38:28.722","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1090, 605"}
+{"timestamp":"2025-07-10 15:38:28.730","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1076, 593"}
+{"timestamp":"2025-07-10 15:38:28.739","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1055, 579"}
+{"timestamp":"2025-07-10 15:38:28.754","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1038, 567"}
+{"timestamp":"2025-07-10 15:38:28.761","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1023, 555"}
+{"timestamp":"2025-07-10 15:38:28.770","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1010, 544"}
+{"timestamp":"2025-07-10 15:38:28.779","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 996, 532"}
+{"timestamp":"2025-07-10 15:38:28.791","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 981, 520"}
+{"timestamp":"2025-07-10 15:38:28.797","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 963, 505"}
+{"timestamp":"2025-07-10 15:38:28.808","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 924, 475"}
+{"timestamp":"2025-07-10 15:38:28.814","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 906, 462"}
+{"timestamp":"2025-07-10 15:38:28.821","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 891, 448"}
+{"timestamp":"2025-07-10 15:38:28.829","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 877, 438"}
+{"timestamp":"2025-07-10 15:38:28.838","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 863, 428"}
+{"timestamp":"2025-07-10 15:38:28.844","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 850, 419"}
+{"timestamp":"2025-07-10 15:38:28.857","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 841, 412"}
+{"timestamp":"2025-07-10 15:38:28.868","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 824, 399"}
+{"timestamp":"2025-07-10 15:38:28.874","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 818, 396"}
+{"timestamp":"2025-07-10 15:38:28.882","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 814, 391"}
+{"timestamp":"2025-07-10 15:38:28.889","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 808, 388"}
+{"timestamp":"2025-07-10 15:38:28.900","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 802, 384"}
+{"timestamp":"2025-07-10 15:38:28.906","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 798, 382"}
+{"timestamp":"2025-07-10 15:38:28.918","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 794, 379"}
+{"timestamp":"2025-07-10 15:38:28.933","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 787, 375"}
+{"timestamp":"2025-07-10 15:38:28.946","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 785, 374"}
+{"timestamp":"2025-07-10 15:38:28.953","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 783, 373"}
+{"timestamp":"2025-07-10 15:38:28.966","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 781, 372"}
+{"timestamp":"2025-07-10 15:38:28.972","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 780, 371"}
+{"timestamp":"2025-07-10 15:38:28.980","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 779, 371"}
+{"timestamp":"2025-07-10 15:38:28.989","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 779, 370"}
+{"timestamp":"2025-07-10 15:38:28.996","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 778, 370"}
+{"timestamp":"2025-07-10 15:38:29.004","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 776, 369"}
+{"timestamp":"2025-07-10 15:38:29.011","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 775, 368"}
+{"timestamp":"2025-07-10 15:38:29.018","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 774, 368"}
+{"timestamp":"2025-07-10 15:38:29.024","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 772, 367"}
+{"timestamp":"2025-07-10 15:38:29.032","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 772, 366"}
+{"timestamp":"2025-07-10 15:38:29.040","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 770, 366"}
+{"timestamp":"2025-07-10 15:38:29.055","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 768, 365"}
+{"timestamp":"2025-07-10 15:38:29.062","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 766, 364"}
+{"timestamp":"2025-07-10 15:38:29.071","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 765, 362"}
+{"timestamp":"2025-07-10 15:38:29.078","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 762, 361"}
+{"timestamp":"2025-07-10 15:38:29.087","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 758, 359"}
+{"timestamp":"2025-07-10 15:38:29.102","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 750, 355"}
+{"timestamp":"2025-07-10 15:38:29.116","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 744, 352"}
+{"timestamp":"2025-07-10 15:38:29.133","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 738, 349"}
+{"timestamp":"2025-07-10 15:38:29.141","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 732, 346"}
+{"timestamp":"2025-07-10 15:38:29.153","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 726, 343"}
+{"timestamp":"2025-07-10 15:38:29.162","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 724, 342"}
+{"timestamp":"2025-07-10 15:38:29.170","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 722, 341"}
+{"timestamp":"2025-07-10 15:38:29.183","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 720, 340"}
+{"timestamp":"2025-07-10 15:38:29.191","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 718, 339"}
+{"timestamp":"2025-07-10 15:38:29.200","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 716, 338"}
+{"timestamp":"2025-07-10 15:38:29.213","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 712, 336"}
+{"timestamp":"2025-07-10 15:38:29.221","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 709, 335"}
+{"timestamp":"2025-07-10 15:38:29.227","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 706, 333"}
+{"timestamp":"2025-07-10 15:38:29.233","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 704, 332"}
+{"timestamp":"2025-07-10 15:38:29.241","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 701, 331"}
+{"timestamp":"2025-07-10 15:38:29.248","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 699, 330"}
+{"timestamp":"2025-07-10 15:38:29.256","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 697, 328"}
+{"timestamp":"2025-07-10 15:38:29.264","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 695, 327"}
+{"timestamp":"2025-07-10 15:38:29.270","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 693, 326"}
+{"timestamp":"2025-07-10 15:38:29.278","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 690, 324"}
+{"timestamp":"2025-07-10 15:38:29.286","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 687, 323"}
+{"timestamp":"2025-07-10 15:38:29.292","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 684, 321"}
+{"timestamp":"2025-07-10 15:38:29.308","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 683, 320"}
+{"timestamp":"2025-07-10 15:38:29.316","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 682, 319"}
+{"timestamp":"2025-07-10 15:38:29.322","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 681, 319"}
+{"timestamp":"2025-07-10 15:38:29.363","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 681, 318"}
+{"timestamp":"2025-07-10 15:38:30.425","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2025-07-10 15:38:40.032","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 681, 318"}
+{"timestamp":"2025-07-10 15:38:43.385","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2025-07-10 15:39:10.775","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:04:37.753","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:04:48.485","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:05:04.171","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:05:09.896","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:12:18.597","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:12:34.155","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:16:18.918","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:26:15.443","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:26:22.963","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:39:26.754","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:39:40.570","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:42:34.756","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:43:25.799","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:45:07.759","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:45:44.484","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:48:12.084","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:48:25.888","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 16:57:06.825","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 16:57:27.204","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:19:57.033","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:20:46.950","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:22:32.880","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:23:01.353","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:26:31.798","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:27:45.411","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:30:35.533","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:30:56.194","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:38:23.115","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:38:31.017","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:38:33.869","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:38:40.297","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2025-07-10 17:38:44.095","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2025-07-10 17:38:50.547","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2025-07-10 17:38:53.028","level":"INFO","category":"Client","message":"Window close event received."}

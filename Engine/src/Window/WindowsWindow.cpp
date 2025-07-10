@@ -7,6 +7,7 @@
 #include "Core/Events/MouseEvent.h"
 #include "Input/Input.hpp"
 #include "Core/EngineSettings.hpp"
+#include "Renderer/RendererContext.hpp"
 
 static bool s_GLFWInitialized = false;
 
@@ -24,6 +25,7 @@ void* WindowsWindow::GetGLLoaderFunction() const {
 }
 
 void WindowsWindow::Init(const WindowProps& props) {
+    TE::RendererContext::EnableBestGPU();
     m_Data.Title = props.Title;
     m_Data.Width = props.Width;
     m_Data.Height = props.Height;
@@ -59,6 +61,11 @@ void WindowsWindow::Init(const WindowProps& props) {
         TE::WindowResizeEvent event(width, height);
         TE_CORE_DEBUG(event.ToString());
         data.EventCallback(event);
+    });
+
+    // === FRAMEBUFFER SIZE CALLBACK ===
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+        glViewport(0, 0, width, height);
     });
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
@@ -129,6 +136,7 @@ void WindowsWindow::Init(const WindowProps& props) {
 
     glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        TE::Input::SetMouseScrollDelta((float)xOffset, (float)yOffset);
         TE::MouseScrolledEvent event((float)xOffset, (float)yOffset);
         TE_CORE_DEBUG(event.ToString());
         data.EventCallback(event);

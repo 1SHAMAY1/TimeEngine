@@ -177,15 +177,14 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Core\EngineSettings.hpp" />
     <ClInclude Include="Include\Core\EngineSettings_Example.hpp" />
     <ClInclude Include="Include\Core\Particle\ParticleEmitterComponent.hpp" />
-    <ClInclude Include="Include\Core\Particle\PArticlePool.hpp" />
+    <ClInclude Include="Include\Core\Particle\ParticlePool.hpp" />
     <ClInclude Include="Include\Core\Particle\ParticleSpawner.hpp" />
     <ClInclude Include="Include\Core\Particle\ParticleTypes.hpp" />
     <ClInclude Include="Include\Core\Particle\ParticleUpdater.hpp" />
     <ClInclude Include="Include\Core\Scene\EntityManager.hpp" />
     <ClInclude Include="Include\Core\Threading\TaskSystem.hpp" />
-    <ClInclude Include="Include\Core\Threading\TaskSystem.inl" />
-    <ClInclude Include="Include\Core\Threading\ThreadingMacros.hpp" />
     <ClInclude Include="Include\Core\Threading\ThreadPool.hpp" />
+    <ClInclude Include="Include\Core\Threading\ThreadingMacros.hpp" />
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp" />
     <ClInclude Include="Include\Input\Input.hpp" />
     <ClInclude Include="Include\Layers\CameraLayer.hpp" />
@@ -201,14 +200,22 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp" />
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp" />
     <ClInclude Include="Include\Renderer\IndexBuffer.hpp" />
+    <ClInclude Include="Include\Renderer\Material.hpp" />
+    <ClInclude Include="Include\Renderer\Material\Material.hpp" />
+    <ClInclude Include="Include\Renderer\Material\MaterialInstance.hpp" />
+    <ClInclude Include="Include\Renderer\Material\MaterialLibrary.hpp" />
+    <ClInclude Include="Include\Renderer\MaterialInstance.hpp" />
+    <ClInclude Include="Include\Renderer\MaterialLibrary.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShader.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLShaderLibrary.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexArray.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLVertexBuffer.hpp" />
     <ClInclude Include="Include\Renderer\OpenGL\TEOpenGLColor.hpp" />
+    <ClInclude Include="Include\Renderer\RenderBatcher.hpp" />
     <ClInclude Include="Include\Renderer\RenderCommand.hpp" />
     <ClInclude Include="Include\Renderer\Renderer.hpp" />
+    <ClInclude Include="Include\Renderer\Renderer2D.hpp" />
     <ClInclude Include="Include\Renderer\RendererContext.hpp" />
     <ClInclude Include="Include\Renderer\Shader.hpp" />
     <ClInclude Include="Include\Renderer\ShaderLibrary.hpp" />
@@ -265,13 +272,25 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Time\Timer.cpp" />
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\Material.cpp" />
+    <ClCompile Include="src\Renderer\Material\MaterialInstance.cpp" />
+    <ClCompile Include="src\Renderer\Material\MaterialLibrary.cpp" />
+    <ClCompile Include="src\Renderer\Material\Matrial.cpp" />
+    <ClCompile Include="src\Renderer\MaterialInstance.cpp">
+      <ObjectFileName>$(IntDir)\MaterialInstance1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\MaterialLibrary.cpp">
+      <ObjectFileName>$(IntDir)\MaterialLibrary1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLShaderLibrary.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\OpenGLVertexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OpenGL\TEOpenGLColor.cpp" />
+    <ClCompile Include="src\Renderer\RenderBatcher.cpp" />
     <ClCompile Include="src\Renderer\RenderCommand.cpp" />
+    <ClCompile Include="src\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Renderer\RendererContext.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\ShaderLibrary.cpp" />

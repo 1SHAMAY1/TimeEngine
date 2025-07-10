@@ -6,6 +6,10 @@ namespace TE
     GLFWwindow* Input::s_Window = nullptr;
     std::unordered_map<KeyCode, InputState> Input::s_KeyStates;
     std::unordered_map<MouseCode, InputState> Input::s_MouseStates;
+    float Input::s_MouseScrollX = 0.0f;
+    float Input::s_MouseScrollY = 0.0f;
+    bool Input::s_MouseButtonDown[3] = { false, false, false };
+    bool Input::s_MouseButtonUp[3] = { false, false, false };
 
     void Input::Init(void* nativeWindow)
     {
@@ -41,6 +45,32 @@ namespace TE
         double x, y;
         glfwGetCursorPos(s_Window, &x, &y);
         return { (float)x, (float)y };
+    }
+
+    MouseDelta Input::GetMouseScrollDelta()
+    {
+        MouseDelta delta(s_MouseScrollX, s_MouseScrollY);
+        s_MouseScrollX = 0.0f;
+        s_MouseScrollY = 0.0f;
+        return delta;
+    }
+
+    void Input::SetMouseScrollDelta(float x, float y)
+    {
+        s_MouseScrollX += x;
+        s_MouseScrollY += y;
+    }
+
+    bool Input::GetMouseButtonDown(int button)
+    {
+        if (button < 0 || button > 2) return false;
+        return s_MouseButtonDown[button];
+    }
+
+    bool Input::GetMouseButtonUp(int button)
+    {
+        if (button < 0 || button > 2) return false;
+        return s_MouseButtonUp[button];
     }
 
     void Input::OnKeyPressed(KeyCode key, TE::Event* e, bool isRepeat)

@@ -1,17 +1,18 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <memory>
+#include "Renderer/VertexArray.hpp"
+#include "Renderer/Material.hpp"
 
 namespace TE {
 
-	class Renderer {
-	public:
-		static void Init();
-		static void Shutdown();
+class Renderer {
+public:
+    virtual ~Renderer() = default;
+    virtual void BeginFrame() = 0;
+    virtual void Submit(const std::shared_ptr<VertexArray>& vao, const std::shared_ptr<Material>& material, const glm::mat4& transform, uint32_t indexCount) = 0;
+    virtual void EndFrame() = 0;
+    virtual void Flush() = 0;
+};
 
-		static void OnWindowResize(uint32_t width, uint32_t height);
-		static void BeginFrame();
-		static void EndFrame();
-
-		static void Clear(const glm::vec4& color);
-	};
 }

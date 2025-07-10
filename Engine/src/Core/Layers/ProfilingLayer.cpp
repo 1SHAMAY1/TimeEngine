@@ -5,6 +5,7 @@
 #include <numeric>
 #include <sstream>
 #include <iomanip>
+#include "Renderer/RendererContext.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -233,12 +234,13 @@ namespace TE {
         ::GetSystemInfo(&sysInfo);
         m_CPUCores = sysInfo.dwNumberOfProcessors;
 
-        m_GPUName = "Unknown GPU"; // Would need to query GPU info
+        // GPU info
+        m_GPUName = TE::RendererContext::GetGPUVendor() + " / " + TE::RendererContext::GetGPURenderer() + " (" + TE::RendererContext::GetGPUType() + ")";
         m_VRAMTotal = 0; // Would need to query GPU VRAM
 #else
         // Linux implementation would go here
         m_CPUName = "Unknown CPU";
-        m_GPUName = "Unknown GPU";
+        m_GPUName = TE::RendererContext::GetGPUVendor() + " / " + TE::RendererContext::GetGPURenderer() + " (" + TE::RendererContext::GetGPUType() + ")";
         m_CPUCores = 0;
         m_RAMTotal = 0;
         m_VRAMTotal = 0;

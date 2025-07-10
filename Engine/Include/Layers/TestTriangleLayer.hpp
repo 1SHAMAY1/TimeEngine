@@ -2,6 +2,7 @@
 #include "Layer.hpp"
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/Shader.hpp"
+#include "Renderer/Material.hpp"
 
 namespace TE {
 
@@ -20,6 +21,7 @@ namespace TE {
         std::unique_ptr<VertexArray> m_VertexArray;
         std::unique_ptr<IndexBuffer> m_IndexBuffer;
         std::shared_ptr<Shader> m_Shader;
+        std::shared_ptr<Material> m_Material;
     };
 }
 

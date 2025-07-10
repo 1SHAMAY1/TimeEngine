@@ -17,6 +17,7 @@ namespace TE {
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
         virtual void OnImGuiRender() override;
+        virtual void OnEvent(class Event& event) override;
 
     private:
         void HandleInput(float deltaTime);
@@ -39,6 +40,8 @@ namespace TE {
         float m_MovementSpeed = 2.0f; // units per second
         float m_RotationSpeed = 90.0f; // degrees per second
         float m_LastFrameTime = 0.0f;
+        float m_Zoom = 1.0f;
+        float m_ZoomSpeed = 0.5f;
         
         // Input tracking for visual feedback
         bool m_WPressed = false;

@@ -10,11 +10,11 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{E145AD0A-4D5C-ABA0-96D3-36C202297C28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Collision">
+      <UniqueIdentifier>{3C087C62-A815-AA48-31FC-A5339D0876FF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core\Layers">
-      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Core\Time">
       <UniqueIdentifier>{1F771BC3-0B71-4415-F4DD-DA25E076AA81}</UniqueIdentifier>
@@ -24,6 +24,9 @@
     </Filter>
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{AF019756-1B6E-5251-E461-EAAE508D74B9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\Material">
+      <UniqueIdentifier>{2D85B231-19AB-7C98-02F1-0164EEB5A164}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Renderer\OpenGL">
       <UniqueIdentifier>{0310E9CB-EFCA-D877-9882-51C2841C2308}</UniqueIdentifier>
@@ -40,17 +43,29 @@
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{192C3F5D-8542-3DF3-CEB9-C8143A0F0E7B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Collision">
+      <UniqueIdentifier>{74146D55-E021-9B3B-6908-9726D51467F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Particle">
+      <UniqueIdentifier>{3C9CAF5E-28AC-5B2F-9165-C04D7D944AC8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Scene">
+      <UniqueIdentifier>{F687180B-62BF-60A2-6BC9-C4C5D77F879B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Threading">
+      <UniqueIdentifier>{9E15D458-0A23-023F-9309-FE29FF15CEF5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\ImGUI">
       <UniqueIdentifier>{CB708F05-B754-505B-20B5-4AAE0CB83ADD}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Layers">
-      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer\Material">
+      <UniqueIdentifier>{65C6B611-51EC-8078-3A32-064426F7A544}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Renderer\OpenGL">
       <UniqueIdentifier>{3BA3FB1C-275E-EBC8-D015-6413BCAF3559}</UniqueIdentifier>
@@ -60,6 +75,9 @@
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor Layer">
+      <UniqueIdentifier>{E96E601B-D5D1-EFBF-7E57-28766A99BB42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -120,11 +138,50 @@
     <ClInclude Include="Include\Camera\PerspectiveCamera.hpp">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Collision\BroadPhase.hpp">
+      <Filter>Header Files\Core\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Collision\CollisionComponent.hpp">
+      <Filter>Header Files\Core\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Collision\CollisionSystem.hpp">
+      <Filter>Header Files\Core\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Collision\CollisionTypes.hpp">
+      <Filter>Header Files\Core\Collision</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\EngineSettings.hpp">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\EngineSettings_Example.hpp">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Particle\ParticleEmitterComponent.hpp">
+      <Filter>Header Files\Core\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Particle\ParticlePool.hpp">
+      <Filter>Header Files\Core\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Particle\ParticleSpawner.hpp">
+      <Filter>Header Files\Core\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Particle\ParticleTypes.hpp">
+      <Filter>Header Files\Core\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Particle\ParticleUpdater.hpp">
+      <Filter>Header Files\Core\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\EntityManager.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Threading\TaskSystem.hpp">
+      <Filter>Header Files\Core\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Threading\ThreadPool.hpp">
+      <Filter>Header Files\Core\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Threading\ThreadingMacros.hpp">
+      <Filter>Header Files\Core\Threading</Filter>
     </ClInclude>
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp">
       <Filter>Header Files\ImGUI</Filter>
@@ -133,42 +190,60 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\CameraLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EngineSettingsButtonLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EngineSettingsLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingButtonLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingWindowManager.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\IndexBuffer.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Material.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Material\Material.hpp">
+      <Filter>Header Files\Renderer\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Material\MaterialInstance.hpp">
+      <Filter>Header Files\Renderer\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Material\MaterialLibrary.hpp">
+      <Filter>Header Files\Renderer\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\MaterialInstance.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\MaterialLibrary.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp">
@@ -189,10 +264,16 @@
     <ClInclude Include="Include\Renderer\OpenGL\TEOpenGLColor.hpp">
       <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Renderer\RenderBatcher.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Renderer\RenderCommand.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\Renderer.hpp">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Renderer2D.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\RendererContext.hpp">
@@ -299,6 +380,12 @@
     <ClCompile Include="src\Core\Application.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Collision\BroadPhase.cpp">
+      <Filter>Source Files\Core\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Collision\CollisionSystem.cpp">
+      <Filter>Source Files\Core\Collision</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Core.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -309,34 +396,34 @@
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\CameraLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EngineSettingsButtonLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EngineSettingsLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LayerStack.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProfilingButtonLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProfilingLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
@@ -351,6 +438,24 @@
       <Filter>Source Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\IndexBuffer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Material.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Material\MaterialInstance.cpp">
+      <Filter>Source Files\Renderer\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Material\MaterialLibrary.cpp">
+      <Filter>Source Files\Renderer\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Material\Matrial.cpp">
+      <Filter>Source Files\Renderer\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\MaterialInstance.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\MaterialLibrary.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp">
@@ -371,7 +476,13 @@
     <ClCompile Include="src\Renderer\OpenGL\TEOpenGLColor.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\RenderBatcher.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\RenderCommand.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Renderer2D.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\RendererContext.cpp">
