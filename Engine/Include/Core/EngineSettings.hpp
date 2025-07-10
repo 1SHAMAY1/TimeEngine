@@ -264,4 +264,4 @@ namespace TE {
         void ValidatePerformanceSettings();
     };
 
-} // namespace TE 
+}

@@ -23,6 +23,7 @@
 #include <thread>             // Threading support
 #include <mutex>              // Mutex for thread safety
 #include <atomic>             // Atomic operations
+#include <queue>              // Queue operations
 
 // ====================================================================================
 // Platform Detection & API Export Macros

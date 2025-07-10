@@ -16,26 +16,24 @@ namespace TE {
     inline ImVec2 operator+(const ImVec2& a, const ImVec2& b) { return { a.x + b.x, a.y + b.y }; }
     inline ImVec2 operator-(const ImVec2& a, const ImVec2& b) { return { a.x - b.x, a.y - b.y }; }
     inline ImVec2 operator*(const ImVec2& v, float scalar)    { return { v.x * scalar, v.y * scalar }; }
+    inline ImVec2 operator*(float scalar, const ImVec2& v)    { return v * scalar; }
     inline ImVec2 operator/(const ImVec2& v, float scalar)    { return { v.x / scalar, v.y / scalar }; }
-    inline float Length(const ImVec2& v)                      { return std::sqrt(v.x * v.x + v.y * v.y); }
+
+    inline float Length(const ImVec2& v) {
+        return std::sqrt(v.x * v.x + v.y * v.y);
+    }
+
     inline ImVec2 Normalize(const ImVec2& v) {
         float len = Length(v);
         return (len > 0.0f) ? v / len : ImVec2(0.0f, 0.0f);
     }
 
     // ===== ImVec4 Operators =====
-    inline ImVec4 operator+(const ImVec4& a, const ImVec4& b) {
-        return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w };
-    }
-    inline ImVec4 operator-(const ImVec4& a, const ImVec4& b) {
-        return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w };
-    }
-    inline ImVec4 operator*(const ImVec4& v, float scalar) {
-        return { v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar };
-    }
-    inline ImVec4 operator/(const ImVec4& v, float scalar) {
-        return { v.x / scalar, v.y / scalar, v.z / scalar, v.w / scalar };
-    }
+    inline ImVec4 operator+(const ImVec4& a, const ImVec4& b) { return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w }; }
+    inline ImVec4 operator-(const ImVec4& a, const ImVec4& b) { return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w }; }
+    inline ImVec4 operator*(const ImVec4& v, float scalar)    { return { v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar }; }
+    inline ImVec4 operator*(float scalar, const ImVec4& v)    { return v * scalar; }
+    inline ImVec4 operator/(const ImVec4& v, float scalar)    { return { v.x / scalar, v.y / scalar, v.z / scalar, v.w / scalar }; }
 
     // ===== TEVector2 =====
     struct TEVector2 {
@@ -46,6 +44,8 @@ namespace TE {
         TEVector2(const ImVec2& v) : x(v.x), y(v.y) {}
 
         float Length() const { return std::sqrt(x * x + y * y); }
+        float LengthSquared() const { return x * x + y * y; }
+
         TEVector2 Normalized() const {
             float len = Length();
             return (len > 0.0f) ? TEVector2(x / len, y / len) : TEVector2();
@@ -55,9 +55,82 @@ namespace TE {
 
         TEVector2 operator+(const TEVector2& rhs) const { return { x + rhs.x, y + rhs.y }; }
         TEVector2 operator-(const TEVector2& rhs) const { return { x - rhs.x, y - rhs.y }; }
-        TEVector2 operator*(float scalar) const { return { x * scalar, y * scalar }; }
-        TEVector2 operator/(float scalar) const { return { x / scalar, y / scalar }; }
+        TEVector2 operator*(float scalar) const         { return { x * scalar, y * scalar }; }
+        TEVector2 operator/(float scalar) const         { return { x / scalar, y / scalar }; }
+        TEVector2 operator-() const                     { return { -x, -y }; }
+
+        TEVector2& operator+=(const TEVector2& rhs) { x += rhs.x; y += rhs.y; return *this; }
+        TEVector2& operator-=(const TEVector2& rhs) { x -= rhs.x; y -= rhs.y; return *this; }
+        TEVector2& operator*=(float scalar)         { x *= scalar; y *= scalar; return *this; }
+        TEVector2& operator/=(float scalar)         { x /= scalar; y /= scalar; return *this; }
+
+        bool operator==(const TEVector2& rhs) const { return x == rhs.x && y == rhs.y; }
+        bool operator!=(const TEVector2& rhs) const { return !(*this == rhs); }
     };
+
+    inline TEVector2 operator*(float scalar, const TEVector2& v) { return v * scalar; }
+
+    inline float Distance(const TEVector2& a, const TEVector2& b) {
+        float dx = a.x - b.x;
+        float dy = a.y - b.y;
+        return std::sqrt(dx * dx + dy * dy);
+    }
+
+    inline float DistanceSquared(const TEVector2& a, const TEVector2& b) {
+        float dx = a.x - b.x;
+        float dy = a.y - b.y;
+        return dx * dx + dy * dy;
+    }
+
+    // ===== TEVector (3D) =====
+    struct TEVector {
+        float x = 0.0f, y = 0.0f, z = 0.0f;
+
+        TEVector() = default;
+        TEVector(float x, float y, float z) : x(x), y(y), z(z) {}
+        TEVector(const glm::vec3& v) : x(v.x), y(v.y), z(v.z) {}
+
+        float Length() const { return std::sqrt(x * x + y * y + z * z); }
+        float LengthSquared() const { return x * x + y * y + z * z; }
+
+        TEVector Normalized() const {
+            float len = Length();
+            return (len > 0.0f) ? TEVector(x / len, y / len, z / len) : TEVector();
+        }
+
+        glm::vec3 ToGLM() const { return { x, y, z }; }
+
+        TEVector operator+(const TEVector& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z }; }
+        TEVector operator-(const TEVector& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z }; }
+        TEVector operator*(float scalar) const        { return { x * scalar, y * scalar, z * scalar }; }
+        TEVector operator/(float scalar) const        { return { x / scalar, y / scalar, z / scalar }; }
+        TEVector operator-() const                    { return { -x, -y, -z }; }
+
+        TEVector& operator+=(const TEVector& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; return *this; }
+        TEVector& operator-=(const TEVector& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; return *this; }
+        TEVector& operator*=(float scalar)        { x *= scalar; y *= scalar; z *= scalar; return *this; }
+        TEVector& operator/=(float scalar)        { x /= scalar; y /= scalar; z /= scalar; return *this; }
+
+        bool operator==(const TEVector& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
+        bool operator!=(const TEVector& rhs) const { return !(*this == rhs); }
+
+        bool operator<(const TEVector& rhs) const  { return LengthSquared() < rhs.LengthSquared(); }
+        bool operator<=(const TEVector& rhs) const { return LengthSquared() <= rhs.LengthSquared(); }
+        bool operator>(const TEVector& rhs) const  { return LengthSquared() > rhs.LengthSquared(); }
+        bool operator>=(const TEVector& rhs) const { return LengthSquared() >= rhs.LengthSquared(); }
+    };
+
+    inline TEVector operator*(float scalar, const TEVector& v) { return v * scalar; }
+
+    inline float Distance(const TEVector& a, const TEVector& b) {
+        float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+        return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    inline float DistanceSquared(const TEVector& a, const TEVector& b) {
+        float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+        return dx * dx + dy * dy + dz * dz;
+    }
 
     // ===== TEVector4 =====
     struct TEVector4 {
@@ -71,9 +144,20 @@ namespace TE {
 
         TEVector4 operator+(const TEVector4& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
         TEVector4 operator-(const TEVector4& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }
-        TEVector4 operator*(float scalar) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
-        TEVector4 operator/(float scalar) const { return { x / scalar, y / scalar, z / scalar, w / scalar }; }
+        TEVector4 operator*(float scalar) const         { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
+        TEVector4 operator/(float scalar) const         { return { x / scalar, y / scalar, z / scalar, w / scalar }; }
+        TEVector4 operator-() const                     { return { -x, -y, -z, -w }; }
+
+        TEVector4& operator+=(const TEVector4& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
+        TEVector4& operator-=(const TEVector4& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; return *this; }
+        TEVector4& operator*=(float scalar)         { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
+        TEVector4& operator/=(float scalar)         { x /= scalar; y /= scalar; z /= scalar; w /= scalar; return *this; }
+
+        bool operator==(const TEVector4& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
+        bool operator!=(const TEVector4& rhs) const { return !(*this == rhs); }
     };
+
+    inline TEVector4 operator*(float scalar, const TEVector4& v) { return v * scalar; }
 
     // ===== Forward Declare =====
     class TEQuat;
@@ -86,8 +170,7 @@ namespace TE {
         float Roll  = 0.0f;
 
         TERotator() = default;
-        TERotator(float pitch, float yaw, float roll)
-            : Pitch(pitch), Yaw(yaw), Roll(roll) {}
+        TERotator(float pitch, float yaw, float roll) : Pitch(pitch), Yaw(yaw), Roll(roll) {}
 
         void AddYaw(float d)   { Yaw += d; }
         void AddPitch(float d) { Pitch += d; }
@@ -101,6 +184,14 @@ namespace TE {
             return ss.str();
         }
 
+        bool operator==(const TERotator& other) const {
+            return Pitch == other.Pitch && Yaw == other.Yaw && Roll == other.Roll;
+        }
+
+        bool operator!=(const TERotator& other) const {
+            return !(*this == other);
+        }
+
         TEQuat ToQuat() const;
     };
 
@@ -112,9 +203,10 @@ namespace TE {
         TEQuat() : Quaternion(1, 0, 0, 0) {}
         TEQuat(const glm::quat& q) : Quaternion(q) {}
 
-        glm::mat4 ToMatrix() const {
-            return glm::mat4(Quaternion);
-        }
+        glm::mat4 ToMatrix() const { return glm::mat4(Quaternion); }
+
+        bool operator==(const TEQuat& other) const { return Quaternion == other.Quaternion; }
+        bool operator!=(const TEQuat& other) const { return !(*this == other); }
     };
 
     inline TEQuat TERotator::ToQuat() const {
@@ -134,6 +226,9 @@ namespace TE {
         TEScale(const glm::vec3& s) : Scale(s) {}
 
         glm::vec3 Get() const { return Scale; }
+
+        bool operator==(const TEScale& other) const { return Scale == other.Scale; }
+        bool operator!=(const TEScale& other) const { return !(*this == other); }
     };
 
     // ===== TETransform =====
@@ -153,9 +248,18 @@ namespace TE {
                 glm::radians(Rotation.Roll)
             );
             glm::mat4 scale = glm::scale(glm::mat4(1.0f), Scale.Get());
-
             return translation * rotation * scale;
+        }
+
+        bool operator==(const TETransform& other) const {
+            return Position == other.Position &&
+                   Rotation == other.Rotation &&
+                   Scale == other.Scale;
+        }
+
+        bool operator!=(const TETransform& other) const {
+            return !(*this == other);
         }
     };
 
-}
+} 

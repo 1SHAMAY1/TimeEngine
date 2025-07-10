@@ -11,6 +11,8 @@ E:\TimeEngine\Engine\src\Camera\CameraController.cpp;E:\TimeEngine\Bin-Intermedi
 E:\TimeEngine\Engine\src\Camera\OrthographicCamera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\OrthographicCamera.obj
 E:\TimeEngine\Engine\src\Camera\PerspectiveCamera.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\PerspectiveCamera.obj
 E:\TimeEngine\Engine\src\Core\Application.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Application.obj
+E:\TimeEngine\Engine\src\Core\Collision\BroadPhase.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\BroadPhase.obj
+E:\TimeEngine\Engine\src\Core\Collision\CollisionSystem.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\CollisionSystem.obj
 E:\TimeEngine\Engine\src\Core\Core.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Core.obj
 E:\TimeEngine\Engine\src\Core\EngineSettings.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\EngineSettings.obj
 E:\TimeEngine\Engine\src\Core\Input\Input.cpp;E:\TimeEngine\Bin-Intermediate\Debug-windows-x86_64\Engine\Input.obj

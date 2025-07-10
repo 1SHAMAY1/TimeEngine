@@ -3,6 +3,9 @@
 #include "Renderer/IndexBuffer.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Core/Log.h"
+#include <glm/glm.hpp>
+#include "Renderer/ShaderLibrary.hpp"
+#include "Renderer/TEColor.hpp"
 
 namespace TE {
 
@@ -15,7 +18,7 @@ namespace TE {
     }
 
     void TestTriangleLayer::OnAttach() {
- // Initialize RenderCommand system
+        // Initialize RenderCommand system
         RenderCommand::Init();
 
         // Create Vertex Array
@@ -26,7 +29,7 @@ namespace TE {
             0.0f,  0.5f, 0.0f,  // Top
            -0.5f, -0.5f, 0.0f,  // Bottom Left
             0.5f, -0.5f, 0.0f   // Bottom Right
-       };
+        };
 
         // Create Vertex Buffer
         m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
@@ -34,7 +37,6 @@ namespace TE {
         // Bind VAO and set vertex attributes
         m_VertexArray->Bind();
         m_VertexBuffer->Bind();
-
         m_VertexArray->AddVertexBuffer(m_VertexBuffer.get());
 
         // Create Index Buffer
@@ -42,40 +44,12 @@ namespace TE {
         m_IndexBuffer.reset(IndexBuffer::Create(indices, 3));
 
         // Attach IBO to VAO
-        m_VertexArray->Bind();          // Must bind VAO first
-        m_IndexBuffer->Bind();          // Then bind IBO while VAO is active
+        m_VertexArray->Bind();
+        m_IndexBuffer->Bind();
         m_VertexArray->SetIndexBuffer(m_IndexBuffer.get());
 
-        // Create Shader
-        std::string vertexSrc = R"(
-            #version 330 core
-            layout(location = 0) in vec3 a_Position;
-            out vec3 v_Position;
-            void main() {
-                v_Position = a_Position;
-                gl_Position = vec4(a_Position, 1.0);
-            }
-        )";
-
-        std::string fragmentSrc = R"(
-            #version 330 core
-            in vec3 v_Position;
-            out vec4 FragColor;
-            void main() {
-                // Convert from [-0.5, 0.5] to [0, 1]
-                vec2 coord = v_Position.xy + vec2(0.5);
-                float dist = length(coord - vec2(0.5));
-                
-                // Low alpha at center (dist = 0), high at edge (dist ≈ 0.7)
-                float alpha = smoothstep(0.1, 0.5, dist);
-                
-                vec3 color = vec3(coord.x, 1.0 - coord.y, 0.6);
-                FragColor = vec4(color, alpha);
-            }
-        )";
-
-        m_Shader.reset(Shader::Create(vertexSrc, fragmentSrc));
-
+        // Use ShaderLibrary for shader
+        m_Shader = ShaderLibrary::CreateColorShader();
     }
 
     void TestTriangleLayer::OnDetach() {
@@ -83,6 +57,14 @@ namespace TE {
 
     void TestTriangleLayer::OnUpdate() {
         m_Shader->Bind();
+        // Set color using TEColor
+        ShaderLibrary::SetColor(m_Shader.get(), TEColor::Red());
+        // Set transform (identity)
+        glm::mat4 transform = glm::mat4(1.0f);
+        ShaderLibrary::SetTransform(m_Shader.get(), transform);
+        // Set view-projection (orthographic for 2D)
+        glm::mat4 viewProj = ShaderLibrary::CreateOrthographicMatrix(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+        ShaderLibrary::SetViewProjection(m_Shader.get(), viewProj);
         m_VertexArray->Bind();
         RenderCommand::DrawIndexed(m_VertexArray->GetRendererID(), m_IndexBuffer->GetCount());
     }
