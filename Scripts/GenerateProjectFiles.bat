@@ -50,14 +50,14 @@ cd "%ROOT_DIR%\Logger\Customizable_Logger"
 if not exist build mkdir build
 cd build
 
-cmake .. -G "Visual Studio 17 2022" -A x64
+cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_C_FLAGS="/Z7" -DCMAKE_CXX_FLAGS="/Z7"
 if %errorlevel% neq 0 (
     echo [✖ Logger CMake configuration failed.]
     pause
     exit /b 1
 )
 
-cmake --build . --config Debug
+cmake --build . --config Debug -- /m:1
 if %errorlevel% neq 0 (
     echo [✖ Logger build failed.]
     pause
@@ -71,14 +71,14 @@ cd "%ROOT_DIR%\Vendor\GLFW"
 if not exist build mkdir build
 cd build
 
-cmake ../glfw -G "Visual Studio 17 2022" -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF
+cmake ../glfw -G "Visual Studio 17 2022" -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="/Z7 /FS" -DCMAKE_CXX_FLAGS="/Z7 /FS"
 if %errorlevel% neq 0 (
     echo [✖ GLFW CMake configuration failed.]
     pause
     exit /b 1
 )
 
-cmake --build . --config Debug
+cmake --build . --config Debug -- /m:1
 if %errorlevel% neq 0 (
     echo [✖ GLFW build failed.]
     pause

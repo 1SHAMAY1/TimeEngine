@@ -1,0 +1,25 @@
+# Binaries
+Bin/
+Bin-Intermediate/
+build/
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.exp
+*.obj
+*.idb
+*.tlog
+
+# Visual Studio
+.vs/
+*.user
+*.vcxproj.user
+
+# Mac
+.DS_Store
+
+# Images
+*.png
+*.jpg

@@ -16,11 +16,26 @@
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Physics">
+      <UniqueIdentifier>{539A31BD-BF5C-6547-080D-F4D3740E3E25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Project">
+      <UniqueIdentifier>{273BCBD3-93FD-FE5D-DCAD-8DEA48AFD73B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scene">
+      <UniqueIdentifier>{BED77426-2A0F-BDBD-3319-21E19FCFE3B6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Core\Time">
       <UniqueIdentifier>{1F771BC3-0B71-4415-F4DD-DA25E076AA81}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\ImGUI">
       <UniqueIdentifier>{93C3C060-7FA7-81B6-E807-7C09D40A6C38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{5DFAB97B-C966-7576-925A-0DD4FE8597DE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform\Windows">
+      <UniqueIdentifier>{97B15682-03CA-3DAC-CC76-CD45384ED245}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{AF019756-1B6E-5251-E461-EAAE508D74B9}</UniqueIdentifier>
@@ -49,17 +64,29 @@
     <Filter Include="Header Files\Core\Particle">
       <UniqueIdentifier>{3C9CAF5E-28AC-5B2F-9165-C04D7D944AC8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Physics">
+      <UniqueIdentifier>{8B388259-F7FA-B5E3-40AB-4470ACAC8EC1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Project">
+      <UniqueIdentifier>{5FD91B70-CB9B-4FFA-144C-DE86804D28D8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\Core\Scene">
       <UniqueIdentifier>{F687180B-62BF-60A2-6BC9-C4C5D77F879B}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Core\Threading">
       <UniqueIdentifier>{9E15D458-0A23-023F-9309-FE29FF15CEF5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameFrameWork">
+      <UniqueIdentifier>{F8A3361F-E4B3-E2EF-4D6D-470E399CD188}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\ImGUI">
       <UniqueIdentifier>{CB708F05-B754-505B-20B5-4AAE0CB83ADD}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Layers">
+      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
@@ -72,6 +99,9 @@
     </Filter>
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{643AB255-50C9-3B1F-F9E7-4F1AE5554CC5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{41016D06-2DE5-2D5C-9645-28AF824818DE}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
@@ -171,7 +201,40 @@
     <ClInclude Include="Include\Core\Particle\ParticleUpdater.hpp">
       <Filter>Header Files\Core\Particle</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Physics\PhysicsWorld.hpp">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Physics\RigidBodyComponent.hpp">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Project\Project.hpp">
+      <Filter>Header Files\Core\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Project\ProjectSerializer.hpp">
+      <Filter>Header Files\Core\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\2DPlayer.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\2DPlayerController.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\AnimatedSpriteComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\Scene\EntityManager.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\GameManager.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\PlayerBase.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\PlayerControllerBase.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\SpriteComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Threading\TaskSystem.hpp">
@@ -183,6 +246,18 @@
     <ClInclude Include="Include\Core\Threading\ThreadingMacros.hpp">
       <Filter>Header Files\Core\Threading</Filter>
     </ClInclude>
+    <ClInclude Include="Include\GameFrameWork\TComponent.hpp">
+      <Filter>Header Files\GameFrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameFrameWork\TFunctionLibrary.hpp">
+      <Filter>Header Files\GameFrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameFrameWork\TObject.hpp">
+      <Filter>Header Files\GameFrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameFrameWork\TStandardGameLibrary.hpp">
+      <Filter>Header Files\GameFrameWork</Filter>
+    </ClInclude>
     <ClInclude Include="Include\ImGUI\ImGuiLayer.hpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
@@ -190,37 +265,43 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\CameraLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EngineSettingsButtonLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EngineSettingsLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingButtonLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingWindowManager.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Layers\ProjectHubLayer.hpp">
+      <Filter>Header Files\Layers</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Editor Layer</Filter>
+      <Filter>Header Files\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Framebuffer.hpp">
+      <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsAPI.hpp">
       <Filter>Header Files\Renderer</Filter>
@@ -245,6 +326,9 @@
     </ClInclude>
     <ClInclude Include="Include\Renderer\MaterialLibrary.hpp">
       <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\OpenGL\OpenGLFramebuffer.hpp">
+      <Filter>Header Files\Renderer\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\OpenGL\OpenGLIndexBuffer.hpp">
       <Filter>Header Files\Renderer\OpenGL</Filter>
@@ -302,6 +386,9 @@
     </ClInclude>
     <ClInclude Include="Include\Utility\MathUtils.hpp">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Utils\PlatformUtils.hpp">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Include\Window\IWindow.hpp">
       <Filter>Header Files\Window</Filter>
@@ -422,11 +509,26 @@
     <ClCompile Include="src\Core\Layers\ProfilingLayer.cpp">
       <Filter>Editor Layer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Layers\ProjectHubLayer.cpp">
+      <Filter>Editor Layer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
       <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Physics\PhysicsWorld.cpp">
+      <Filter>Source Files\Core\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Project\Project.cpp">
+      <Filter>Source Files\Core\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Project\ProjectSerializer.cpp">
+      <Filter>Source Files\Core\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Scene\EntityManager.cpp">
+      <Filter>Source Files\Core\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Time\Ticker.cpp">
       <Filter>Source Files\Core\Time</Filter>
@@ -436,6 +538,9 @@
     </ClCompile>
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp">
       <Filter>Source Files\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp">
+      <Filter>Source Files\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\IndexBuffer.cpp">
       <Filter>Source Files\Renderer</Filter>
@@ -457,6 +562,9 @@
     </ClCompile>
     <ClCompile Include="src\Renderer\MaterialLibrary.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLFramebuffer.cpp">
+      <Filter>Source Files\Renderer\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\OpenGL\OpenGLIndexBuffer.cpp">
       <Filter>Source Files\Renderer\OpenGL</Filter>
@@ -495,6 +603,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\TEColor.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Texture.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\VertexArray.cpp">

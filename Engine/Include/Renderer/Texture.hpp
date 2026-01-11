@@ -10,6 +10,8 @@ namespace TE {
 		void Bind(uint32_t slot = 0) const;
 		void Unbind() const;
 
+		uint32_t GetRendererID() const { return m_RendererID; }
+
 	private:
 		uint32_t m_RendererID;
 		std::string m_FilePath;

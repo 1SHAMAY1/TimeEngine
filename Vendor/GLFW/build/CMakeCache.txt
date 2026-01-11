@@ -25,8 +25,11 @@ CMAKE_AR:FILEPATH=D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.
 // else will be ignored.
 CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;MinSizeRel;RelWithDebInfo
 
+//No help, variable specified on the command line.
+CMAKE_CXX_FLAGS:UNINITIALIZED=/Z7 /FS
+
 //Flags used by the C compiler during all build types.
-CMAKE_C_FLAGS:STRING=/DWIN32 /D_WINDOWS
+CMAKE_C_FLAGS:STRING=/Z7 /FS
 
 //Flags used by the C compiler during DEBUG builds.
 CMAKE_C_FLAGS_DEBUG:STRING=/Ob0 /Od /RTC1

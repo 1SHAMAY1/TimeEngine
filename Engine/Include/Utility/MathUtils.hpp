@@ -70,6 +70,10 @@ namespace TE {
 
     inline TEVector2 operator*(float scalar, const TEVector2& v) { return v * scalar; }
 
+    inline float Dot(const TEVector2& a, const TEVector2& b) {
+        return a.x * b.x + a.y * b.y;
+    }
+
     inline float Distance(const TEVector2& a, const TEVector2& b) {
         float dx = a.x - b.x;
         float dy = a.y - b.y;

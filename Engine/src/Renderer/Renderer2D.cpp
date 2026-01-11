@@ -29,10 +29,10 @@ void Renderer2D::Flush() {
 void Renderer2D::SubmitQuad(const glm::vec2& position, const glm::vec2& size, const std::shared_ptr<Material>& material) {
     float x = position.x, y = position.y, w = size.x, h = size.y;
     float vertices[] = {
-        x,     y,     0.0f,
-        x + w, y,     0.0f,
-        x + w, y + h, 0.0f,
-        x,     y + h, 0.0f
+        0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
     };
     uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
     auto vao = std::shared_ptr<VertexArray>(VertexArray::Create());

@@ -2,6 +2,8 @@
 
 #include "PreRequisites.h"
 #include "CustomizableLogger.hpp"
+#include <string>
+#include <sstream>
 
 namespace TE
 {
@@ -14,27 +16,37 @@ namespace TE
         inline static CustomizableLogger& GetClientLogger() { return *s_ClientLogger; }
 
     private:
-        // DO NOT export STL members; no TE_API here to avoid warning C4251
         static std::unique_ptr<CustomizableLogger> s_CoreLogger;
         static std::unique_ptr<CustomizableLogger> s_ClientLogger;
     };
 }
 
-// ======= Logging Macros using your logger =======
+// Simple variadic string joiner for logs to avoid fmt dependency issues
+template<typename... Args>
+std::string LogFormat(Args&&... args) {
+    std::ostringstream ss;
+    (ss << ... << args); 
+    return ss.str();
+}
 
-// -------- Core Logger Macros with File/Line --------
-#define TE_CORE_INFO(msg)      ::TE::Log::GetCoreLogger().log("Core", msg, "INFO",     __FILE__, __LINE__)
-#define TE_CORE_WARN(msg)      ::TE::Log::GetCoreLogger().log("Core", msg, "WARNING",  __FILE__, __LINE__)
-#define TE_CORE_ERROR(msg)     ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR",    __FILE__, __LINE__)
-#define TE_CORE_DEBUG(msg)     ::TE::Log::GetCoreLogger().log("Core", msg, "DEBUG",    __FILE__, __LINE__)
-#define TE_CORE_CRITICAL(msg)  ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL", __FILE__, __LINE__)
+// Support single argument (msg only)
+#define TE_CORE_INFO_1(msg)      ::TE::Log::GetCoreLogger().log("Core", msg, "INFO",     __FILE__, __LINE__)
+#define TE_CORE_WARN_1(msg)      ::TE::Log::GetCoreLogger().log("Core", msg, "WARNING",  __FILE__, __LINE__)
+#define TE_CORE_ERROR_1(msg)     ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR",    __FILE__, __LINE__)
+#define TE_CORE_CRITICAL_1(msg)  ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL", __FILE__, __LINE__)
+
+// Support variadic (msg + args) - simplified to just stream them
+#define TE_CORE_INFO(...)      ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "INFO",     __FILE__, __LINE__)
+#define TE_CORE_WARN(...)      ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "WARNING",  __FILE__, __LINE__)
+#define TE_CORE_ERROR(...)     ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "ERROR",    __FILE__, __LINE__)
+#define TE_CORE_DEBUG(...)     ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "DEBUG",    __FILE__, __LINE__)
+#define TE_CORE_CRITICAL(...)  ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "CRITICAL", __FILE__, __LINE__)
+
 #define TE_CORE_ASSERT(x, msg) if (!(x)) { TE_CORE_CRITICAL(msg); __debugbreak(); }
 
-
-// -------- Client Logger Macros with File/Line --------
-#define TE_CLIENT_INFO(msg)     ::TE::Log::GetClientLogger().log("Client", msg, "INFO",     __FILE__, __LINE__)
-#define TE_CLIENT_WARN(msg)     ::TE::Log::GetClientLogger().log("Client", msg, "WARNING",  __FILE__, __LINE__)
-#define TE_CLIENT_ERROR(msg)    ::TE::Log::GetClientLogger().log("Client", msg, "ERROR",    __FILE__, __LINE__)
-#define TE_CLIENT_DEBUG(msg)    ::TE::Log::GetClientLogger().log("Client", msg, "DEBUG",    __FILE__, __LINE__)
-#define TE_CLIENT_CRITICAL(msg) ::TE::Log::GetClientLogger().log("Client", msg, "CRITICAL", __FILE__, __LINE__)
+#define TE_CLIENT_INFO(...)     ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "INFO",     __FILE__, __LINE__)
+#define TE_CLIENT_WARN(...)     ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "WARNING",  __FILE__, __LINE__)
+#define TE_CLIENT_ERROR(...)    ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "ERROR",    __FILE__, __LINE__)
+#define TE_CLIENT_DEBUG(...)    ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "DEBUG",    __FILE__, __LINE__)
+#define TE_CLIENT_CRITICAL(...) ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "CRITICAL", __FILE__, __LINE__)
 #define TE_CLIENT_ASSERT(x, msg) if (!(x)) { TE_CLIENT_CRITICAL(msg); __debugbreak(); }

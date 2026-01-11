@@ -16,6 +16,7 @@ IncludeDir["GLFW"]           = "Vendor/GLFW/glfw/include"
 IncludeDir["GLAD"]           = "Vendor/GLAD/include"
 IncludeDir["ImGui"]          = "Vendor/IMGUI/ImGui"
 IncludeDir["GLM"]            = "Vendor/GLM"
+IncludeDir["stb_image"]      = "Vendor/stb_image"
 
 -- ========== Vendor Group ==========
 
@@ -54,7 +55,10 @@ project "Engine"
         -- Editor & Profiling Layers
         "Engine/Include/Layers/**.hpp",
         "Engine/src/Core/Layers/**.cpp",
-        "Engine/src/Layers/**.cpp",        
+        "Engine/src/Layers/**.cpp",
+        "Engine/src/Core/Project/**.cpp",
+        "Engine/Include/Core/Project/**.hpp",
+        "Engine/src/Platform/Windows/**.cpp",        
         
         -- GLAD
         "Vendor/GLAD/src/glad.c",
@@ -93,7 +97,8 @@ project "Engine"
         "%{IncludeDir.Logger}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
-        "%{IncludeDir.GLM}"
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.stb_image}"
     }
 
     libdirs {
@@ -109,7 +114,7 @@ project "Engine"
 
     dependson { "Logger" }
 
-    buildoptions { "/utf-8" }
+    buildoptions { "/utf-8", "/FS" }
 
     filter "system:windows"
         systemversion "latest"
@@ -136,6 +141,9 @@ project "Engine"
     filter "configurations:Dist"
         defines { "TE_DIST" }
         optimize "On"
+        
+    filter "system:windows"
+        icon "Resources/Branding/Icon.ico"
 
 -- ========== Sandbox Project ==========
 

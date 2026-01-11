@@ -7,7 +7,7 @@ events:
       - "D:/CMake/share/cmake-4.1/Modules/CMakeDetermineSystem.cmake:212 (message)"
       - "CMakeLists.txt:3 (project)"
     message: |
-      The system is: Windows - 10.0.26100 - AMD64
+      The system is: Windows - 10.0.26200 - AMD64
   -
     kind: "find-v1"
     backtrace:
@@ -35,6 +35,7 @@ events:
     found: "D:/CMake/share/cmake-4.1/Modules/CMakeCCompilerId.c.in"
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -52,13 +53,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
   -
     kind: "message-v1"
     backtrace:
@@ -69,13 +75,13 @@ events:
     message: |
       Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
       Compiler:  
-      Build flags: 
+      Build flags: /Z7;/FS
       Id flags:  
       
       The output was:
       0
       MSBuild version 17.12.12+1cce77968 for .NET Framework
-      Build started 7/10/2025 4:31:39 PM.
+      Build started 12/30/2025 10:34:07 AM.
       
       Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\4.1.0-rc1\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -104,7 +110,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.85
+      Time Elapsed 00:00:00.78
       
       
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -137,6 +143,7 @@ events:
       - "link"
     candidate_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
       - "C:/Python313/Scripts/"
       - "C:/Python313/"
       - "C:/Windows/System32/"
@@ -154,18 +161,24 @@ events:
       - "C:/ProgramData/chocolatey/bin/"
       - "D:/GitCLI/"
       - "D:/CMake/bin/"
+      - "C:/Program Files (x86)/IVI/Bin/"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/"
       - "C:/Users/shank/AppData/Local/GitHubDesktop/bin/"
       - "D:/VSCode/Microsoft VS Code/bin/"
       - "C:/Users/shank/.dotnet/tools/"
       - "E:/Rider/bin/"
       - "C:/Users/shank/AppData/Roaming/npm/"
-      - "E:/cursor/resources/app/bin/"
+      - "E:/Cursor/resources/app/bin/"
+      - "C:/Users/shank/.diversion/bin/"
+      - "D:/Antigravity/bin/"
     searched_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/link.com"
     found: "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/link.exe"
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -183,13 +196,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -213,6 +231,7 @@ events:
       - "lld-link"
     candidate_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
       - "C:/Python313/Scripts/"
       - "C:/Python313/"
       - "C:/Windows/System32/"
@@ -230,17 +249,25 @@ events:
       - "C:/ProgramData/chocolatey/bin/"
       - "D:/GitCLI/"
       - "D:/CMake/bin/"
+      - "C:/Program Files (x86)/IVI/Bin/"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/"
       - "C:/Users/shank/AppData/Local/GitHubDesktop/bin/"
       - "D:/VSCode/Microsoft VS Code/bin/"
       - "C:/Users/shank/.dotnet/tools/"
       - "E:/Rider/bin/"
       - "C:/Users/shank/AppData/Roaming/npm/"
-      - "E:/cursor/resources/app/bin/"
+      - "E:/Cursor/resources/app/bin/"
+      - "C:/Users/shank/.diversion/bin/"
+      - "D:/Antigravity/bin/"
     searched_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/lld-link.com"
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/lld-link.exe"
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/lld-link"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/lld-link.com"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/lld-link.exe"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/lld-link"
       - "C:/Python313/Scripts/lld-link.com"
       - "C:/Python313/Scripts/lld-link.exe"
       - "C:/Python313/Scripts/lld-link"
@@ -292,6 +319,15 @@ events:
       - "D:/CMake/bin/lld-link.com"
       - "D:/CMake/bin/lld-link.exe"
       - "D:/CMake/bin/lld-link"
+      - "C:/Program Files (x86)/IVI/Bin/lld-link.com"
+      - "C:/Program Files (x86)/IVI/Bin/lld-link.exe"
+      - "C:/Program Files (x86)/IVI/Bin/lld-link"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/lld-link.com"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/lld-link.exe"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/lld-link"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/lld-link.com"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/lld-link.exe"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/lld-link"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/lld-link.com"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/lld-link.exe"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/lld-link"
@@ -310,12 +346,19 @@ events:
       - "C:/Users/shank/AppData/Roaming/npm/lld-link.com"
       - "C:/Users/shank/AppData/Roaming/npm/lld-link.exe"
       - "C:/Users/shank/AppData/Roaming/npm/lld-link"
-      - "E:/cursor/resources/app/bin/lld-link.com"
-      - "E:/cursor/resources/app/bin/lld-link.exe"
-      - "E:/cursor/resources/app/bin/lld-link"
+      - "E:/Cursor/resources/app/bin/lld-link.com"
+      - "E:/Cursor/resources/app/bin/lld-link.exe"
+      - "E:/Cursor/resources/app/bin/lld-link"
+      - "C:/Users/shank/.diversion/bin/lld-link.com"
+      - "C:/Users/shank/.diversion/bin/lld-link.exe"
+      - "C:/Users/shank/.diversion/bin/lld-link"
+      - "D:/Antigravity/bin/lld-link.com"
+      - "D:/Antigravity/bin/lld-link.exe"
+      - "D:/Antigravity/bin/lld-link"
     found: false
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -333,13 +376,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -361,6 +409,7 @@ events:
       - "link"
     candidate_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
       - "C:/Python313/Scripts/"
       - "C:/Python313/"
       - "C:/Windows/System32/"
@@ -378,18 +427,24 @@ events:
       - "C:/ProgramData/chocolatey/bin/"
       - "D:/GitCLI/"
       - "D:/CMake/bin/"
+      - "C:/Program Files (x86)/IVI/Bin/"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/"
       - "C:/Users/shank/AppData/Local/GitHubDesktop/bin/"
       - "D:/VSCode/Microsoft VS Code/bin/"
       - "C:/Users/shank/.dotnet/tools/"
       - "E:/Rider/bin/"
       - "C:/Users/shank/AppData/Roaming/npm/"
-      - "E:/cursor/resources/app/bin/"
+      - "E:/Cursor/resources/app/bin/"
+      - "C:/Users/shank/.diversion/bin/"
+      - "D:/Antigravity/bin/"
     searched_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/link.com"
     found: "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/link.exe"
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -407,13 +462,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -435,6 +495,7 @@ events:
       - "mt"
     candidate_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
       - "C:/Python313/Scripts/"
       - "C:/Python313/"
       - "C:/Windows/System32/"
@@ -452,17 +513,25 @@ events:
       - "C:/ProgramData/chocolatey/bin/"
       - "D:/GitCLI/"
       - "D:/CMake/bin/"
+      - "C:/Program Files (x86)/IVI/Bin/"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/"
       - "C:/Users/shank/AppData/Local/GitHubDesktop/bin/"
       - "D:/VSCode/Microsoft VS Code/bin/"
       - "C:/Users/shank/.dotnet/tools/"
       - "E:/Rider/bin/"
       - "C:/Users/shank/AppData/Roaming/npm/"
-      - "E:/cursor/resources/app/bin/"
+      - "E:/Cursor/resources/app/bin/"
+      - "C:/Users/shank/.diversion/bin/"
+      - "D:/Antigravity/bin/"
     searched_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/mt.com"
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/mt.exe"
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/mt"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/mt.com"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/mt.exe"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/mt"
       - "C:/Python313/Scripts/mt.com"
       - "C:/Python313/Scripts/mt.exe"
       - "C:/Python313/Scripts/mt"
@@ -514,6 +583,15 @@ events:
       - "D:/CMake/bin/mt.com"
       - "D:/CMake/bin/mt.exe"
       - "D:/CMake/bin/mt"
+      - "C:/Program Files (x86)/IVI/Bin/mt.com"
+      - "C:/Program Files (x86)/IVI/Bin/mt.exe"
+      - "C:/Program Files (x86)/IVI/Bin/mt"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/mt.com"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/mt.exe"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/mt"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/mt.com"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/mt.exe"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/mt"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/mt.com"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/mt.exe"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/mt"
@@ -532,12 +610,19 @@ events:
       - "C:/Users/shank/AppData/Roaming/npm/mt.com"
       - "C:/Users/shank/AppData/Roaming/npm/mt.exe"
       - "C:/Users/shank/AppData/Roaming/npm/mt"
-      - "E:/cursor/resources/app/bin/mt.com"
-      - "E:/cursor/resources/app/bin/mt.exe"
-      - "E:/cursor/resources/app/bin/mt"
+      - "E:/Cursor/resources/app/bin/mt.com"
+      - "E:/Cursor/resources/app/bin/mt.exe"
+      - "E:/Cursor/resources/app/bin/mt"
+      - "C:/Users/shank/.diversion/bin/mt.com"
+      - "C:/Users/shank/.diversion/bin/mt.exe"
+      - "C:/Users/shank/.diversion/bin/mt"
+      - "D:/Antigravity/bin/mt.com"
+      - "D:/Antigravity/bin/mt.exe"
+      - "D:/Antigravity/bin/mt"
     found: false
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -555,13 +640,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -583,6 +673,7 @@ events:
       - "lib"
     candidate_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
       - "C:/Python313/Scripts/"
       - "C:/Python313/"
       - "C:/Windows/System32/"
@@ -600,18 +691,24 @@ events:
       - "C:/ProgramData/chocolatey/bin/"
       - "D:/GitCLI/"
       - "D:/CMake/bin/"
+      - "C:/Program Files (x86)/IVI/Bin/"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/"
       - "C:/Users/shank/AppData/Local/GitHubDesktop/bin/"
       - "D:/VSCode/Microsoft VS Code/bin/"
       - "C:/Users/shank/.dotnet/tools/"
       - "E:/Rider/bin/"
       - "C:/Users/shank/AppData/Roaming/npm/"
-      - "E:/cursor/resources/app/bin/"
+      - "E:/Cursor/resources/app/bin/"
+      - "C:/Users/shank/.diversion/bin/"
+      - "D:/Antigravity/bin/"
     searched_directories:
       - "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/lib.com"
     found: "D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/lib.exe"
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -629,13 +726,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -659,6 +761,7 @@ events:
     names:
       - "rc"
     candidate_directories:
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
       - "C:/Python313/Scripts/"
       - "C:/Python313/"
       - "C:/Windows/System32/"
@@ -676,13 +779,18 @@ events:
       - "C:/ProgramData/chocolatey/bin/"
       - "D:/GitCLI/"
       - "D:/CMake/bin/"
+      - "C:/Program Files (x86)/IVI/Bin/"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/"
       - "C:/Users/shank/AppData/Local/GitHubDesktop/bin/"
       - "D:/VSCode/Microsoft VS Code/bin/"
       - "C:/Users/shank/.dotnet/tools/"
       - "E:/Rider/bin/"
       - "C:/Users/shank/AppData/Roaming/npm/"
-      - "E:/cursor/resources/app/bin/"
+      - "E:/Cursor/resources/app/bin/"
+      - "C:/Users/shank/.diversion/bin/"
+      - "D:/Antigravity/bin/"
       - "C:/Program Files/bin/"
       - "C:/Program Files/sbin/"
       - "C:/Program Files/"
@@ -696,6 +804,9 @@ events:
       - "C:/Program Files/GLFW/sbin/"
       - "C:/Program Files/GLFW/"
     searched_directories:
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/rc.com"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/rc.exe"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/rc"
       - "C:/Python313/Scripts/rc.com"
       - "C:/Python313/Scripts/rc.exe"
       - "C:/Python313/Scripts/rc"
@@ -747,6 +858,15 @@ events:
       - "D:/CMake/bin/rc.com"
       - "D:/CMake/bin/rc.exe"
       - "D:/CMake/bin/rc"
+      - "C:/Program Files (x86)/IVI/Bin/rc.com"
+      - "C:/Program Files (x86)/IVI/Bin/rc.exe"
+      - "C:/Program Files (x86)/IVI/Bin/rc"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/rc.com"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/rc.exe"
+      - "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/rc"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/rc.com"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/rc.exe"
+      - "C:/PROGRA~2/IVIFOU~1/VISA/WinNT/Bin/rc"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/rc.com"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/rc.exe"
       - "C:/Users/shank/AppData/Local/Microsoft/WindowsApps/rc"
@@ -765,9 +885,15 @@ events:
       - "C:/Users/shank/AppData/Roaming/npm/rc.com"
       - "C:/Users/shank/AppData/Roaming/npm/rc.exe"
       - "C:/Users/shank/AppData/Roaming/npm/rc"
-      - "E:/cursor/resources/app/bin/rc.com"
-      - "E:/cursor/resources/app/bin/rc.exe"
-      - "E:/cursor/resources/app/bin/rc"
+      - "E:/Cursor/resources/app/bin/rc.com"
+      - "E:/Cursor/resources/app/bin/rc.exe"
+      - "E:/Cursor/resources/app/bin/rc"
+      - "C:/Users/shank/.diversion/bin/rc.com"
+      - "C:/Users/shank/.diversion/bin/rc.exe"
+      - "C:/Users/shank/.diversion/bin/rc"
+      - "D:/Antigravity/bin/rc.com"
+      - "D:/Antigravity/bin/rc.exe"
+      - "D:/Antigravity/bin/rc"
       - "C:/Program Files/bin/rc.com"
       - "C:/Program Files/bin/rc.exe"
       - "C:/Program Files/bin/rc"
@@ -807,6 +933,7 @@ events:
     found: false
     search_context:
       ENV{PATH}:
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
         - "C:\\Python313\\Scripts\\"
         - "C:\\Python313\\"
         - "C:\\WINDOWS\\system32"
@@ -824,13 +951,18 @@ events:
         - "C:\\ProgramData\\chocolatey\\bin"
         - "D:\\GitCLI\\"
         - "D:\\CMake\\bin"
+        - "C:\\Program Files (x86)\\IVI\\bin"
+        - "C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin"
+        - "C:\\PROGRA~2\\IVIFOU~1\\VISA\\WinNT\\Bin"
         - "C:\\Users\\shank\\AppData\\Local\\Microsoft\\WindowsApps"
         - "C:\\Users\\shank\\AppData\\Local\\GitHubDesktop\\bin"
         - "D:\\VSCode\\Microsoft VS Code\\bin"
         - "C:\\Users\\shank\\.dotnet\\tools"
         - "E:\\Rider\\bin"
         - "C:\\Users\\shank\\AppData\\Roaming\\npm"
-        - "E:\\cursor\\resources\\app\\bin"
+        - "E:\\Cursor\\resources\\app\\bin"
+        - "C:\\Users\\shank\\.diversion\\bin"
+        - "D:\\Antigravity\\bin"
       CMAKE_INSTALL_PREFIX: "C:/Program Files/GLFW"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "C:/Program Files"
@@ -846,50 +978,50 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-bsl1ge"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-bsl1ge"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-uviqvc"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-uviqvc"
     cmakeVariables:
-      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS: "/Z7 /FS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
       CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
     buildResult:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-bsl1ge'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-uviqvc'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_0fcfc.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_f67c0.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/10/2025 4:31:40 PM.
+        Build started 12/30/2025 10:34:08 AM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-bsl1ge\\cmTC_0fcfc.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-uviqvc\\cmTC_f67c0.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_0fcfc.dir\\Debug\\".
+          Creating directory "cmTC_f67c0.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-bsl1ge\\Debug\\".
-          Creating directory "cmTC_0fcfc.dir\\Debug\\cmTC_0fcfc.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-uviqvc\\Debug\\".
+          Creating directory "cmTC_f67c0.dir\\Debug\\cmTC_f67c0.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_0fcfc.dir\\Debug\\cmTC_0fcfc.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_0fcfc.dir\\Debug\\cmTC_0fcfc.tlog\\unsuccessfulbuild".
+          Creating "cmTC_f67c0.dir\\Debug\\cmTC_f67c0.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_f67c0.dir\\Debug\\cmTC_f67c0.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_0fcfc.dir\\Debug\\\\" /Fd"cmTC_0fcfc.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_f67c0.dir\\Debug\\\\" /Fd"cmTC_f67c0.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_0fcfc.dir\\Debug\\\\" /Fd"cmTC_0fcfc.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_f67c0.dir\\Debug\\\\" /Fd"cmTC_f67c0.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "D:\\CMake\\share\\cmake-4.1\\Modules\\CMakeCCompilerABI.c"
           CMakeCCompilerABI.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-bsl1ge\\Debug\\cmTC_0fcfc.exe" /INCREMENTAL /ILK:"cmTC_0fcfc.dir\\Debug\\cmTC_0fcfc.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-bsl1ge/Debug/cmTC_0fcfc.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-bsl1ge/Debug/cmTC_0fcfc.lib" /MACHINE:X64  /machine:x64 cmTC_0fcfc.dir\\Debug\\CMakeCCompilerABI.obj
-          cmTC_0fcfc.vcxproj -> E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-bsl1ge\\Debug\\cmTC_0fcfc.exe
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-uviqvc\\Debug\\cmTC_f67c0.exe" /INCREMENTAL /ILK:"cmTC_f67c0.dir\\Debug\\cmTC_f67c0.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-uviqvc/Debug/cmTC_f67c0.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-uviqvc/Debug/cmTC_f67c0.lib" /MACHINE:X64  /machine:x64 cmTC_f67c0.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_f67c0.vcxproj -> E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-uviqvc\\Debug\\cmTC_f67c0.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_0fcfc.dir\\Debug\\cmTC_0fcfc.tlog\\unsuccessfulbuild".
-          Touching "cmTC_0fcfc.dir\\Debug\\cmTC_0fcfc.tlog\\cmTC_0fcfc.lastbuildstate".
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-bsl1ge\\cmTC_0fcfc.vcxproj" (default targets).
+          Deleting file "cmTC_f67c0.dir\\Debug\\cmTC_f67c0.tlog\\unsuccessfulbuild".
+          Touching "cmTC_f67c0.dir\\Debug\\cmTC_f67c0.tlog\\cmTC_f67c0.lastbuildstate".
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-uviqvc\\cmTC_f67c0.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:01.04
+        Time Elapsed 00:00:01.59
         
       exitCode: 0
   -
@@ -931,10 +1063,10 @@ events:
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-qnt4qb"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-qnt4qb"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-yd9s7n"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-yd9s7n"
     cmakeVariables:
-      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS: "/Z7 /FS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
       CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
       CMAKE_MODULE_PATH: "E:/TimeEngine/Vendor/GLFW/glfw/CMake/modules"
@@ -942,40 +1074,40 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-qnt4qb'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-yd9s7n'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_1a7db.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_e7a88.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/10/2025 4:31:41 PM.
+        Build started 12/30/2025 10:34:10 AM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\cmTC_1a7db.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\cmTC_e7a88.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_1a7db.dir\\Debug\\".
+          Creating directory "cmTC_e7a88.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\Debug\\".
-          Creating directory "cmTC_1a7db.dir\\Debug\\cmTC_1a7db.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\Debug\\".
+          Creating directory "cmTC_e7a88.dir\\Debug\\cmTC_e7a88.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_1a7db.dir\\Debug\\cmTC_1a7db.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_1a7db.dir\\Debug\\cmTC_1a7db.tlog\\unsuccessfulbuild".
+          Creating "cmTC_e7a88.dir\\Debug\\cmTC_e7a88.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_e7a88.dir\\Debug\\cmTC_e7a88.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_1a7db.dir\\Debug\\\\" /Fd"cmTC_1a7db.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\src.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_e7a88.dir\\Debug\\\\" /Fd"cmTC_e7a88.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\src.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_1a7db.dir\\Debug\\\\" /Fd"cmTC_1a7db.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\src.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_e7a88.dir\\Debug\\\\" /Fd"cmTC_e7a88.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\src.c"
           src.c
-        E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\cmTC_1a7db.vcxproj]
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\cmTC_1a7db.vcxproj" (default targets) -- FAILED.
+        E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\cmTC_e7a88.vcxproj]
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\cmTC_e7a88.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\cmTC_1a7db.vcxproj" (default target) (1) ->
+        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\cmTC_e7a88.vcxproj" (default target) (1) ->
         (ClCompile target) -> 
-          E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qnt4qb\\cmTC_1a7db.vcxproj]
+          E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yd9s7n\\cmTC_e7a88.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.51
+        Time Elapsed 00:00:00.47
         
       exitCode: 1
   -
@@ -988,10 +1120,10 @@ events:
     checks:
       - "Looking for pthread_create in pthreads"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-9vngyj"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-9vngyj"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-hxfse2"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-hxfse2"
     cmakeVariables:
-      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS: "/Z7 /FS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
       CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
       CMAKE_MODULE_PATH: "E:/TimeEngine/Vendor/GLFW/glfw/CMake/modules"
@@ -999,37 +1131,37 @@ events:
       variable: "CMAKE_HAVE_PTHREADS_CREATE"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-9vngyj'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-hxfse2'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_1bffc.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4c647.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/10/2025 4:31:42 PM.
+        Build started 12/30/2025 10:34:11 AM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\cmTC_1bffc.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\cmTC_4c647.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_1bffc.dir\\Debug\\".
+          Creating directory "cmTC_4c647.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\Debug\\".
-          Creating directory "cmTC_1bffc.dir\\Debug\\cmTC_1bffc.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\Debug\\".
+          Creating directory "cmTC_4c647.dir\\Debug\\cmTC_4c647.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_1bffc.dir\\Debug\\cmTC_1bffc.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_1bffc.dir\\Debug\\cmTC_1bffc.tlog\\unsuccessfulbuild".
+          Creating "cmTC_4c647.dir\\Debug\\cmTC_4c647.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_4c647.dir\\Debug\\cmTC_4c647.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_1bffc.dir\\Debug\\\\" /Fd"cmTC_1bffc.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\CheckFunctionExists.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_4c647.dir\\Debug\\\\" /Fd"cmTC_4c647.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_1bffc.dir\\Debug\\\\" /Fd"cmTC_1bffc.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\CheckFunctionExists.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_4c647.dir\\Debug\\\\" /Fd"cmTC_4c647.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\CheckFunctionExists.c"
           CheckFunctionExists.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\Debug\\cmTC_1bffc.exe" /INCREMENTAL /ILK:"cmTC_1bffc.dir\\Debug\\cmTC_1bffc.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-9vngyj/Debug/cmTC_1bffc.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-9vngyj/Debug/cmTC_1bffc.lib" /MACHINE:X64  /machine:x64 cmTC_1bffc.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\cmTC_1bffc.vcxproj]
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\cmTC_1bffc.vcxproj" (default targets) -- FAILED.
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\Debug\\cmTC_4c647.exe" /INCREMENTAL /ILK:"cmTC_4c647.dir\\Debug\\cmTC_4c647.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-hxfse2/Debug/cmTC_4c647.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-hxfse2/Debug/cmTC_4c647.lib" /MACHINE:X64  /machine:x64 cmTC_4c647.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\cmTC_4c647.vcxproj]
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\cmTC_4c647.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\cmTC_1bffc.vcxproj" (default target) (1) ->
+        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\cmTC_4c647.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-9vngyj\\cmTC_1bffc.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hxfse2\\cmTC_4c647.vcxproj]
         
             0 Warning(s)
             1 Error(s)
@@ -1047,10 +1179,10 @@ events:
     checks:
       - "Looking for pthread_create in pthread"
     directories:
-      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-3ud71y"
-      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-3ud71y"
+      source: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pyoj19"
+      binary: "E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pyoj19"
     cmakeVariables:
-      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS: "/Z7 /FS"
       CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
       CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
       CMAKE_MODULE_PATH: "E:/TimeEngine/Vendor/GLFW/glfw/CMake/modules"
@@ -1058,42 +1190,42 @@ events:
       variable: "CMAKE_HAVE_PTHREAD_CREATE"
       cached: true
       stdout: |
-        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-3ud71y'
+        Change Dir: 'E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pyoj19'
         
-        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_c02d7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): D:/Installed/VisualStudio/VisualStudioIDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_60963.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.12.12+1cce77968 for .NET Framework
-        Build started 7/10/2025 4:31:43 PM.
+        Build started 12/30/2025 10:34:12 AM.
         
-        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\cmTC_c02d7.vcxproj" on node 1 (default targets).
+        Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\cmTC_60963.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_c02d7.dir\\Debug\\".
+          Creating directory "cmTC_60963.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\Debug\\".
-          Creating directory "cmTC_c02d7.dir\\Debug\\cmTC_c02d7.tlog\\".
+          Creating directory "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\Debug\\".
+          Creating directory "cmTC_60963.dir\\Debug\\cmTC_60963.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_c02d7.dir\\Debug\\cmTC_c02d7.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_c02d7.dir\\Debug\\cmTC_c02d7.tlog\\unsuccessfulbuild".
+          Creating "cmTC_60963.dir\\Debug\\cmTC_60963.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_60963.dir\\Debug\\cmTC_60963.tlog\\unsuccessfulbuild".
         ClCompile:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_c02d7.dir\\Debug\\\\" /Fd"cmTC_c02d7.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\CheckFunctionExists.c"
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_60963.dir\\Debug\\\\" /Fd"cmTC_60963.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34438 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_c02d7.dir\\Debug\\\\" /Fd"cmTC_c02d7.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\CheckFunctionExists.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Fo"cmTC_60963.dir\\Debug\\\\" /Fd"cmTC_60963.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue  /FS "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\CheckFunctionExists.c"
           CheckFunctionExists.c
         Link:
-          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\Debug\\cmTC_c02d7.exe" /INCREMENTAL /ILK:"cmTC_c02d7.dir\\Debug\\cmTC_c02d7.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-3ud71y/Debug/cmTC_c02d7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-3ud71y/Debug/cmTC_c02d7.lib" /MACHINE:X64  /machine:x64 cmTC_c02d7.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\cmTC_c02d7.vcxproj]
-        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\cmTC_c02d7.vcxproj" (default targets) -- FAILED.
+          D:\\Installed\\VisualStudio\\VisualStudioIDE\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe /OUT:"E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\Debug\\cmTC_60963.exe" /INCREMENTAL /ILK:"cmTC_60963.dir\\Debug\\cmTC_60963.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pyoj19/Debug/cmTC_60963.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"E:/TimeEngine/Vendor/GLFW/build/CMakeFiles/CMakeScratch/TryCompile-pyoj19/Debug/cmTC_60963.lib" /MACHINE:X64  /machine:x64 cmTC_60963.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\cmTC_60963.vcxproj]
+        Done Building Project "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\cmTC_60963.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\cmTC_c02d7.vcxproj" (default target) (1) ->
+        "E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\cmTC_60963.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3ud71y\\cmTC_c02d7.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\TimeEngine\\Vendor\\GLFW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-pyoj19\\cmTC_60963.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.76
+        Time Elapsed 00:00:00.77
         
       exitCode: 1
 ...

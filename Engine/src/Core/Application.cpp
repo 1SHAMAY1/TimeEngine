@@ -72,6 +72,11 @@ namespace TE
         TE_CORE_INFO("Application Destructor called.");
     }
 
+    void Application::Close()
+    {
+        m_Running = false;
+    }
+
     void Application::Run()
     {
         TE_CORE_INFO("Application Run started.");

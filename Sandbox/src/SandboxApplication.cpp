@@ -1,63 +1,48 @@
 #include <Engine.h>
+#include "Layers/ProjectHubLayer.hpp"
 #include "Layers/EditorLayer.hpp"
-#include "Layers/LogoLayer.hpp"
-#include "Layers/CameraLayer.hpp"
-#include "Layers/ProfilingButtonLayer.hpp"
-#include "Layers/EngineSettingsButtonLayer.hpp"
+#include "Core/Project/Project.hpp"
+#include <filesystem>
+#include <string>
 
-class Project : public TE::Application
+class Sandbox : public TE::Application
 {
 public:
-	Project()
+	Sandbox(const std::string& startProject)
 	{
-		auto* logoLayer = new TE::LogoLayer();
-		BIND_FN_MULTI(logoLayer->LogoFinishedDelegate, this, Project::OnLogoComplete);
-		PushLayer(logoLayer);
-	}
+		TE_CORE_INFO("Sandbox Constructor with args: '{0}'", startProject);
 
-	void OnLogoComplete()
-	{
-		TE_CORE_INFO("Logo animation finished. Adding CameraLayer and ProfilingButtonLayer after logo removal.");
-		
-		// Add camera layer
-		auto* cameraLayer = new TE::CameraLayer();
-		if (cameraLayer)
+		if (!startProject.empty() && std::filesystem::exists(startProject))
 		{
-			MarkLayerForAddition(cameraLayer);
+			TE_CORE_INFO("Attempting to load project: {0}", startProject);
+			// Load Project Directly
+			if (TE::Project::Load(startProject))
+			{
+				TE_CORE_INFO("Project loaded successfully. Pushing EditorLayer.");
+				PushLayer(new TE::EditorLayer());
+			}
+			else
+			{
+				TE_CORE_ERROR("Failed to load project from args: {0}. Falling back to Hub.", startProject);
+				PushLayer(new TE::ProjectHubLayer());
+			}
 		}
 		else
 		{
-			TE_CORE_ERROR("Failed to create CameraLayer!");
-		}
-		
-		// Add profiling button layer
-		auto* profilingButtonLayer = new TE::ProfilingButtonLayer();
-		if (profilingButtonLayer)
-		{
-			MarkLayerForAddition(profilingButtonLayer);
-		}
-		else
-		{
-			TE_CORE_ERROR("Failed to create ProfilingButtonLayer!");
-		}
-		
-		// Add engine settings button layer
-		auto* engineSettingsButtonLayer = new TE::EngineSettingsButtonLayer();
-		if (engineSettingsButtonLayer)
-		{
-			MarkLayerForAddition(engineSettingsButtonLayer);
-		}
-		else
-		{
-			TE_CORE_ERROR("Failed to create EngineSettingsButtonLayer!");
+			TE_CORE_INFO("No valid project argument. Starting Project Hub.");
+			// Start with the Project Hub (Launcher)
+			PushLayer(new TE::ProjectHubLayer());
 		}
 	}
-
-private:
-	// No raw layer pointers needed; engine manages layer lifetimes
 };
 
-TE::Application* TE::CreateApplication()
+TE::Application* TE::CreateApplication(int argc, char** argv)
 {
-	return new Project();
+	std::string startProject = "";
+	if (argc > 1)
+	{
+		startProject = argv[1];
+	}
+
+	return new Sandbox(startProject);
 }

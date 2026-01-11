@@ -8,6 +8,8 @@
 #include "Input/Input.hpp"
 #include "Core/EngineSettings.hpp"
 #include "Renderer/RendererContext.hpp"
+#include <filesystem>
+#include <stb_image.h>
 
 static bool s_GLFWInitialized = false;
 
@@ -52,6 +54,35 @@ void WindowsWindow::Init(const WindowProps& props) {
     TE::Input::Init(m_Window); // Register window with input system
 
     SetVSync(true);
+
+    // Set Window Icon
+    {
+        GLFWimage images[1];
+        int width, height, channels;
+        // Use standard stbi_load (declarations available if Texture.cpp compiled effectively, assuming stb_image.h included)
+        // We need to include stb_image.h
+        // Note: We use a hardcoded path or relative to execution directory
+        std::string iconPath = "Resources/Branding/Icon.png";
+        if (!std::filesystem::exists(iconPath)) 
+            iconPath = "e:/TimeEngine/Resources/Branding/Icon.png";
+
+        if (std::filesystem::exists(iconPath))
+        {
+            stbi_set_flip_vertically_on_load(0); // Ensure icon is not flipped (Top-Left origin)
+            images[0].pixels = stbi_load(iconPath.c_str(), &width, &height, &channels, 4); // Force RGBA
+            if (images[0].pixels)
+            {
+                images[0].width = width;
+                images[0].height = height;
+                glfwSetWindowIcon(m_Window, 1, images);
+                stbi_image_free(images[0].pixels);
+            }
+            else
+            {
+                TE_CORE_WARN("Failed to load window icon: {0}", iconPath);
+            }
+        }
+    }
 
     // === EVENT CALLBACKS ===
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {

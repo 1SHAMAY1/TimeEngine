@@ -18,6 +18,7 @@ namespace TE
         virtual ~Application();
 
         void Run();
+        void Close();
 
         virtual void OnUpdate() {}
 
@@ -62,5 +63,5 @@ namespace TE
     };
 
     // To be defined by the client (e.g., Sandbox app)
-    Application* CreateApplication();
+    Application* CreateApplication(int argc, char** argv);
 }
