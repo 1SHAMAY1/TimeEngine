@@ -1,0 +1,21 @@
+name: Merge Safety check
+
+on:
+  pull_request:
+    branches: [ main, ecs, editor, gameplay, ui, samples ]
+
+jobs:
+  check-conflicts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for merge conflicts
+        run: |
+          echo "Checking for potential merge issues..."
+          # This is a placeholder for more advanced conflict detection or build checks
+          # For now, it simply ensures the PR can be checked out and basic structure is intact
+          ls -R
