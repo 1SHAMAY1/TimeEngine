@@ -19,27 +19,28 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Setup CMake
-        uses: jason-curtis/setup-cmake@v1
-
       - name: Build Logger Dependency
-        working-directory: Logger/Customizable_Logger
+        shell: cmd
         run: |
-          mkdir build
+          cd Logger\Customizable_Logger
+          if not exist build mkdir build
           cd build
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_C_FLAGS="/Z7" -DCMAKE_CXX_FLAGS="/Z7"
-          cmake --build . --config Debug -- /m
+          cmake --build . --config Debug -- /m:1
 
       - name: Build GLFW Dependency
-        working-directory: Vendor/GLFW
+        shell: cmd
         run: |
-          mkdir build
+          cd Vendor\GLFW
+          if not exist build mkdir build
           cd build
           cmake ../glfw -G "Visual Studio 17 2022" -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="/Z7 /FS" -DCMAKE_CXX_FLAGS="/Z7 /FS"
-          cmake --build . --config Debug -- /m
+          cmake --build . --config Debug -- /m:1
 
       - name: Generate Solution with Premake
-        run: .\Vendor\Premake\premake5.exe vs2022
+        shell: cmd
+        run: Vendor\Premake\premake5.exe vs2022
 
       - name: Build Solution
+        shell: cmd
         run: msbuild TimeEngine.sln /p:Configuration=Debug /p:Platform=x64 /m
