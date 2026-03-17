@@ -1,0 +1,19 @@
+name: Clang-Format Check
+
+on:
+  pull_request:
+    branches: [ main, ecs, editor, gameplay, ui, samples ]
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Clang-Format check
+        uses: DieZunft/clang-format-lint-action@master
+        with:
+          source: '.'
+          exclude-regex: '(Vendor/.*|Bin/.*|Bin-Intermediate/.*)'
+          extensions: 'h,hpp,c,cpp'
+          clang-format-style: 'file'
+          inplace: false

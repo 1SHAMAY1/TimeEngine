@@ -1,0 +1,24 @@
+# Labeler Configuration
+# Labels PRs based on changed files
+
+ECS:
+- Engine/src/ECS/**/*
+- Engine/Include/ECS/**/*
+
+Editor:
+- Engine/src/Core/Layers/**/*
+- Engine/Include/Layers/**/*
+
+Core:
+- Engine/src/Core/**/*
+- Engine/Include/Core/**/*
+
+Renderer:
+- Engine/src/Renderer/**/*
+- Engine/Include/Renderer/**/*
+
+UI:
+- Vendor/IMGUI/**/*
+
+Samples:
+- Sandbox/**/*

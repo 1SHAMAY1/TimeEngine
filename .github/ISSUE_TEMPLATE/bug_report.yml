@@ -1,0 +1,41 @@
+name: Bug Report
+description: File a report to help us improve the Time Engine
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the issue...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: List the steps to reproduce the behavior.
+      placeholder: |
+        1. Open the Project Hub
+        2. Create a 2D project
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Info
+      description: OS version, GPU, etc.
+      placeholder: Windows 11, RTX 3070...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or output
+      description: Please copy and paste any relevant log output from the Console.
+      render: shell
