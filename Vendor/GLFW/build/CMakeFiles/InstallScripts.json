@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"E:/TimeEngine/Vendor/GLFW/build/cmake_install.cmake",
-		"E:/TimeEngine/Vendor/GLFW/build/src/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

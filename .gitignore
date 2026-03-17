@@ -1,7 +1,9 @@
 # Binaries
 Bin/
 Bin-Intermediate/
-build/
+**/build/
+**/bin/
+**/obj/
 *.exe
 *.dll
 *.lib
