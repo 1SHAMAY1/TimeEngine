@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-BasedOnStyle: LLVM
+BasedOnStyle: LLVM # Change to Google, Chromium, Mozilla, etc. if you want
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
@@ -12,9 +12,9 @@ AlignConsecutiveDeclarations: false
 AlignOperands: true
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: All 
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-BreakBeforeBraces: Allman
-Standard: Auto
+BreakBeforeBraces: Allman 
+Standard: Auto 
 ...
