@@ -1,7 +1,9 @@
 ---
 Language: Cpp
-BasedOnStyle: Google
+BasedOnStyle: LLVM
 IndentWidth: 4
+TabWidth: 4
+UseTab: Never
 ColumnLimit: 120
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
@@ -13,6 +15,6 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Allman
 Standard: C++17
 ...
