@@ -1,24 +1,30 @@
 # Labeler Configuration
-# Labels PRs based on changed files
+# Labels PRs based on changed files using actions/labeler@v5 syntax
 
 ECS:
-- Engine/src/ECS/**/*
-- Engine/Include/ECS/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'Engine/src/ECS/**/*'
+      - any-glob-to-any-file: 'Engine/Include/ECS/**/*'
 
 Editor:
-- Engine/src/Core/Layers/**/*
-- Engine/Include/Layers/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'Engine/src/Core/Layers/**/*'
+      - any-glob-to-any-file: 'Engine/Include/Layers/**/*'
 
 Core:
-- Engine/src/Core/**/*
-- Engine/Include/Core/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'Engine/src/Core/**/*'
+      - any-glob-to-any-file: 'Engine/Include/Core/**/*'
 
 Renderer:
-- Engine/src/Renderer/**/*
-- Engine/Include/Renderer/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'Engine/src/Renderer/**/*'
+      - any-glob-to-any-file: 'Engine/Include/Renderer/**/*'
 
 UI:
-- Vendor/IMGUI/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'Vendor/IMGUI/**/*'
 
 Samples:
-- Sandbox/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'Sandbox/**/*'
