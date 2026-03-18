@@ -27,5 +27,5 @@ jobs:
           $changedFiles = "${{ steps.changed-files.outputs.all_changed_files }}"
           if ($changedFiles.Trim() -ne "") {
             $files = $changedFiles -split ' '
-            clang-format -n -Werror $files
+            clang-format -style=file -n -Werror $files
           }
