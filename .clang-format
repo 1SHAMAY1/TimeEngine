@@ -16,5 +16,5 @@ AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Allman
-Standard: C++17
+Standard: Latest
 ...
