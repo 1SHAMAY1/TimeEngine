@@ -15,6 +15,6 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All 
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-BreakBeforeBraces: Allman 
-Standard: Auto 
+BreakBeforeBraces: Allman
+Standard: Auto
 ...
