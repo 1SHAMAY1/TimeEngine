@@ -16,5 +16,9 @@ AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Allman
+<<<<<<< HEAD
 Standard: Auto
+=======
+Standard: Latest
+>>>>>>> 3372651 (Enable Intro Screen and fix iterator invalidation crash)
 ...
