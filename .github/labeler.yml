@@ -3,28 +3,32 @@
 
 ECS:
   - changed-files:
-      - any-glob-to-any-file: 'Engine/src/ECS/**/*'
-      - any-glob-to-any-file: 'Engine/Include/ECS/**/*'
+    - any-glob-to-any-file:
+      - 'Engine/src/ECS/**/*'
+      - 'Engine/Include/ECS/**/*'
 
 Editor:
   - changed-files:
-      - any-glob-to-any-file: 'Engine/src/Core/Layers/**/*'
-      - any-glob-to-any-file: 'Engine/Include/Layers/**/*'
+    - any-glob-to-any-file:
+      - 'Engine/src/Core/Layers/**/*'
+      - 'Engine/Include/Layers/**/*'
 
 Core:
   - changed-files:
-      - any-glob-to-any-file: 'Engine/src/Core/**/*'
-      - any-glob-to-any-file: 'Engine/Include/Core/**/*'
+    - any-glob-to-any-file:
+      - 'Engine/src/Core/**/*'
+      - 'Engine/Include/Core/**/*'
 
 Renderer:
   - changed-files:
-      - any-glob-to-any-file: 'Engine/src/Renderer/**/*'
-      - any-glob-to-any-file: 'Engine/Include/Renderer/**/*'
+    - any-glob-to-any-file:
+      - 'Engine/src/Renderer/**/*'
+      - 'Engine/Include/Renderer/**/*'
 
 UI:
   - changed-files:
-      - any-glob-to-any-file: 'Vendor/IMGUI/**/*'
+    - any-glob-to-any-file: 'Vendor/IMGUI/**/*'
 
 Samples:
   - changed-files:
-      - any-glob-to-any-file: 'Sandbox/**/*'
+    - any-glob-to-any-file: 'Sandbox/**/*'
