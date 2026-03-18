@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-BasedOnStyle: LLVM
+BasedOnStyle: LLVM # Change to Google, Chromium, Mozilla, etc. if you want
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
@@ -12,13 +12,12 @@ AlignConsecutiveDeclarations: false
 AlignOperands: true
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: All 
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Allman
-<<<<<<< HEAD
 Standard: Auto
 =======
-Standard: Latest
->>>>>>> 3372651 (Enable Intro Screen and fix iterator invalidation crash)
+BreakBeforeBraces: Allman 
+Standard: Auto 
 ...
