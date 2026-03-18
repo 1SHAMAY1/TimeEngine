@@ -1,4 +1,5 @@
-#include <Engine.h>
+#include "Core/Project/Project.hpp"
+#include "Layers/EditorLayer.hpp"
 #include "Layers/ProjectHubLayer.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Layers/LogoLayer.hpp"
@@ -43,13 +44,19 @@ public:
     }
 };
 
-TE::Application* TE::CreateApplication(int argc, char** argv)
+TE::Application *TE::CreateApplication(int argc, char **argv)
 {
     std::string startProject = "";
     if (argc > 1)
     {
         startProject = argv[1];
     }
+    std::string startProject = "";
+    if (argc > 1)
+    {
+        startProject = argv[1];
+    }
 
+    return new Sandbox(startProject);
     return new Sandbox(startProject);
 }
