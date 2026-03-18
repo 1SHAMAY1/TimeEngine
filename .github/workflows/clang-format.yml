@@ -6,14 +6,26 @@ on:
 
 jobs:
   clang-format:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run Clang-Format check
-        uses: DieZunft/clang-format-lint-action@master
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
         with:
-          source: '.'
-          exclude-regex: '(Vendor/.*|Bin/.*|Bin-Intermediate/.*)'
-          extensions: 'h,hpp,c,cpp'
-          clang-format-style: 'file'
-          inplace: false
+          files: |
+            **/*.{h,hpp,c,cpp}
+            !Vendor/**
+            !Bin/**
+            !Bin-Intermediate/**
+
+      - name: Run clang-format check
+        if: steps.changed-files.outputs.any_changed == 'true'
+        shell: pwsh
+        run: |
+          $changedFiles = "${{ steps.changed-files.outputs.all_changed_files }}"
+          if ($changedFiles.Trim() -ne "") {
+            $files = $changedFiles -split ' '
+            clang-format -n -Werror $files
+          }
