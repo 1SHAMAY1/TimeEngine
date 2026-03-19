@@ -590,50 +590,54 @@ void EditorLayer::UI_DrawViewport()
                      ImVec2{1, 0});
     }
 
-        auto drawList = ImGui::GetWindowDrawList();
-        if (m_ShowViewport)
-        {
-            ImVec2 winPos = ImGui::GetWindowPos();
-            ImVec2 winSize = ImGui::GetWindowSize();
-            
-            // Base grid step at default zoom
-            float BASE_GRID_STEP = 64.0f;
-            // Scale grid step based on camera zoom relative to default
-            float visualGridStep = BASE_GRID_STEP * (m_EditorSettings.DefaultZoom / m_CameraZoom);
-            
-            // Subdivide or clump if grid gets too small/large
-            if (visualGridStep < 10.0f) visualGridStep *= 10.0f;
-            if (visualGridStep > 500.0f) visualGridStep /= 10.0f;
+    auto drawList = ImGui::GetWindowDrawList();
+    if (m_ShowViewport)
+    {
+        ImVec2 winPos = ImGui::GetWindowPos();
+        ImVec2 winSize = ImGui::GetWindowSize();
 
-            ImU32 gridColor = IM_COL32(200, 200, 200, 40);
+        // Base grid step at default zoom
+        float BASE_GRID_STEP = 64.0f;
+        // Scale grid step based on camera zoom relative to default
+        float visualGridStep = BASE_GRID_STEP * (m_EditorSettings.DefaultZoom / m_CameraZoom);
 
-            // Calculate scrolling offset based on camera position and zoom
-            float offsetX = fmodf(-m_CameraPosition.x * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
-            float offsetY = fmodf(m_CameraPosition.y * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
+        // Subdivide or clump if grid gets too small/large
+        if (visualGridStep < 10.0f)
+            visualGridStep *= 10.0f;
+        if (visualGridStep > 500.0f)
+            visualGridStep /= 10.0f;
 
-            for (float x = offsetX; x < winSize.x; x += visualGridStep)
-                drawList->AddLine(ImVec2(winPos.x + x, winPos.y), ImVec2(winPos.x + x, winPos.y + winSize.y), gridColor);
-            
-            for (float y = offsetY; y < winSize.y; y += visualGridStep)
-                drawList->AddLine(ImVec2(winPos.x, winPos.y + y), ImVec2(winPos.x + winSize.x, winPos.y + y), gridColor);
-        }
+        ImU32 gridColor = IM_COL32(200, 200, 200, 40);
 
-        ImGui::SetCursorPos(ImVec2(10, 30));
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Viewport Size: %.0f, %.0f", m_LastViewportX, m_LastViewportY);
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Pos: %.2f, %.2f | Zoom: %.2f", m_CameraPosition.x, m_CameraPosition.y, m_CameraZoom);
-        
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Speed Multiplier:");
-        ImGui::SameLine();
-        ImGui::PushItemWidth(100);
-        ImGui::DragFloat("##Speed", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f, "%.1f");
-        ImGui::PopItemWidth();
-        ImGui::PopStyleVar();
+        // Calculate scrolling offset based on camera position and zoom
+        float offsetX = fmodf(-m_CameraPosition.x * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
+        float offsetY = fmodf(m_CameraPosition.y * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
 
-        if (!m_EditorSettings.AllowNavigation)
-             ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Navigation: DISABLED");
-        else
-             ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Navigation: RMB + WASD (Shift: Sprint | Scroll: Zoom | Shift+Scroll: Speed Multi)");
+        for (float x = offsetX; x < winSize.x; x += visualGridStep)
+            drawList->AddLine(ImVec2(winPos.x + x, winPos.y), ImVec2(winPos.x + x, winPos.y + winSize.y), gridColor);
+
+        for (float y = offsetY; y < winSize.y; y += visualGridStep)
+            drawList->AddLine(ImVec2(winPos.x, winPos.y + y), ImVec2(winPos.x + winSize.x, winPos.y + y), gridColor);
+    }
+
+    ImGui::SetCursorPos(ImVec2(10, 30));
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Viewport Size: %.0f, %.0f", m_LastViewportX, m_LastViewportY);
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Pos: %.2f, %.2f | Zoom: %.2f", m_CameraPosition.x,
+                       m_CameraPosition.y, m_CameraZoom);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
+    ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Speed Multiplier:");
+    ImGui::SameLine();
+    ImGui::PushItemWidth(100);
+    ImGui::DragFloat("##Speed", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f, "%.1f");
+    ImGui::PopItemWidth();
+    ImGui::PopStyleVar();
+
+    if (!m_EditorSettings.AllowNavigation)
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Navigation: DISABLED");
+    else
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f),
+                           "Navigation: RMB + WASD (Shift: Sprint | Scroll: Zoom | Shift+Scroll: Speed Multi)");
 
     ImGui::End();
     ImGui::PopStyleVar();
@@ -762,8 +766,10 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent &e)
         if (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift))
         {
             m_EditorSettings.SpeedMultiplier += e.GetYOffset() * 0.1f;
-            if (m_EditorSettings.SpeedMultiplier < 0.1f) m_EditorSettings.SpeedMultiplier = 0.1f;
-            if (m_EditorSettings.SpeedMultiplier > 100.0f) m_EditorSettings.SpeedMultiplier = 100.0f;
+            if (m_EditorSettings.SpeedMultiplier < 0.1f)
+                m_EditorSettings.SpeedMultiplier = 0.1f;
+            if (m_EditorSettings.SpeedMultiplier > 100.0f)
+                m_EditorSettings.SpeedMultiplier = 100.0f;
         }
         else
         {
