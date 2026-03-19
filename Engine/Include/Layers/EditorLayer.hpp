@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Layers/Layer.hpp"
 #include "Core/Events/KeyEvent.h"
@@ -14,9 +14,10 @@ namespace TE {
     {
         bool ShowPhysicsColliders = false;
         bool AllowNavigation = true;
-        float CameraSpeed = 10.0f;
+        float SpeedMultiplier = 1.0f; // Slider 0.1 to 100
+        float BaseCameraSpeed = 100.0f;
         float ZoomSpeed = 2.0f;
-        // Theme settings can go here or remain in the dedicated function
+        float DefaultZoom = 10.0f;
     };
 
     struct ProjectSettings
