@@ -203,6 +203,10 @@ project "Sandbox"
         systemversion "latest"
         defines { "TE_PLATFORM_WINDOWS" }
 
+        postbuildcommands {
+            '\"%{wks.location}Bin\\' .. outputdir .. '\\%{prj.name}\\%{prj.name}.exe\" --register'
+        }
+
     filter "configurations:Debug"
         defines { "TE_DEBUG" }
         symbols "On"

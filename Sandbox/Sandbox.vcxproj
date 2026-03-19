@@ -93,6 +93,9 @@
       <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Debug;..\Vendor\GLFW\build\src\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)Bin\Debug-windows-x86_64\$(ProjectName)\$(ProjectName).exe" --register</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -117,6 +120,9 @@
       <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Release;..\Vendor\GLFW\build\src\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)Bin\Release-windows-x86_64\$(ProjectName)\$(ProjectName).exe" --register</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <ClCompile>
@@ -141,6 +147,9 @@
       <AdditionalDependencies>Customizable_Logger.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Logger\Customizable_Logger\build\lib\Dist;..\Vendor\GLFW\build\src\Dist;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)Bin\Dist-windows-x86_64\$(ProjectName)\$(ProjectName).exe" --register</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Vendor\IMGUI\ImGui\backends\imgui_impl_glfw.h" />
