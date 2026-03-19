@@ -1,8 +1,10 @@
 #include "Layers/EditorLayer.hpp"
 #include "Core/Application.h"
+#include "Core/KeyCodes.hpp"
 #include "Core/Log.h"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Project/Project.hpp"
+#include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/RenderCommand.hpp"
@@ -389,9 +391,9 @@ void EditorLayer::UI_DrawSceneHierarchy()
             ImGui::Separator();
         };
 
-        DrawEntityNode("Main Camera");
-        DrawEntityNode("Directional Light");
-        DrawEntityNode("Player Start");
+        DrawEntityNode("Main Camera (Mock)");
+        DrawEntityNode("Directional Light (Mock)");
+        DrawEntityNode("Player Start (Mock)");
 
         ImGui::PopStyleColor();
         ImGui::PopStyleVar(2);
@@ -593,19 +595,49 @@ void EditorLayer::UI_DrawViewport()
     {
         ImVec2 winPos = ImGui::GetWindowPos();
         ImVec2 winSize = ImGui::GetWindowSize();
-        float GRID_STEP = 64.0f;
+
+        // Base grid step at default zoom
+        float BASE_GRID_STEP = 64.0f;
+        // Scale grid step based on camera zoom relative to default
+        float visualGridStep = BASE_GRID_STEP * (m_EditorSettings.DefaultZoom / m_CameraZoom);
+
+        // Subdivide or clump if grid gets too small/large
+        if (visualGridStep < 10.0f)
+            visualGridStep *= 10.0f;
+        if (visualGridStep > 500.0f)
+            visualGridStep /= 10.0f;
 
         ImU32 gridColor = IM_COL32(200, 200, 200, 40);
 
-        for (float x = fmodf(0.0f, GRID_STEP); x < winSize.x; x += GRID_STEP)
+        // Calculate scrolling offset based on camera position and zoom
+        float offsetX = fmodf(-m_CameraPosition.x * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
+        float offsetY = fmodf(m_CameraPosition.y * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
+
+        for (float x = offsetX; x < winSize.x; x += visualGridStep)
             drawList->AddLine(ImVec2(winPos.x + x, winPos.y), ImVec2(winPos.x + x, winPos.y + winSize.y), gridColor);
 
-        for (float y = fmodf(0.0f, GRID_STEP); y < winSize.y; y += GRID_STEP)
+        for (float y = offsetY; y < winSize.y; y += visualGridStep)
             drawList->AddLine(ImVec2(winPos.x, winPos.y + y), ImVec2(winPos.x + winSize.x, winPos.y + y), gridColor);
     }
 
     ImGui::SetCursorPos(ImVec2(10, 30));
-    ImGui::Text("Viewport Size: %.0f, %.0f", m_LastViewportX, m_LastViewportY);
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Viewport Size: %.0f, %.0f", m_LastViewportX, m_LastViewportY);
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Pos: %.2f, %.2f | Zoom: %.2f", m_CameraPosition.x,
+                       m_CameraPosition.y, m_CameraZoom);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
+    ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Speed Multiplier:");
+    ImGui::SameLine();
+    ImGui::PushItemWidth(100);
+    ImGui::DragFloat("##Speed", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f, "%.1f");
+    ImGui::PopItemWidth();
+    ImGui::PopStyleVar();
+
+    if (!m_EditorSettings.AllowNavigation)
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Navigation: DISABLED");
+    else
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f),
+                           "Navigation: RMB + WASD (Shift: Sprint | Scroll: Zoom | Shift+Scroll: Speed Multi)");
 
     ImGui::End();
     ImGui::PopStyleVar();
@@ -626,7 +658,7 @@ void EditorLayer::UI_DrawSettingsPanel()
     if (ImGui::CollapsingHeader("Viewport", ImGuiTreeNodeFlags_DefaultOpen))
     {
         ImGui::Checkbox("Show Physics Colliders", &m_EditorSettings.ShowPhysicsColliders);
-        ImGui::DragFloat("Camera Speed", &m_EditorSettings.CameraSpeed, 0.1f, 1.0f, 100.0f);
+        ImGui::DragFloat("Speed Multiplier", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f);
         ImGui::DragFloat("Zoom Speed", &m_EditorSettings.ZoomSpeed, 0.1f, 0.1f, 10.0f);
     }
 
@@ -705,7 +737,8 @@ void EditorLayer::UpdateCamera(float dt)
 
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
-        float speed = m_EditorSettings.CameraSpeed * dt;
+        float sprintBonus = (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift)) ? 2.5f : 1.0f;
+        float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier) * sprintBonus * dt;
 
         if (ImGui::IsKeyDown(ImGuiKey_W))
             m_CameraPosition.y += speed;
@@ -730,9 +763,20 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent &e)
 {
     if (m_ViewportHovered)
     {
-        m_CameraZoom -= e.GetYOffset() * 0.5f * m_EditorSettings.ZoomSpeed;
-        if (m_CameraZoom < 0.1f)
-            m_CameraZoom = 0.1f;
+        if (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift))
+        {
+            m_EditorSettings.SpeedMultiplier += e.GetYOffset() * 0.1f;
+            if (m_EditorSettings.SpeedMultiplier < 0.1f)
+                m_EditorSettings.SpeedMultiplier = 0.1f;
+            if (m_EditorSettings.SpeedMultiplier > 100.0f)
+                m_EditorSettings.SpeedMultiplier = 100.0f;
+        }
+        else
+        {
+            m_CameraZoom -= e.GetYOffset() * 0.5f * m_EditorSettings.ZoomSpeed;
+            if (m_CameraZoom < 0.1f)
+                m_CameraZoom = 0.1f;
+        }
         return true;
     }
     return false;
