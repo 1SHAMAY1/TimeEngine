@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "imgui.h"
@@ -42,6 +42,7 @@ namespace TE {
         TEVector2() = default;
         TEVector2(float x, float y) : x(x), y(y) {}
         TEVector2(const ImVec2& v) : x(v.x), y(v.y) {}
+        TEVector2(const glm::vec2& v) : x(v.x), y(v.y) {}
 
         float Length() const { return std::sqrt(x * x + y * y); }
         float LengthSquared() const { return x * x + y * y; }
@@ -52,6 +53,7 @@ namespace TE {
         }
 
         ImVec2 ToImVec2() const { return { x, y }; }
+        glm::vec2 ToGLM() const { return { x, y }; }
 
         TEVector2 operator+(const TEVector2& rhs) const { return { x + rhs.x, y + rhs.y }; }
         TEVector2 operator-(const TEVector2& rhs) const { return { x - rhs.x, y - rhs.y }; }
@@ -143,8 +145,10 @@ namespace TE {
         TEVector4() = default;
         TEVector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
         TEVector4(const ImVec4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
+        TEVector4(const glm::vec4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
 
         ImVec4 ToImVec4() const { return { x, y, z, w }; }
+        glm::vec4 ToGLM() const { return { x, y, z, w }; }
 
         TEVector4 operator+(const TEVector4& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
         TEVector4 operator-(const TEVector4& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }

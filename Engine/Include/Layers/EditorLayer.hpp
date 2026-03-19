@@ -5,7 +5,11 @@
 #include "Core/Events/MouseEvent.h"
 #include "Layers/Layer.hpp"
 #include "Renderer/Framebuffer.hpp"
+#include "Core/Scene/Scene.hpp"
 #include <string>
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
 
 namespace TE
 {
@@ -64,8 +68,8 @@ private:
     void UI_DrawProperties();
     void UI_DrawContentBrowser();
     void UI_DrawViewport();
-    void UI_DrawSettingsPanel();        // New
-    void UI_DrawProjectSettingsPanel(); // New
+    void UI_DrawSettingsPanel();
+    void UI_DrawProjectSettingsPanel();
 
     // Navigation
     void UpdateCamera(float dt);
@@ -90,12 +94,13 @@ private:
     glm::vec3 m_CameraPosition = {0.0f, 0.0f, 10.0f};
     float m_CameraZoom = 10.0f; // Ortho size or Z distance
 
-    // Mock State for now (Should be moved to proper Panel classes)
-    std::string m_SelectedEntity = "";
+    // Scene State
+    std::shared_ptr<Scene> m_ActiveScene;
+    Entity m_SelectedEntity;
 
     // Resources
     std::shared_ptr<class Texture> m_FileIcon;
-    std::shared_ptr<class Texture> m_FolderIcon; // Need this
+    std::shared_ptr<class Texture> m_FolderIcon;
     std::shared_ptr<class Framebuffer> m_Framebuffer;
     std::shared_ptr<class Renderer2D> m_Renderer2D;
 

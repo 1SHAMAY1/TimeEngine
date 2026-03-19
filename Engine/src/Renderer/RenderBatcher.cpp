@@ -27,6 +27,7 @@ void RenderBatcher::Flush() {
         if (!lastMaterial || cmd.material != lastMaterial) {
             cmd.material->GetShader()->Bind();
             cmd.material->ApplyUniforms();
+            ShaderLibrary::SetViewProjection(cmd.material->GetShader().get(), m_ViewProjection);
             lastMaterial = cmd.material;
         }
         // Set transform uniform

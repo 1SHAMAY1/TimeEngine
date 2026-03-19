@@ -21,8 +21,11 @@ public:
     void End();
     void Flush(); // Issues the actual draw calls, batching by material/shader
 
+    void SetViewProjection(const glm::mat4& viewProjection) { m_ViewProjection = viewProjection; }
+
 private:
     std::vector<BatchDrawCommand> m_DrawCommands;
+    glm::mat4 m_ViewProjection = glm::mat4(1.0f);
 };
 
 } 

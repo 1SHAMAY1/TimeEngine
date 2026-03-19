@@ -25,3 +25,6 @@ Bin-Intermediate/
 # Images
 *.png
 *.jpg
+
+# Agents
+.agents/

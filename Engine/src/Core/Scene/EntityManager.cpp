@@ -25,6 +25,31 @@ void EntityManager::RemoveAllComponents(Entity entity) {
     }
 }
 
+void EntityManager::RemoveComponentInstance(Entity entity, TComponent* instance) {
+    if (!instance) return;
+
+    // Recursive removal of children
+    auto& children = const_cast<std::vector<TComponent*>&>(instance->GetChildrenComponents());
+    while (!children.empty()) {
+        RemoveComponentInstance(entity, children[0]);
+    }
+
+    // Detach from parent
+    instance->SetComponentParent(nullptr);
+
+    auto& entityPool = m_ComponentPools[std::type_index(typeid(*instance))];
+    auto compIt = entityPool.find(entity.GetID());
+    if (compIt != entityPool.end()) {
+        auto& pool = compIt->second;
+        auto it = std::find_if(pool.begin(), pool.end(), [&](const std::unique_ptr<TComponent>& ptr) {
+            return ptr.get() == instance;
+        });
+        if (it != pool.end()) {
+            pool.erase(it);
+        }
+    }
+}
+
 // Template methods are defined in the header.
 
 } // namespace TE 

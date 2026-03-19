@@ -16,9 +16,6 @@
     <Filter Include="Source Files\Core\Input">
       <UniqueIdentifier>{A01AC625-0C52-0EBD-155C-72E0811235B6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\Layers">
-      <UniqueIdentifier>{8055A2E4-6C7A-F164-95C5-D6F48149F082}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core\Physics">
       <UniqueIdentifier>{539A31BD-BF5C-6547-080D-F4D3740E3E25}</UniqueIdentifier>
     </Filter>
@@ -108,6 +105,9 @@
     </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{E808F3D7-546A-D0E5-DDD7-1698493807A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor Layer">
+      <UniqueIdentifier>{E96E601B-D5D1-EFBF-7E57-28766A99BB42}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -222,10 +222,22 @@
     <ClInclude Include="Include\Core\Scene\AnimatedSpriteComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Scene\BoxComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\CircleComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\Scene\EntityManager.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Scene\GameManager.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\LightComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\ParallaxComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Scene\PlayerBase.hpp">
@@ -234,7 +246,22 @@
     <ClInclude Include="Include\Core\Scene\PlayerControllerBase.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Scene\ProceduralSpriteComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\Scene.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\Scene\SpriteComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\TagComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\TransformComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\TriangleComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Threading\TaskSystem.hpp">
@@ -262,6 +289,21 @@
       <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\Input\Input.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Input\InputAction.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Input\InputComponent.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Input\InputMappingContext.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Input\InputRemapper.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Input\InputSystem.hpp">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\CameraLayer.hpp">
@@ -483,37 +525,37 @@
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\CameraLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EditorLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EngineSettingsButtonLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\EngineSettingsLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\Layer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LayerStack.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\LogoLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProfilingButtonLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProfilingLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\ProjectHubLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Layers\TestTriangleLayer.cpp">
-      <Filter>Source Files\Core\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Log.cpp">
       <Filter>Source Files\Core</Filter>
@@ -528,6 +570,9 @@
       <Filter>Source Files\Core\Project</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Scene\EntityManager.cpp">
+      <Filter>Source Files\Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Scene\Scene.cpp">
       <Filter>Source Files\Core\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Time\Ticker.cpp">

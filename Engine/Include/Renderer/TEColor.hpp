@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <glm/glm.hpp>
 #include <string>
@@ -30,6 +30,7 @@ namespace TE {
 
         // ===== Accessor =====
         const glm::vec4& GetValue() const { return m_Value; }
+        glm::vec4& GetValue() { return m_Value; }
 
     private:
         glm::vec4 m_Value;
