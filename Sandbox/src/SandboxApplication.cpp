@@ -2,10 +2,10 @@
 #include "Layers/EditorLayer.hpp"
 #include "Layers/LogoLayer.hpp"
 #include "Layers/ProjectHubLayer.hpp"
+#include "Utils/PlatformUtils.hpp"
 #include <Engine.h>
 #include <filesystem>
 #include <string>
-#include "Utils/PlatformUtils.hpp"
 
 class Sandbox : public TE::Application
 {

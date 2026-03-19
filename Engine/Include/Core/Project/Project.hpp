@@ -1,62 +1,54 @@
 #pragma once
 
-#include <string>
+#include "Core/Log.h"
 #include <filesystem>
 #include <memory>
-#include "Core/Log.h"
+#include <string>
 
-namespace TE {
+namespace TE
+{
 
-    struct ProjectConfig
+struct ProjectConfig
+{
+    std::string Name = "Untitled";
+    std::filesystem::path StartScene;
+    std::filesystem::path AssetDirectory;
+    std::filesystem::path ScriptModulePath;
+    std::filesystem::path ThumbnailPath;
+};
+
+class TE_API Project
+{
+public:
+    static const std::filesystem::path &GetProjectDirectory() { return s_ActiveProject->m_ProjectDirectory; }
+
+    static std::filesystem::path GetAssetDirectory()
     {
-        std::string Name = "Untitled";
-        std::filesystem::path StartScene;
-        std::filesystem::path AssetDirectory;
-        std::filesystem::path ScriptModulePath;
-        std::filesystem::path ThumbnailPath;
-    };
+        if (s_ActiveProject->m_Config.AssetDirectory.is_absolute())
+            return s_ActiveProject->m_Config.AssetDirectory;
+        return s_ActiveProject->m_ProjectDirectory / s_ActiveProject->m_Config.AssetDirectory;
+    }
 
-    class TE_API Project
+    ProjectConfig &GetConfig() { return m_Config; }
+
+    static ProjectConfig &GetActiveConfig()
     {
-    public:
-        static const std::filesystem::path& GetProjectDirectory()
-        {
-            return s_ActiveProject->m_ProjectDirectory;
-        }
+        TE_CORE_ASSERT(s_ActiveProject, "No active project!");
+        return s_ActiveProject->m_Config;
+    }
 
-        static std::filesystem::path GetAssetDirectory()
-        {
-            if (s_ActiveProject->m_Config.AssetDirectory.is_absolute())
-                return s_ActiveProject->m_Config.AssetDirectory;
-            return s_ActiveProject->m_ProjectDirectory / s_ActiveProject->m_Config.AssetDirectory;
-        }
+    static std::shared_ptr<Project> GetActive() { return s_ActiveProject; }
 
-        ProjectConfig& GetConfig()
-        {
-            return m_Config;
-        }
+    static std::shared_ptr<Project> New();
+    static std::shared_ptr<Project> Load(const std::filesystem::path &path);
 
-        static ProjectConfig& GetActiveConfig()
-        {
-            TE_CORE_ASSERT(s_ActiveProject, "No active project!");
-            return s_ActiveProject->m_Config;
-        }
+    static bool SaveActive(const std::filesystem::path &path);
 
-        static std::shared_ptr<Project> GetActive()
-        {
-            return s_ActiveProject;
-        }
+private:
+    ProjectConfig m_Config;
+    std::filesystem::path m_ProjectDirectory;
 
-        static std::shared_ptr<Project> New();
-        static std::shared_ptr<Project> Load(const std::filesystem::path& path);
-        
-        static bool SaveActive(const std::filesystem::path& path);
+    inline static std::shared_ptr<Project> s_ActiveProject;
+};
 
-    private:
-        ProjectConfig m_Config;
-        std::filesystem::path m_ProjectDirectory;
-
-        inline static std::shared_ptr<Project> s_ActiveProject;
-    };
-
-}
+} // namespace TE
