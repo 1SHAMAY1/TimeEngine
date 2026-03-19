@@ -1,15 +1,16 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Utility/MathUtils.hpp"
-#include <vector>
 #include <algorithm>
+#include <vector>
 class TObject;
 
 TE_CLASS()
-class TE_API TComponent {
+class TE_API TComponent
+{
 protected:
     TEPROPERTY()
-    TObject* Owner = nullptr;
+    TObject *Owner = nullptr;
 
     TEPROPERTY()
     bool bMarkedPendingDestroy = false;
@@ -17,15 +18,15 @@ protected:
     TEPROPERTY()
     bool bInitialized = false;
 
-    TComponent* Parent = nullptr;
-    std::vector<TComponent*> Children;
+    TComponent *Parent = nullptr;
+    std::vector<TComponent *> Children;
 
 public:
     TE::TETransform Transform;
     virtual ~TComponent() = default;
 
-    void SetOwner(TObject* newOwner) { Owner = newOwner; }
-    TObject* GetOwner() const { return Owner; }
+    void SetOwner(TObject *newOwner) { Owner = newOwner; }
+    TObject *GetOwner() const { return Owner; }
 
     void OnInitialize() { bInitialized = true; }
     void OnAttach() {}
@@ -36,17 +37,20 @@ public:
     bool IsMarkedPendingDestroy() const { return bMarkedPendingDestroy; }
     bool IsInitialized() const { return bInitialized; }
 
-    virtual const char* GetClassName() const { return StaticClassName; }
+    virtual const char *GetClassName() const { return StaticClassName; }
 
     // Hierarchy
-    TComponent* GetParentComponent() const { return Parent; }
-    const std::vector<TComponent*>& GetChildrenComponents() const { return Children; }
+    TComponent *GetParentComponent() const { return Parent; }
+    const std::vector<TComponent *> &GetChildrenComponents() const { return Children; }
 
-    void SetComponentParent(TComponent* newParent) {
-        if (Parent == newParent) return;
+    void SetComponentParent(TComponent *newParent)
+    {
+        if (Parent == newParent)
+            return;
 
         // Remove from old parent
-        if (Parent) {
+        if (Parent)
+        {
             auto it = std::find(Parent->Children.begin(), Parent->Children.end(), this);
             if (it != Parent->Children.end())
                 Parent->Children.erase(it);
@@ -55,11 +59,11 @@ public:
         Parent = newParent;
 
         // Add to new parent
-        if (Parent) {
+        if (Parent)
+        {
             Parent->Children.push_back(this);
         }
     }
 
-    static constexpr const char* StaticClassName = "TComponent";
+    static constexpr const char *StaticClassName = "TComponent";
 };
-

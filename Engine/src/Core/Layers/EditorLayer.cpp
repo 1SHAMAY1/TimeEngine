@@ -5,6 +5,16 @@
 #include "Core/Log.h"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Project/Project.hpp"
+#include "Core/Scene/AnimatedSpriteComponent.hpp"
+#include "Core/Scene/BoxComponent.hpp"
+#include "Core/Scene/CircleComponent.hpp"
+#include "Core/Scene/LightComponent.hpp"
+#include "Core/Scene/ParallaxComponent.hpp"
+#include "Core/Scene/ProceduralSpriteComponent.hpp"
+#include "Core/Scene/SpriteComponent.hpp"
+#include "Core/Scene/TagComponent.hpp"
+#include "Core/Scene/TransformComponent.hpp"
+#include "Core/Scene/TriangleComponent.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
@@ -14,16 +24,6 @@
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
 #include "Utility/MathUtils.hpp"
-#include "Core/Scene/TagComponent.hpp"
-#include "Core/Scene/TransformComponent.hpp"
-#include "Core/Scene/ParallaxComponent.hpp"
-#include "Core/Scene/SpriteComponent.hpp"
-#include "Core/Scene/AnimatedSpriteComponent.hpp"
-#include "Core/Scene/ProceduralSpriteComponent.hpp"
-#include "Core/Scene/BoxComponent.hpp"
-#include "Core/Scene/CircleComponent.hpp"
-#include "Core/Scene/TriangleComponent.hpp"
-#include "Core/Scene/LightComponent.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <cstring>
@@ -168,8 +168,7 @@ void EditorLayer::OnUpdate()
                     TEVector2 worldCenter = body->Position + localCenter;
 
                     // Use world coordinates (transformed by View-Proj in shader)
-                    TEVector2 pos = {worldCenter.x - size.x * 0.5f,
-                                     worldCenter.y - size.y * 0.5f};
+                    TEVector2 pos = {worldCenter.x - size.x * 0.5f, worldCenter.y - size.y * 0.5f};
                     TEVector2 sz = {size.x, size.y};
 
                     m_Renderer2D->SubmitQuad(pos, sz, m_DebugMaterial);
@@ -180,25 +179,29 @@ void EditorLayer::OnUpdate()
         // Scene Rendering (Phase 1.12 Refined)
         if (m_ActiveScene)
         {
-            auto& entityManager = m_ActiveScene->GetEntityManager();
-            const auto& entities = entityManager.GetAliveEntities();
+            auto &entityManager = m_ActiveScene->GetEntityManager();
+            const auto &entities = entityManager.GetAliveEntities();
             for (EntityID id : entities)
             {
                 Entity entity(id);
-                auto* transform = entityManager.GetComponent<TransformComponent>(entity);
-                if (!transform) continue;
+                auto *transform = entityManager.GetComponent<TransformComponent>(entity);
+                if (!transform)
+                    continue;
 
-                auto GetWorldTransform = [&](TComponent* comp) -> glm::mat4 {
-                    std::vector<TComponent*> chain;
-                    TComponent* curr = comp;
-                    while (curr) {
+                auto GetWorldTransform = [&](TComponent *comp) -> glm::mat4
+                {
+                    std::vector<TComponent *> chain;
+                    TComponent *curr = comp;
+                    while (curr)
+                    {
                         chain.push_back(curr);
                         curr = curr->GetParentComponent();
                     }
                     std::reverse(chain.begin(), chain.end());
-                    
+
                     glm::mat4 model = transform->Transform.GetMatrix();
-                    for (auto* node : chain) {
+                    for (auto *node : chain)
+                    {
                         model = model * node->Transform.GetMatrix();
                     }
                     return model;
@@ -206,45 +209,54 @@ void EditorLayer::OnUpdate()
 
                 // Draw LightComponents (Visualization)
                 auto lights = entityManager.GetComponents<LightComponent>(entity);
-                for (auto* light : lights)
+                for (auto *light : lights)
                 {
-                    if (!light->bIsVisible) continue;
+                    if (!light->bIsVisible)
+                        continue;
                     glm::mat4 worldMat = GetWorldTransform(light);
                     m_Renderer2D->SubmitLight(*light, TEVector2(worldMat[3].x, worldMat[3].y));
                 }
 
                 // Draw BoxComponents
                 auto boxes = entityManager.GetComponents<BoxComponent>(entity);
-                for (auto* box : boxes)
+                for (auto *box : boxes)
                 {
                     glm::mat4 model = GetWorldTransform(box);
                     // Apply the shape's specific Size
                     glm::mat4 finalModel = glm::scale(model, glm::vec3(box->Size.x, box->Size.y, 1.0f));
 
-                    if (box->bIsVisible) {
+                    if (box->bIsVisible)
+                    {
                         m_DebugMaterial->SetColor(box->BaseColor);
                         m_Renderer2D->SubmitQuad(finalModel, m_DebugMaterial);
                     }
-                    if (box->bShowDebug) {
-                        // Outline: we don't have a mat4 specific outlines yet, so we'll just use the center for now or implement better
-                        m_Renderer2D->SubmitRectOutline(TEVector2(model[3].x, model[3].y), {box->Size.x * model[0].x, box->Size.y * model[1].y}, 0.05f, TEColor(0.2f, 1.0f, 0.2f, 1.0f));
+                    if (box->bShowDebug)
+                    {
+                        // Outline: we don't have a mat4 specific outlines yet, so we'll just use the center for now or
+                        // implement better
+                        m_Renderer2D->SubmitRectOutline(TEVector2(model[3].x, model[3].y),
+                                                        {box->Size.x * model[0].x, box->Size.y * model[1].y}, 0.05f,
+                                                        TEColor(0.2f, 1.0f, 0.2f, 1.0f));
                     }
                 }
 
                 // Draw CircleComponents
                 auto circles = entityManager.GetComponents<CircleComponent>(entity);
-                for (auto* circle : circles)
+                for (auto *circle : circles)
                 {
                     glm::mat4 model = GetWorldTransform(circle);
                     float radius = circle->Radius;
                     TEVector2 worldPos = {model[3].x, model[3].y};
 
-                    if (circle->bIsVisible) {
+                    if (circle->bIsVisible)
+                    {
                         m_DebugMaterial->SetColor(circle->BaseColor);
-                        // Using SubmitCircle (center + radius) - this doesn't support elliptical scale well but it's okay for 2D circles
+                        // Using SubmitCircle (center + radius) - this doesn't support elliptical scale well but it's
+                        // okay for 2D circles
                         m_Renderer2D->SubmitCircle(worldPos, radius * model[0].x, m_DebugMaterial);
                     }
-                    if (circle->bShowDebug) {
+                    if (circle->bShowDebug)
+                    {
                         m_DebugMaterial->SetColor(TEColor(0.2f, 1.0f, 0.2f, 0.5f));
                         m_Renderer2D->SubmitCircle(worldPos, radius * model[0].x, m_DebugMaterial);
                     }
@@ -252,11 +264,12 @@ void EditorLayer::OnUpdate()
 
                 // Draw TriangleComponents
                 auto triangles = entityManager.GetComponents<TriangleComponent>(entity);
-                for (auto* tri : triangles)
+                for (auto *tri : triangles)
                 {
                     glm::mat4 model = GetWorldTransform(tri);
-                    
-                    auto TransformPoint = [&](const TEVector2& p) {
+
+                    auto TransformPoint = [&](const TEVector2 &p)
+                    {
                         glm::vec4 tp = model * glm::vec4(p.x, p.y, 0.0f, 1.0f);
                         return TEVector2(tp.x, tp.y);
                     };
@@ -264,12 +277,14 @@ void EditorLayer::OnUpdate()
                     TEVector2 p1 = TransformPoint(tri->Point1);
                     TEVector2 p2 = TransformPoint(tri->Point2);
                     TEVector2 p3 = TransformPoint(tri->Point3);
-                    
-                    if (tri->bIsVisible) {
+
+                    if (tri->bIsVisible)
+                    {
                         m_DebugMaterial->SetColor(tri->BaseColor);
                         m_Renderer2D->SubmitTriangle(p1, p2, p3, m_DebugMaterial);
                     }
-                    if (tri->bShowDebug) {
+                    if (tri->bShowDebug)
+                    {
                         m_DebugMaterial->SetColor(TEColor(0.2f, 1.0f, 0.2f, 0.5f));
                         m_Renderer2D->SubmitTriangle(p1, p2, p3, m_DebugMaterial);
                     }
@@ -370,30 +385,30 @@ static bool DrawVec3Control(const std::string &label, glm::vec3 &values, float r
 }
 
 // Helper for Styled "+" Buttons
-static bool DrawPlusButton(const char* id, float offsetX = 40.0f)
+static bool DrawPlusButton(const char *id, float offsetX = 40.0f)
 {
     ImGui::SameLine(ImGui::GetWindowWidth() - offsetX);
-    
+
     // Vertical centering
     float lineHeight = ImGui::GetFrameHeight();
     float buttonSize = lineHeight - 4.0f; // Slightly smaller than line a bit
-    
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.6f, 0.2f, 1.0f});        // Green Bg
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.6f, 0.2f, 1.0f}); // Green Bg
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.8f, 0.3f, 1.0f});
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.1f, 0.5f, 0.15f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{1.0f, 1.0f, 1.0f, 1.0f});          // White Plus
-    
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{1.0f, 1.0f, 1.0f, 1.0f}); // White Plus
+
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-    
+
     bool clicked = ImGui::Button(id, ImVec2(buttonSize, buttonSize));
-    
+
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(4);
 
     if (ImGui::IsItemHovered())
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    
+
     return clicked;
 }
 
@@ -535,25 +550,24 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
     if (m_ActiveScene)
     {
-        auto& entityManager = m_ActiveScene->GetEntityManager();
-        const auto& aliveEntities = entityManager.GetAliveEntities();
+        auto &entityManager = m_ActiveScene->GetEntityManager();
+        const auto &aliveEntities = entityManager.GetAliveEntities();
 
-        auto DrawEntityNode = [&](auto&& self, Entity entity) -> void
+        auto DrawEntityNode = [&](auto &&self, Entity entity) -> void
         {
             EntityID id = entity.GetID();
             std::string name = "Entity " + std::to_string(id);
-            if (auto* tagComp = entityManager.GetComponent<TagComponent>(entity))
+            if (auto *tagComp = entityManager.GetComponent<TagComponent>(entity))
                 name = tagComp->Tag;
 
-            auto* transformComp = entityManager.GetComponent<TransformComponent>(entity);
+            auto *transformComp = entityManager.GetComponent<TransformComponent>(entity);
             bool hasChildren = transformComp && !transformComp->Children.empty();
 
-            ImGuiTreeNodeFlags flags =
-                (m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0) |
-                (hasChildren ? 0 : ImGuiTreeNodeFlags_Leaf) |
-                ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
+            ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0) |
+                                       (hasChildren ? 0 : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_OpenOnArrow |
+                                       ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-            bool opened = ImGui::TreeNodeEx((void*)(uint64_t)id, flags, name.c_str());
+            bool opened = ImGui::TreeNodeEx((void *)(uint64_t)id, flags, name.c_str());
             if (ImGui::IsItemClicked())
                 m_SelectedEntity = entity;
 
@@ -593,8 +607,10 @@ void EditorLayer::UI_DrawSceneHierarchy()
         };
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 8)); // Taller bar
-        ImGui::SetNextItemAllowOverlap(); // Allow button to overlap
-        bool rootOpened = ImGui::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
+        ImGui::SetNextItemAllowOverlap();                              // Allow button to overlap
+        bool rootOpened =
+            ImGui::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
+                                                ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
         ImGui::PopStyleVar();
 
         if (rootOpened)
@@ -611,7 +627,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
             for (EntityID id : aliveEntities)
             {
                 Entity entity(id);
-                auto* transformComp = entityManager.GetComponent<TransformComponent>(entity);
+                auto *transformComp = entityManager.GetComponent<TransformComponent>(entity);
                 // Only draw roots
                 if (!transformComp || transformComp->Parent == 0)
                 {
@@ -651,12 +667,12 @@ void EditorLayer::UI_DrawProperties()
     }
     else
     {
-        auto& entityManager = m_ActiveScene->GetEntityManager();
+        auto &entityManager = m_ActiveScene->GetEntityManager();
         EntityID id = m_SelectedEntity.GetID();
-        
+
         ImGui::TextDisabled("Entity ID: %llu", id);
 
-        if (auto* tagComp = entityManager.GetComponent<TagComponent>(m_SelectedEntity))
+        if (auto *tagComp = entityManager.GetComponent<TagComponent>(m_SelectedEntity))
         {
             char buffer[256];
             memset(buffer, 0, sizeof(buffer));
@@ -670,12 +686,12 @@ void EditorLayer::UI_DrawProperties()
 
         ImGui::Separator();
 
-        if (auto* transformComp = entityManager.GetComponent<TransformComponent>(m_SelectedEntity))
+        if (auto *transformComp = entityManager.GetComponent<TransformComponent>(m_SelectedEntity))
         {
             if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 DrawVec3Control("Position", transformComp->Transform.Position);
-                
+
                 // Rotation (TERotator)
                 glm::vec3 rotation = transformComp->Transform.Rotation.ToVec3();
                 if (DrawVec3Control("Rotation", rotation))
@@ -691,7 +707,8 @@ void EditorLayer::UI_DrawProperties()
 
         ImGui::Separator();
 
-        auto DrawComponentProperties = [&](TComponent* comp) -> bool {
+        auto DrawComponentProperties = [&](TComponent *comp) -> bool
+        {
             if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 DrawVec3Control("Position", comp->Transform.Position);
@@ -708,46 +725,56 @@ void EditorLayer::UI_DrawProperties()
             }
             ImGui::Separator();
 
-            if (auto* sprite = dynamic_cast<SpriteComponent*>(comp)) {
+            if (auto *sprite = dynamic_cast<SpriteComponent *>(comp))
+            {
                 ImGui::Text("Sprite properties here...");
             }
-            else if (auto* animSprite = dynamic_cast<AnimatedSpriteComponent*>(comp)) {
+            else if (auto *animSprite = dynamic_cast<AnimatedSpriteComponent *>(comp))
+            {
                 ImGui::Text("Animation properties here...");
             }
-            else if (auto* pc = dynamic_cast<ParallaxComponent*>(comp)) {
+            else if (auto *pc = dynamic_cast<ParallaxComponent *>(comp))
+            {
                 ImGui::DragFloat2("Scroll Factor", &pc->ScrollFactor.x, 0.01f, 0.0f, 1.0f);
             }
-            else if (auto* box = dynamic_cast<BoxComponent*>(comp)) {
+            else if (auto *box = dynamic_cast<BoxComponent *>(comp))
+            {
                 ImGui::DragFloat2("Size", &box->Size.x, 0.1f);
                 ImGui::Checkbox("Has Collision", &box->bHasCollision);
-                if (box->bHasCollision) {
+                if (box->bHasCollision)
+                {
                     ImGui::DragFloat("Density", &box->Density, 0.1f, 0.0f, 100.0f);
                     ImGui::DragFloat("Friction", &box->Friction, 0.05f, 0.0f, 1.0f);
                     ImGui::Checkbox("Show Debug", &box->bShowDebug);
                 }
             }
-            else if (auto* circle = dynamic_cast<CircleComponent*>(comp)) {
+            else if (auto *circle = dynamic_cast<CircleComponent *>(comp))
+            {
                 ImGui::DragFloat("Radius", &circle->Radius, 0.1f, 0.0f, 100.0f);
                 ImGui::Checkbox("Has Collision", &circle->bHasCollision);
-                if (circle->bHasCollision) {
+                if (circle->bHasCollision)
+                {
                     ImGui::DragFloat("Density", &circle->Density, 0.1f, 0.0f, 100.0f);
                     ImGui::DragFloat("Friction", &circle->Friction, 0.05f, 0.0f, 1.0f);
                     ImGui::Checkbox("Show Debug", &circle->bShowDebug);
                 }
             }
-            else if (auto* tri = dynamic_cast<TriangleComponent*>(comp)) {
+            else if (auto *tri = dynamic_cast<TriangleComponent *>(comp))
+            {
                 ImGui::DragFloat2("P1", &tri->Point1.x, 0.1f);
                 ImGui::DragFloat2("P2", &tri->Point2.x, 0.1f);
                 ImGui::DragFloat2("P3", &tri->Point3.x, 0.1f);
                 ImGui::Checkbox("Has Collision", &tri->bHasCollision);
-                if (tri->bHasCollision) {
+                if (tri->bHasCollision)
+                {
                     ImGui::DragFloat("Density", &tri->Density, 0.1f, 0.0f, 100.0f);
                     ImGui::DragFloat("Friction", &tri->Friction, 0.05f, 0.0f, 1.0f);
                     ImGui::Checkbox("Show Debug", &tri->bShowDebug);
                 }
             }
-            else if (auto* light = dynamic_cast<LightComponent*>(comp)) {
-                const char* types[] = { "Point", "Spot", "Line" };
+            else if (auto *light = dynamic_cast<LightComponent *>(comp))
+            {
+                const char *types[] = {"Point", "Spot", "Line"};
                 int currentType = (int)light->Type;
                 if (ImGui::Combo("Type", &currentType, types, IM_ARRAYSIZE(types)))
                     light->Type = (TELightType)currentType;
@@ -756,28 +783,33 @@ void EditorLayer::UI_DrawProperties()
                 ImGui::DragFloat("Intensity", &light->Intensity, 0.1f, 0.0f, 100.0f);
                 ImGui::Checkbox("Visible", &light->bIsVisible);
 
-                if (light->Type == TELightType::Point || light->Type == TELightType::Spot) {
+                if (light->Type == TELightType::Point || light->Type == TELightType::Spot)
+                {
                     ImGui::DragFloat("Radius", &light->Radius, 0.1f, 0.0f, 1000.0f);
                 }
 
-                if (light->Type == TELightType::Spot) {
+                if (light->Type == TELightType::Spot)
+                {
                     ImGui::DragFloat2("Direction", &light->Direction.x, 0.01f, -1.0f, 1.0f);
                     ImGui::DragFloat("Inner Angle", &light->InnerAngle, 1.0f, 0.0f, 180.0f);
                     ImGui::DragFloat("Outer Angle", &light->OuterAngle, 1.0f, 0.0f, 180.0f);
                 }
 
-                if (light->Type == TELightType::Line) {
+                if (light->Type == TELightType::Line)
+                {
                     ImGui::DragFloat2("Line Offset", &light->LineOffset.x, 0.1f);
                     ImGui::DragFloat("Width", &light->Width, 0.1f, 0.01f, 100.0f);
                 }
             }
 
-            if (auto* psc = dynamic_cast<ProceduralSpriteComponent*>(comp)) {
+            if (auto *psc = dynamic_cast<ProceduralSpriteComponent *>(comp))
+            {
                 ImGui::ColorEdit4("Base Color", &psc->BaseColor.GetValue().x);
                 ImGui::Checkbox("Visible", &psc->bIsVisible);
             }
 
-            if (ImGui::Button("Remove Component")) {
+            if (ImGui::Button("Remove Component"))
+            {
                 entityManager.RemoveComponentInstance(m_SelectedEntity, comp);
                 return true; // Removed
             }
@@ -785,28 +817,35 @@ void EditorLayer::UI_DrawProperties()
         };
 
         static bool s_OpenAddComponent = false;
-        static TComponent* s_AddingChildTo = nullptr;
+        static TComponent *s_AddingChildTo = nullptr;
 
-        auto DrawComponentNode = [&](auto&& self, TComponent* comp) -> void {
-            if (!comp) return;
+        auto DrawComponentNode = [&](auto &&self, TComponent *comp) -> void
+        {
+            if (!comp)
+                return;
 
             ImGui::PushID(comp);
-            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap |
+                                       ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
             bool opened = ImGui::TreeNodeEx(comp, flags, comp->GetClassName());
-            
-            if (DrawPlusButton(("+##AddChild" + std::to_string((uintptr_t)comp)).c_str())) {
+
+            if (DrawPlusButton(("+##AddChild" + std::to_string((uintptr_t)comp)).c_str()))
+            {
                 s_AddingChildTo = comp;
                 s_OpenAddComponent = true;
             }
 
-            if (opened) {
-                if (DrawComponentProperties(comp)) {
+            if (opened)
+            {
+                if (DrawComponentProperties(comp))
+                {
                     // Component was removed, don't continue with this node
                     ImGui::TreePop();
                     ImGui::PopID();
                     return;
                 }
-                for (auto* child : comp->GetChildrenComponents()) {
+                for (auto *child : comp->GetChildrenComponents())
+                {
                     self(self, child);
                 }
                 ImGui::TreePop();
@@ -817,8 +856,9 @@ void EditorLayer::UI_DrawProperties()
         ImGui::Separator();
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 8)); // Taller bar
-        ImGui::SetNextItemAllowOverlap(); // Allow button to overlap
-        bool componentsOpened = ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
+        ImGui::SetNextItemAllowOverlap();                              // Allow button to overlap
+        bool componentsOpened =
+            ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
         ImGui::PopStyleVar();
 
         if (componentsOpened)
@@ -829,40 +869,52 @@ void EditorLayer::UI_DrawProperties()
                 s_OpenAddComponent = true;
             }
 
-            if (s_OpenAddComponent) {
+            if (s_OpenAddComponent)
+            {
                 ImGui::OpenPopup("AddComponentPopup");
                 s_OpenAddComponent = false;
             }
 
             if (ImGui::BeginPopup("AddComponentPopup"))
             {
-                auto AddComp = [&](auto* dummy) {
+                auto AddComp = [&](auto *dummy)
+                {
                     using T = std::remove_pointer_t<decltype(dummy)>;
-                    TComponent* newComp = entityManager.AddComponent<T>(m_SelectedEntity);
+                    TComponent *newComp = entityManager.AddComponent<T>(m_SelectedEntity);
                     if (s_AddingChildTo)
                         newComp->SetComponentParent(s_AddingChildTo);
                 };
 
-                if (ImGui::MenuItem("Sprite Component")) AddComp((SpriteComponent*)nullptr);
-                if (ImGui::MenuItem("Animated Sprite Component")) AddComp((AnimatedSpriteComponent*)nullptr);
-                if (ImGui::MenuItem("Parallax Component")) AddComp((ParallaxComponent*)nullptr);
-                if (ImGui::MenuItem("Procedural Sprite Component")) AddComp((ProceduralSpriteComponent*)nullptr);
-                if (ImGui::MenuItem("Box Component")) AddComp((BoxComponent*)nullptr);
-                if (ImGui::MenuItem("Circle Component")) AddComp((CircleComponent*)nullptr);
-                if (ImGui::MenuItem("Triangle Component")) AddComp((TriangleComponent*)nullptr);
-                if (ImGui::MenuItem("Light Component")) AddComp((LightComponent*)nullptr);
-                
+                if (ImGui::MenuItem("Sprite Component"))
+                    AddComp((SpriteComponent *)nullptr);
+                if (ImGui::MenuItem("Animated Sprite Component"))
+                    AddComp((AnimatedSpriteComponent *)nullptr);
+                if (ImGui::MenuItem("Parallax Component"))
+                    AddComp((ParallaxComponent *)nullptr);
+                if (ImGui::MenuItem("Procedural Sprite Component"))
+                    AddComp((ProceduralSpriteComponent *)nullptr);
+                if (ImGui::MenuItem("Box Component"))
+                    AddComp((BoxComponent *)nullptr);
+                if (ImGui::MenuItem("Circle Component"))
+                    AddComp((CircleComponent *)nullptr);
+                if (ImGui::MenuItem("Triangle Component"))
+                    AddComp((TriangleComponent *)nullptr);
+                if (ImGui::MenuItem("Light Component"))
+                    AddComp((LightComponent *)nullptr);
+
                 ImGui::EndPopup();
             }
 
             // Draw root components (those without parents, excluding Transform/Tag)
             auto allComps = entityManager.GetAllComponents(m_SelectedEntity);
-            for (auto* comp : allComps) {
-                if (!comp->GetParentComponent()) {
-                    const char* className = comp->GetClassName();
+            for (auto *comp : allComps)
+            {
+                if (!comp->GetParentComponent())
+                {
+                    const char *className = comp->GetClassName();
                     if (strcmp(className, "TransformComponent") == 0 || strcmp(className, "TagComponent") == 0)
                         continue;
-                    
+
                     DrawComponentNode(DrawComponentNode, comp);
                 }
             }

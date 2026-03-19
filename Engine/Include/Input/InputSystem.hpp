@@ -1,38 +1,41 @@
 #pragma once
-#include "InputMappingContext.hpp"
 #include "InputComponent.hpp"
+#include "InputMappingContext.hpp"
 #include "InputRemapper.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
 
-namespace TE {
+namespace TE
+{
 
-    class InputSystem {
-    public:
-        static InputSystem& Get();
+class InputSystem
+{
+public:
+    static InputSystem &Get();
 
-        void AddMappingContext(std::shared_ptr<InputMappingContext> context, int priority = 0);
-        void RemoveMappingContext(std::shared_ptr<InputMappingContext> context);
+    void AddMappingContext(std::shared_ptr<InputMappingContext> context, int priority = 0);
+    void RemoveMappingContext(std::shared_ptr<InputMappingContext> context);
 
-        void Update(float deltaTime);
+    void Update(float deltaTime);
 
-        void SetRemapper(std::shared_ptr<InputRemapper> remapper) { m_Remapper = remapper; }
+    void SetRemapper(std::shared_ptr<InputRemapper> remapper) { m_Remapper = remapper; }
 
-        // Internally used by components to register themselves
-        void RegisterComponent(InputComponent* component);
-        void UnregisterComponent(InputComponent* component);
+    // Internally used by components to register themselves
+    void RegisterComponent(InputComponent *component);
+    void UnregisterComponent(InputComponent *component);
 
-    private:
-        InputSystem() = default;
+private:
+    InputSystem() = default;
 
-        struct ContextPriority {
-            std::shared_ptr<InputMappingContext> Context;
-            int Priority;
-        };
-
-        std::vector<ContextPriority> m_Contexts;
-        std::vector<InputComponent*> m_Components;
-        std::shared_ptr<InputRemapper> m_Remapper;
+    struct ContextPriority
+    {
+        std::shared_ptr<InputMappingContext> Context;
+        int Priority;
     };
+
+    std::vector<ContextPriority> m_Contexts;
+    std::vector<InputComponent *> m_Components;
+    std::shared_ptr<InputRemapper> m_Remapper;
+};
 
 } // namespace TE

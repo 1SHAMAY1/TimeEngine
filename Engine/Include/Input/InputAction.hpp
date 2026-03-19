@@ -4,29 +4,32 @@
 #include <string>
 #include <variant>
 
-namespace TE {
+namespace TE
+{
 
-    enum class EInputActionValueType {
-        Digital,    // bool
-        Axis1D,     // float
-        Axis2D      // TEVector2
-    };
+enum class EInputActionValueType
+{
+    Digital, // bool
+    Axis1D,  // float
+    Axis2D   // TEVector2
+};
 
-    struct InputActionValue {
-        std::variant<bool, float, TEVector2> Value;
+struct InputActionValue
+{
+    std::variant<bool, float, TEVector2> Value;
 
-        bool GetDigital() const { return std::get<bool>(Value); }
-        float GetAxis1D() const { return std::get<float>(Value); }
-        TEVector2 GetAxis2D() const { return std::get<TEVector2>(Value); }
-    };
+    bool GetDigital() const { return std::get<bool>(Value); }
+    float GetAxis1D() const { return std::get<float>(Value); }
+    TEVector2 GetAxis2D() const { return std::get<TEVector2>(Value); }
+};
 
-    class InputAction {
-    public:
-        std::string Name;
-        EInputActionValueType ValueType;
+class InputAction
+{
+public:
+    std::string Name;
+    EInputActionValueType ValueType;
 
-        InputAction(const std::string& name, EInputActionValueType type)
-            : Name(name), ValueType(type) {}
-    };
+    InputAction(const std::string &name, EInputActionValueType type) : Name(name), ValueType(type) {}
+};
 
 } // namespace TE

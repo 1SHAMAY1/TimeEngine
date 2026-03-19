@@ -3,13 +3,13 @@
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
+#include "Core/Scene/Scene.hpp"
 #include "Layers/Layer.hpp"
 #include "Renderer/Framebuffer.hpp"
-#include "Core/Scene/Scene.hpp"
-#include <string>
-#include <memory>
-#include <vector>
 #include <glm/glm.hpp>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace TE
 {
