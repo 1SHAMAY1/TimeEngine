@@ -31,8 +31,14 @@ namespace TE {
             return s_ActiveProject->m_ProjectDirectory / s_ActiveProject->m_Config.AssetDirectory;
         }
 
-        static ProjectConfig& GetConfig()
+        ProjectConfig& GetConfig()
         {
+            return m_Config;
+        }
+
+        static ProjectConfig& GetActiveConfig()
+        {
+            TE_CORE_ASSERT(s_ActiveProject, "No active project!");
             return s_ActiveProject->m_Config;
         }
 

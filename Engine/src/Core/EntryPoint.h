@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Log.h"
 
 #ifdef TE_PLATFORM_WINDOWS
@@ -13,8 +13,11 @@ int main(int argc, char** argv)
         TE_CLIENT_INFO("Welcome to Time Engine.");
 
         auto project = TE::CreateApplication(argc, argv);
-        project->Run();
-        delete project;
+        if (project)
+        {
+            project->Run();
+            delete project;
+        }
     }
     catch (const std::exception& e)
     {

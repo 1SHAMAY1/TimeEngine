@@ -1,4 +1,4 @@
-﻿#include "Layers/EditorLayer.hpp"
+#include "Layers/EditorLayer.hpp"
 #include "Core/Log.h"
 #include "Core/Application.h"
 #include "imgui.h"
@@ -447,7 +447,7 @@ namespace TE {
         std::filesystem::path rootPath;
         if (s_CurrentTab == ContentTab::Assets) 
         {
-             std::string assetDir = Project::GetConfig().AssetDirectory.string();
+             std::string assetDir = Project::GetActiveConfig().AssetDirectory.string();
              if (assetDir.empty()) assetDir = "Assets";
              rootPath = Project::GetProjectDirectory() / assetDir;
         }

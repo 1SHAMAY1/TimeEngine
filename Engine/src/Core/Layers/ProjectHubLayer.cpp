@@ -28,7 +28,9 @@ namespace TE {
         // Default path to where the engine is or a "Projects" folder
         std::filesystem::path defaultInfo = std::filesystem::current_path() / "Projects";
         if (!std::filesystem::exists(defaultInfo))
+        {
             std::filesystem::create_directory(defaultInfo);
+        }
         
         strncpy(m_NewProjectPath, defaultInfo.string().c_str(), sizeof(m_NewProjectPath));
     }
@@ -176,6 +178,12 @@ namespace TE {
         ImGui::EndChild();
 
         ImGui::End(); // Root
+
+        if (!m_ProjectToOpen.empty())
+        {
+            OpenProject(m_ProjectToOpen);
+            m_ProjectToOpen.clear();
+        }
     }
 
     void ProjectHubLayer::UI_DrawProjectsList()
@@ -224,39 +232,36 @@ namespace TE {
             
             for (const auto& path : m_RecentProjects)
             {
-                 std::string filename = path.filename().string();
-                 // Remove extension for display
-                 size_t lastdot = filename.find_last_of(".");
-                 if (lastdot != std::string::npos) filename = filename.substr(0, lastdot);
-                 
-                 ImGui::PushID(path.string().c_str());
+                  std::string filename = path.filename().string();
+                  // Remove extension for display
+                  size_t lastdot = filename.find_last_of(".");
+                  if (lastdot != std::string::npos) filename = filename.substr(0, lastdot);
+                  
+                  ImGui::PushID(path.string().c_str());
 
-                 // Card-like Button
-                 if (m_ProjectIcon)
-                 {
-                     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
-                     if (ImGui::ImageButton(path.string().c_str(), (ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(), ImVec2(thumbnailSize, thumbnailSize)))
-                     {
-                         OpenProject(path);
-                         ImGui::PopStyleColor();
-                         return;
-                     }
-                     ImGui::PopStyleColor();
-                 }
-                 else
-                 {
-                     if (ImGui::Button("OBJ", ImVec2(thumbnailSize, thumbnailSize)))
-                     {
-                         OpenProject(path);
-                         return;
-                     }
-                 }
+                  // Card-like Button
+                  if (m_ProjectIcon)
+                  {
+                      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
+                      if (ImGui::ImageButton(path.string().c_str(), (ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(), ImVec2(thumbnailSize, thumbnailSize)))
+                      {
+                          m_ProjectToOpen = path;
+                      }
+                      ImGui::PopStyleColor();
+                  }
+                  else
+                  {
+                      if (ImGui::Button("OBJ", ImVec2(thumbnailSize, thumbnailSize)))
+                      {
+                          m_ProjectToOpen = path;
+                      }
+                  }
 
-                 ImGui::TextWrapped("%s", filename.c_str());
-                 ImGui::TextDisabled("%.20s...", path.string().c_str()); // Trucate path for visuals
-                 
-                 ImGui::PopID();
-                 ImGui::NextColumn();
+                  ImGui::TextWrapped("%s", filename.c_str());
+                  ImGui::TextDisabled("%.20s...", path.string().c_str()); // Trucate path for visuals
+                  
+                  ImGui::PopID();
+                  ImGui::NextColumn();
             }
             ImGui::Columns(1);
         }
@@ -342,7 +347,7 @@ namespace TE {
 
         // 2. Create Project Object
         std::shared_ptr<Project> newProject = Project::New();
-        ProjectConfig& config = Project::GetConfig();
+        ProjectConfig& config = newProject->GetConfig();
         config.Name = name;
         config.AssetDirectory = "Assets";
         config.StartScene = "Assets/Default.tescene"; 
@@ -354,7 +359,7 @@ namespace TE {
         Project::SaveActive(projFile);
 
         // 4. Open It
-        OpenProject(projFile);
+        m_ProjectToOpen = projFile;
     }
 
     void ProjectHubLayer::OpenProject(const std::filesystem::path& path)
@@ -382,7 +387,7 @@ namespace TE {
             // Load the project into the global state
             if (Project::Load(path))
             {
-                TE_CORE_INFO("Project loaded successfully: {0}", path.string());
+                TE_CORE_INFO("Project loaded successfully: ", path.string());
                 
                 // Switch layers safely using deferred queue
                 // Add EditorLayer
@@ -393,12 +398,12 @@ namespace TE {
             }
             else
             {
-                TE_CORE_ERROR("Failed to load project: {0}", path.string());
+                TE_CORE_ERROR("Failed to load project: ", path.string());
             }
         }
         else
         {
-            TE_CORE_ERROR("Project file not found: {0}", path.string());
+            TE_CORE_ERROR("Project file not found: ", path.string());
         }
     }
 

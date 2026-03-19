@@ -27,7 +27,7 @@ namespace TE {
 
     bool ProjectSerializer::Serialize(const std::filesystem::path& filepath)
     {
-        const auto& config = m_Project->GetConfig();
+        auto& config = m_Project->GetConfig();
 
         std::ofstream hout(filepath);
         if (hout.is_open())

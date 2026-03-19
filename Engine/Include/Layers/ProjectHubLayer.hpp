@@ -46,6 +46,8 @@ namespace TE {
         // UI Resources
         std::shared_ptr<class Texture> m_LogoIcon;
         std::shared_ptr<class Texture> m_ProjectIcon;
+
+        std::filesystem::path m_ProjectToOpen;
     };
 
 }
