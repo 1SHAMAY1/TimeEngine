@@ -11,11 +11,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/RenderBatcher.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/RenderBatcher.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer2D.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer2D.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/TEColor.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/TEColor.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TComponent.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Scene/EntityManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Scene/EntityManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/RenderBatcher.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/RenderBatcher.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/Renderer2D.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/Renderer2D.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,10 +62,6 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/Presentation.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/cmath" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/memory" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/vector" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.42.34433/include/xutility" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/Camera.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/CameraController.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/OrthographicCamera.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -61,6 +76,8 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Particle/ParticleTypes.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Particle/ParticleUpdater.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Project/Project.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TFunctionLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TObject.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -89,6 +106,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/TEOpenGLColor.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/RenderCommand.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Renderer2D.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/RendererContext.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/ShaderLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -97,6 +115,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/VertexArray.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/VertexBuffer.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Utils/PlatformUtils.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Window/IWindow.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Window/WindowsWindow.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Camera/Camera.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -114,7 +133,6 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Events/Event.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Events/KeyEvent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Events/MouseEvent.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TComponent.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TFunctionLibrary.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TObject.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TStandardGameLibrary.hpp" root0="SKIP_HIGHLIGHTING" />
@@ -132,6 +150,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Log.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Log.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/PreRequisites.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/Scene/Scene.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Time/Ticker.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Time/Ticker.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Time/Timer.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -149,6 +168,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLVertexBuffer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/OpenGL/TEOpenGLColor.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/RenderCommand.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/Renderer2D.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/RendererContext.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/Shader.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -176,20 +196,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ Project.Sandbox.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "ui",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C/C++ Project.Sandbox.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ecs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ Project.Sandbox">
     <configuration name="Logger" type="CppProject" factoryName="C++ Project">
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Logger/Customizable_Logger/Logger.vcxproj" />
@@ -249,6 +269,7 @@
       <workItem from="1767017472188" duration="10307000" />
       <workItem from="1767063003148" duration="8073000" />
       <workItem from="1773856935292" duration="412000" />
+      <workItem from="1773925500321" duration="6418000" />
     </task>
     <servers />
   </component>
