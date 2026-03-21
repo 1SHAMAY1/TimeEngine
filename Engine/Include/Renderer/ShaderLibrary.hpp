@@ -16,10 +16,14 @@ namespace TE {
         static std::shared_ptr<Shader> CreateBasicShader();
         static std::shared_ptr<Shader> CreateTextureShader();
         static std::shared_ptr<Shader> CreateColorShader();
+        static std::shared_ptr<Shader> CreateStandardShader();
         static std::shared_ptr<Shader> CreateLightingShader();
         static std::shared_ptr<Shader> CreateParticleShader();
         static std::shared_ptr<Shader> CreatePostProcessShader();
         static std::shared_ptr<Shader> CreateUIShader();
+        static std::shared_ptr<Shader> CreateLight2DShader();
+        static std::shared_ptr<Shader> CreateAmbientGradientShader();
+        static std::shared_ptr<Shader> CreateLightBlendShader();
 
         // ===== Common Shader Functions =====
         static void SetMVP(Shader* shader, const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
@@ -90,6 +94,7 @@ namespace TE {
         static std::string GetTextureFragmentShader();
         static std::string GetColorVertexShader();
         static std::string GetColorFragmentShader();
+        static std::string GetStandardFragmentShader();
         static std::string GetLightingVertexShader();
         static std::string GetLightingFragmentShader();
         static std::string GetParticleVertexShader();
@@ -98,6 +103,11 @@ namespace TE {
         static std::string GetPostProcessFragmentShader();
         static std::string GetUIVertexShader();
         static std::string GetUIFragmentShader();
+        static std::string GetLight2DVertexShader();
+        static std::string GetLight2DFragmentShader();
+        static std::string GetAmbientGradientFragmentShader();
+        static std::string GetLightBlendVertexShader();
+        static std::string GetLightBlendFragmentShader();
     };
 
 } 

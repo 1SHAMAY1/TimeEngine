@@ -11,10 +11,12 @@ namespace TE {
         static std::shared_ptr<OpenGLShader> CreateOpenGLBasicShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLTextureShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLColorShader();
+        static std::shared_ptr<OpenGLShader> CreateOpenGLStandardShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLLightingShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLParticleShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLPostProcessShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLUIShader();
+        static std::shared_ptr<OpenGLShader> CreateOpenGLLight2DShader();
         static std::shared_ptr<OpenGLShader> CreateOpenGLComputeShader(const std::string& computeSource);
 
         // ===== OpenGL-Specific Functions =====

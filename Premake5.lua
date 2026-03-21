@@ -131,15 +131,15 @@ project "Engine"
         }
 
     filter "configurations:Debug"
-        defines { "TE_DEBUG" }
+        defines { "TE_DEBUG", "TE_EDITOR" }
         symbols "On"
 
     filter "configurations:Release"
-        defines { "TE_RELEASE" }
+        defines { "TE_RELEASE", "TE_EDITOR" }
         optimize "On"
 
     filter "configurations:Dist"
-        defines { "TE_DIST" }
+        defines { "TE_DIST", "TE_PACKAGED", "TE_MINIMIZED" }
         optimize "On"
         
     filter "system:windows"
@@ -208,13 +208,13 @@ project "Sandbox"
         }
 
     filter "configurations:Debug"
-        defines { "TE_DEBUG" }
+        defines { "TE_DEBUG", "TE_EDITOR" }
         symbols "On"
 
     filter "configurations:Release"
-        defines { "TE_RELEASE" }
+        defines { "TE_RELEASE", "TE_EDITOR" }
         optimize "On"
 
     filter "configurations:Dist"
-        defines { "TE_DIST" }
+        defines { "TE_DIST", "TE_PACKAGED", "TE_MINIMIZED" }
         optimize "On"

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <GLFW/glfw3.h>
 #include <unordered_map>
@@ -11,7 +11,7 @@
 
 namespace TE
 {
-    TE_API struct InputState
+    struct TE_API InputState
     {
         bool IsPressed = false;
         int RepeatCount = 0;
@@ -21,7 +21,7 @@ namespace TE
         std::chrono::steady_clock::time_point PressedTime;
     };
 
-    TE_API struct MouseDelta {
+    struct TE_API MouseDelta {
         float x = 0.0f;
         float y = 0.0f;
         MouseDelta() = default;

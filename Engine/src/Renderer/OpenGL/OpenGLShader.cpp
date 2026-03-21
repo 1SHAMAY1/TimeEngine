@@ -1,4 +1,4 @@
-﻿#include "Renderer/OpenGL/OpenGLShader.hpp"
+#include "Renderer/OpenGL/OpenGLShader.hpp"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
@@ -82,5 +82,21 @@ namespace TE {
 
 	void OpenGLShader::SetUniform4f(const std::string& name, const glm::vec4& value) {
 		glUniform4f(GetUniformLocation(name), value.x, value.y, value.z, value.w);
+	}
+
+	void OpenGLShader::SetUniform3f(const std::string& name, const glm::vec3& value) {
+		glUniform3f(GetUniformLocation(name), value.x, value.y, value.z);
+	}
+
+	void OpenGLShader::SetUniform2f(const std::string& name, const glm::vec2& value) {
+		glUniform2f(GetUniformLocation(name), value.x, value.y);
+	}
+
+	void OpenGLShader::SetUniform1f(const std::string& name, float value) {
+		glUniform1f(GetUniformLocation(name), value);
+	}
+
+	void OpenGLShader::SetUniform1i(const std::string& name, int value) {
+		glUniform1i(GetUniformLocation(name), value);
 	}
 }

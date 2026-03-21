@@ -30,6 +30,13 @@ namespace TE {
         );
     }
 
+    std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLStandardShader() {
+        return std::make_shared<OpenGLShader>(
+            ShaderLibrary::GetColorVertexShader(),
+            ShaderLibrary::GetStandardFragmentShader()
+        );
+    }
+
     std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLightingShader() {
         return std::make_shared<OpenGLShader>(
             ShaderLibrary::GetLightingVertexShader(),
@@ -55,6 +62,13 @@ namespace TE {
         return std::make_shared<OpenGLShader>(
             ShaderLibrary::GetUIVertexShader(),
             ShaderLibrary::GetUIFragmentShader()
+        );
+    }
+
+    std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLight2DShader() {
+        return std::make_shared<OpenGLShader>(
+            ShaderLibrary::GetLight2DVertexShader(),
+            ShaderLibrary::GetLight2DFragmentShader()
         );
     }
 
