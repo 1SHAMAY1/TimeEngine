@@ -8,6 +8,7 @@
 #include "Renderer/Framebuffer.hpp"
 #include <glm/glm.hpp>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,7 @@ struct EditorSettings
     float BaseCameraSpeed = 100.0f;
     float ZoomSpeed = 2.0f;
     float DefaultZoom = 10.0f;
+    std::map<std::string, KeyCode> Shortcuts;
 };
 
 struct ProjectSettings
@@ -58,6 +60,15 @@ private:
     bool OnMouseButtonPressed(MouseButtonPressedEvent &e);
     bool OnMouseScrolled(MouseScrolledEvent &e);
 
+    // Selection Helpers
+    bool IsEntitySelected(Entity entity) const;
+    void SelectEntity(Entity entity, bool multiSelect = false, bool toggle = false);
+    void ClearSelection();
+    void DeleteSelectedEntities();
+
+    // Gizmo Helpers
+    void UI_DrawGizmos();
+
     // UI Helpers
     void SetDarkThemeColors();
     void UI_DrawMenubar();
@@ -70,11 +81,16 @@ private:
     void UI_DrawViewport();
     void UI_DrawSettingsPanel();
     void UI_DrawProjectSettingsPanel();
+    void UI_DrawGizmoText();
+    void UI_ViewportContextMenu();
+    std::string GetKeyName(KeyCode key);
+    int ToImGuiKey(KeyCode key);
 
     // Navigation
     void UpdateCamera(float dt);
+    void HandleViewportInput();
+    void UpdateGizmoHover();
 
-private:
     // Layout State
     bool m_ShowSceneHierarchy = true;
     bool m_ShowProperties = true;
@@ -96,21 +112,46 @@ private:
 
     // Scene State
     std::shared_ptr<Scene> m_ActiveScene;
-    Entity m_SelectedEntity;
+    std::set<Entity> m_SelectedEntities;
+
+    // Gizmo State
+    enum class GizmoType
+    {
+        None = -1,
+        Translate = 0,
+        Rotate = 1,
+        Scale = 2
+    };
+    GizmoType m_GizmoType = GizmoType::Translate;
+    int m_GizmoOperation = -1; // -1: none, 0: X, 1: Y, 2: Z/Center
+    int m_HoveredGizmoAxis = -1; // Cached for interaction check
 
     // Resources
     std::shared_ptr<class Texture> m_FileIcon;
     std::shared_ptr<class Texture> m_FolderIcon;
     std::shared_ptr<class Framebuffer> m_Framebuffer;
+    std::shared_ptr<class Framebuffer> m_LightMapFramebuffer;
     std::shared_ptr<class Renderer2D> m_Renderer2D;
 
     // Physics
     std::shared_ptr<class PhysicsWorld> m_PhysicsWorld;
     std::vector<struct RigidBody *> m_TestBodies;
     std::shared_ptr<class Material> m_DebugMaterial;
+    std::shared_ptr<class Material> m_LightBlendMaterial;
+    std::shared_ptr<class Material> m_GizmoXMaterial;
+    std::shared_ptr<class Material> m_GizmoYMaterial;
+    std::shared_ptr<class Material> m_GizmoMaterial;
 
     bool m_ViewportSizeChanged = false; // Tracks if we need resize
     float m_LastViewportX = 0, m_LastViewportY = 0;
+    glm::vec2 m_ViewportPos = {0, 0};
+    Entity m_HoveredEntity = Entity(0); // For context menu
+
+    // Gizmo Dragging
+    glm::vec2 m_GizmoDragStartMousePos = {0.0f, 0.0f};
+    glm::vec3 m_GizmoDragStartEntityPos = {0.0f, 0.0f, 0.0f};
+    glm::vec3 m_GizmoDragStartEntityScale = {1.0f, 1.0f, 1.0f};
+    float m_GizmoDragStartEntityRotation = 0.0f;
 };
 
 } // namespace TE

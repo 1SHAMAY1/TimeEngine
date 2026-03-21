@@ -85,9 +85,6 @@
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{E0AF9005-CC93-515B-35F4-4BAE21F73BDD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Layers">
-      <UniqueIdentifier>{C092BFBD-2CF4-9CCB-B561-E37D21C2D38A}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Renderer">
       <UniqueIdentifier>{E743A1CF-53B0-5CCA-1CA4-F42788CF7E32}</UniqueIdentifier>
     </Filter>
@@ -219,6 +216,9 @@
     <ClInclude Include="Include\Core\Scene\2DPlayerController.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Scene\AmbientLightComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\Scene\AnimatedSpriteComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
@@ -307,40 +307,40 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\CameraLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EditorLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EngineSettingsButtonLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\EngineSettingsLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\Layer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LayerStack.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\LogoLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingButtonLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProfilingWindowManager.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\ProjectHubLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Layers\TestTriangleLayer.hpp">
-      <Filter>Header Files\Layers</Filter>
+      <Filter>Editor Layer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Renderer\Framebuffer.hpp">
       <Filter>Header Files\Renderer</Filter>

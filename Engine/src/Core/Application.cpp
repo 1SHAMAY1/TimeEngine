@@ -8,6 +8,7 @@
 #include "ImGUI/ImGuiLayer.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/RenderCommand.hpp"
+#include <GLFW/glfw3.h>
 
 
 namespace TE
@@ -117,6 +118,8 @@ namespace TE
         }
 
         TE_CORE_INFO("Application Run ended.");
+
+        glfwTerminate();
     }
 
     void Application::PushLayer(Layer* layer)

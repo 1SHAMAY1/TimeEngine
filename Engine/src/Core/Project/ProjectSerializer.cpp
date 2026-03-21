@@ -1,5 +1,8 @@
 #include "Core/Project/ProjectSerializer.hpp"
 #include <fstream>
+#include <string>
+#include <sstream>
+#include <vector>
 
 // Simple YAML-based serialization for now.
 // We will need to ensure yaml-cpp is available or use a simple custom parser if not.
@@ -34,6 +37,7 @@ bool ProjectSerializer::Serialize(const std::filesystem::path &filepath)
         hout << "AssetDirectory: " << config.AssetDirectory.string() << std::endl;
         hout << "ScriptModulePath: " << config.ScriptModulePath.string() << std::endl;
         hout << "ThumbnailPath: " << config.ThumbnailPath.string() << std::endl;
+
         hout.close();
         return true;
     }

@@ -14,6 +14,7 @@ struct BatchDrawCommand
     std::shared_ptr<Material> material;
     glm::mat4 transform;
     uint32_t indexCount;
+    int blendMode = 0; // 0 = Normal, 1 = Additive, 2 = Multiplicative
 };
 
 class RenderBatcher
@@ -21,7 +22,7 @@ class RenderBatcher
 public:
     void Begin();
     void Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
-                const glm::mat4 &transform, uint32_t indexCount);
+                const glm::mat4 &transform, uint32_t indexCount, int blendMode = 0);
     void End();
     void Flush(); // Issues the actual draw calls, batching by material/shader
 

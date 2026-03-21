@@ -78,7 +78,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_DEBUG;TE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;src;Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLFW\glfw\include;..\Vendor\GLAD\include;..\Vendor\GLM;..\Vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -103,7 +103,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\Engine.lib" "$(Sol
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_RELEASE;TE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;src;Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLFW\glfw\include;..\Vendor\GLAD\include;..\Vendor\GLM;..\Vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -132,7 +132,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\Engine.lib" "$(S
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TE_PLATFORM_WINDOWS;TE_BUILD_DLL;IMGUI_IMPL_OPENGL_LOADER_GLAD;TE_DIST;TE_PACKAGED;TE_MINIMIZED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Vendor\IMGUI\ImGui;src;Include;..\Logger\Customizable_Logger\Include;..\Vendor\GLFW\glfw\include;..\Vendor\GLAD\include;..\Vendor\GLM;..\Vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -187,6 +187,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Core\Project\ProjectSerializer.hpp" />
     <ClInclude Include="Include\Core\Scene\2DPlayer.hpp" />
     <ClInclude Include="Include\Core\Scene\2DPlayerController.hpp" />
+    <ClInclude Include="Include\Core\Scene\AmbientLightComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\AnimatedSpriteComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\BoxComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\CircleComponent.hpp" />

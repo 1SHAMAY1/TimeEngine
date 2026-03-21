@@ -33,6 +33,9 @@ public:
     const glm::vec4 &GetValue() const { return m_Value; }
     glm::vec4 &GetValue() { return m_Value; }
 
+    // ===== Arithmetic =====
+    TEColor operator*(float scalar) const { return TEColor(m_Value.r * scalar, m_Value.g * scalar, m_Value.b * scalar, m_Value.a); }
+
 private:
     glm::vec4 m_Value;
 };

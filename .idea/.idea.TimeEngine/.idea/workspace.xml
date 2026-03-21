@@ -11,28 +11,42 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.agents/rules/priority.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Project/Project.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Project/Project.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/BoxComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/BoxComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/CircleComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/CircleComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/TriangleComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/TriangleComponent.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Input/Input.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Input/Input.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Material.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Material.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShaderLibrary.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/OpenGL/OpenGLShaderLibrary.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/RenderBatcher.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/RenderBatcher.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer2D.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Renderer2D.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/ShaderLibrary.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/ShaderLibrary.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/TEColor.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/TEColor.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Utility/MathUtils.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TComponent.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/KeyCodes.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/KeyCodes.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/TestTriangleLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Scene/EntityManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Scene/EntityManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Project/ProjectSerializer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Project/ProjectSerializer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/ImGUI/ImGuiLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/ImGUI/ImGuiLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/Material.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/Material.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLShader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLShader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLShaderLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/OpenGL/OpenGLShaderLibrary.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/RenderBatcher.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/RenderBatcher.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/Renderer2D.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/Renderer2D.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Premake5.lua" beforeDir="false" afterPath="$PROJECT_DIR$/Premake5.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sandbox/Sandbox.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Sandbox.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" afterDir="false" />
     </list>
@@ -76,8 +90,12 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Particle/ParticleTypes.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Particle/ParticleUpdater.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Project/Project.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/AmbientLightComponent.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/ProceduralSpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TFunctionLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TObject.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -137,6 +155,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TObject.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/GameFrameWork/TStandardGameLibrary.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Input/Input.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/src/Core/KeyCodes.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/CameraLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Core/Layers/EngineSettingsButtonLayer.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -185,7 +204,7 @@
     <setting file="file://$PROJECT_DIR$/Vendor/GLAD/src/glad.c" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vendor/GLFW/glfw/include/GLFW/glfw3.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vendor/GLM/glm/gtx/euler_angles.hpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Vendor/IMGUI/ImGui/imgui.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Vendor/IMGUI/ImGui/imgui.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -201,12 +220,13 @@
     &quot;C/C++ Project.Sandbox.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;ecs&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;editor&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -270,6 +290,9 @@
       <workItem from="1767063003148" duration="8073000" />
       <workItem from="1773856935292" duration="412000" />
       <workItem from="1773925500321" duration="6418000" />
+      <workItem from="1774013469904" duration="964000" />
+      <workItem from="1774014481129" duration="4753000" />
+      <workItem from="1774060193044" duration="19869000" />
     </task>
     <servers />
   </component>

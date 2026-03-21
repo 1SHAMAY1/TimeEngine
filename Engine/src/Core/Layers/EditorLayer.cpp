@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+#include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Core/Application.h"
 #include "Core/KeyCodes.hpp"
@@ -9,6 +10,7 @@
 #include "Core/Scene/BoxComponent.hpp"
 #include "Core/Scene/CircleComponent.hpp"
 #include "Core/Scene/LightComponent.hpp"
+#include "Core/Scene/AmbientLightComponent.hpp"
 #include "Core/Scene/ParallaxComponent.hpp"
 #include "Core/Scene/ProceduralSpriteComponent.hpp"
 #include "Core/Scene/SpriteComponent.hpp"
@@ -56,6 +58,7 @@ void EditorLayer::OnAttach()
     fbSpec.Width = 1280;
     fbSpec.Height = 720;
     m_Framebuffer = Framebuffer::Create(fbSpec);
+    m_LightMapFramebuffer = Framebuffer::Create(fbSpec);
 
     // Renderer Init
     TE_CORE_INFO("Initializing Renderer2D...");
@@ -84,10 +87,22 @@ void EditorLayer::OnAttach()
 
     // Debug Material
     TE_CORE_INFO("Creating Debug Material...");
-    auto shader = ShaderLibrary::CreateColorShader();
-    if (!shader)
+    auto unlitShader = ShaderLibrary::CreateColorShader();
+    if (!unlitShader)
         TE_CORE_ERROR("Failed to create ColorShader!");
-    m_DebugMaterial = std::make_shared<Material>(shader);
+    m_DebugMaterial = std::make_shared<Material>(unlitShader);
+    m_GizmoXMaterial = std::make_shared<Material>(unlitShader);
+    m_GizmoXMaterial->SetColor(TEColor(0.9f, 0.1f, 0.1f, 1.0f));
+    m_GizmoXMaterial->SetUniform("u_IsUnlit", 1.0f);
+    m_GizmoYMaterial = std::make_shared<Material>(unlitShader);
+    m_GizmoYMaterial->SetColor(TEColor(0.1f, 0.8f, 0.1f, 1.0f));
+    m_GizmoYMaterial->SetUniform("u_IsUnlit", 1.0f);
+    m_GizmoMaterial = std::make_shared<Material>(unlitShader);
+    m_GizmoMaterial->SetColor(TEColor(0.9f, 0.9f, 0.9f, 0.8f));
+    m_GizmoMaterial->SetUniform("u_IsUnlit", 1.0f);
+
+    auto blendShader = ShaderLibrary::CreateLightBlendShader();
+    if (blendShader) m_LightBlendMaterial = std::make_shared<Material>(blendShader);
 
     // Load Icons
     TE_CORE_INFO("Loading Icons...");
@@ -102,6 +117,21 @@ void EditorLayer::OnAttach()
         m_FolderIcon = std::make_shared<Texture>(folderPath);
     else if (std::filesystem::exists("e:/TimeEngine/Resources/Icons/Folder.png"))
         m_FolderIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Icons/Folder.png");
+
+    // Default Shortcuts if not present
+    if (m_EditorSettings.Shortcuts.empty())
+    {
+        m_EditorSettings.Shortcuts["MoveForward"] = Key::W;
+        m_EditorSettings.Shortcuts["MoveBackward"] = Key::S;
+        m_EditorSettings.Shortcuts["MoveLeft"] = Key::A;
+        m_EditorSettings.Shortcuts["MoveRight"] = Key::D;
+        m_EditorSettings.Shortcuts["Sprint"] = Key::LeftShift;
+        m_EditorSettings.Shortcuts["Delete"] = Key::Delete;
+        m_EditorSettings.Shortcuts["Translate"] = Key::W;
+        m_EditorSettings.Shortcuts["Rotate"] = Key::E;
+        m_EditorSettings.Shortcuts["Scale"] = Key::R;
+        m_EditorSettings.Shortcuts["Select"] = Key::Q;
+    }
 
     TE_CORE_INFO("EditorLayer::OnAttach Finished.");
 }
@@ -122,26 +152,147 @@ void EditorLayer::OnUpdate()
         dt = 0.05f; // Clamp
 
     UpdateCamera(dt);
+    HandleViewportInput();
 
     // Physics Step
     if (m_PhysicsWorld)
         m_PhysicsWorld->Step(dt);
 
-    // Resize Framebuffer
     if (const FramebufferSpecification &spec = m_Framebuffer->GetSpecification();
         m_ViewportSizeChanged && spec.Width > 0 && spec.Height > 0 &&
         (spec.Width != m_LastViewportX || spec.Height != m_LastViewportY))
     {
         m_Framebuffer->Resize((uint32_t)m_LastViewportX, (uint32_t)m_LastViewportY);
+        if (m_LightMapFramebuffer)
+            m_LightMapFramebuffer->Resize((uint32_t)m_LastViewportX, (uint32_t)m_LastViewportY);
         m_ViewportSizeChanged = false;
     }
 
-    // Render
+    // 1. LightMap Pass
+    if (m_LightMapFramebuffer && m_LightBlendMaterial)
+    {
+        m_LightMapFramebuffer->Bind();
+
+        // Default to very dim (0.1) if no AmbientLight exists in the scene.
+        // This makes the scene faintly visible while making Point Lights pop brightly.
+        TEColor ambientClear(0.1f, 0.1f, 0.1f, 1.0f);
+        bool hasAmbient = false;
+        if (m_ActiveScene)
+        {
+            auto &entityManager = m_ActiveScene->GetEntityManager();
+            const auto &entities = entityManager.GetAliveEntities();
+            for (EntityID id : entities)
+            {
+                auto ambients = entityManager.GetComponents<AmbientLightComponent>(Entity(id));
+                if (!ambients.empty())
+                {
+                    float intsy = ambients[0]->Intensity;
+                    ambientClear = TEColor(ambients[0]->SkyColor.GetValue().r * intsy,
+                                           ambients[0]->SkyColor.GetValue().g * intsy,
+                                           ambients[0]->SkyColor.GetValue().b * intsy, 1.0f);
+                    hasAmbient = true;
+                    break;
+                }
+            }
+        }
+        
+        RenderCommand::SetClearColor({ambientClear.GetValue().r, ambientClear.GetValue().g, ambientClear.GetValue().b, 1.0f});
+        RenderCommand::Clear();
+
+        if (m_Renderer2D && m_ActiveScene)
+        {
+            float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
+            float zoom = m_CameraZoom;
+            glm::mat4 projection = glm::ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
+            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
+            glm::mat4 viewProj = projection * view;
+
+            m_Renderer2D->BeginFrame(viewProj);
+            auto &entityManager = m_ActiveScene->GetEntityManager();
+            const auto &entities = entityManager.GetAliveEntities();
+
+            // Collect lights and shadow-casting occluders
+            struct LightInfo { TEVector2 pos; float radius; float rotation; LightComponent* comp; };
+            std::vector<LightInfo> sceneLights;
+            struct OccluderInfo { std::vector<TEVector2> vertices; float radiusScale; TEVector2 center; };
+            std::vector<OccluderInfo> occluders;
+
+            for (EntityID id : entities)
+            {
+                Entity entity(id);
+                auto *transform = entityManager.GetComponent<TransformComponent>(entity);
+                if (!transform) continue;
+
+                auto GetWorldTransform = [&](TComponent *comp) -> glm::mat4 {
+                    std::vector<TComponent *> chain;
+                    TComponent *curr = comp;
+                    while (curr) { chain.push_back(curr); curr = curr->GetParentComponent(); }
+                    std::reverse(chain.begin(), chain.end());
+                    glm::mat4 model = transform->Transform.GetMatrix();
+                    for (auto *node : chain) { model = model * node->Transform.GetMatrix(); }
+                    return model;
+                };
+
+                // Collect lights
+                auto lights = entityManager.GetComponents<LightComponent>(entity);
+                for (auto *light : lights)
+                {
+                    glm::mat4 worldMat = GetWorldTransform(light);
+                    float rotation = atan2(worldMat[0][1], worldMat[0][0]);
+                    sceneLights.push_back({TEVector2(worldMat[3].x, worldMat[3].y), light->Radius, rotation, light});
+                }
+
+                // Collect shadow-casting geometry generically
+                auto allComponents = entityManager.GetAllComponents(entity);
+                for (auto *comp : allComponents)
+                {
+                    if (comp->CastsOcclusionShadow())
+                    {
+                        glm::mat4 model = GetWorldTransform(comp);
+                        std::vector<TEVector2> verts = comp->GetWorldVertices(model);
+                        if (!verts.empty())
+                        {
+                            // Approximate radius scale for culling (from model matrix scale)
+                            float rScale = glm::length(glm::vec3(model[0]));
+                            occluders.push_back({verts, rScale, TEVector2(model[3].x, model[3].y)});
+                        }
+                    }
+                }
+            }
+
+            // 1a. Draw all lights into lightmap
+            for (auto &li : sceneLights)
+            {
+                m_Renderer2D->SubmitLight(*li.comp, li.pos, li.rotation);
+            }
+
+            // 1b. Draw shadow volumes for each light-occluder pair
+            for (auto &li : sceneLights)
+            {
+                for (auto &occ : occluders)
+                {
+                    // Quick distance check
+                    float dx = occ.center.x - li.pos.x;
+                    float dy = occ.center.y - li.pos.y;
+                    float distSq = dx * dx + dy * dy;
+                    float maxDist = li.radius + occ.radiusScale;
+                    if (distSq > maxDist * maxDist) continue;
+
+                    m_Renderer2D->SubmitShadow(li.pos, li.radius, occ.vertices);
+                }
+            }
+
+            m_Renderer2D->EndFrame();
+            m_Renderer2D->Flush();
+        }
+        m_LightMapFramebuffer->Unbind();
+    }
+
+    // 2. Main Scene Pass
     m_Framebuffer->Bind();
     RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
     RenderCommand::Clear();
 
-    // Draw Scene
     if (m_Renderer2D && m_DebugMaterial)
     {
         float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
@@ -167,7 +318,6 @@ void EditorLayer::OnUpdate()
                     TEVector2 localCenter = (body->Shape.aabb.min + body->Shape.aabb.max) * 0.5f;
                     TEVector2 worldCenter = body->Position + localCenter;
 
-                    // Use world coordinates (transformed by View-Proj in shader)
                     TEVector2 pos = {worldCenter.x - size.x * 0.5f, worldCenter.y - size.y * 0.5f};
                     TEVector2 sz = {size.x, size.y};
 
@@ -176,7 +326,7 @@ void EditorLayer::OnUpdate()
             }
         }
 
-        // Scene Rendering (Phase 1.12 Refined)
+        // Scene Rendering
         if (m_ActiveScene)
         {
             auto &entityManager = m_ActiveScene->GetEntityManager();
@@ -207,91 +357,36 @@ void EditorLayer::OnUpdate()
                     return model;
                 };
 
-                // Draw LightComponents (Visualization)
-                auto lights = entityManager.GetComponents<LightComponent>(entity);
-                for (auto *light : lights)
+                // Generic Rendering
+                auto allComponents = entityManager.GetAllComponents(entity);
+                for (auto *comp : allComponents)
                 {
-                    if (!light->bIsVisible)
-                        continue;
-                    glm::mat4 worldMat = GetWorldTransform(light);
-                    m_Renderer2D->SubmitLight(*light, TEVector2(worldMat[3].x, worldMat[3].y));
-                }
-
-                // Draw BoxComponents
-                auto boxes = entityManager.GetComponents<BoxComponent>(entity);
-                for (auto *box : boxes)
-                {
-                    glm::mat4 model = GetWorldTransform(box);
-                    // Apply the shape's specific Size
-                    glm::mat4 finalModel = glm::scale(model, glm::vec3(box->Size.x, box->Size.y, 1.0f));
-
-                    if (box->bIsVisible)
-                    {
-                        m_DebugMaterial->SetColor(box->BaseColor);
-                        m_Renderer2D->SubmitQuad(finalModel, m_DebugMaterial);
-                    }
-                    if (box->bShowDebug)
-                    {
-                        // Outline: we don't have a mat4 specific outlines yet, so we'll just use the center for now or
-                        // implement better
-                        m_Renderer2D->SubmitRectOutline(TEVector2(model[3].x, model[3].y),
-                                                        {box->Size.x * model[0].x, box->Size.y * model[1].y}, 0.05f,
-                                                        TEColor(0.2f, 1.0f, 0.2f, 1.0f));
-                    }
-                }
-
-                // Draw CircleComponents
-                auto circles = entityManager.GetComponents<CircleComponent>(entity);
-                for (auto *circle : circles)
-                {
-                    glm::mat4 model = GetWorldTransform(circle);
-                    float radius = circle->Radius;
-                    TEVector2 worldPos = {model[3].x, model[3].y};
-
-                    if (circle->bIsVisible)
-                    {
-                        m_DebugMaterial->SetColor(circle->BaseColor);
-                        // Using SubmitCircle (center + radius) - this doesn't support elliptical scale well but it's
-                        // okay for 2D circles
-                        m_Renderer2D->SubmitCircle(worldPos, radius * model[0].x, m_DebugMaterial);
-                    }
-                    if (circle->bShowDebug)
-                    {
-                        m_DebugMaterial->SetColor(TEColor(0.2f, 1.0f, 0.2f, 0.5f));
-                        m_Renderer2D->SubmitCircle(worldPos, radius * model[0].x, m_DebugMaterial);
-                    }
-                }
-
-                // Draw TriangleComponents
-                auto triangles = entityManager.GetComponents<TriangleComponent>(entity);
-                for (auto *tri : triangles)
-                {
-                    glm::mat4 model = GetWorldTransform(tri);
-
-                    auto TransformPoint = [&](const TEVector2 &p)
-                    {
-                        glm::vec4 tp = model * glm::vec4(p.x, p.y, 0.0f, 1.0f);
-                        return TEVector2(tp.x, tp.y);
-                    };
-
-                    TEVector2 p1 = TransformPoint(tri->Point1);
-                    TEVector2 p2 = TransformPoint(tri->Point2);
-                    TEVector2 p3 = TransformPoint(tri->Point3);
-
-                    if (tri->bIsVisible)
-                    {
-                        m_DebugMaterial->SetColor(tri->BaseColor);
-                        m_Renderer2D->SubmitTriangle(p1, p2, p3, m_DebugMaterial);
-                    }
-                    if (tri->bShowDebug)
-                    {
-                        m_DebugMaterial->SetColor(TEColor(0.2f, 1.0f, 0.2f, 0.5f));
-                        m_Renderer2D->SubmitTriangle(p1, p2, p3, m_DebugMaterial);
-                    }
+                    glm::mat4 model = GetWorldTransform(comp);
+                    comp->OnRender(m_Renderer2D.get(), model, m_DebugMaterial);
                 }
             }
         }
 
+        m_Renderer2D->EndFrame();
+        m_Renderer2D->Flush(); // Draw Scene (Objects)
+
+        // 3. Composite LightMap Pass
+        if (m_LightMapFramebuffer && m_LightBlendMaterial)
+        {
+            m_Renderer2D->BeginFrame(glm::mat4(1.0f)); 
+            uint32_t lightmapTex = m_LightMapFramebuffer->GetColorAttachmentRendererID();
+            OpenGLShaderLibrary::BindTexture2D(lightmapTex, 0); 
+            
+            glm::mat4 compTransform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 1.0f));
+            m_Renderer2D->SubmitQuad(compTransform, m_LightBlendMaterial, 2); 
+
+            m_Renderer2D->EndFrame();
+            m_Renderer2D->Flush();
+        }
+
+        // 4. Draw Gizmos (on top)
+        m_Renderer2D->BeginFrame(viewProj); // Bind camera projection!
+        UI_DrawGizmos();
         m_Renderer2D->EndFrame();
         m_Renderer2D->Flush();
     }
@@ -303,6 +398,8 @@ void EditorLayer::OnEvent(Event &event)
 {
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<MouseScrolledEvent>(TE_BIND_EVENT_FN(EditorLayer::OnMouseScrolled));
+    dispatcher.Dispatch<KeyPressedEvent>(TE_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+    dispatcher.Dispatch<MouseButtonPressedEvent>(TE_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 }
 
 // Helper for Vec3 controls
@@ -417,7 +514,7 @@ void EditorLayer::OnImGuiRender()
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
     bool opt_fullscreen = opt_fullscreen_persistant;
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_NoWindowMenuButton;
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     if (opt_fullscreen)
@@ -531,7 +628,6 @@ void EditorLayer::UI_DrawMenubar()
         }
         if (ImGui::BeginMenu("Window"))
         {
-            ImGui::MenuItem("Viewport", NULL, &m_ShowViewport);
             ImGui::MenuItem("Scene Hierarchy", NULL, &m_ShowSceneHierarchy);
             ImGui::MenuItem("Properties", NULL, &m_ShowProperties);
             ImGui::MenuItem("Content Browser", NULL, &m_ShowContentBrowser);
@@ -563,13 +659,17 @@ void EditorLayer::UI_DrawSceneHierarchy()
             auto *transformComp = entityManager.GetComponent<TransformComponent>(entity);
             bool hasChildren = transformComp && !transformComp->Children.empty();
 
-            ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0) |
+            ImGuiTreeNodeFlags flags = (IsEntitySelected(entity) ? ImGuiTreeNodeFlags_Selected : 0) |
                                        (hasChildren ? 0 : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_OpenOnArrow |
                                        ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
 
             bool opened = ImGui::TreeNodeEx((void *)(uint64_t)id, flags, name.c_str());
             if (ImGui::IsItemClicked())
-                m_SelectedEntity = entity;
+            {
+                bool multiSelect = ImGui::GetIO().KeyShift;
+                bool toggle = ImGui::GetIO().KeyCtrl;
+                SelectEntity(entity, multiSelect, toggle);
+            }
 
             // Context Menu
             if (ImGui::BeginPopupContextItem())
@@ -587,8 +687,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 if (ImGui::MenuItem("Delete Entity"))
                 {
                     m_ActiveScene->DestroyEntity(entity);
-                    if (m_SelectedEntity == entity)
-                        m_SelectedEntity = Entity();
+                    if (m_SelectedEntities.count(entity))
+                        m_SelectedEntities.erase(entity);
                 }
                 ImGui::EndPopup();
             }
@@ -640,12 +740,25 @@ void EditorLayer::UI_DrawSceneHierarchy()
             ImGui::TreePop();
         }
 
+        // Click on empty space in hierarchy to deselect
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
+            ClearSelection();
+
         // Right-click on empty space to create entity
         if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight))
         {
             if (ImGui::MenuItem("Create Empty Entity"))
             {
                 m_ActiveScene->CreateEntity("Empty Entity");
+            }
+
+            if (!m_SelectedEntities.empty())
+            {
+                ImGui::Separator();
+                if (ImGui::MenuItem("Delete Selected"))
+                {
+                    DeleteSelectedEntities();
+                }
             }
             ImGui::EndPopup();
         }
@@ -661,13 +774,16 @@ void EditorLayer::UI_DrawProperties()
 
     ImGui::Begin("Properties");
 
-    if (!m_ActiveScene || !m_ActiveScene->GetEntityManager().IsValid(m_SelectedEntity))
+    if (!m_ActiveScene || m_SelectedEntities.empty())
     {
         ImGui::Text("Select an entity to view details.");
     }
     else
     {
+        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Tip: Ctrl+Click sliders for numerical input.");
+        ImGui::Separator();
         auto &entityManager = m_ActiveScene->GetEntityManager();
+        Entity m_SelectedEntity = *m_SelectedEntities.begin(); // Primary selection for properties
         EntityID id = m_SelectedEntity.GetID();
 
         ImGui::TextDisabled("Entity ID: %llu", id);
@@ -780,8 +896,8 @@ void EditorLayer::UI_DrawProperties()
                     light->Type = (TELightType)currentType;
 
                 ImGui::ColorEdit4("Color", &light->Color.GetValue().x);
-                ImGui::DragFloat("Intensity", &light->Intensity, 0.1f, 0.0f, 100.0f);
-                ImGui::Checkbox("Visible", &light->bIsVisible);
+                ImGui::DragFloat("Intensity", &light->Intensity, 0.1f, 0.0f, 1000.0f);
+                ImGui::DragFloat("Falloff Exponent", &light->FalloffExponent, 0.1f, 0.1f, 10.0f);
 
                 if (light->Type == TELightType::Point || light->Type == TELightType::Spot)
                 {
@@ -800,6 +916,15 @@ void EditorLayer::UI_DrawProperties()
                     ImGui::DragFloat2("Line Offset", &light->LineOffset.x, 0.1f);
                     ImGui::DragFloat("Width", &light->Width, 0.1f, 0.01f, 100.0f);
                 }
+            }
+            else if (auto *ambient = dynamic_cast<AmbientLightComponent *>(comp))
+            {
+                ImGui::ColorEdit4("Sky Color", &ambient->SkyColor.GetValue().x);
+                ImGui::ColorEdit4("Horizon Color", &ambient->HorizonColor.GetValue().x);
+                ImGui::ColorEdit4("Ground Color", &ambient->GroundColor.GetValue().x);
+                ImGui::DragFloat("Intensity", &ambient->Intensity, 0.01f, 0.0f, 10.0f);
+                ImGui::DragFloat("Horizon Height", &ambient->HorizonHeight, 0.01f, 0.0f, 1.0f);
+                ImGui::DragFloat("Horizon Spread", &ambient->HorizonSpread, 0.01f, 0.0f, 1.0f);
             }
 
             if (auto *psc = dynamic_cast<ProceduralSpriteComponent *>(comp))
@@ -901,6 +1026,8 @@ void EditorLayer::UI_DrawProperties()
                     AddComp((TriangleComponent *)nullptr);
                 if (ImGui::MenuItem("Light Component"))
                     AddComp((LightComponent *)nullptr);
+                if (ImGui::MenuItem("Ambient Light Component"))
+                    AddComp((AmbientLightComponent *)nullptr);
 
                 ImGui::EndPopup();
             }
@@ -1046,10 +1173,18 @@ void EditorLayer::UI_DrawViewport()
         return;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::Begin("Viewport");
+    ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 
     m_ViewportFocused = ImGui::IsWindowFocused();
     m_ViewportHovered = ImGui::IsWindowHovered();
+    if (m_ViewportHovered)
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+
+    auto &shortcuts = m_EditorSettings.Shortcuts;
+
+    ImVec2 winPos = ImGui::GetWindowPos();
+    ImVec2 contentOffset = ImGui::GetWindowContentRegionMin();
+    m_ViewportPos = { winPos.x + contentOffset.x, winPos.y + contentOffset.y };
 
     ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
     if (m_LastViewportX != viewportPanelSize.x || m_LastViewportY != viewportPanelSize.y)
@@ -1059,12 +1194,15 @@ void EditorLayer::UI_DrawViewport()
         m_ViewportSizeChanged = true;
     }
 
-    if (m_Framebuffer)
-    {
-        uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void *)(uintptr_t)textureID, ImVec2{m_LastViewportX, m_LastViewportY}, ImVec2{0, 1},
-                     ImVec2{1, 0});
-    }
+        if (m_Framebuffer)
+        {
+            uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+            ImGui::Image((void *)(uintptr_t)textureID, ImVec2{m_LastViewportX, m_LastViewportY}, ImVec2{0, 1},
+                         ImVec2{1, 0});
+            
+            UI_ViewportContextMenu();
+            UI_DrawGizmoText(); // DRAW TEXT HERE (Valid ImGui context)
+        }
 
     auto drawList = ImGui::GetWindowDrawList();
     if (m_ShowViewport)
@@ -1096,25 +1234,96 @@ void EditorLayer::UI_DrawViewport()
             drawList->AddLine(ImVec2(winPos.x, winPos.y + y), ImVec2(winPos.x + winSize.x, winPos.y + y), gridColor);
     }
 
-    ImGui::SetCursorPos(ImVec2(10, 30));
-    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Viewport Size: %.0f, %.0f", m_LastViewportX, m_LastViewportY);
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Pos: %.2f, %.2f | Zoom: %.2f", m_CameraPosition.x,
-                       m_CameraPosition.y, m_CameraZoom);
+    // AAA Style Horizontal Toolbar
+    {
+        ImGui::SetCursorPos(ImVec2(10, 40)); // Positioned lower and floating
+        
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 14.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 6));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
+        
+        // Toolbar Background: Fully transparent for a floating effect
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+        
+        if (ImGui::BeginChild("ViewportToolbar", ImVec2(ImGui::GetContentRegionAvail().x - 20, 40), false))
+        {
+            // Left Group: Settings & View
+            if (ImGui::Button("Menu"))
+                ImGui::OpenPopup("ViewportSettingsPopup");
+            
+            if (ImGui::BeginPopup("ViewportSettingsPopup"))
+            {
+                ImGui::TextDisabled("Viewport Stats");
+                ImGui::Text("Size: %.0f x %.0f", m_LastViewportX, m_LastViewportY);
+                ImGui::Text("Cam: (%.1f, %.1f)", m_CameraPosition.x, m_CameraPosition.y);
+                ImGui::Text("Zoom: %.1f", m_CameraZoom);
+                ImGui::Separator();
+                ImGui::Checkbox("Allow Navigation", &m_EditorSettings.AllowNavigation);
+                ImGui::Checkbox("Show Physics", &m_EditorSettings.ShowPhysicsColliders);
+                ImGui::EndPopup();
+            }
 
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-    ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Speed Multiplier:");
-    ImGui::SameLine();
-    ImGui::PushItemWidth(100);
-    ImGui::DragFloat("##Speed", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f, "%.1f");
-    ImGui::PopItemWidth();
-    ImGui::PopStyleVar();
+            ImGui::SameLine();
 
-    if (!m_EditorSettings.AllowNavigation)
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Navigation: DISABLED");
-    else
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f),
-                           "Navigation: RMB + WASD (Shift: Sprint | Scroll: Zoom | Shift+Scroll: Speed Multi)");
+            // Navigation Toggle (Pill style)
+            auto navColor = m_EditorSettings.AllowNavigation ? ImVec4(0.25f, 0.5f, 1.0f, 1.0f) : ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
+            ImGui::PushStyleColor(ImGuiCol_Button, navColor);
+            if (ImGui::Button("Nav")) m_EditorSettings.AllowNavigation = !m_EditorSettings.AllowNavigation;
+            ImGui::SetItemTooltip("Toggle Viewport Navigation");
+            ImGui::PopStyleColor();
 
+            ImGui::SameLine();
+
+            // Right Group: Gizmo Modes
+            float rightOffset = ImGui::GetContentRegionAvail().x - (4 * 75); // Adjusted spacing
+            if (rightOffset > 0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + rightOffset);
+
+            auto gizmoButton = [&](const char* label, GizmoType type, const char* tooltip) {
+                bool active = m_GizmoType == type;
+                if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.5f, 1.0f, 1.0f)); // Bright blue for active
+                else ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.25f, 0.8f));
+                
+                if (ImGui::Button(label, ImVec2(65, 0))) m_GizmoType = type;
+                ImGui::SetItemTooltip("%s", tooltip);
+                ImGui::PopStyleColor();
+                ImGui::SameLine();
+            };
+
+            gizmoButton("Select", GizmoType::None, "Selection Tool (Esc)");
+            gizmoButton("Move", GizmoType::Translate, "Translation Tool (W)");
+            gizmoButton("Rotate", GizmoType::Rotate, "Rotation Tool (E)");
+            gizmoButton("Scale", GizmoType::Scale, "Scaling Tool (R)");
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor(1);
+        ImGui::PopStyleVar(3);
+    }
+
+    if (m_ViewportFocused)
+    {
+        KeyCode delCode = m_EditorSettings.Shortcuts.count("Delete") ? m_EditorSettings.Shortcuts.at("Delete") : Key::Delete;
+        if (ImGui::IsKeyPressed((ImGuiKey)ToImGuiKey(delCode)) || ImGui::IsKeyPressed(ImGuiKey_Backspace))
+        {
+            DeleteSelectedEntities();
+        }
+
+        // Gizmo Switching
+        if (!ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && !ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+        {
+            auto checkGizmo = [&](const std::string& name, GizmoType type) {
+                KeyCode code = shortcuts.count(name) ? shortcuts.at(name) : (KeyCode)0;
+                if (code != (KeyCode)0 && ImGui::IsKeyPressed((ImGuiKey)ToImGuiKey(code)))
+                    m_GizmoType = type;
+            };
+
+            checkGizmo("Translate", GizmoType::Translate);
+            checkGizmo("Rotate", GizmoType::Rotate);
+            checkGizmo("Scale", GizmoType::Scale);
+            checkGizmo("Select", GizmoType::None);
+        }
+    }
+
+    // Removed Navigation Text
     ImGui::End();
     ImGui::PopStyleVar();
 }
@@ -1158,6 +1367,52 @@ void EditorLayer::UI_DrawSettingsPanel()
             SetDarkThemeColors();
     }
 
+    if (ImGui::CollapsingHeader("Shortcuts", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        auto &shortcuts = m_EditorSettings.Shortcuts;
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, 150.0f);
+
+        for (auto &[name, key] : shortcuts)
+        {
+            ImGui::PushID(name.c_str());
+            
+            ImGui::Text(name.c_str());
+            ImGui::NextColumn();
+
+            std::string buttonLabel = GetKeyName(key) + "##" + name;
+            if (ImGui::Button(buttonLabel.c_str(), ImVec2(100, 0)))
+            {
+                // Rebind logic (modal or wait for next key)
+                ImGui::OpenPopup(("Rebind##" + name).c_str());
+            }
+
+            if (ImGui::BeginPopupModal(("Rebind##" + name).c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Press any key to rebind '%s'...", name.c_str());
+                ImGui::Separator();
+
+                for (int k = (int)Key::Space; k <= (int)Key::Menu; k++)
+                {
+                    if (Input::IsKeyPressed((KeyCode)k))
+                    {
+                        key = (KeyCode)k;
+                        ImGui::CloseCurrentPopup();
+                        break;
+                    }
+                }
+
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                    ImGui::CloseCurrentPopup();
+                ImGui::EndPopup();
+            }
+
+            ImGui::NextColumn();
+            ImGui::PopID();
+        }
+        ImGui::Columns(1);
+    }
+
     ImGui::End();
 }
 
@@ -1167,7 +1422,8 @@ void EditorLayer::UI_DrawProjectSettingsPanel()
         return;
 
     ImGui::Begin("Project Settings", &m_ShowProjectSettings);
-
+    ImGui::Text("Project Name: %s", Project::GetActiveConfig().Name.c_str());
+    
     if (ImGui::CollapsingHeader("Game Configuration", ImGuiTreeNodeFlags_DefaultOpen))
     {
         const char *items[] = {"2D", "3D"};
@@ -1203,7 +1459,101 @@ void EditorLayer::UI_DrawProjectSettingsPanel()
             }
         }
     }
+
     ImGui::End();
+}
+
+void EditorLayer::HandleViewportInput()
+{
+    if (!m_ActiveScene) return;
+
+    // First, update gizmo hover state so we know if we should block selection
+    UpdateGizmoHover();
+
+    // 1. Escape Key to Deselect
+    if (m_ViewportFocused && ImGui::IsKeyPressed(ImGuiKey_Escape))
+    {
+        ClearSelection();
+    }
+
+    // 2. Click Handling (Selection)
+    // BLOCK selection if we are hovering a gizmo or already dragging one
+    if (m_ViewportHovered && !ImGui::IsMouseDown(ImGuiMouseButton_Right) && m_HoveredGizmoAxis == -1 && m_GizmoOperation == -1)
+    {
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+        {
+            ImVec2 mousePos = ImGui::GetMousePos();
+            glm::vec2 viewportMouse = { mousePos.x - m_ViewportPos.x, mousePos.y - m_ViewportPos.y };
+            
+            // Adjust for DPI/Scale if needed, but usually world coords are fine if they match aspect
+            float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
+            float zoom = m_CameraZoom;
+            
+            // Convert to World Coords
+            glm::vec2 worldMouse;
+            worldMouse.x = ((viewportMouse.x / m_LastViewportX) * 2.0f - 1.0f) * aspect * zoom + m_CameraPosition.x;
+            worldMouse.y = (1.0f - (viewportMouse.y / m_LastViewportY) * 2.0f) * zoom + m_CameraPosition.y;
+
+            auto& entityManager = m_ActiveScene->GetEntityManager();
+            auto GetWorldTransform = [&](Entity e, TComponent *comp) -> glm::mat4 {
+                auto *transform = entityManager.GetComponent<TransformComponent>(e);
+                if (!transform) return glm::mat4(1.0f);
+                std::vector<TComponent *> chain;
+                TComponent *curr = comp;
+                while (curr) { chain.push_back(curr); curr = curr->GetParentComponent(); }
+                std::reverse(chain.begin(), chain.end());
+                glm::mat4 model = transform->Transform.GetMatrix();
+                for (auto *node : chain) { model = model * node->Transform.GetMatrix(); }
+                return model;
+            };
+
+            std::vector<Entity> candidates;
+            for (auto entityID : entityManager.GetAliveEntities())
+            {
+                Entity entity(entityID);
+                bool hit = false;
+                auto allComponents = entityManager.GetAllComponents(entity);
+                for (auto *comp : allComponents)
+                {
+                    glm::mat4 model = GetWorldTransform(entity, comp);
+                    if (comp->ContainsPoint(model, worldMouse))
+                    {
+                        hit = true;
+                        break;
+                    }
+                }
+                if (!hit)
+                {
+                    auto *transform = entityManager.GetComponent<TransformComponent>(entity);
+                    if (transform)
+                    {
+                        glm::vec2 pos = { transform->Transform.Position.x, transform->Transform.Position.y };
+                        if (transform->Parent != 0) {
+                            auto* p = entityManager.GetComponent<TransformComponent>(Entity(transform->Parent));
+                            if (p) pos += glm::vec2(p->Transform.Position.x, p->Transform.Position.y);
+                        }
+                        if (glm::distance(worldMouse, pos) <= 0.3f) hit = true;
+                    }
+                }
+                if (hit) candidates.push_back(entity);
+            }
+
+            if (!candidates.empty())
+            {
+                Entity hitEntity = candidates.back();
+                bool control = ImGui::GetIO().KeyCtrl;
+                SelectEntity(hitEntity, false, control);
+            }
+            else
+            {
+                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    ClearSelection();
+            }
+
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+                ImGui::OpenPopup("ViewportContextMenu");
+        }
+    }
 }
 
 void EditorLayer::UpdateCamera(float dt)
@@ -1211,18 +1561,35 @@ void EditorLayer::UpdateCamera(float dt)
     if (!m_EditorSettings.AllowNavigation)
         return;
 
-    if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
-    {
-        float sprintBonus = (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift)) ? 2.5f : 1.0f;
-        float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier) * sprintBonus * dt;
+    auto& shortcuts = m_EditorSettings.Shortcuts;
+    KeyCode moveForwardCode = shortcuts.count("MoveForward") ? shortcuts.at("MoveForward") : Key::W;
+    KeyCode moveBackwardCode = shortcuts.count("MoveBackward") ? shortcuts.at("MoveBackward") : Key::S;
+    KeyCode moveLeftCode = shortcuts.count("MoveLeft") ? shortcuts.at("MoveLeft") : Key::A;
+    KeyCode moveRightCode = shortcuts.count("MoveRight") ? shortcuts.at("MoveRight") : Key::D;
+    KeyCode sprintCode = shortcuts.count("Sprint") ? shortcuts.at("Sprint") : Key::LeftShift;
 
-        if (ImGui::IsKeyDown(ImGuiKey_W))
+    // Convert to ImGuiKey for better reliability
+    ImGuiKey forward = (ImGuiKey)ToImGuiKey(moveForwardCode);
+    ImGuiKey backward = (ImGuiKey)ToImGuiKey(moveBackwardCode);
+    ImGuiKey left = (ImGuiKey)ToImGuiKey(moveLeftCode);
+    ImGuiKey right = (ImGuiKey)ToImGuiKey(moveRightCode);
+    ImGuiKey sprint = (ImGuiKey)ToImGuiKey(sprintCode);
+
+    if (m_ViewportHovered && ImGui::IsMouseDown(ImGuiMouseButton_Right))
+    {
+        float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier);
+        if (ImGui::IsKeyDown(sprint))
+            speed *= 2.5f;
+
+        speed *= dt;
+
+        if (ImGui::IsKeyDown(forward))
             m_CameraPosition.y += speed;
-        if (ImGui::IsKeyDown(ImGuiKey_S))
+        if (ImGui::IsKeyDown(backward))
             m_CameraPosition.y -= speed;
-        if (ImGui::IsKeyDown(ImGuiKey_A))
+        if (ImGui::IsKeyDown(left))
             m_CameraPosition.x -= speed;
-        if (ImGui::IsKeyDown(ImGuiKey_D))
+        if (ImGui::IsKeyDown(right))
             m_CameraPosition.x += speed;
 
         if (ImGui::IsKeyDown(ImGuiKey_Q))
@@ -1239,7 +1606,11 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent &e)
 {
     if (m_ViewportHovered)
     {
-        if (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift))
+        auto &shortcuts = m_EditorSettings.Shortcuts;
+        KeyCode sprint = Key::LeftShift;
+        if (shortcuts.count("Sprint")) sprint = shortcuts.at("Sprint");
+
+        if (Input::IsKeyPressed(sprint))
         {
             m_EditorSettings.SpeedMultiplier += e.GetYOffset() * 0.1f;
             if (m_EditorSettings.SpeedMultiplier < 0.1f)
@@ -1256,6 +1627,522 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent &e)
         return true;
     }
     return false;
+}
+
+bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
+{
+    // Shortcuts
+    if (e.IsRepeat())
+        return false;
+
+    bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+    bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+    if (e.GetKeyCode() == Key::Escape)
+    {
+        ClearSelection();
+        return true;
+    }
+
+    auto &shortcuts = m_EditorSettings.Shortcuts;
+    
+    // Delete Shortcut
+    KeyCode deleteKey = Key::Delete;
+    if (shortcuts.count("Delete")) deleteKey = shortcuts.at("Delete");
+
+    if (e.GetKeyCode() == deleteKey || e.GetKeyCode() == Key::Backspace)
+    {
+        DeleteSelectedEntities();
+        return true;
+    }
+
+    // Gizmo Switching (Now handled in UI_DrawViewport for better responsiveness)
+    /*
+    if (!control)
+    {
+        switch (e.GetKeyCode())
+        {
+            case Key::W: m_GizmoType = GizmoType::Translate; return true;
+            case Key::E: m_GizmoType = GizmoType::Rotate; return true;
+            case Key::R: m_GizmoType = GizmoType::Scale; return true;
+            case Key::Q: m_GizmoType = GizmoType::None; return true;
+        }
+    }
+    */
+
+    return false;
+}
+
+void EditorLayer::UI_ViewportContextMenu()
+{
+    // AAA Style Context Action Widget
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
+    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 8.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 8));
+    
+    // Glass-like panel colors (Subtle translucency with dark premium base)
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.08f, 0.08f, 0.09f, 0.94f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f)); // Soft highlight border
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.2f, 0.45f, 0.9f, 0.4f)); // AAA-style selection blue
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.2f, 0.45f, 0.9f, 0.6f));
+
+    if (ImGui::BeginPopupContextWindow("ViewportContextMenu"))
+    {
+        if (m_ActiveScene)
+        {
+            ImGui::TextDisabled("SCENE ACTIONS");
+            ImGui::Separator();
+            
+            if (ImGui::MenuItem("Create Empty Entity"))
+            {
+                m_ActiveScene->CreateEntity("New Entity");
+            }
+
+            if (!m_SelectedEntities.empty())
+            {
+                ImGui::Separator();
+                ImGui::TextDisabled("ENTITY ACTIONS");
+                if (ImGui::MenuItem("Delete Selected"))
+                {
+                    DeleteSelectedEntities();
+                }
+            }
+        }
+        ImGui::EndPopup();
+    }
+    
+    ImGui::PopStyleColor(4);
+    ImGui::PopStyleVar(3);
+}
+
+std::string EditorLayer::GetKeyName(KeyCode key)
+{
+    switch (key)
+    {
+        case Key::A: return "A";
+        case Key::B: return "B";
+        case Key::C: return "C";
+        case Key::D: return "D";
+        case Key::E: return "E";
+        case Key::F: return "F";
+        case Key::G: return "G";
+        case Key::H: return "H";
+        case Key::I: return "I";
+        case Key::J: return "J";
+        case Key::K: return "K";
+        case Key::L: return "L";
+        case Key::M: return "M";
+        case Key::N: return "N";
+        case Key::O: return "O";
+        case Key::P: return "P";
+        case Key::Q: return "Q";
+        case Key::R: return "R";
+        case Key::S: return "S";
+        case Key::T: return "T";
+        case Key::U: return "U";
+        case Key::V: return "V";
+        case Key::W: return "W";
+        case Key::X: return "X";
+        case Key::Y: return "Y";
+        case Key::Z: return "Z";
+        case Key::D0: return "0";
+        case Key::D1: return "1";
+        case Key::D2: return "2";
+        case Key::D3: return "3";
+        case Key::D4: return "4";
+        case Key::D5: return "5";
+        case Key::D6: return "6";
+        case Key::D7: return "7";
+        case Key::D8: return "8";
+        case Key::D9: return "9";
+        case Key::Escape: return "Esc";
+        case Key::LeftControl: return "Ctrl";
+        case Key::LeftShift: return "Shift";
+        case Key::LeftAlt: return "Alt";
+        case Key::Space: return "Space";
+        case Key::Enter: return "Enter";
+        case Key::Tab: return "Tab";
+        case Key::Backspace: return "Backspace";
+        case Key::Insert: return "Insert";
+        case Key::Delete: return "Delete";
+        case Key::Right: return "Right";
+        case Key::Left: return "Left";
+        case Key::Down: return "Down";
+        case Key::Up: return "Up";
+        default: return "Key " + std::to_string((int)key);
+    }
+}
+
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent &e)
+{
+    // Clicks handled in HandleViewportInput polling
+    return false;
+}
+
+bool EditorLayer::IsEntitySelected(Entity entity) const
+{
+    return m_SelectedEntities.find(entity) != m_SelectedEntities.end();
+}
+
+void EditorLayer::SelectEntity(Entity entity, bool multiSelect, bool toggle)
+{
+    if (!toggle && !multiSelect)
+        m_SelectedEntities.clear();
+
+    if (toggle)
+    {
+        if (m_SelectedEntities.count(entity))
+            m_SelectedEntities.erase(entity);
+        else
+            m_SelectedEntities.insert(entity);
+    }
+    else
+    {
+        m_SelectedEntities.insert(entity);
+    }
+}
+
+void EditorLayer::ClearSelection()
+{
+    m_SelectedEntities.clear();
+}
+
+void EditorLayer::DeleteSelectedEntities()
+{
+    for (auto entity : m_SelectedEntities)
+    {
+        m_ActiveScene->DestroyEntity(entity);
+    }
+    m_SelectedEntities.clear();
+}
+
+void EditorLayer::UpdateGizmoHover()
+{
+    m_HoveredGizmoAxis = -1;
+    if (!m_ActiveScene || m_SelectedEntities.empty() || m_GizmoType == GizmoType::None)
+        return;
+
+    Entity primary = *m_SelectedEntities.begin();
+    auto &entityManager = m_ActiveScene->GetEntityManager();
+    if (!entityManager.IsValid(primary)) return;
+
+    auto *transform = entityManager.GetComponent<TransformComponent>(primary);
+    if (!transform) return;
+
+    glm::mat4 model = transform->Transform.GetMatrix();
+    TEVector2 pos = {model[3].x, model[3].y};
+
+    float gizmoSize = 0.3f * m_CameraZoom;
+    float thickness = 0.01f * m_CameraZoom;
+    float boxSize = thickness * 3.0f;
+    float arrowSize = thickness * 4.0f;
+
+    ImVec2 mousePos = ImGui::GetMousePos();
+    float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
+    float mx = (mousePos.x - m_ViewportPos.x) / m_LastViewportX * 2.0f - 1.0f;
+    float my = -((mousePos.y - m_ViewportPos.y) / m_LastViewportY * 2.0f - 1.0f);
+    glm::vec2 worldMouse = { mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y };
+
+    if (m_LastViewportX > 0.0f && m_LastViewportY > 0.0f)
+    {
+        if (m_GizmoType == GizmoType::Translate || m_GizmoType == GizmoType::Scale)
+        {
+            if (std::abs(worldMouse.x - pos.x) < boxSize * 0.5f && std::abs(worldMouse.y - pos.y) < boxSize * 0.5f)
+                m_HoveredGizmoAxis = 2;
+            else if (worldMouse.x > pos.x && worldMouse.x < pos.x + gizmoSize + arrowSize && std::abs(worldMouse.y - pos.y) < thickness * 4.0f)
+                m_HoveredGizmoAxis = 0;
+            else if (worldMouse.y > pos.y && worldMouse.y < pos.y + gizmoSize + arrowSize && std::abs(worldMouse.x - pos.x) < thickness * 4.0f)
+                m_HoveredGizmoAxis = 1;
+        }
+        else if (m_GizmoType == GizmoType::Rotate)
+        {
+            float dist = glm::distance(worldMouse, glm::vec2(pos.x, pos.y));
+            if (std::abs(dist - gizmoSize) < thickness * 4.0f)
+                m_HoveredGizmoAxis = 3;
+        }
+    }
+}
+
+void EditorLayer::UI_DrawGizmos()
+{
+    if (!m_ActiveScene || m_SelectedEntities.empty() || m_GizmoType == GizmoType::None)
+    {
+        m_HoveredGizmoAxis = -1;
+        return;
+    }
+
+    // Hover state is updated by UpdateGizmoHover (called by HandleViewportInput each frame)
+    // But we update it again here for safety/redundancy if rendered multiple times
+    UpdateGizmoHover();
+
+    Entity primary = *m_SelectedEntities.begin();
+    auto &entityManager = m_ActiveScene->GetEntityManager();
+    auto *transform = entityManager.GetComponent<TransformComponent>(primary);
+    if (!transform) return;
+
+    glm::mat4 model = transform->Transform.GetMatrix();
+    TEVector2 pos = {model[3].x, model[3].y};
+    float gizmoSize = 0.3f * m_CameraZoom;
+    float thickness = 0.01f * m_CameraZoom;
+    float boxSize = thickness * 3.0f;
+    float arrowSize = thickness * 4.0f;
+
+    ImVec2 mousePos = ImGui::GetMousePos();
+    float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
+    float mx = (mousePos.x - m_ViewportPos.x) / m_LastViewportX * 2.0f - 1.0f;
+    float my = -((mousePos.y - m_ViewportPos.y) / m_LastViewportY * 2.0f - 1.0f);
+    glm::vec2 worldMouse = { mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y };
+
+    if (m_LastViewportX > 0.0f && m_LastViewportY > 0.0f)
+    {
+        if (m_ViewportFocused && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        {
+            if (m_GizmoOperation == -1)
+            {
+                m_GizmoOperation = m_HoveredGizmoAxis;
+                if (m_GizmoOperation != -1)
+                {
+                    m_GizmoDragStartMousePos = worldMouse;
+                    m_GizmoDragStartEntityPos = transform->Transform.Position;
+                    m_GizmoDragStartEntityScale = transform->Transform.Scale.Scale;
+                    m_GizmoDragStartEntityRotation = transform->Transform.Rotation.Roll;
+                }
+            }
+
+            if (m_GizmoOperation != -1)
+            {
+                glm::vec2 delta = worldMouse - m_GizmoDragStartMousePos;
+                
+                if (m_GizmoOperation == 0) // X
+                {
+                    if (m_GizmoType == GizmoType::Translate) 
+                        transform->Transform.Position.x = m_GizmoDragStartEntityPos.x + delta.x;
+                    else if (m_GizmoType == GizmoType::Scale) 
+                        transform->Transform.Scale.Scale.x = m_GizmoDragStartEntityScale.x + delta.x / gizmoSize;
+                }
+                else if (m_GizmoOperation == 1) // Y
+                {
+                    if (m_GizmoType == GizmoType::Translate) 
+                        transform->Transform.Position.y = m_GizmoDragStartEntityPos.y + delta.y;
+                    else if (m_GizmoType == GizmoType::Scale) 
+                        transform->Transform.Scale.Scale.y = m_GizmoDragStartEntityScale.y + delta.y / gizmoSize;
+                }
+                else if (m_GizmoOperation == 2) // Center (Uniform)
+                {
+                    if (m_GizmoType == GizmoType::Translate)
+                    {
+                        transform->Transform.Position.x = m_GizmoDragStartEntityPos.x + delta.x;
+                        transform->Transform.Position.y = m_GizmoDragStartEntityPos.y + delta.y;
+                    }
+                    else if (m_GizmoType == GizmoType::Scale)
+                    {
+                        float s = (delta.x + delta.y) / (gizmoSize * 2.0f);
+                        transform->Transform.Scale.Scale = m_GizmoDragStartEntityScale + glm::vec3(s, s, 0.0f);
+                    }
+                }
+                else if (m_GizmoOperation == 3) // Rotation
+                {
+                    float angleStart = atan2(m_GizmoDragStartMousePos.y - pos.y, m_GizmoDragStartMousePos.x - pos.x);
+                    float angleCurrent = atan2(worldMouse.y - pos.y, worldMouse.x - pos.x);
+                    float deltaAngle = glm::degrees(angleCurrent - angleStart);
+                    transform->Transform.Rotation.Roll = m_GizmoDragStartEntityRotation + deltaAngle;
+                }
+            }
+        }
+        else
+        {
+            m_GizmoOperation = -1;
+        }
+    }
+
+    // Contextual Gizmo Colors
+    TEColor colorX, colorY, colorCenter;
+    if (m_ProjectSettings.Mode2D == ProjectSettings::TwoDMode::TopDown)
+    {
+        colorX = (m_HoveredGizmoAxis == 0 || m_GizmoOperation == 0) ? TEColor(1.0f, 0.4f, 0.4f, 1.0f) : TEColor(0.9f, 0.1f, 0.1f, 1.0f);
+        colorY = (m_HoveredGizmoAxis == 1 || m_GizmoOperation == 1) ? TEColor(0.4f, 1.0f, 0.4f, 1.0f) : TEColor(0.1f, 0.8f, 0.1f, 1.0f);
+        colorCenter = (m_HoveredGizmoAxis == 2 || m_GizmoOperation == 2) ? TEColor(1.0f, 1.0f, 0.4f, 1.0f) : TEColor(0.9f, 0.9f, 0.9f, 0.8f);
+    }
+    else // SideScroller
+    {
+        colorX = (m_HoveredGizmoAxis == 0 || m_GizmoOperation == 0) ? TEColor(0.4f, 0.6f, 1.0f, 1.0f) : TEColor(0.1f, 0.3f, 0.9f, 1.0f);
+        colorY = (m_HoveredGizmoAxis == 1 || m_GizmoOperation == 1) ? TEColor(1.0f, 0.6f, 0.2f, 1.0f) : TEColor(0.9f, 0.4f, 0.0f, 1.0f);
+        colorCenter = (m_HoveredGizmoAxis == 2 || m_GizmoOperation == 2) ? TEColor(1.0f, 1.0f, 0.4f, 1.0f) : TEColor(0.9f, 0.9f, 0.9f, 0.8f);
+    }
+
+    m_GizmoXMaterial->SetColor(colorX);
+    m_GizmoYMaterial->SetColor(colorY);
+    m_GizmoMaterial->SetColor(colorCenter);
+
+    // Render
+    float arrowStartOffset = boxSize * 0.5f;
+
+    if (m_GizmoType == GizmoType::Translate || m_GizmoType == GizmoType::Scale)
+    {
+        // Center Handle
+        m_Renderer2D->SubmitQuad(glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, 0.2f)) *
+                                     glm::scale(glm::mat4(1.0f), glm::vec3(boxSize, boxSize, 1.0f)),
+                                 m_GizmoMaterial);
+
+        // X Axis
+        m_Renderer2D->SubmitQuad(glm::translate(glm::mat4(1.0f), glm::vec3(pos.x + arrowStartOffset + gizmoSize * 0.5f, pos.y, 0.15f)) *
+                                     glm::scale(glm::mat4(1.0f), glm::vec3(gizmoSize, thickness, 1.0f)),
+                                 m_GizmoXMaterial);
+        
+        if (m_GizmoType == GizmoType::Translate) {
+            m_Renderer2D->SubmitTriangle({pos.x + arrowStartOffset + gizmoSize, pos.y + thickness * 2},
+                                         {pos.x + arrowStartOffset + gizmoSize + arrowSize, pos.y},
+                                         {pos.x + arrowStartOffset + gizmoSize, pos.y - thickness * 2},
+                                         m_GizmoXMaterial);
+        } else if (m_GizmoType == GizmoType::Scale) {
+            m_Renderer2D->SubmitQuad(glm::translate(glm::mat4(1.0f), glm::vec3(pos.x + arrowStartOffset + gizmoSize + thickness, pos.y, 0.15f)) *
+                                         glm::scale(glm::mat4(1.0f), glm::vec3(thickness * 2, thickness * 2, 1.0f)),
+                                     m_GizmoXMaterial);
+        }
+
+        // Y Axis
+        m_Renderer2D->SubmitQuad(glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y + arrowStartOffset + gizmoSize * 0.5f, 0.15f)) *
+                                     glm::scale(glm::mat4(1.0f), glm::vec3(thickness, gizmoSize, 1.0f)),
+                                 m_GizmoYMaterial);
+        
+        if (m_GizmoType == GizmoType::Translate) {
+            m_Renderer2D->SubmitTriangle({pos.x - thickness * 2, pos.y + arrowStartOffset + gizmoSize},
+                                         {pos.x, pos.y + arrowStartOffset + gizmoSize + arrowSize},
+                                         {pos.x + thickness * 2, pos.y + arrowStartOffset + gizmoSize},
+                                         m_GizmoYMaterial);
+        } else if (m_GizmoType == GizmoType::Scale) {
+            m_Renderer2D->SubmitQuad(glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y + arrowStartOffset + gizmoSize + thickness, 0.15f)) *
+                                         glm::scale(glm::mat4(1.0f), glm::vec3(thickness * 2, thickness * 2, 1.0f)),
+                                     m_GizmoYMaterial);
+        }
+    }
+    else if (m_GizmoType == GizmoType::Rotate)
+    {
+        TEColor rotColor = (m_HoveredGizmoAxis == 3 || m_GizmoOperation == 3) ? TEColor(0.4f, 0.4f, 1.0f, 1.0f) : TEColor(0.1f, 0.1f, 0.8f, 1.0f);
+        
+        // Concentric Rings for professional feel
+        m_Renderer2D->SubmitCircleOutline({pos.x, pos.y}, gizmoSize * 0.8f, thickness * 0.5f, rotColor * 0.4f);
+        m_Renderer2D->SubmitCircleOutline({pos.x, pos.y}, gizmoSize, thickness, rotColor);
+        m_Renderer2D->SubmitCircleOutline({pos.x, pos.y}, gizmoSize * 1.2f, thickness * 0.5f, rotColor * 0.4f);
+
+        // Tick Marks (every 15 degrees)
+        for (int i = 0; i < 360; i += 15)
+        {
+            float rad = glm::radians((float)i);
+            glm::vec2 dir = {cos(rad), sin(rad)};
+            float inner = gizmoSize * 0.95f;
+            float outer = gizmoSize * 1.05f;
+            
+            // Highlight cardinal directions
+            if (i % 90 == 0) {
+                inner = gizmoSize * 0.85f;
+                outer = gizmoSize * 1.15f;
+            }
+            
+            m_Renderer2D->SubmitLine({pos.x + dir.x * inner, pos.y + dir.y * inner}, 
+                                     {pos.x + dir.x * outer, pos.y + dir.y * outer}, 
+                                     thickness * 0.5f, rotColor * 0.6f);
+        }
+
+    }
+}
+
+void EditorLayer::UI_DrawGizmoText()
+{
+    if (m_SelectedEntities.empty() || m_GizmoType != GizmoType::Rotate || m_GizmoOperation != 3)
+        return;
+
+    Entity primary = *m_SelectedEntities.begin();
+    auto &entityManager = m_ActiveScene->GetEntityManager();
+    auto *transform = entityManager.GetComponent<TransformComponent>(primary);
+    if (!transform) return;
+
+    glm::mat4 model = transform->Transform.GetMatrix();
+    TEVector2 pos = { model[3].x, model[3].y };
+
+    ImVec2 mousePos = ImGui::GetMousePos();
+    float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
+    float mx = (mousePos.x - m_ViewportPos.x) / m_LastViewportX * 2.0f - 1.0f;
+    float my = -((mousePos.y - m_ViewportPos.y) / m_LastViewportY * 2.0f - 1.0f);
+    glm::vec2 worldMouse = { mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y };
+
+    float angleStart = atan2(m_GizmoDragStartMousePos.y - pos.y, m_GizmoDragStartMousePos.x - pos.x);
+    float angleCurrent = atan2(worldMouse.y - pos.y, worldMouse.x - pos.x);
+    float deltaAngle = glm::degrees(angleCurrent - angleStart);
+
+    // Correct for wrap-around
+    while (deltaAngle > 180.0f) deltaAngle -= 360.0f;
+    while (deltaAngle < -180.0f) deltaAngle += 360.0f;
+
+    ImGui::SetCursorScreenPos(ImGui::GetMousePos() + ImVec2(20, 20));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 1.0f, 1.0f));
+    ImGui::Text("%.1f deg", deltaAngle);
+    ImGui::PopStyleColor();
+}
+
+int EditorLayer::ToImGuiKey(KeyCode key)
+{
+    switch (key)
+    {
+        case Key::Tab: return ImGuiKey_Tab;
+        case Key::Left: return ImGuiKey_LeftArrow;
+        case Key::Right: return ImGuiKey_RightArrow;
+        case Key::Up: return ImGuiKey_UpArrow;
+        case Key::Down: return ImGuiKey_DownArrow;
+        case Key::PageUp: return ImGuiKey_PageUp;
+        case Key::PageDown: return ImGuiKey_PageDown;
+        case Key::Home: return ImGuiKey_Home;
+        case Key::End: return ImGuiKey_End;
+        case Key::Insert: return ImGuiKey_Insert;
+        case Key::Delete: return ImGuiKey_Delete;
+        case Key::Backspace: return ImGuiKey_Backspace;
+        case Key::Space: return ImGuiKey_Space;
+        case Key::Enter: return ImGuiKey_Enter;
+        case Key::Escape: return ImGuiKey_Escape;
+        case Key::A: return ImGuiKey_A;
+        case Key::B: return ImGuiKey_B;
+        case Key::C: return ImGuiKey_C;
+        case Key::D: return ImGuiKey_D;
+        case Key::E: return ImGuiKey_E;
+        case Key::F: return ImGuiKey_F;
+        case Key::G: return ImGuiKey_G;
+        case Key::H: return ImGuiKey_H;
+        case Key::I: return ImGuiKey_I;
+        case Key::J: return ImGuiKey_J;
+        case Key::K: return ImGuiKey_K;
+        case Key::L: return ImGuiKey_L;
+        case Key::M: return ImGuiKey_M;
+        case Key::N: return ImGuiKey_N;
+        case Key::O: return ImGuiKey_O;
+        case Key::P: return ImGuiKey_P;
+        case Key::Q: return ImGuiKey_Q;
+        case Key::R: return ImGuiKey_R;
+        case Key::S: return ImGuiKey_S;
+        case Key::T: return ImGuiKey_T;
+        case Key::U: return ImGuiKey_U;
+        case Key::V: return ImGuiKey_V;
+        case Key::W: return ImGuiKey_W;
+        case Key::X: return ImGuiKey_X;
+        case Key::Y: return ImGuiKey_Y;
+        case Key::Z: return ImGuiKey_Z;
+        case Key::D0: return ImGuiKey_0;
+        case Key::D1: return ImGuiKey_1;
+        case Key::D2: return ImGuiKey_2;
+        case Key::D3: return ImGuiKey_3;
+        case Key::D4: return ImGuiKey_4;
+        case Key::D5: return ImGuiKey_5;
+        case Key::D6: return ImGuiKey_6;
+        case Key::D7: return ImGuiKey_7;
+        case Key::D8: return ImGuiKey_8;
+        case Key::D9: return ImGuiKey_9;
+        case Key::LeftShift: return ImGuiKey_LeftShift;
+        case Key::RightShift: return ImGuiKey_RightShift;
+        case Key::LeftControl: return ImGuiKey_LeftCtrl;
+        case Key::RightControl: return ImGuiKey_RightCtrl;
+        case Key::LeftAlt: return ImGuiKey_LeftAlt;
+        case Key::RightAlt: return ImGuiKey_RightAlt;
+    }
+    return ImGuiKey_None;
 }
 
 void EditorLayer::SetDarkThemeColors()
