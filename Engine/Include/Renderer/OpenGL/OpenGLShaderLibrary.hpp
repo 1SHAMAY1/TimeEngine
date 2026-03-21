@@ -1,7 +1,7 @@
 #pragma once
+#include <glad/glad.h>
 #include "Renderer/ShaderLibrary.hpp"
 #include "Renderer/OpenGL/OpenGLShader.hpp"
-#include <glad/glad.h>
 
 namespace TE {
 
