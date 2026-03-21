@@ -123,7 +123,7 @@ private:
         Scale = 2
     };
     GizmoType m_GizmoType = GizmoType::Translate;
-    int m_GizmoOperation = -1; // -1: none, 0: X, 1: Y, 2: Z/Center
+    int m_GizmoOperation = -1;   // -1: none, 0: X, 1: Y, 2: Z/Center
     int m_HoveredGizmoAxis = -1; // Cached for interaction check
 
     // Resources

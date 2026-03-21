@@ -1,27 +1,29 @@
 #pragma once
 #include "Renderer/Shader.hpp"
 #include "Renderer/TEColor.hpp"
-#include <unordered_map>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
-namespace TE {
+namespace TE
+{
 
-class TE_API Material {
+class TE_API Material
+{
 public:
-    Material(const std::shared_ptr<Shader>& shader);
+    Material(const std::shared_ptr<Shader> &shader);
     ~Material();
 
-    void SetColor(const TEColor& color);
-    const TEColor& GetColor() const;
+    void SetColor(const TEColor &color);
+    const TEColor &GetColor() const;
 
-    void SetUniform(const std::string& name, float value);
-    void SetUniform(const std::string& name, int value);
-    void SetUniform(const std::string& name, const glm::vec2& value);
-    void SetUniform(const std::string& name, const glm::vec3& value);
-    void SetUniform(const std::string& name, const glm::vec4& value);
-    void SetUniform(const std::string& name, const glm::mat4& value);
+    void SetUniform(const std::string &name, float value);
+    void SetUniform(const std::string &name, int value);
+    void SetUniform(const std::string &name, const glm::vec2 &value);
+    void SetUniform(const std::string &name, const glm::vec3 &value);
+    void SetUniform(const std::string &name, const glm::vec4 &value);
+    void SetUniform(const std::string &name, const glm::mat4 &value);
 
-    void SetShader(const std::shared_ptr<Shader>& shader);
+    void SetShader(const std::shared_ptr<Shader> &shader);
     std::shared_ptr<Shader> GetShader() const;
 
     // Set all uniforms (for now, just color and custom ones)
@@ -39,4 +41,4 @@ private:
     std::unordered_map<std::string, glm::mat4> m_Mat4Uniforms;
 };
 
-} 
+} // namespace TE

@@ -22,7 +22,8 @@ void RenderBatcher::End()
 void RenderBatcher::Flush()
 {
     // Simple batching: sort by blendMode then material (shader pointer)
-    std::sort(m_DrawCommands.begin(), m_DrawCommands.end(), [](const BatchDrawCommand &a, const BatchDrawCommand &b)
+    std::sort(m_DrawCommands.begin(), m_DrawCommands.end(),
+              [](const BatchDrawCommand &a, const BatchDrawCommand &b)
               {
                   if (a.blendMode != b.blendMode)
                       return a.blendMode < b.blendMode;

@@ -10,7 +10,7 @@ namespace TE
 {
 class Renderer2D;
 class Material;
-}
+} // namespace TE
 
 TE_CLASS()
 class TE_API TComponent
@@ -65,7 +65,10 @@ public:
     /// Default: does nothing. Override in visible components.
     /// Renders the component specifically for the editor/scene view.
     /// Default: does nothing. Override in visible components.
-    virtual void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel, const std::shared_ptr<class TE::Material> &material) const {}
+    virtual void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
+                          const std::shared_ptr<class TE::Material> &material) const
+    {
+    }
 
     // Hierarchy
     TComponent *GetParentComponent() const { return Parent; }

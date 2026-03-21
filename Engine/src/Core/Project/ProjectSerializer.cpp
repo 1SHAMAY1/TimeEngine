@@ -1,7 +1,7 @@
 #include "Core/Project/ProjectSerializer.hpp"
 #include <fstream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 // Simple YAML-based serialization for now.

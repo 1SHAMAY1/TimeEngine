@@ -1,415 +1,520 @@
 #include "Renderer/ShaderLibrary.hpp"
-#include "Renderer/Shader.hpp"
-#include "Renderer/RendererContext.hpp"
 #include "Renderer/GraphicsAPI.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
-#include <glm/gtc/type_ptr.hpp>
+#include "Renderer/RendererContext.hpp"
+#include "Renderer/Shader.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-namespace TE {
+namespace TE
+{
 
-    std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderLibrary::s_ShaderCache;
+std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderLibrary::s_ShaderCache;
 
-    // ===== Shader Creation =====
-    std::shared_ptr<Shader> ShaderLibrary::CreateBasicShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLBasicShader();
-        }
-        return nullptr;
+// ===== Shader Creation =====
+std::shared_ptr<Shader> ShaderLibrary::CreateBasicShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLBasicShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateTextureShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLTextureShader();
-        }
-        return nullptr;
+std::shared_ptr<Shader> ShaderLibrary::CreateTextureShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLTextureShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateColorShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLColorShader();
-        }
-        return nullptr;
+std::shared_ptr<Shader> ShaderLibrary::CreateColorShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLColorShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateStandardShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLStandardShader();
-        }
-        return nullptr;
+std::shared_ptr<Shader> ShaderLibrary::CreateStandardShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLStandardShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateLightingShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLLightingShader();
-        }
-        return nullptr;
+std::shared_ptr<Shader> ShaderLibrary::CreateLightingShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLLightingShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateLight2DShader() {
-        return std::shared_ptr<Shader>(Shader::Create(GetLight2DVertexShader(), GetLight2DFragmentShader()));
+std::shared_ptr<Shader> ShaderLibrary::CreateLight2DShader()
+{
+    return std::shared_ptr<Shader>(Shader::Create(GetLight2DVertexShader(), GetLight2DFragmentShader()));
+}
+
+std::shared_ptr<Shader> ShaderLibrary::CreateAmbientGradientShader()
+{
+    return std::shared_ptr<Shader>(Shader::Create(GetLight2DVertexShader(), GetAmbientGradientFragmentShader()));
+}
+
+std::shared_ptr<Shader> ShaderLibrary::CreateLightBlendShader()
+{
+    return std::shared_ptr<Shader>(Shader::Create(GetLightBlendVertexShader(), GetLightBlendFragmentShader()));
+}
+
+std::shared_ptr<Shader> ShaderLibrary::CreateParticleShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLParticleShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateAmbientGradientShader() {
-        return std::shared_ptr<Shader>(Shader::Create(GetLight2DVertexShader(), GetAmbientGradientFragmentShader()));
+std::shared_ptr<Shader> ShaderLibrary::CreatePostProcessShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLPostProcessShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateLightBlendShader() {
-        return std::shared_ptr<Shader>(Shader::Create(GetLightBlendVertexShader(), GetLightBlendFragmentShader()));
+std::shared_ptr<Shader> ShaderLibrary::CreateUIShader()
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        return OpenGLShaderLibrary::CreateOpenGLUIShader();
     }
+    return nullptr;
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateParticleShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLParticleShader();
-        }
-        return nullptr;
+// ===== Common Shader Functions =====
+void ShaderLibrary::SetMVP(Shader *shader, const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_Model", model);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_View", view);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_Projection", projection);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_MVP", projection * view * model);
     }
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreatePostProcessShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLPostProcessShader();
-        }
-        return nullptr;
+void ShaderLibrary::SetColor(Shader *shader, const TEColor &color) { SetColor(shader, color.GetValue()); }
+
+void ShaderLibrary::SetColor(Shader *shader, const glm::vec4 &color)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Color", color);
     }
+}
 
-    std::shared_ptr<Shader> ShaderLibrary::CreateUIShader() {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            return OpenGLShaderLibrary::CreateOpenGLUIShader();
-        }
-        return nullptr;
+void ShaderLibrary::SetTransform(Shader *shader, const glm::mat4 &transform)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_Transform", transform);
     }
+}
 
-    // ===== Common Shader Functions =====
-    void ShaderLibrary::SetMVP(Shader* shader, const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_Model", model);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_View", view);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_Projection", projection);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_MVP", projection * view * model);
-        }
+void ShaderLibrary::SetViewProjection(Shader *shader, const glm::mat4 &viewProjection)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_ViewProjection", viewProjection);
     }
+}
 
-    void ShaderLibrary::SetColor(Shader* shader, const TEColor& color) {
-        SetColor(shader, color.GetValue());
+void ShaderLibrary::SetLightPosition(Shader *shader, const glm::vec3 &position)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform3f(glShader, "u_LightPosition", position);
     }
+}
 
-    void ShaderLibrary::SetColor(Shader* shader, const glm::vec4& color) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_Color", color);
-        }
+void ShaderLibrary::SetLightColor(Shader *shader, const TEColor &color)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_LightColor", color.GetValue());
     }
+}
 
-    void ShaderLibrary::SetTransform(Shader* shader, const glm::mat4& transform) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_Transform", transform);
-        }
+void ShaderLibrary::SetAmbientLight(Shader *shader, float intensity)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_AmbientIntensity", intensity);
     }
+}
 
-    void ShaderLibrary::SetViewProjection(Shader* shader, const glm::mat4& viewProjection) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_ViewProjection", viewProjection);
-        }
+void ShaderLibrary::SetDiffuseLight(Shader *shader, float intensity)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_DiffuseIntensity", intensity);
     }
+}
 
-    void ShaderLibrary::SetLightPosition(Shader* shader, const glm::vec3& position) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform3f(glShader, "u_LightPosition", position);
-        }
+void ShaderLibrary::SetSpecularLight(Shader *shader, float intensity, float shininess)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_SpecularIntensity", intensity);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Shininess", shininess);
     }
+}
 
-    void ShaderLibrary::SetLightColor(Shader* shader, const TEColor& color) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_LightColor", color.GetValue());
-        }
+void ShaderLibrary::SetTexture(Shader *shader, int slot)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1i(glShader, "u_Texture", slot);
     }
+}
 
-    void ShaderLibrary::SetAmbientLight(Shader* shader, float intensity) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_AmbientIntensity", intensity);
-        }
+void ShaderLibrary::SetTime(Shader *shader, float time)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Time", time);
     }
+}
 
-    void ShaderLibrary::SetDiffuseLight(Shader* shader, float intensity) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_DiffuseIntensity", intensity);
-        }
+void ShaderLibrary::SetResolution(Shader *shader, const glm::vec2 &resolution)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform2f(glShader, "u_Resolution", resolution);
     }
+}
 
-    void ShaderLibrary::SetSpecularLight(Shader* shader, float intensity, float shininess) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_SpecularIntensity", intensity);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Shininess", shininess);
-        }
+void ShaderLibrary::SetCameraPosition(Shader *shader, const glm::vec3 &position)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform3f(glShader, "u_CameraPosition", position);
     }
+}
 
-    void ShaderLibrary::SetTexture(Shader* shader, int slot) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1i(glShader, "u_Texture", slot);
-        }
+void ShaderLibrary::SetFog(Shader *shader, const TEColor &color, float density, float start, float end)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_FogColor", color.GetValue());
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogDensity", density);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogStart", start);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogEnd", end);
     }
+}
 
-    void ShaderLibrary::SetTime(Shader* shader, float time) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Time", time);
-        }
+// ===== Utility Functions =====
+glm::mat4 ShaderLibrary::CreateModelMatrix(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale)
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, scale);
+    return model;
+}
+
+glm::mat4 ShaderLibrary::CreateViewMatrix(const glm::vec3 &position, const glm::vec3 &target, const glm::vec3 &up)
+{
+    return glm::lookAt(position, target, up);
+}
+
+glm::mat4 ShaderLibrary::CreateProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane)
+{
+    return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+}
+
+glm::mat4 ShaderLibrary::CreateOrthographicMatrix(float left, float right, float bottom, float top, float nearPlane,
+                                                  float farPlane)
+{
+    return glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+}
+
+// ===== Color Utilities =====
+void ShaderLibrary::SetTint(Shader *shader, const TEColor &tint, float intensity)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Tint", tint.GetValue());
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_TintIntensity", intensity);
     }
+}
 
-    void ShaderLibrary::SetResolution(Shader* shader, const glm::vec2& resolution) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform2f(glShader, "u_Resolution", resolution);
-        }
+void ShaderLibrary::SetBrightness(Shader *shader, float brightness)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Brightness", brightness);
     }
+}
 
-    void ShaderLibrary::SetCameraPosition(Shader* shader, const glm::vec3& position) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform3f(glShader, "u_CameraPosition", position);
-        }
+void ShaderLibrary::SetContrast(Shader *shader, float contrast)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Contrast", contrast);
     }
+}
 
-    void ShaderLibrary::SetFog(Shader* shader, const TEColor& color, float density, float start, float end) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_FogColor", color.GetValue());
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogDensity", density);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogStart", start);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogEnd", end);
-        }
+void ShaderLibrary::SetSaturation(Shader *shader, float saturation)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Saturation", saturation);
     }
+}
 
-    // ===== Utility Functions =====
-    glm::mat4 ShaderLibrary::CreateModelMatrix(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, position);
-        model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model, scale);
-        return model;
+void ShaderLibrary::SetGamma(Shader *shader, float gamma)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Gamma", gamma);
     }
+}
 
-    glm::mat4 ShaderLibrary::CreateViewMatrix(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up) {
-        return glm::lookAt(position, target, up);
+// ===== Material Properties =====
+void ShaderLibrary::SetMaterial(Shader *shader, const TEColor &ambient, const TEColor &diffuse, const TEColor &specular,
+                                float shininess)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.ambient", ambient.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.diffuse", diffuse.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.specular", specular.GetValue());
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Material.shininess", shininess);
     }
+}
 
-    glm::mat4 ShaderLibrary::CreateProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane) {
-        return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+void ShaderLibrary::SetEmissive(Shader *shader, const TEColor &emissive)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Emissive", emissive.GetValue());
     }
+}
 
-    glm::mat4 ShaderLibrary::CreateOrthographicMatrix(float left, float right, float bottom, float top, float nearPlane, float farPlane) {
-        return glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+void ShaderLibrary::SetMetallic(Shader *shader, float metallic)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Metallic", metallic);
     }
+}
 
-    // ===== Color Utilities =====
-    void ShaderLibrary::SetTint(Shader* shader, const TEColor& tint, float intensity) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_Tint", tint.GetValue());
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_TintIntensity", intensity);
-        }
+void ShaderLibrary::SetRoughness(Shader *shader, float roughness)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_Roughness", roughness);
     }
+}
 
-    void ShaderLibrary::SetBrightness(Shader* shader, float brightness) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Brightness", brightness);
-        }
+void ShaderLibrary::SetNormalMap(Shader *shader, int slot)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1i(glShader, "u_NormalMap", slot);
     }
+}
 
-    void ShaderLibrary::SetContrast(Shader* shader, float contrast) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Contrast", contrast);
-        }
+void ShaderLibrary::SetRoughnessMap(Shader *shader, int slot)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1i(glShader, "u_RoughnessMap", slot);
     }
+}
 
-    void ShaderLibrary::SetSaturation(Shader* shader, float saturation) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Saturation", saturation);
-        }
+void ShaderLibrary::SetMetallicMap(Shader *shader, int slot)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1i(glShader, "u_MetallicMap", slot);
     }
+}
 
-    void ShaderLibrary::SetGamma(Shader* shader, float gamma) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Gamma", gamma);
-        }
+void ShaderLibrary::SetAOMap(Shader *shader, int slot)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1i(glShader, "u_AOMap", slot);
     }
+}
 
-    // ===== Material Properties =====
-    void ShaderLibrary::SetMaterial(Shader* shader, const TEColor& ambient, const TEColor& diffuse, const TEColor& specular, float shininess) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.ambient", ambient.GetValue());
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.diffuse", diffuse.GetValue());
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.specular", specular.GetValue());
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Material.shininess", shininess);
-        }
+// ===== Animation Support =====
+void ShaderLibrary::SetBoneTransforms(Shader *shader, const std::vector<glm::mat4> &boneTransforms)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniformMat4Array(glShader, "u_BoneTransforms", boneTransforms);
     }
+}
 
-    void ShaderLibrary::SetEmissive(Shader* shader, const TEColor& emissive) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_Emissive", emissive.GetValue());
-        }
+void ShaderLibrary::SetAnimationTime(Shader *shader, float time)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_AnimationTime", time);
     }
+}
 
-    void ShaderLibrary::SetMetallic(Shader* shader, float metallic) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Metallic", metallic);
-        }
+void ShaderLibrary::SetBlendWeights(Shader *shader, const glm::vec4 &weights)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_BlendWeights", weights);
     }
+}
 
-    void ShaderLibrary::SetRoughness(Shader* shader, float roughness) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_Roughness", roughness);
-        }
+// ===== Post-Processing =====
+void ShaderLibrary::SetBloom(Shader *shader, float threshold, float intensity)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_BloomThreshold", threshold);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_BloomIntensity", intensity);
     }
+}
 
-    void ShaderLibrary::SetNormalMap(Shader* shader, int slot) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1i(glShader, "u_NormalMap", slot);
-        }
+void ShaderLibrary::SetVignette(Shader *shader, float intensity, float radius)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_VignetteIntensity", intensity);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_VignetteRadius", radius);
     }
+}
 
-    void ShaderLibrary::SetRoughnessMap(Shader* shader, int slot) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1i(glShader, "u_RoughnessMap", slot);
-        }
+void ShaderLibrary::SetChromaticAberration(Shader *shader, float intensity)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_ChromaticAberration", intensity);
     }
+}
 
-    void ShaderLibrary::SetMetallicMap(Shader* shader, int slot) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1i(glShader, "u_MetallicMap", slot);
-        }
+void ShaderLibrary::SetMotionBlur(Shader *shader, const glm::mat4 &previousViewProjection)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniformMat4(glShader, "u_PreviousViewProjection", previousViewProjection);
     }
+}
 
-    void ShaderLibrary::SetAOMap(Shader* shader, int slot) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1i(glShader, "u_AOMap", slot);
-        }
+void ShaderLibrary::SetDepthOfField(Shader *shader, float focusDistance, float focusRange)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_FocusDistance", focusDistance);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_FocusRange", focusRange);
     }
+}
 
-    // ===== Animation Support =====
-    void ShaderLibrary::SetBoneTransforms(Shader* shader, const std::vector<glm::mat4>& boneTransforms) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniformMat4Array(glShader, "u_BoneTransforms", boneTransforms);
-        }
+// ===== Particle System =====
+void ShaderLibrary::SetParticleLife(Shader *shader, float life)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_ParticleLife", life);
     }
+}
 
-    void ShaderLibrary::SetAnimationTime(Shader* shader, float time) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_AnimationTime", time);
-        }
+void ShaderLibrary::SetParticleSize(Shader *shader, float size)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform1f(glShader, "u_ParticleSize", size);
     }
+}
 
-    void ShaderLibrary::SetBlendWeights(Shader* shader, const glm::vec4& weights) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_BlendWeights", weights);
-        }
+void ShaderLibrary::SetParticleVelocity(Shader *shader, const glm::vec3 &velocity)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform3f(glShader, "u_ParticleVelocity", velocity);
     }
+}
 
-    // ===== Post-Processing =====
-    void ShaderLibrary::SetBloom(Shader* shader, float threshold, float intensity) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_BloomThreshold", threshold);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_BloomIntensity", intensity);
-        }
+void ShaderLibrary::SetParticleAcceleration(Shader *shader, const glm::vec3 &acceleration)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform3f(glShader, "u_ParticleAcceleration", acceleration);
     }
+}
 
-    void ShaderLibrary::SetVignette(Shader* shader, float intensity, float radius) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_VignetteIntensity", intensity);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_VignetteRadius", radius);
-        }
+void ShaderLibrary::SetParticleColor(Shader *shader, const TEColor &startColor, const TEColor &endColor)
+{
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    {
+        OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleStartColor", startColor.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleEndColor", endColor.GetValue());
     }
+}
 
-    void ShaderLibrary::SetChromaticAberration(Shader* shader, float intensity) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_ChromaticAberration", intensity);
-        }
-    }
-
-    void ShaderLibrary::SetMotionBlur(Shader* shader, const glm::mat4& previousViewProjection) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniformMat4(glShader, "u_PreviousViewProjection", previousViewProjection);
-        }
-    }
-
-    void ShaderLibrary::SetDepthOfField(Shader* shader, float focusDistance, float focusRange) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_FocusDistance", focusDistance);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_FocusRange", focusRange);
-        }
-    }
-
-    // ===== Particle System =====
-    void ShaderLibrary::SetParticleLife(Shader* shader, float life) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_ParticleLife", life);
-        }
-    }
-
-    void ShaderLibrary::SetParticleSize(Shader* shader, float size) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform1f(glShader, "u_ParticleSize", size);
-        }
-    }
-
-    void ShaderLibrary::SetParticleVelocity(Shader* shader, const glm::vec3& velocity) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform3f(glShader, "u_ParticleVelocity", velocity);
-        }
-    }
-
-    void ShaderLibrary::SetParticleAcceleration(Shader* shader, const glm::vec3& acceleration) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform3f(glShader, "u_ParticleAcceleration", acceleration);
-        }
-    }
-
-    void ShaderLibrary::SetParticleColor(Shader* shader, const TEColor& startColor, const TEColor& endColor) {
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL) {
-            OpenGLShader* glShader = dynamic_cast<OpenGLShader*>(shader);
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleStartColor", startColor.GetValue());
-            OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleEndColor", endColor.GetValue());
-        }
-    }
-
-    // ===== Internal Shader Sources =====
-    std::string ShaderLibrary::GetBasicVertexShader() {
-        return R"(
+// ===== Internal Shader Sources =====
+std::string ShaderLibrary::GetBasicVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
             layout(location = 1) in vec3 a_Normal;
@@ -430,10 +535,11 @@ namespace TE {
                 gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetBasicFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetBasicFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec3 v_Position;
             in vec3 v_Normal;
@@ -453,10 +559,11 @@ namespace TE {
                 FragColor = vec4(ambient + diffuse, u_Color.a);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetTextureVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetTextureVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
             layout(location = 1) in vec3 a_Normal;
@@ -477,10 +584,11 @@ namespace TE {
                 gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetTextureFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetTextureFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec3 v_Position;
             in vec3 v_Normal;
@@ -509,10 +617,11 @@ namespace TE {
                 FragColor = vec4(texColor.rgb * ambient, texColor.a);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetColorVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetColorVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
 
@@ -523,10 +632,11 @@ namespace TE {
                 gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetColorFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetColorFragmentShader()
+{
+    return R"(
             #version 330 core
             uniform vec4 u_Color;
 
@@ -536,10 +646,11 @@ namespace TE {
                 FragColor = u_Color;
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetStandardFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetStandardFragmentShader()
+{
+    return R"(
             #version 330 core
             uniform vec4 u_Color;
             uniform float u_AmbientIntensity;
@@ -560,10 +671,11 @@ namespace TE {
                 FragColor = vec4(u_Color.rgb * ambient, u_Color.a);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetLightingVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetLightingVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
             layout(location = 1) in vec3 a_Normal;
@@ -584,10 +696,11 @@ namespace TE {
                 gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetLightingFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetLightingFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec3 v_Position;
             in vec3 v_Normal;
@@ -619,10 +732,11 @@ namespace TE {
                 FragColor = vec4(result, texColor.a);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetParticleVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetParticleVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
             layout(location = 1) in vec3 a_Velocity;
@@ -642,10 +756,11 @@ namespace TE {
                 gl_PointSize = u_ParticleSize * (1.0 - a_Life);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetParticleFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetParticleFragmentShader()
+{
+    return R"(
             #version 330 core
             in float v_Life;
             in vec3 v_Position;
@@ -660,10 +775,11 @@ namespace TE {
                 FragColor = color;
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetPostProcessVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetPostProcessVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
             layout(location = 1) in vec2 a_TexCoord;
@@ -675,10 +791,11 @@ namespace TE {
                 gl_Position = vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetPostProcessFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetPostProcessFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec2 v_TexCoord;
 
@@ -693,10 +810,11 @@ namespace TE {
                 FragColor = color;
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetUIVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetUIVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec2 a_Position;
             layout(location = 1) in vec2 a_TexCoord;
@@ -710,10 +828,11 @@ namespace TE {
                 gl_Position = u_Projection * vec4(a_Position, 0.0, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetUIFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetUIFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec2 v_TexCoord;
 
@@ -727,10 +846,11 @@ namespace TE {
                 FragColor = texColor * u_Color;
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetLight2DVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetLight2DVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
 
@@ -744,10 +864,11 @@ namespace TE {
                 gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetLight2DFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetLight2DFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec2 v_LocalPos;
 
@@ -812,10 +933,11 @@ namespace TE {
                 FragColor = vec4(u_Color.rgb * falloff, falloff);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetAmbientGradientFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetAmbientGradientFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec2 v_LocalPos; // -1 to 1
 
@@ -845,10 +967,11 @@ namespace TE {
                 FragColor = vec4(color * u_Intensity, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetLightBlendVertexShader() {
-        return R"(
+std::string ShaderLibrary::GetLightBlendVertexShader()
+{
+    return R"(
             #version 330 core
             layout(location = 0) in vec3 a_Position;
 
@@ -862,10 +985,11 @@ namespace TE {
                 gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         )";
-    }
+}
 
-    std::string ShaderLibrary::GetLightBlendFragmentShader() {
-        return R"(
+std::string ShaderLibrary::GetLightBlendFragmentShader()
+{
+    return R"(
             #version 330 core
             in vec2 v_TexCoord;
             uniform sampler2D u_Texture;
@@ -876,6 +1000,6 @@ namespace TE {
                 FragColor = texture(u_Texture, v_TexCoord);
             }
         )";
-    }
-
 }
+
+} // namespace TE

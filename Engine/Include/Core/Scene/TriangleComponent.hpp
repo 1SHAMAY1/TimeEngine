@@ -28,7 +28,9 @@ public:
         glm::vec4 w1 = worldModel * glm::vec4(Point1.x, Point1.y, 0, 1);
         glm::vec4 w2 = worldModel * glm::vec4(Point2.x, Point2.y, 0, 1);
         glm::vec4 w3 = worldModel * glm::vec4(Point3.x, Point3.y, 0, 1);
-        v.push_back({w1.x, w1.y}); v.push_back({w2.x, w2.y}); v.push_back({w3.x, w3.y});
+        v.push_back({w1.x, w1.y});
+        v.push_back({w2.x, w2.y});
+        v.push_back({w3.x, w3.y});
         return v;
     }
 
@@ -44,7 +46,8 @@ public:
 
     bool CastsOcclusionShadow() const override { return bHasCollision && bIsVisible; }
 
-    void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel, const std::shared_ptr<class TE::Material> &material) const override
+    void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
+                  const std::shared_ptr<class TE::Material> &material) const override
     {
         auto TransformPoint = [&](const TEVector2 &p)
         {

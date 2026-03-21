@@ -14,11 +14,11 @@ namespace TE
 Renderer2D::Renderer2D()
 {
     m_Light2DMaterial = std::make_shared<Material>(ShaderLibrary::CreateLight2DShader());
-    
+
     // Initialize Unit Quad VAO for optimization
     float quadVertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f};
     uint32_t quadIndices[] = {0, 1, 2, 2, 3, 0};
-    
+
     m_UnitQuadVAO = std::shared_ptr<VertexArray>(VertexArray::Create());
     auto vbo = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
     auto ibo = IndexBuffer::Create(quadIndices, 6);
@@ -49,7 +49,7 @@ void Renderer2D::EndFrame()
         static std::shared_ptr<Material> ambientMaterial = nullptr;
         if (!ambientMaterial)
             ambientMaterial = std::make_shared<Material>(ShaderLibrary::CreateAmbientGradientShader());
-            
+
         ambientMaterial->SetUniform("u_SkyColor", m_AmbientSky);
         ambientMaterial->SetUniform("u_HorizonColor", m_AmbientHorizon);
         ambientMaterial->SetUniform("u_GroundColor", m_AmbientGround);
@@ -60,7 +60,7 @@ void Renderer2D::EndFrame()
         // Submit very large quad to cover entire view (Ambient Light)
         SubmitQuad(glm::scale(glm::mat4(1.0f), glm::vec3(1000000.0f, 1000000.0f, 1.0f)), ambientMaterial, true);
     }
-    
+
     m_Batcher.End();
     m_Batcher.Flush();
 }
@@ -143,9 +143,9 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     static std::shared_ptr<Shader> lightShader = nullptr;
     if (!lightShader)
         lightShader = ShaderLibrary::CreateLight2DShader();
-    
+
     auto lightMaterial = std::make_shared<Material>(lightShader);
-    
+
     lightMaterial->SetColor(light.Color);
     lightMaterial->SetUniform("u_Intensity", light.Intensity);
     lightMaterial->SetUniform("u_FalloffExponent", light.FalloffExponent);
@@ -154,43 +154,46 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     if (light.Type == TELightType::Point)
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)) *
-                             glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
+                              glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
         SubmitQuad(transform, lightMaterial, 1);
     }
     else if (light.Type == TELightType::Spot)
     {
         float baseAngle = atan2(light.Direction.y, light.Direction.x);
         float finalAngle = baseAngle + rotationRadians;
-        glm::vec2 finalDirection = { cos(finalAngle), sin(finalAngle) };
+        glm::vec2 finalDirection = {cos(finalAngle), sin(finalAngle)};
 
         lightMaterial->SetUniform("u_Direction", finalDirection);
         lightMaterial->SetUniform("u_InnerAngle", light.InnerAngle);
         lightMaterial->SetUniform("u_OuterAngle", light.OuterAngle);
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)) *
-                             glm::rotate(glm::mat4(1.0f), rotationRadians, glm::vec3(0.0f, 0.0f, 1.0f)) *
-                             glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
+                              glm::rotate(glm::mat4(1.0f), rotationRadians, glm::vec3(0.0f, 0.0f, 1.0f)) *
+                              glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
         SubmitQuad(transform, lightMaterial, 1);
     }
     else if (light.Type == TELightType::Line)
     {
         float length = sqrt(light.LineOffset.x * light.LineOffset.x + light.LineOffset.y * light.LineOffset.y);
         float angle = atan2(light.LineOffset.y, light.LineOffset.x);
-        
+
         lightMaterial->SetUniform("u_LineLength", length);
         lightMaterial->SetUniform("u_Radius", light.Radius);
 
         // Translate to middle of line
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x + light.LineOffset.x*0.5f, position.y + light.LineOffset.y*0.5f, 0.0f)) *
-                             glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
-                             glm::scale(glm::mat4(1.0f), glm::vec3(length + light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
+        glm::mat4 transform =
+            glm::translate(glm::mat4(1.0f), glm::vec3(position.x + light.LineOffset.x * 0.5f,
+                                                      position.y + light.LineOffset.y * 0.5f, 0.0f)) *
+            glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(length + light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
         SubmitQuad(transform, lightMaterial, 1);
     }
 }
 
 void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, const std::vector<TEVector2> &vertices)
 {
-    if (vertices.size() < 2) return;
+    if (vertices.size() < 2)
+        return;
 
     // Find the two silhouette vertices: the ones that form the widest angle from the light.
     glm::vec2 lp(lightPos.x, lightPos.y);
@@ -198,7 +201,7 @@ void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, cons
     // Compute angles from light to each vertex
     std::vector<float> angles;
     angles.reserve(vertices.size());
-    for (const auto& v : vertices)
+    for (const auto &v : vertices)
     {
         glm::vec2 dir = glm::vec2(v.x, v.y) - lp;
         angles.push_back(atan2(dir.y, dir.x));
@@ -212,8 +215,10 @@ void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, cons
         for (size_t j = i + 1; j < vertices.size(); j++)
         {
             float diff = angles[j] - angles[i];
-            while (diff > 3.14159265f) diff -= 2.0f * 3.14159265f;
-            while (diff < -3.14159265f) diff += 2.0f * 3.14159265f;
+            while (diff > 3.14159265f)
+                diff -= 2.0f * 3.14159265f;
+            while (diff < -3.14159265f)
+                diff += 2.0f * 3.14159265f;
             float absDiff = std::abs(diff);
 
             if (absDiff > maxSpread)
@@ -256,8 +261,8 @@ void Renderer2D::SetAmbientLight(const TEColor &color, float intensity)
     m_AmbientIntensity = intensity;
 }
 
-void Renderer2D::SetAmbientGradient(const TEColor &sky, const TEColor &horizon, const TEColor &ground, 
-                                    float intensity, float horizonHeight, float horizonSpread)
+void Renderer2D::SetAmbientGradient(const TEColor &sky, const TEColor &horizon, const TEColor &ground, float intensity,
+                                    float horizonHeight, float horizonSpread)
 {
     m_AmbientSky = sky;
     m_AmbientHorizon = horizon;
@@ -293,19 +298,20 @@ void Renderer2D::SubmitLine(const TEVector2 &p1, const TEVector2 &p2, float thic
         lineMaterial = std::make_shared<Material>(ShaderLibrary::CreateColorShader());
         lineMaterial->SetUniform("u_IsUnlit", 1.0f);
     }
-    
+
     lineMaterial->SetColor(color);
 
     TEVector2 dir = p2 - p1;
     float length = dir.Length();
-    if (length < 0.0001f) return;
+    if (length < 0.0001f)
+        return;
 
     float angle = atan2(dir.y, dir.x);
     TEVector2 mid = (p1 + p2) * 0.5f;
 
     glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(mid.x, mid.y, 0.0f)) *
-                         glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
-                         glm::scale(glm::mat4(1.0f), glm::vec3(length, thickness, 1.0f));
+                          glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
+                          glm::scale(glm::mat4(1.0f), glm::vec3(length, thickness, 1.0f));
 
     SubmitQuad(transform, lineMaterial);
 }
@@ -317,10 +323,10 @@ void Renderer2D::SubmitCircleOutline(const TEVector2 &center, float radius, floa
     {
         float a1 = 2.0f * 3.14159f * (float)i / segments;
         float a2 = 2.0f * 3.14159f * (float)(i + 1) / segments;
-        
+
         TEVector2 p1 = center + TEVector2(cos(a1) * radius, sin(a1) * radius);
         TEVector2 p2 = center + TEVector2(cos(a2) * radius, sin(a2) * radius);
-        
+
         SubmitLine(p1, p2, thickness, color);
     }
 }

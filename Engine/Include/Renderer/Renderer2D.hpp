@@ -33,8 +33,8 @@ public:
     void SubmitLight(const class LightComponent &light, const TEVector2 &position, float rotation = 0.0f);
     void SubmitShadow(const TEVector2 &lightPos, float lightRadius, const std::vector<TEVector2> &vertices);
     void SetAmbientLight(const TEColor &color, float intensity);
-    void SetAmbientGradient(const TEColor &sky, const TEColor &horizon, const TEColor &ground, 
-                            float intensity = 1.0f, float horizonHeight = 0.5f, float horizonSpread = 0.2f);
+    void SetAmbientGradient(const TEColor &sky, const TEColor &horizon, const TEColor &ground, float intensity = 1.0f,
+                            float horizonHeight = 0.5f, float horizonSpread = 0.2f);
 
     // Debug Outlines
     void SubmitRectOutline(const TEVector2 &position, const TEVector2 &size, float thickness, const TEColor &color);
@@ -45,7 +45,7 @@ private:
 
     std::shared_ptr<VertexArray> m_UnitQuadVAO;
     std::shared_ptr<Material> m_Light2DMaterial;
-    
+
     // Ambient Gradient State (No default ambient light)
     TEColor m_AmbientSky = TEColor(0.04f, 0.04f, 0.06f, 1.0f);
     TEColor m_AmbientHorizon = TEColor(0.08f, 0.08f, 0.12f, 1.0f);

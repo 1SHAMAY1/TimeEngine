@@ -42,7 +42,8 @@ public:
 
     bool CastsOcclusionShadow() const override { return bHasCollision && bIsVisible; }
 
-    void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel, const std::shared_ptr<class TE::Material> &material) const override
+    void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
+                  const std::shared_ptr<class TE::Material> &material) const override
     {
         TE::TEVector2 worldPos = {worldModel[3].x, worldModel[3].y};
         float radius = Radius * glm::length(glm::vec3(worldModel[0]));
