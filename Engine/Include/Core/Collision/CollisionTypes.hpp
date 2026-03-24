@@ -1,87 +1,80 @@
-﻿#pragma once
+#pragma once
 
+#include "Utility/MathUtils.hpp"
 #include <cstdint>
-#include <cstring>     
-#include "Utility/MathUtils.hpp" 
+#include <cstring>
+#include <vector>
 
-namespace TE {
+namespace TE
+{
 
-    // Type of collision shape
-    enum class CollisionType : uint8_t {
-        AABB = 0,
-        Circle = 1
-    };
+// Type of collision shape
+enum class CollisionType : uint8_t
+{
+    AABB = 0,
+    Circle = 1,
+    Triangle = 2,
+    Polygon = 3
+};
 
-    // Axis-Aligned Bounding Box
-    struct BoundsAABB {
-        TEVector2 min;
-        TEVector2 max;
+// Axis-Aligned Bounding Box
+struct BoundsAABB
+{
+    TEVector2 min;
+    TEVector2 max;
 
-        BoundsAABB() = default;
-        BoundsAABB(const TEVector2& min, const TEVector2& max) : min(min), max(max) {}
-    };
+    BoundsAABB() = default;
+    BoundsAABB(const TEVector2 &min, const TEVector2 &max) : min(min), max(max) {}
+};
 
-    // Circle bounds
-    struct BoundsCircle {
-        TEVector2 center;
-        float radius = 0.0f;
+// Circle bounds
+struct BoundsCircle
+{
+    TEVector2 center;
+    float radius = 0.0f;
 
-        BoundsCircle() = default;
-        BoundsCircle(const TEVector2& center, float radius) : center(center), radius(radius) {}
-    };
+    BoundsCircle() = default;
+    BoundsCircle(const TEVector2 &center, float radius) : center(center), radius(radius) {}
+};
 
-    // Unified collision shape using tagged union
-    struct CollisionShape {
-        CollisionType type;
+// Triangle bounds
+struct BoundsTriangle
+{
+    TEVector2 points[3];
 
-        union {
-            BoundsAABB aabb;
-            BoundsCircle circle;
-        };
+    BoundsTriangle() = default;
+    BoundsTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3)
+    {
+        points[0] = p1;
+        points[1] = p2;
+        points[2] = p3;
+    }
+};
 
-        // Default constructor (AABB zeroed)
-        CollisionShape()
-            : type(CollisionType::AABB) {
-            std::memset(&aabb, 0, sizeof(BoundsAABB));
-        }
+// Polygon bounds (Dynamic)
+struct BoundsPolygon
+{
+    std::vector<TEVector2> points;
 
-        // AABB constructor
-        CollisionShape(const BoundsAABB& b)
-            : type(CollisionType::AABB) {
-            std::memcpy(&aabb, &b, sizeof(BoundsAABB));
-        }
+    BoundsPolygon() = default;
+    BoundsPolygon(const std::vector<TEVector2> &p) : points(p) {}
+};
 
-        // Circle constructor
-        CollisionShape(const BoundsCircle& c)
-            : type(CollisionType::Circle) {
-            std::memcpy(&circle, &c, sizeof(BoundsCircle));
-        }
+// Unified collision shape (Removed union for non-POD support)
+struct CollisionShape
+{
+    CollisionType type;
 
-        // Copy constructor
-        CollisionShape(const CollisionShape& other)
-            : type(other.type) {
-            if (type == CollisionType::AABB) {
-                std::memcpy(&aabb, &other.aabb, sizeof(BoundsAABB));
-            } else if (type == CollisionType::Circle) {
-                std::memcpy(&circle, &other.circle, sizeof(BoundsCircle));
-            }
-        }
+    BoundsAABB aabb;
+    BoundsCircle circle;
+    BoundsTriangle triangle;
+    BoundsPolygon polygon;
 
-        // Assignment operator
-        CollisionShape& operator=(const CollisionShape& other) {
-            if (this == &other) return *this;
+    CollisionShape() : type(CollisionType::AABB) {}
+    CollisionShape(const BoundsAABB &b) : type(CollisionType::AABB), aabb(b) {}
+    CollisionShape(const BoundsCircle &c) : type(CollisionType::Circle), circle(c) {}
+    CollisionShape(const BoundsTriangle &t) : type(CollisionType::Triangle), triangle(t) {}
+    CollisionShape(const BoundsPolygon &p) : type(CollisionType::Polygon), polygon(p) {}
+};
 
-            type = other.type;
-            if (type == CollisionType::AABB) {
-                std::memcpy(&aabb, &other.aabb, sizeof(BoundsAABB));
-            } else if (type == CollisionType::Circle) {
-                std::memcpy(&circle, &other.circle, sizeof(BoundsCircle));
-            }
-            return *this;
-        }
-
-        // Destructor (safe due to POD types, but added for completeness)
-        ~CollisionShape() = default;
-    };
-
-} 
+} // namespace TE

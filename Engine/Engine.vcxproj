@@ -170,10 +170,14 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Camera\CameraController.hpp" />
     <ClInclude Include="Include\Camera\OrthographicCamera.hpp" />
     <ClInclude Include="Include\Camera\PerspectiveCamera.hpp" />
+    <ClInclude Include="Include\Core\Collision\BoxColliderComponent.hpp" />
     <ClInclude Include="Include\Core\Collision\BroadPhase.hpp" />
+    <ClInclude Include="Include\Core\Collision\CircleColliderComponent.hpp" />
     <ClInclude Include="Include\Core\Collision\CollisionComponent.hpp" />
     <ClInclude Include="Include\Core\Collision\CollisionSystem.hpp" />
     <ClInclude Include="Include\Core\Collision\CollisionTypes.hpp" />
+    <ClInclude Include="Include\Core\Collision\PolygonColliderComponent.hpp" />
+    <ClInclude Include="Include\Core\Collision\TriangleColliderComponent.hpp" />
     <ClInclude Include="Include\Core\EngineSettings.hpp" />
     <ClInclude Include="Include\Core\EngineSettings_Example.hpp" />
     <ClInclude Include="Include\Core\Particle\ParticleEmitterComponent.hpp" />

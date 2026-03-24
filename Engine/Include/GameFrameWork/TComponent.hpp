@@ -1,16 +1,19 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Utility/MathUtils.hpp"
+#include "Utility/UIUtils.hpp"
 #include <algorithm>
+#include <glm/glm.hpp>
 #include <memory>
+#include <string>
 #include <vector>
+
 class TObject;
 
 namespace TE
 {
 class Renderer2D;
 class Material;
-} // namespace TE
 
 TE_CLASS()
 class TE_API TComponent
@@ -18,6 +21,8 @@ class TE_API TComponent
 protected:
     TEPROPERTY()
     TObject *Owner = nullptr;
+
+    class EntityManager *Manager = nullptr;
 
     TEPROPERTY()
     bool bMarkedPendingDestroy = false;
@@ -29,20 +34,31 @@ protected:
     std::vector<TComponent *> Children;
 
 public:
+    TEPROPERTY()
+    std::string InstanceName;
+
     TE::TETransform Transform;
     virtual ~TComponent() = default;
 
     void SetOwner(TObject *newOwner) { Owner = newOwner; }
     TObject *GetOwner() const { return Owner; }
 
-    void OnInitialize() { bInitialized = true; }
-    void OnAttach() {}
-    void OnDetach() {}
-    void Tick(float deltaTime) {}
+    void SetEntityManager(class EntityManager *mgr) { Manager = mgr; }
+    class EntityManager *GetEntityManager() const { return Manager; }
+
+    // Convenience method to get the owner as an Entity
+    class Entity GetOwnerEntity() const;
+
+    virtual void OnInitialize() { bInitialized = true; }
+    virtual void OnAttach() {}
+    virtual void OnDetach() {}
+    virtual void Tick(float deltaTime) {}
 
     void MarkPendingDestroy() { bMarkedPendingDestroy = true; }
     bool IsMarkedPendingDestroy() const { return bMarkedPendingDestroy; }
     bool IsInitialized() const { return bInitialized; }
+
+    virtual void OnDrawInspector() {}
 
     virtual const char *GetClassName() const { return StaticClassName; }
 
@@ -50,21 +66,15 @@ public:
     // Override these in subclasses to enable picking and shadow casting.
 
     /// Returns world-space outline vertices for this component (used by shadow casting).
-    /// Default: empty (no shadow). Override in shape components.
     virtual std::vector<TE::TEVector2> GetWorldVertices(const glm::mat4 &worldModel) const { return {}; }
 
     /// Returns true if the world-space point is inside this component (used for picking/selection).
-    /// Default: false. Override in shape/light components.
     virtual bool ContainsPoint(const glm::mat4 &worldModel, const TE::TEVector2 &point) const { return false; }
 
     /// Returns true if this component should block light (for shadow casting).
-    /// Default: false. Override in shape components with collision.
     virtual bool CastsOcclusionShadow() const { return false; }
 
     /// Renders the component specifically for the editor/scene view.
-    /// Default: does nothing. Override in visible components.
-    /// Renders the component specifically for the editor/scene view.
-    /// Default: does nothing. Override in visible components.
     virtual void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
                           const std::shared_ptr<class TE::Material> &material) const
     {
@@ -98,3 +108,11 @@ public:
 
     static constexpr const char *StaticClassName = "TComponent";
 };
+
+} // namespace TE
+
+#define TPROPERTY_FLOAT(var, name) ImGui::DragFloat(name, &var, 0.1f)
+#define TPROPERTY_VEC2(var, name) TE::UIUtils::DrawVec2Control(name, *(glm::vec2 *)&var)
+#define TPROPERTY_VEC3(var, name) TE::UIUtils::DrawVec3Control(name, var)
+#define TPROPERTY_BOOL(var, name) ImGui::Checkbox(name, &var)
+#define TPROPERTY_COLOR(var, name) ImGui::ColorEdit4(name, &var.GetValue().x)

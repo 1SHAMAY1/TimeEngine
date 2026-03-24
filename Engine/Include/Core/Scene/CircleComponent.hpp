@@ -1,4 +1,6 @@
 #pragma once
+#include "Core/Collision/CircleColliderComponent.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "ProceduralSpriteComponent.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -10,13 +12,18 @@ namespace TE
 class CircleComponent : public ProceduralSpriteComponent
 {
 public:
-    float Radius = 0.5f;
+    GENERATED_BODY(CircleComponent)
 
-    // Collision Data
-    bool bHasCollision = true;
-    bool bShowDebug = false;
-    float Density = 1.0f;
-    float Friction = 0.5f;
+    T_PROPERTY(float, Radius, "Radius", 0.5f)
+    T_PROPERTY(TEColor, BaseColor, "Base Color", TEColor::White())
+    T_PROPERTY(bool, bIsVisible, "Visible", true)
+
+    virtual void OnInitialize() override
+    {
+        ProceduralSpriteComponent::OnInitialize();
+        auto *collider = GetOwnerEntity().AddComponent<CircleColliderComponent>();
+        collider->Radius = Radius;
+    }
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 
@@ -34,13 +41,15 @@ public:
 
     bool ContainsPoint(const glm::mat4 &worldModel, const TEVector2 &point) const override
     {
-        glm::vec2 pos = {worldModel[3].x, worldModel[3].y};
-        float r = Radius * glm::length(glm::vec3(worldModel[0]));
-        float dx = point.x - pos.x, dy = point.y - pos.y;
-        return (dx * dx + dy * dy) <= r * r;
+        auto *collider = GetOwnerEntity().GetComponent<CircleColliderComponent>();
+        if (collider)
+        {
+            float dx = point.x - collider->shape.circle.center.x;
+            float dy = point.y - collider->shape.circle.center.y;
+            return (dx * dx + dy * dy) <= collider->shape.circle.radius * collider->shape.circle.radius;
+        }
+        return false;
     }
-
-    bool CastsOcclusionShadow() const override { return bHasCollision && bIsVisible; }
 
     void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
                   const std::shared_ptr<class TE::Material> &material) const override
@@ -53,13 +62,16 @@ public:
             material->SetColor(BaseColor);
             renderer->SubmitCircle(worldPos, radius, material);
         }
-        if (bShowDebug)
-        {
-            renderer->SubmitCircleOutline(worldPos, radius, 0.05f, TE::TEColor(0.2f, 1.0f, 0.2f, 1.0f));
-        }
     }
-
-    static constexpr const char *StaticClassName = "CircleComponent";
 };
+
+#ifdef TE_EDITOR
+T_REGISTER_COMPONENT(CircleComponent, "Circle Component")
+T_REGISTER_PROPERTY(CircleComponent, float, Radius, "Radius")
+T_REGISTER_PROPERTY(CircleComponent, TEColor, BaseColor, "Base Color")
+T_REGISTER_PROPERTY(CircleComponent, bool, bIsVisible, "Visible")
+T_REGISTER_PRESET(Circle, "Circle", "Shapes",
+                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<CircleComponent>(id); }))
+#endif
 
 } // namespace TE
