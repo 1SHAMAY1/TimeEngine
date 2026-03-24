@@ -1,11 +1,10 @@
-﻿#pragma once
+#pragma once
 #include "CollisionComponent.hpp"
 #include <vector>
-#include <unordered_map>
 
 namespace TE {
 
-    using EntityID = uint32_t;
+    using EntityID = uint64_t;
 
     struct CollisionPair {
         EntityID a, b;
@@ -13,8 +12,7 @@ namespace TE {
 
     class BroadPhase {
     public:
-        static std::vector<CollisionPair> BruteForce(
-            const std::unordered_map<EntityID, CollisionComponent>& allColliders);
+        static std::vector<CollisionPair> BruteForce(const std::vector<CollisionComponent*>& colliders);
     };
 
 }

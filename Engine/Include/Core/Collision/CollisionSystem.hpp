@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CollisionComponent.hpp"
 #include "BroadPhase.hpp"
+#include "Core/Scene/EntityManager.hpp"
 #include <unordered_map>
 #include <functional>
 
@@ -8,20 +9,26 @@ namespace TE {
 
     class CollisionSystem {
     public:
-        using EntityID = uint32_t;
+        CollisionSystem(EntityManager* mgr) : m_EntityManager(mgr) {}
 
-        void Register(EntityID id, const CollisionComponent& comp);
-        void Unregister(EntityID id);
-        void Clear();
         void Process();  // Run every frame
 
         std::function<void(EntityID, EntityID)> onCollision;
 
     private:
-        std::unordered_map<EntityID, CollisionComponent> m_Colliders;
+        EntityManager* m_EntityManager;
 
+        // SAT Collision Tests
+        bool CheckCollision(CollisionComponent* a, CollisionComponent* b);
+        
         bool AABBvsAABB(const BoundsAABB& a, const BoundsAABB& b);
         bool CircleVsCircle(const BoundsCircle& a, const BoundsCircle& b);
+        bool PolyVsPoly(const std::vector<TEVector2>& a, const std::vector<TEVector2>& b);
+        bool CircleVsPoly(const BoundsCircle& circle, const std::vector<TEVector2>& poly);
+        
+        // Helper for SAT
+        std::vector<TEVector2> GetAxes(const std::vector<TEVector2>& points);
+        void Project(const std::vector<TEVector2>& points, const TEVector2& axis, float& min, float& max);
     };
 
 }

@@ -21,3 +21,8 @@ public:
 };
 
 } // namespace TE
+
+#ifdef TE_EDITOR
+#include "Core/Scene/ComponentRegistry.hpp"
+T_COMPONENT_INTERNAL(TransformComponent)
+#endif

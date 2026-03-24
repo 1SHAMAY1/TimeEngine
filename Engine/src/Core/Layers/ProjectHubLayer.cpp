@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include "Renderer/Texture.hpp"
 #include <Windows.h>
@@ -132,15 +133,27 @@ void ProjectHubLayer::OnImGuiRender()
     float btnHeight = 40.0f;
 
     // Navigation Buttons
-    if (ImGui::Button("Recent Projects", ImVec2(-1, btnHeight)))
-    {
-        m_CurrentView = HubView::RecentProjects;
-    }
+    ImGui::Spacing();
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20, 12));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+    
+    auto drawNavButton = [&](const char* label, HubView view) {
+        bool active = m_CurrentView == view;
+        if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.35f, 0.45f, 0.6f));
+        else ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 
-    if (ImGui::Button("Create New", ImVec2(-1, btnHeight)))
-    {
-        m_CurrentView = HubView::CreateNew;
-    }
+        if (ImGui::Button(label, ImVec2(-1, btnHeight)))
+        {
+            m_CurrentView = view;
+        }
+        ImGui::PopStyleColor();
+    };
+
+    drawNavButton("Recent Projects", HubView::RecentProjects);
+    ImGui::Spacing();
+    drawNavButton("Create New", HubView::CreateNew);
+
+    ImGui::PopStyleVar(2);
 
     ImGui::EndChild();
     ImGui::PopStyleColor();
@@ -211,52 +224,70 @@ void ProjectHubLayer::UI_DrawProjectsList()
     }
     else
     {
-        float thumbnailSize = 80.0f;
-        float padding = 16.0f;
-        float cellSize = thumbnailSize + padding;
-
+        float cardWidth = 240.0f;
+        float cardHeight = 140.0f;
+        float padding = 20.0f;
+        
         float panelWidth = ImGui::GetContentRegionAvail().x;
-        int columnCount = (int)(panelWidth / cellSize);
-        if (columnCount < 1)
-            columnCount = 1;
+        int columnCount = (int)(panelWidth / (cardWidth + padding));
+        if (columnCount < 1) columnCount = 1;
 
-        // Grid Layout
         ImGui::Columns(columnCount, 0, false);
 
         for (const auto &path : m_RecentProjects)
         {
             std::string filename = path.filename().string();
-            // Remove extension for display
             size_t lastdot = filename.find_last_of(".");
-            if (lastdot != std::string::npos)
-                filename = filename.substr(0, lastdot);
+            if (lastdot != std::string::npos) filename = filename.substr(0, lastdot);
 
             ImGui::PushID(path.string().c_str());
-
-            // Card-like Button
-            if (m_ProjectIcon)
+            
+            ImGuiWindow* window = ImGui::GetCurrentWindow();
+            ImVec2 pos = window->DC.CursorPos;
+            ImVec2 size(cardWidth, cardHeight);
+            ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
+            
+            ImGui::ItemSize(bb);
+            if (ImGui::ItemAdd(bb, ImGui::GetID(filename.c_str())))
             {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-                if (ImGui::ImageButton(path.string().c_str(), (ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(),
-                                       ImVec2(thumbnailSize, thumbnailSize)))
-                {
-                    m_ProjectToOpen = path;
-                }
+                bool hovered, held;
+                bool pressed = ImGui::ButtonBehavior(bb, ImGui::GetID(filename.c_str()), &hovered, &held);
+                
+                if (pressed) m_ProjectToOpen = path;
+
+                // Glass Card Background
+                ImU32 bgCol = ImGui::GetColorU32(hovered ? ImGuiCol_HeaderHovered : ImGuiCol_WindowBg);
+                float alpha = hovered ? 0.6f : 0.4f;
+                ImVec4 bgVec = ImGui::ColorConvertU32ToFloat4(bgCol);
+                bgVec.w = alpha;
+                
+                window->DrawList->AddRectFilled(pos, bb.Max, ImGui::ColorConvertFloat4ToU32(bgVec), 12.0f);
+                window->DrawList->AddRect(pos, bb.Max, ImGui::GetColorU32(ImGuiCol_Border, 0.5f), 12.0f, 0, 1.5f);
+
+                // Content
+                ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 15, ImGui::GetCursorPosY() + 15));
+                ImGui::BeginGroup();
+                
+                // Icon Placeholder/Icon
+                ImVec2 iconSize(48, 48);
+                if (m_ProjectIcon)
+                    window->DrawList->AddImage((ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(), 
+                        ImVec2(pos.x + 15, pos.y + 15), ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
+                else
+                    window->DrawList->AddRectFilled(ImVec2(pos.x + 15, pos.y + 15), ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y), 
+                        ImGui::GetColorU32(ImVec4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
+
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + iconSize.y + 10);
+                ImGui::Text("%s", filename.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.62f, 0.65f, 1.0f));
+                ImGui::Text("%.30s...", path.parent_path().string().c_str());
                 ImGui::PopStyleColor();
+                ImGui::EndGroup();
             }
-            else
-            {
-                if (ImGui::Button("OBJ", ImVec2(thumbnailSize, thumbnailSize)))
-                {
-                    m_ProjectToOpen = path;
-                }
-            }
-
-            ImGui::TextWrapped("%s", filename.c_str());
-            ImGui::TextDisabled("%.20s...", path.string().c_str()); // Trucate path for visuals
 
             ImGui::PopID();
             ImGui::NextColumn();
+            ImGui::Spacing();
         }
         ImGui::Columns(1);
     }
@@ -446,55 +477,41 @@ void ProjectHubLayer::SetDarkThemeColors()
     style.ItemSpacing = ImVec2(10, 10);
     style.WindowPadding = ImVec2(0, 0);
 
-    // --- Colors (Professional Dark Slate Theme) ---
+    // --- Colors (AAA Glass Theme) ---
+    style.AntiAliasedLines = true;
+    style.AntiAliasedFill = true;
 
     // Backgrounds
-    colors[ImGuiCol_WindowBg] = ImVec4{0.11f, 0.11f, 0.12f, 1.0f}; // Dark Gray
-    colors[ImGuiCol_ChildBg] = ImVec4{0.15f, 0.15f, 0.16f, 1.0f};  // Sidebar
-    colors[ImGuiCol_PopupBg] = ImVec4{0.12f, 0.12f, 0.13f, 0.95f};
+    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.95f}; 
+    colors[ImGuiCol_ChildBg] = ImVec4{0.12f, 0.12f, 0.14f, 0.4f};  
+    colors[ImGuiCol_PopupBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.98f};
 
     // Text
-    colors[ImGuiCol_Text] = ImVec4{0.90f, 0.90f, 0.92f, 1.0f};
-    colors[ImGuiCol_TextDisabled] = ImVec4{0.50f, 0.50f, 0.52f, 1.0f};
+    colors[ImGuiCol_Text] = ImVec4{0.95f, 0.95f, 1.0f, 1.0f};
+    colors[ImGuiCol_TextDisabled] = ImVec4{0.55f, 0.58f, 0.62f, 1.0f};
 
-    // Headers
-    colors[ImGuiCol_Header] = ImVec4{0.20f, 0.20f, 0.22f, 1.0f};
-    colors[ImGuiCol_HeaderHovered] = ImVec4{0.25f, 0.25f, 0.28f, 1.0f};
-    colors[ImGuiCol_HeaderActive] = ImVec4{0.18f, 0.18f, 0.20f, 1.0f};
+    // Interactive
+    colors[ImGuiCol_Header] = ImVec4{0.25f, 0.28f, 0.35f, 0.45f};
+    colors[ImGuiCol_HeaderHovered] = ImVec4{0.3f, 0.35f, 0.45f, 0.7f};
+    colors[ImGuiCol_HeaderActive] = ImVec4{0.2f, 0.22f, 0.28f, 0.8f};
 
-    // Buttons
-    colors[ImGuiCol_Button] = ImVec4{0.20f, 0.20f, 0.22f, 1.0f};
-    colors[ImGuiCol_ButtonHovered] = ImVec4{0.25f, 0.25f, 0.28f, 1.0f};
-    colors[ImGuiCol_ButtonActive] = ImVec4{0.18f, 0.18f, 0.20f, 1.0f};
+    colors[ImGuiCol_Button] = ImVec4{0.22f, 0.25f, 0.3f, 0.4f};
+    colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.35f, 0.45f, 0.7f};
+    colors[ImGuiCol_ButtonActive] = ImVec4{0.18f, 0.2f, 0.25f, 0.9f};
 
-    // Inputs
-    colors[ImGuiCol_FrameBg] = ImVec4{0.08f, 0.08f, 0.09f, 1.0f};
-    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.15f, 0.15f, 0.16f, 1.0f};
-    colors[ImGuiCol_FrameBgActive] = ImVec4{0.25f, 0.25f, 0.26f, 1.0f};
+    colors[ImGuiCol_FrameBg] = ImVec4{0.18f, 0.2f, 0.22f, 0.4f};
+    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.25f, 0.28f, 0.32f, 0.6f};
+    colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.18f, 0.2f, 0.8f};
 
     // Border
-    colors[ImGuiCol_Border] = ImVec4{0.10f, 0.10f, 0.10f, 0.5f};
+    colors[ImGuiCol_Border] = ImVec4{0.4f, 0.42f, 0.45f, 0.3f};
     style.WindowBorderSize = 0.0f;
     style.FrameBorderSize = 1.0f;
 
-    // Tabs
-    colors[ImGuiCol_Tab] = ImVec4{0.18f, 0.18f, 0.20f, 1.0f};
-    colors[ImGuiCol_TabHovered] = ImVec4{0.25f, 0.25f, 0.28f, 1.0f};
-    colors[ImGuiCol_TabActive] = ImVec4{0.22f, 0.22f, 0.24f, 1.0f};
-
-    // Title
-    colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.15f, 0.15f, 1.0f};
-    colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.15f, 0.15f, 1.0f};
-
-    // Separator
-    colors[ImGuiCol_Separator] = ImVec4{0.16f, 0.16f, 0.17f, 1.0f};
-    colors[ImGuiCol_SeparatorHovered] = ImVec4{0.20f, 0.20f, 0.22f, 1.0f};
-    colors[ImGuiCol_SeparatorActive] = ImVec4{0.22f, 0.22f, 0.24f, 1.0f};
-
-    // Accents (e.g. Checkbox check, Slider grab) - Subtle Blue
-    colors[ImGuiCol_CheckMark] = ImVec4{0.26f, 0.59f, 0.98f, 1.0f};
-    colors[ImGuiCol_SliderGrab] = ImVec4{0.26f, 0.59f, 0.98f, 1.0f};
-    colors[ImGuiCol_SliderGrabActive] = ImVec4{0.26f, 0.59f, 0.98f, 1.0f};
+    // Accents
+    colors[ImGuiCol_CheckMark] = ImVec4{0.3f, 0.6f, 1.0f, 1.0f};
+    colors[ImGuiCol_SliderGrab] = ImVec4{0.35f, 0.65f, 1.0f, 0.8f};
+    colors[ImGuiCol_SliderGrabActive] = ImVec4{0.4f, 0.7f, 1.0f, 1.0f};
 }
 
 } // namespace TE
