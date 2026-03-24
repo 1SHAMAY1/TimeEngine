@@ -1,13 +1,13 @@
 #pragma once
 #include <cstdint>
+#include <functional>
+#include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <type_traits>
 #include <typeindex>
 #include <unordered_map>
-#include <string>
-#include <functional>
-#include <map>
 
 #include "GameFrameWork/TComponent.hpp"
 
@@ -88,37 +88,23 @@ private:
 
 // --- Template Implementations ---
 
-inline bool Entity::IsValid() const
-{
-    return m_Manager && m_Manager->IsValid(m_ID);
-}
+inline bool Entity::IsValid() const { return m_Manager && m_Manager->IsValid(m_ID); }
 
 template <typename T, typename... Args> T *Entity::AddComponent(Args &&...args)
 {
     return m_Manager->AddComponent<T>(m_ID, std::forward<Args>(args)...);
 }
 
-template <typename T> T *Entity::GetComponent() const
-{
-    return m_Manager->GetComponent<T>(m_ID);
-}
+template <typename T> T *Entity::GetComponent() const { return m_Manager->GetComponent<T>(m_ID); }
 
-template <typename T> bool Entity::HasComponent() const
-{
-    return m_Manager->HasComponent<T>(m_ID);
-}
+template <typename T> bool Entity::HasComponent() const { return m_Manager->HasComponent<T>(m_ID); }
 
-template <typename T> std::vector<T *> Entity::GetComponents() const
-{
-    return m_Manager->GetComponents<T>(m_ID);
-}
+template <typename T> std::vector<T *> Entity::GetComponents() const { return m_Manager->GetComponents<T>(m_ID); }
 
-template <typename T> void Entity::RemoveComponent()
-{
-    m_Manager->RemoveComponent<T>(m_ID);
-}
+template <typename T> void Entity::RemoveComponent() { m_Manager->RemoveComponent<T>(m_ID); }
 
-template <typename Component, typename... Args> Component *EntityManager::AddComponent(EntityID entityID, Args &&...args)
+template <typename Component, typename... Args>
+Component *EntityManager::AddComponent(EntityID entityID, Args &&...args)
 {
     static_assert(std::is_base_of<TComponent, Component>::value, "Component must derive from TComponent");
     auto &pool = m_ComponentPools[std::type_index(typeid(Component))][entityID];

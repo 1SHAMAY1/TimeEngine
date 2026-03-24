@@ -1,10 +1,10 @@
 #pragma once
+#include "Core/Collision/CircleColliderComponent.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "ProceduralSpriteComponent.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Utility/MathUtils.hpp"
-#include "Core/Collision/CircleColliderComponent.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {
@@ -21,7 +21,7 @@ public:
     virtual void OnInitialize() override
     {
         ProceduralSpriteComponent::OnInitialize();
-        auto* collider = GetOwnerEntity().AddComponent<CircleColliderComponent>();
+        auto *collider = GetOwnerEntity().AddComponent<CircleColliderComponent>();
         collider->Radius = Radius;
     }
 
@@ -41,8 +41,9 @@ public:
 
     bool ContainsPoint(const glm::mat4 &worldModel, const TEVector2 &point) const override
     {
-        auto* collider = GetOwnerEntity().GetComponent<CircleColliderComponent>();
-        if (collider) {
+        auto *collider = GetOwnerEntity().GetComponent<CircleColliderComponent>();
+        if (collider)
+        {
             float dx = point.x - collider->shape.circle.center.x;
             float dy = point.y - collider->shape.circle.center.y;
             return (dx * dx + dy * dy) <= collider->shape.circle.radius * collider->shape.circle.radius;
@@ -69,7 +70,8 @@ T_REGISTER_COMPONENT(CircleComponent, "Circle Component")
 T_REGISTER_PROPERTY(CircleComponent, float, Radius, "Radius")
 T_REGISTER_PROPERTY(CircleComponent, TEColor, BaseColor, "Base Color")
 T_REGISTER_PROPERTY(CircleComponent, bool, bIsVisible, "Visible")
-T_REGISTER_PRESET(Circle, "Circle", "Shapes", ([](::TE::EntityID id, ::TE::EntityManager* em) { em->AddComponent<CircleComponent>(id); }))
+T_REGISTER_PRESET(Circle, "Circle", "Shapes",
+                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<CircleComponent>(id); }))
 #endif
 
 } // namespace TE

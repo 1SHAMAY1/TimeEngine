@@ -136,11 +136,14 @@ void ProjectHubLayer::OnImGuiRender()
     ImGui::Spacing();
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20, 12));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
-    
-    auto drawNavButton = [&](const char* label, HubView view) {
+
+    auto drawNavButton = [&](const char *label, HubView view)
+    {
         bool active = m_CurrentView == view;
-        if (active) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.35f, 0.45f, 0.6f));
-        else ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        if (active)
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.35f, 0.45f, 0.6f));
+        else
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 
         if (ImGui::Button(label, ImVec2(-1, btnHeight)))
         {
@@ -227,10 +230,11 @@ void ProjectHubLayer::UI_DrawProjectsList()
         float cardWidth = 240.0f;
         float cardHeight = 140.0f;
         float padding = 20.0f;
-        
+
         float panelWidth = ImGui::GetContentRegionAvail().x;
         int columnCount = (int)(panelWidth / (cardWidth + padding));
-        if (columnCount < 1) columnCount = 1;
+        if (columnCount < 1)
+            columnCount = 1;
 
         ImGui::Columns(columnCount, 0, false);
 
@@ -238,44 +242,48 @@ void ProjectHubLayer::UI_DrawProjectsList()
         {
             std::string filename = path.filename().string();
             size_t lastdot = filename.find_last_of(".");
-            if (lastdot != std::string::npos) filename = filename.substr(0, lastdot);
+            if (lastdot != std::string::npos)
+                filename = filename.substr(0, lastdot);
 
             ImGui::PushID(path.string().c_str());
-            
-            ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+            ImGuiWindow *window = ImGui::GetCurrentWindow();
             ImVec2 pos = window->DC.CursorPos;
             ImVec2 size(cardWidth, cardHeight);
             ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
-            
+
             ImGui::ItemSize(bb);
             if (ImGui::ItemAdd(bb, ImGui::GetID(filename.c_str())))
             {
                 bool hovered, held;
                 bool pressed = ImGui::ButtonBehavior(bb, ImGui::GetID(filename.c_str()), &hovered, &held);
-                
-                if (pressed) m_ProjectToOpen = path;
+
+                if (pressed)
+                    m_ProjectToOpen = path;
 
                 // Glass Card Background
                 ImU32 bgCol = ImGui::GetColorU32(hovered ? ImGuiCol_HeaderHovered : ImGuiCol_WindowBg);
                 float alpha = hovered ? 0.6f : 0.4f;
                 ImVec4 bgVec = ImGui::ColorConvertU32ToFloat4(bgCol);
                 bgVec.w = alpha;
-                
+
                 window->DrawList->AddRectFilled(pos, bb.Max, ImGui::ColorConvertFloat4ToU32(bgVec), 12.0f);
                 window->DrawList->AddRect(pos, bb.Max, ImGui::GetColorU32(ImGuiCol_Border, 0.5f), 12.0f, 0, 1.5f);
 
                 // Content
                 ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 15, ImGui::GetCursorPosY() + 15));
                 ImGui::BeginGroup();
-                
+
                 // Icon Placeholder/Icon
                 ImVec2 iconSize(48, 48);
                 if (m_ProjectIcon)
-                    window->DrawList->AddImage((ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(), 
-                        ImVec2(pos.x + 15, pos.y + 15), ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
+                    window->DrawList->AddImage((ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(),
+                                               ImVec2(pos.x + 15, pos.y + 15),
+                                               ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
                 else
-                    window->DrawList->AddRectFilled(ImVec2(pos.x + 15, pos.y + 15), ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y), 
-                        ImGui::GetColorU32(ImVec4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
+                    window->DrawList->AddRectFilled(ImVec2(pos.x + 15, pos.y + 15),
+                                                    ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y),
+                                                    ImGui::GetColorU32(ImVec4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
 
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + iconSize.y + 10);
                 ImGui::Text("%s", filename.c_str());
@@ -482,8 +490,8 @@ void ProjectHubLayer::SetDarkThemeColors()
     style.AntiAliasedFill = true;
 
     // Backgrounds
-    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.95f}; 
-    colors[ImGuiCol_ChildBg] = ImVec4{0.12f, 0.12f, 0.14f, 0.4f};  
+    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.95f};
+    colors[ImGuiCol_ChildBg] = ImVec4{0.12f, 0.12f, 0.14f, 0.4f};
     colors[ImGuiCol_PopupBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.98f};
 
     // Text

@@ -1,10 +1,10 @@
 #pragma once
+#include "Core/Collision/BoxColliderComponent.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "ProceduralSpriteComponent.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Utility/MathUtils.hpp"
-#include "Core/Collision/BoxColliderComponent.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {
@@ -21,8 +21,8 @@ public:
     virtual void OnInitialize() override
     {
         ProceduralSpriteComponent::OnInitialize();
-        
-        auto* collider = GetOwnerEntity().AddComponent<BoxColliderComponent>();
+
+        auto *collider = GetOwnerEntity().AddComponent<BoxColliderComponent>();
         collider->Size = Size;
     }
 
@@ -43,11 +43,11 @@ public:
 
     bool ContainsPoint(const glm::mat4 &worldModel, const TEVector2 &point) const override
     {
-        auto* collider = GetOwnerEntity().GetComponent<BoxColliderComponent>();
-        if (collider) {
-            const auto& aabb = collider->shape.aabb;
-            return point.x >= aabb.min.x && point.x <= aabb.max.x && 
-                   point.y >= aabb.min.y && point.y <= aabb.max.y;
+        auto *collider = GetOwnerEntity().GetComponent<BoxColliderComponent>();
+        if (collider)
+        {
+            const auto &aabb = collider->shape.aabb;
+            return point.x >= aabb.min.x && point.x <= aabb.max.x && point.y >= aabb.min.y && point.y <= aabb.max.y;
         }
         return false;
     }
@@ -68,7 +68,8 @@ T_REGISTER_COMPONENT(BoxComponent, "Box Component")
 T_REGISTER_PROPERTY(BoxComponent, TEVector2, Size, "Size")
 T_REGISTER_PROPERTY(BoxComponent, TEColor, BaseColor, "Base Color")
 T_REGISTER_PROPERTY(BoxComponent, bool, bIsVisible, "Visible")
-T_REGISTER_PRESET(Box, "Box", "Shapes", ([](::TE::EntityID id, ::TE::EntityManager* em) { em->AddComponent<BoxComponent>(id); }))
+T_REGISTER_PRESET(Box, "Box", "Shapes",
+                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<BoxComponent>(id); }))
 #endif
 
 } // namespace TE

@@ -1,8 +1,8 @@
 #pragma once
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Utility/MathUtils.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {
@@ -53,42 +53,46 @@ T_REGISTER_ENUM_PROPERTY(LightComponent, TELightType, Type, "Light Type")
 T_REGISTER_PROPERTY(LightComponent, float, Intensity, "Intensity")
 T_REGISTER_PROPERTY(LightComponent, TEColor, Color, "Color")
 
-T_REGISTER_PROPERTY_COND(LightComponent, float, Radius, "Radius", [](void* inst) { 
-    return ((LightComponent*)inst)->Type == TELightType::Point || ((LightComponent*)inst)->Type == TELightType::Spot; 
-})
-T_REGISTER_PROPERTY_COND(LightComponent, float, FalloffExponent, "Falloff Exponent", [](void* inst) { 
-    return ((LightComponent*)inst)->Type != TELightType::Line; 
-})
+T_REGISTER_PROPERTY_COND(LightComponent, float, Radius, "Radius",
+                         [](void *inst)
+                         {
+                             return ((LightComponent *)inst)->Type == TELightType::Point ||
+                                    ((LightComponent *)inst)->Type == TELightType::Spot;
+                         })
+T_REGISTER_PROPERTY_COND(LightComponent, float, FalloffExponent, "Falloff Exponent",
+                         [](void *inst) { return ((LightComponent *)inst)->Type != TELightType::Line; })
 
-T_REGISTER_PROPERTY_COND(LightComponent, float, InnerAngle, "Inner Angle", [](void* inst) { 
-    return ((LightComponent*)inst)->Type == TELightType::Spot; 
-})
-T_REGISTER_PROPERTY_COND(LightComponent, float, OuterAngle, "Outer Angle", [](void* inst) { 
-    return ((LightComponent*)inst)->Type == TELightType::Spot; 
-})
-T_REGISTER_PROPERTY_COND(LightComponent, TEVector2, Direction, "Direction", [](void* inst) { 
-    return ((LightComponent*)inst)->Type == TELightType::Spot; 
-})
+T_REGISTER_PROPERTY_COND(LightComponent, float, InnerAngle, "Inner Angle",
+                         [](void *inst) { return ((LightComponent *)inst)->Type == TELightType::Spot; })
+T_REGISTER_PROPERTY_COND(LightComponent, float, OuterAngle, "Outer Angle",
+                         [](void *inst) { return ((LightComponent *)inst)->Type == TELightType::Spot; })
+T_REGISTER_PROPERTY_COND(LightComponent, TEVector2, Direction, "Direction",
+                         [](void *inst) { return ((LightComponent *)inst)->Type == TELightType::Spot; })
 
-T_REGISTER_PROPERTY_COND(LightComponent, TEVector2, LineOffset, "Line Offset", [](void* inst) { 
-    return ((LightComponent*)inst)->Type == TELightType::Line; 
-})
-T_REGISTER_PROPERTY_COND(LightComponent, float, Width, "Width", [](void* inst) { 
-    return ((LightComponent*)inst)->Type == TELightType::Line; 
-})
+T_REGISTER_PROPERTY_COND(LightComponent, TEVector2, LineOffset, "Line Offset",
+                         [](void *inst) { return ((LightComponent *)inst)->Type == TELightType::Line; })
+T_REGISTER_PROPERTY_COND(LightComponent, float, Width, "Width",
+                         [](void *inst) { return ((LightComponent *)inst)->Type == TELightType::Line; })
 
 // Entity presets registered here - no need to touch EditorLayer.cpp for new light types
-T_REGISTER_PRESET(PointLight, "Point Light", "Lights", ([](::TE::EntityID id, ::TE::EntityManager* em) {
-    em->AddComponent<LightComponent>(id);
-}))
-T_REGISTER_PRESET(SpotLight, "Spot Light", "Lights", ([](::TE::EntityID id, ::TE::EntityManager* em) {
-    auto* l = em->AddComponent<LightComponent>(id);
-    if (l) l->Type = TELightType::Spot;
-}))
-T_REGISTER_PRESET(LineLight, "Line Light", "Lights", ([](::TE::EntityID id, ::TE::EntityManager* em) {
-    auto* l = em->AddComponent<LightComponent>(id);
-    if (l) l->Type = TELightType::Line;
-}))
+T_REGISTER_PRESET(PointLight, "Point Light", "Lights",
+                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<LightComponent>(id); }))
+T_REGISTER_PRESET(SpotLight, "Spot Light", "Lights",
+                  (
+                      [](::TE::EntityID id, ::TE::EntityManager *em)
+                      {
+                          auto *l = em->AddComponent<LightComponent>(id);
+                          if (l)
+                              l->Type = TELightType::Spot;
+                      }))
+T_REGISTER_PRESET(LineLight, "Line Light", "Lights",
+                  (
+                      [](::TE::EntityID id, ::TE::EntityManager *em)
+                      {
+                          auto *l = em->AddComponent<LightComponent>(id);
+                          if (l)
+                              l->Type = TELightType::Line;
+                      }))
 #endif
 
 } // namespace TE

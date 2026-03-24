@@ -1,12 +1,12 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Utility/MathUtils.hpp"
+#include "Utility/UIUtils.hpp"
 #include <algorithm>
+#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
-#include <glm/glm.hpp>
-#include "Utility/UIUtils.hpp"
 
 class TObject;
 
@@ -22,7 +22,7 @@ protected:
     TEPROPERTY()
     TObject *Owner = nullptr;
 
-    class EntityManager* Manager = nullptr;
+    class EntityManager *Manager = nullptr;
 
     TEPROPERTY()
     bool bMarkedPendingDestroy = false;
@@ -43,8 +43,8 @@ public:
     void SetOwner(TObject *newOwner) { Owner = newOwner; }
     TObject *GetOwner() const { return Owner; }
 
-    void SetEntityManager(class EntityManager* mgr) { Manager = mgr; }
-    class EntityManager* GetEntityManager() const { return Manager; }
+    void SetEntityManager(class EntityManager *mgr) { Manager = mgr; }
+    class EntityManager *GetEntityManager() const { return Manager; }
 
     // Convenience method to get the owner as an Entity
     class Entity GetOwnerEntity() const;
@@ -112,7 +112,7 @@ public:
 } // namespace TE
 
 #define TPROPERTY_FLOAT(var, name) ImGui::DragFloat(name, &var, 0.1f)
-#define TPROPERTY_VEC2(var, name) TE::UIUtils::DrawVec2Control(name, *(glm::vec2*)&var)
+#define TPROPERTY_VEC2(var, name) TE::UIUtils::DrawVec2Control(name, *(glm::vec2 *)&var)
 #define TPROPERTY_VEC3(var, name) TE::UIUtils::DrawVec3Control(name, var)
 #define TPROPERTY_BOOL(var, name) ImGui::Checkbox(name, &var)
 #define TPROPERTY_COLOR(var, name) ImGui::ColorEdit4(name, &var.GetValue().x)

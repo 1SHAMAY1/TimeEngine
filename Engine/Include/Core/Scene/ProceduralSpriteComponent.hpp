@@ -1,8 +1,8 @@
 #pragma once
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Utility/MathUtils.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {

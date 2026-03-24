@@ -2,17 +2,20 @@
 #include "CollisionComponent.hpp"
 #include <vector>
 
-namespace TE {
+namespace TE
+{
 
-    using EntityID = uint64_t;
+using EntityID = uint64_t;
 
-    struct CollisionPair {
-        EntityID a, b;
-    };
+struct CollisionPair
+{
+    EntityID a, b;
+};
 
-    class BroadPhase {
-    public:
-        static std::vector<CollisionPair> BruteForce(const std::vector<CollisionComponent*>& colliders);
-    };
+class BroadPhase
+{
+public:
+    static std::vector<CollisionPair> BruteForce(const std::vector<CollisionComponent *> &colliders);
+};
 
-}
+} // namespace TE

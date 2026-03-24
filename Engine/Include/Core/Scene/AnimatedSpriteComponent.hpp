@@ -1,9 +1,9 @@
 #pragma once
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/Texture.hpp"
 #include <memory>
 #include <vector>
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {

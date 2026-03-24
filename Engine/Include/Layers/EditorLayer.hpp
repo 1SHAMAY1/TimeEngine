@@ -84,7 +84,7 @@ private:
     void UI_DrawProjectSettingsPanel();
     void UI_DrawGizmoText();
     void UI_ViewportContextMenu();
-    void DrawComponentNode(Entity entity, class TComponent* comp);
+    void DrawComponentNode(Entity entity, class TComponent *comp);
     std::string GetKeyName(KeyCode key);
     int ToImGuiKey(KeyCode key);
 
@@ -119,10 +119,10 @@ private:
     bool m_ShouldOpenAddComponentPopup = false;
     class TComponent *m_ComponentParentForAdd = nullptr; // Parent component for the new component
     class TComponent *m_SelectedComponent = nullptr;
-    
+
     // Renaming state
     EntityID m_RenamingEntityID = 0;
-    class TComponent* m_RenamingComponent = nullptr;
+    class TComponent *m_RenamingComponent = nullptr;
     bool m_FocusedRenamingInput = false;
 
     // Gizmo State
@@ -163,10 +163,10 @@ private:
     glm::vec3 m_GizmoDragStartEntityPos = {0.0f, 0.0f, 0.0f};
     glm::vec3 m_GizmoDragStartEntityScale = {1.0f, 1.0f, 1.0f};
     float m_GizmoDragStartEntityRotation = 0.0f;
-    
+
     // Deletion Queues
     std::vector<Entity> m_EntitiesToDelete;
-    std::vector<std::pair<EntityID, class TComponent*>> m_ComponentsToDelete;
+    std::vector<std::pair<EntityID, class TComponent *>> m_ComponentsToDelete;
     void ProcessDeletionQueues();
 };
 

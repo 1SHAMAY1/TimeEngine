@@ -4,10 +4,7 @@
 namespace TE
 {
 
-Entity TComponent::GetOwnerEntity() const
-{
-    return Entity((EntityID)Owner, Manager);
-}
+Entity TComponent::GetOwnerEntity() const { return Entity((EntityID)Owner, Manager); }
 
 Entity EntityManager::CreateEntity()
 {
@@ -38,7 +35,7 @@ void EntityManager::RemoveComponentInstance(EntityID entityID, TComponent *insta
 
     // Recursive removal of children
     auto children = instance->GetChildrenComponents(); // Use a copy to avoid iterator invalidation
-    for (auto* child : children)
+    for (auto *child : children)
     {
         RemoveComponentInstance(entityID, child);
     }

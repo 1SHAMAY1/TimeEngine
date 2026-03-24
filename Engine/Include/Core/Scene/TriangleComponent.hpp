@@ -1,10 +1,10 @@
 #pragma once
+#include "Core/Collision/TriangleColliderComponent.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "ProceduralSpriteComponent.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Utility/MathUtils.hpp"
-#include "Core/Collision/TriangleColliderComponent.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {
@@ -23,7 +23,7 @@ public:
     virtual void OnInitialize() override
     {
         ProceduralSpriteComponent::OnInitialize();
-        auto* collider = GetOwnerEntity().AddComponent<TriangleColliderComponent>();
+        auto *collider = GetOwnerEntity().AddComponent<TriangleColliderComponent>();
         collider->Vertices0 = Point1;
         collider->Vertices1 = Point2;
         collider->Vertices2 = Point3;
@@ -45,9 +45,10 @@ public:
 
     bool ContainsPoint(const glm::mat4 &worldModel, const TEVector2 &point) const override
     {
-        auto* collider = GetOwnerEntity().GetComponent<TriangleColliderComponent>();
-        if (collider) {
-            const auto* pts = &collider->Vertices0;
+        auto *collider = GetOwnerEntity().GetComponent<TriangleColliderComponent>();
+        if (collider)
+        {
+            const auto *pts = &collider->Vertices0;
             float minX = std::min({pts[0].x, pts[1].x, pts[2].x});
             float maxX = std::max({pts[0].x, pts[1].x, pts[2].x});
             float minY = std::min({pts[0].y, pts[1].y, pts[2].y});
@@ -85,7 +86,8 @@ T_REGISTER_PROPERTY(TriangleComponent, TEVector2, Point2, "Point 2")
 T_REGISTER_PROPERTY(TriangleComponent, TEVector2, Point3, "Point 3")
 T_REGISTER_PROPERTY(TriangleComponent, TEColor, BaseColor, "Base Color")
 T_REGISTER_PROPERTY(TriangleComponent, bool, bIsVisible, "Visible")
-T_REGISTER_PRESET(Triangle, "Triangle", "Shapes", ([](::TE::EntityID id, ::TE::EntityManager* em) { em->AddComponent<TriangleComponent>(id); }))
+T_REGISTER_PRESET(Triangle, "Triangle", "Shapes",
+                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<TriangleComponent>(id); }))
 #endif
 
 } // namespace TE

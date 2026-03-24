@@ -1,5 +1,6 @@
 #include "Layers/EditorLayer.hpp"
 #include "Core/Application.h"
+#include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Core/KeyCodes.hpp"
 #include "Core/Log.h"
 #include "Core/Physics/PhysicsWorld.hpp"
@@ -7,12 +8,11 @@
 #include "Core/Scene/AmbientLightComponent.hpp"
 #include "Core/Scene/BoxComponent.hpp"
 #include "Core/Scene/CircleComponent.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/LightComponent.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "Core/Scene/TriangleComponent.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
-#include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
@@ -186,22 +186,15 @@ void EditorLayer::OnUpdate()
                 auto ambients = entityManager.GetComponents<AmbientLightComponent>(Entity(id));
                 if (!ambients.empty())
                 {
-                    auto* amb = ambients[0];
+                    auto *amb = ambients[0];
                     float intsy = amb->Intensity;
-                    ambientClear =
-                        TEColor(amb->SkyColor.GetValue().r * intsy, amb->SkyColor.GetValue().g * intsy,
-                                amb->SkyColor.GetValue().b * intsy, 1.0f);
-                    
+                    ambientClear = TEColor(amb->SkyColor.GetValue().r * intsy, amb->SkyColor.GetValue().g * intsy,
+                                           amb->SkyColor.GetValue().b * intsy, 1.0f);
+
                     if (m_Renderer2D)
                     {
-                        m_Renderer2D->SetAmbientGradient(
-                            amb->SkyColor, 
-                            amb->HorizonColor, 
-                            amb->GroundColor, 
-                            amb->Intensity,
-                            amb->HorizonHeight,
-                            amb->HorizonSpread
-                        );
+                        m_Renderer2D->SetAmbientGradient(amb->SkyColor, amb->HorizonColor, amb->GroundColor,
+                                                         amb->Intensity, amb->HorizonHeight, amb->HorizonSpread);
                     }
 
                     hasAmbient = true;
@@ -683,7 +676,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
     ImGui::Begin("Scene Hierarchy");
     if (m_ActiveScene)
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 12)); 
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 12));
         auto &entityManager = m_ActiveScene->GetEntityManager();
         const auto &aliveEntities = entityManager.GetAliveEntities();
 
@@ -700,24 +693,25 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
             ImGui::SetNextItemAllowOverlap();
             // Increased FramePadding for consistent ~34px height across all nodes
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10)); 
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10));
             ImGuiTreeNodeFlags flags = (IsEntitySelected(entity) ? ImGuiTreeNodeFlags_Selected : 0) |
                                        (hasChildren ? 0 : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_OpenOnArrow |
                                        ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
 
             bool opened = false;
-            
+
             if (m_RenamingEntityID == id)
             {
                 // Renaming placeholder to keep tree structure
-                opened = ImGui::TreeNodeEx((void *)(uintptr_t)(id + 10000), flags, " "); 
+                opened = ImGui::TreeNodeEx((void *)(uintptr_t)(id + 10000), flags, " ");
                 ImGui::SameLine();
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
                 strncpy(buffer, name.c_str(), sizeof(buffer) - 1);
-                
+
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 40.0f);
-                if (ImGui::InputText("##RenameEntity", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+                if (ImGui::InputText("##RenameEntity", buffer, sizeof(buffer),
+                                     ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
                 {
                     if (auto *tagComp = entityManager.GetComponent<TagComponent>(entity))
                         tagComp->Tag = std::string(buffer);
@@ -730,13 +724,13 @@ void EditorLayer::UI_DrawSceneHierarchy()
             {
                 ImGui::SetNextItemAllowOverlap();
                 opened = ImGui::TreeNodeEx((void *)(uint64_t)id, flags, name.c_str());
-                
+
                 if (ImGui::IsItemClicked())
                 {
                     bool multiSelect = ImGui::GetIO().KeyShift;
                     bool toggle = ImGui::GetIO().KeyCtrl;
                     SelectEntity(entity, multiSelect, toggle);
-                    m_SelectedComponent = nullptr; 
+                    m_SelectedComponent = nullptr;
                 }
 
                 if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_F2))
@@ -746,26 +740,28 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 float buttonSize = ImGui::GetFrameHeight() * 0.75f; // Entity size (Medium)
                 float padding = ImGui::GetStyle().FramePadding.x;
                 float posX = ImGui::GetWindowWidth() - buttonSize - padding - 15.0f;
-                
+
                 // Plus Button (+)
                 ImGui::SameLine(posX - buttonSize - 5.0f);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetFrameHeight() - buttonSize) * 0.5f);
                 if (UIUtils::DrawPlusButton("+##Add" + std::to_string(id), buttonSize * 1.2f)) // Entity scale (Medium)
                 {
                     m_SelectedToAddComponent = entity;
-                    m_ComponentParentForAdd = nullptr; 
+                    m_ComponentParentForAdd = nullptr;
                     m_ShouldOpenAddComponentPopup = true;
                 }
- 
+
                 // Delete Button (X)
                 ImGui::SameLine(posX);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetFrameHeight() - buttonSize) * 0.5f);
-                if (UIUtils::DrawDeleteButton("Entity" + std::to_string(id), buttonSize * 1.2f)) // Entity scale (Medium)
+                if (UIUtils::DrawDeleteButton("Entity" + std::to_string(id),
+                                              buttonSize * 1.2f)) // Entity scale (Medium)
                 {
                     m_EntitiesToDelete.push_back(entity);
-                    if (opened) ImGui::TreePop(); 
+                    if (opened)
+                        ImGui::TreePop();
                     ImGui::PopStyleVar(); // Fix: Pop before early return
-                    return; 
+                    return;
                 }
             }
             ImGui::PopStyleVar(); // Balance the push from line 703
@@ -773,7 +769,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
             // Context Menu
             if (ImGui::BeginPopupContextItem())
             {
-                if (ImGui::MenuItem("Rename", "F2")) m_RenamingEntityID = id;
+                if (ImGui::MenuItem("Rename", "F2"))
+                    m_RenamingEntityID = id;
                 if (ImGui::MenuItem("Add Child"))
                 {
                     Entity child = m_ActiveScene->CreateEntity("New Child");
@@ -804,7 +801,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 {
                     if (comp->GetParentComponent() != nullptr)
                         continue;
-                    
+
                     // Filter out internal components by class name (more reliable across DLLs)
                     std::string className = comp->GetClassName();
                     if (className == "TagComponent" || className == "TransformComponent")
@@ -823,19 +820,21 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
                 // Draw vertical guideline
                 float verticalLineYEnd = ImGui::GetCursorScreenPos().y - ImGui::GetStyle().ItemSpacing.y;
-                ImGui::GetWindowDrawList()->AddLine(ImVec2(verticalLineX, verticalLineYStart), ImVec2(verticalLineX, verticalLineYEnd), 
-                                                   ImGui::GetColorU32(ImGuiCol_Border), 1.0f);
+                ImGui::GetWindowDrawList()->AddLine(ImVec2(verticalLineX, verticalLineYStart),
+                                                    ImVec2(verticalLineX, verticalLineYEnd),
+                                                    ImGui::GetColorU32(ImGuiCol_Border), 1.0f);
 
                 ImGui::TreePop();
             }
         };
 
         ImGui::PopStyleVar(); // Pop ItemSpacing from line 686
-        
+
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10)); // Taller bar (~34px)
         ImGui::SetNextItemAllowOverlap();
-        bool rootOpened = ImGui::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
-                                                 ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
+        bool rootOpened =
+            ImGui::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
+                                                ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
         ImGui::PopStyleVar(); // Pop FramePadding
 
         if (rootOpened)
@@ -861,12 +860,14 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 ImGui::Spacing();
 
                 // Dynamic: driven by EntityPresets registered via T_REGISTER_PRESET
-                const auto& presets = ComponentRegistry::Get().GetEntityPresets();                std::string lastCategory = "";
-                for (const auto& preset : presets)
+                const auto &presets = ComponentRegistry::Get().GetEntityPresets();
+                std::string lastCategory = "";
+                for (const auto &preset : presets)
                 {
                     if (preset.Category != lastCategory && !preset.Category.empty())
                     {
-                        if (!lastCategory.empty()) ImGui::Spacing();
+                        if (!lastCategory.empty())
+                            ImGui::Spacing();
                         ImGui::Separator();
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.40f, 0.70f, 1.00f, 1.00f));
                         ImGui::Text("  > %s", preset.Category.c_str());
@@ -877,7 +878,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
                     if (ImGui::MenuItem(label.c_str()))
                     {
                         Entity e = m_ActiveScene->CreateEntity(preset.Name);
-                        auto& em = m_ActiveScene->GetEntityManager();
+                        auto &em = m_ActiveScene->GetEntityManager();
                         preset.Create(e.GetID(), &em);
                     }
                 }
@@ -916,7 +917,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
         {
             if (m_SelectedToAddComponent)
             {
-                ImGui::Text("Add Component to %s", m_ComponentParentForAdd ? m_ComponentParentForAdd->GetClassName() : "Entity");
+                ImGui::Text("Add Component to %s",
+                            m_ComponentParentForAdd ? m_ComponentParentForAdd->GetClassName() : "Entity");
                 ImGui::Separator();
                 if (ImGui::BeginChild("AddComponentScroll", ImVec2(250, 300), false, ImGuiWindowFlags_NoScrollbar))
                 {
@@ -927,7 +929,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
                             if (m_ActiveScene)
                             {
                                 auto &entityManager = m_ActiveScene->GetEntityManager();
-                                TComponent* newComp = factory(&entityManager, m_SelectedToAddComponent.GetID());
+                                TComponent *newComp = factory(&entityManager, m_SelectedToAddComponent.GetID());
                                 if (newComp && m_ComponentParentForAdd)
                                 {
                                     newComp->SetComponentParent(m_ComponentParentForAdd);
@@ -965,10 +967,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
             ImGui::EndPopup();
         }
         ImGui::End();
-
     }
 }
-    
 
 void EditorLayer::UI_DrawProperties()
 {
@@ -988,7 +988,7 @@ void EditorLayer::UI_DrawProperties()
         ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Tip: Ctrl+Click sliders for numerical input.");
         ImGui::Separator();
         auto &entityManager = m_ActiveScene->GetEntityManager();
-        Entity m_SelectedEntity = *m_SelectedEntities.begin(); 
+        Entity m_SelectedEntity = *m_SelectedEntities.begin();
         EntityID id = m_SelectedEntity.GetID();
 
         ImGui::TextDisabled("Entity ID: %llu", id);
@@ -1083,14 +1083,14 @@ void EditorLayer::UI_DrawProperties()
                         ImGui::PopID();
                     }
                 }
-                
+
                 ImGui::Separator();
                 if (ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
                 {
                     m_ComponentsToDelete.push_back({id, m_SelectedComponent});
                     m_SelectedComponent = nullptr;
                 }
-                
+
                 if (ImGui::Button("Back to Entity Info", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
                     m_SelectedComponent = nullptr;
             }
@@ -1100,7 +1100,8 @@ void EditorLayer::UI_DrawProperties()
         {
             // Default: Show all components in a clean list
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 8));
-            bool componentsOpened = ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
+            bool componentsOpened =
+                ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
             ImGui::PopStyleVar();
 
             if (componentsOpened)
@@ -1359,8 +1360,8 @@ void EditorLayer::UI_DrawViewport()
             ImGui::SameLine();
 
             // Navigation Toggle (Pill style)
-            auto navColor =
-                m_EditorSettings.AllowNavigation ? ImVec4(0.20f, 0.55f, 0.90f, 1.00f) : ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
+            auto navColor = m_EditorSettings.AllowNavigation ? ImVec4(0.20f, 0.55f, 0.90f, 1.00f)
+                                                             : ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
             ImGui::PushStyleColor(ImGuiCol_Button, navColor);
             if (ImGui::Button("Nav"))
                 m_EditorSettings.AllowNavigation = !m_EditorSettings.AllowNavigation;
@@ -1978,10 +1979,7 @@ void EditorLayer::SelectEntity(Entity entity, bool multiSelect, bool toggle)
     }
 }
 
-void EditorLayer::SelectComponent(TComponent *component)
-{
-    m_SelectedComponent = component;
-}
+void EditorLayer::SelectComponent(TComponent *component) { m_SelectedComponent = component; }
 
 void EditorLayer::ClearSelection()
 {
@@ -1997,18 +1995,17 @@ void EditorLayer::DeleteSelectedEntities()
     }
 }
 
-void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
+void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
 {
     ImGui::PushID(comp);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10)); // Consistent height
     ImGui::SetNextItemAllowOverlap();
-    
+
     bool isSelected = (m_SelectedComponent == comp);
     bool hasChildren = !comp->GetChildrenComponents().empty();
-    
-    ImGuiTreeNodeFlags cFlags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
-                               ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | 
-                               ImGuiTreeNodeFlags_AllowOverlap;
+
+    ImGuiTreeNodeFlags cFlags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_SpanAvailWidth |
+                                ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowOverlap;
     if (!hasChildren)
         cFlags |= ImGuiTreeNodeFlags_Leaf;
 
@@ -2019,13 +2016,14 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
 
     if (m_RenamingComponent == comp)
     {
-        cOpened = ImGui::TreeNodeEx((void*)((uintptr_t)comp + 1), cFlags, " ");
+        cOpened = ImGui::TreeNodeEx((void *)((uintptr_t)comp + 1), cFlags, " ");
         ImGui::SameLine();
         char cBuffer[256];
         memset(cBuffer, 0, sizeof(cBuffer));
         strncpy(cBuffer, cName.c_str(), sizeof(cBuffer) - 1);
         ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 40.0f);
-        if (ImGui::InputText("##RenameComp", cBuffer, sizeof(cBuffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+        if (ImGui::InputText("##RenameComp", cBuffer, sizeof(cBuffer),
+                             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
         {
             comp->InstanceName = std::string(cBuffer);
             m_RenamingComponent = nullptr;
@@ -2036,10 +2034,10 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
     else
     {
         cOpened = ImGui::TreeNodeEx(comp, cFlags, cName.c_str());
-        
+
         if (ImGui::IsItemClicked())
         {
-            SelectEntity(entity); // Select entity first (clears component selection)
+            SelectEntity(entity);  // Select entity first (clears component selection)
             SelectComponent(comp); // Select component second (sets selection for gizmo)
         }
         if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_F2))
@@ -2050,8 +2048,8 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
         float padding = ImGui::GetStyle().FramePadding.x;
         float posX = ImGui::GetWindowWidth() - buttonHeight - padding - 15.0f;
 
-        bool isMandatory = (strcmp(comp->GetClassName(), "TagComponent") == 0 || 
-                           strcmp(comp->GetClassName(), "TransformComponent") == 0);
+        bool isMandatory = (strcmp(comp->GetClassName(), "TagComponent") == 0 ||
+                            strcmp(comp->GetClassName(), "TransformComponent") == 0);
 
         if (!isMandatory)
         {
@@ -2059,7 +2057,7 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
 
             // Plus Button (+) on Component
             ImGui::SameLine(posX - buttonHeight - 5.0f);
-            ImGui::SetCursorScreenPos({ ImGui::GetCursorScreenPos().x, centeredY });
+            ImGui::SetCursorScreenPos({ImGui::GetCursorScreenPos().x, centeredY});
             if (UIUtils::DrawPlusButton("+##AddComp" + std::to_string((uintptr_t)comp), buttonHeight, 1.0f))
             {
                 m_SelectedToAddComponent = entity;
@@ -2069,7 +2067,7 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
 
             // Delete Button (X) - defer deletion
             ImGui::SameLine(posX);
-            ImGui::SetCursorScreenPos({ ImGui::GetCursorScreenPos().x, centeredY });
+            ImGui::SetCursorScreenPos({ImGui::GetCursorScreenPos().x, centeredY});
             if (UIUtils::DrawDeleteButton("X##DelComp" + std::to_string((uintptr_t)comp), buttonHeight, 1.0f))
             {
                 wantsDelete = true;
@@ -2079,13 +2077,13 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent* comp)
 
     if (cOpened)
     {
-        for (auto* child : comp->GetChildrenComponents())
+        for (auto *child : comp->GetChildrenComponents())
         {
             DrawComponentNode(entity, child);
         }
         ImGui::TreePop();
     }
-    
+
     ImGui::PopStyleVar(); // Pop FramePadding
     ImGui::PopID();
 
@@ -2104,7 +2102,7 @@ void EditorLayer::UpdateGizmoHover()
     if (!m_ActiveScene || m_GizmoType == GizmoType::None)
         return;
 
-    TETransform* targetTransform = nullptr;
+    TETransform *targetTransform = nullptr;
     if (m_SelectedComponent && strcmp(m_SelectedComponent->GetClassName(), "AmbientLightComponent") != 0)
     {
         targetTransform = &m_SelectedComponent->Transform;
@@ -2112,10 +2110,10 @@ void EditorLayer::UpdateGizmoHover()
     else if (!m_SelectedEntities.empty())
     {
         Entity primary = *m_SelectedEntities.begin();
-        auto& entityManager = m_ActiveScene->GetEntityManager();
+        auto &entityManager = m_ActiveScene->GetEntityManager();
         if (entityManager.IsValid(primary))
         {
-            auto* transformComp = entityManager.GetComponent<TransformComponent>(primary);
+            auto *transformComp = entityManager.GetComponent<TransformComponent>(primary);
             if (transformComp)
                 targetTransform = &transformComp->Transform;
         }
@@ -2170,7 +2168,7 @@ void EditorLayer::UI_DrawGizmos()
 
     UpdateGizmoHover();
 
-    TETransform* targetTransform = nullptr;
+    TETransform *targetTransform = nullptr;
     if (m_SelectedComponent && strcmp(m_SelectedComponent->GetClassName(), "AmbientLightComponent") != 0)
     {
         targetTransform = &m_SelectedComponent->Transform;
@@ -2178,10 +2176,10 @@ void EditorLayer::UI_DrawGizmos()
     else if (!m_SelectedEntities.empty())
     {
         Entity primary = *m_SelectedEntities.begin();
-        auto& entityManager = m_ActiveScene->GetEntityManager();
+        auto &entityManager = m_ActiveScene->GetEntityManager();
         if (entityManager.IsValid(primary))
         {
-            auto* transformComp = entityManager.GetComponent<TransformComponent>(primary);
+            auto *transformComp = entityManager.GetComponent<TransformComponent>(primary);
             if (transformComp)
                 targetTransform = &transformComp->Transform;
         }
@@ -2536,108 +2534,108 @@ int EditorLayer::ToImGuiKey(KeyCode key)
 void EditorLayer::SetDarkThemeColors()
 {
     auto &style = ImGui::GetStyle();
-    style.WindowRounding    = 10.0f;
-    style.ChildRounding     = 8.0f;
-    style.FrameRounding     = 6.0f;
-    style.PopupRounding     = 10.0f;
-    style.TabRounding       = 6.0f;
-    style.GrabRounding      = 5.0f;
+    style.WindowRounding = 10.0f;
+    style.ChildRounding = 8.0f;
+    style.FrameRounding = 6.0f;
+    style.PopupRounding = 10.0f;
+    style.TabRounding = 6.0f;
+    style.GrabRounding = 5.0f;
     style.ScrollbarRounding = 8.0f;
-    style.WindowBorderSize  = 1.0f;
-    style.FrameBorderSize   = 0.0f;
-    style.PopupBorderSize   = 1.0f;
-    style.ItemSpacing       = ImVec2(8.0f, 5.0f);
-    style.FramePadding      = ImVec2(6.0f, 4.0f);
-    style.WindowPadding     = ImVec2(10.0f, 8.0f);
+    style.WindowBorderSize = 1.0f;
+    style.FrameBorderSize = 0.0f;
+    style.PopupBorderSize = 1.0f;
+    style.ItemSpacing = ImVec2(8.0f, 5.0f);
+    style.FramePadding = ImVec2(6.0f, 4.0f);
+    style.WindowPadding = ImVec2(10.0f, 8.0f);
 
     auto &colors = style.Colors;
 
     // --- Professional dark glass palette ---
-    ImVec4 bgDeep       = ImVec4(0.07f, 0.08f, 0.09f, 0.98f);
-    ImVec4 bgPanel      = ImVec4(0.10f, 0.11f, 0.12f, 0.95f);
-    ImVec4 bgWidget     = ImVec4(0.13f, 0.14f, 0.16f, 0.80f);
-    ImVec4 borderColor  = ImVec4(0.22f, 0.24f, 0.27f, 0.50f);
-    ImVec4 headerGlass  = ImVec4(0.16f, 0.18f, 0.21f, 0.70f);
-    ImVec4 headerHover  = ImVec4(0.22f, 0.25f, 0.29f, 0.85f);
+    ImVec4 bgDeep = ImVec4(0.07f, 0.08f, 0.09f, 0.98f);
+    ImVec4 bgPanel = ImVec4(0.10f, 0.11f, 0.12f, 0.95f);
+    ImVec4 bgWidget = ImVec4(0.13f, 0.14f, 0.16f, 0.80f);
+    ImVec4 borderColor = ImVec4(0.22f, 0.24f, 0.27f, 0.50f);
+    ImVec4 headerGlass = ImVec4(0.16f, 0.18f, 0.21f, 0.70f);
+    ImVec4 headerHover = ImVec4(0.22f, 0.25f, 0.29f, 0.85f);
     ImVec4 headerActive = ImVec4(0.28f, 0.31f, 0.36f, 1.00f);
-    ImVec4 tabActive    = ImVec4(0.21f, 0.24f, 0.28f, 1.00f);
-    ImVec4 textColor    = ImVec4(0.90f, 0.92f, 0.95f, 1.00f);
-    ImVec4 textDim      = ImVec4(0.50f, 0.55f, 0.60f, 1.00f);
+    ImVec4 tabActive = ImVec4(0.21f, 0.24f, 0.28f, 1.00f);
+    ImVec4 textColor = ImVec4(0.90f, 0.92f, 0.95f, 1.00f);
+    ImVec4 textDim = ImVec4(0.50f, 0.55f, 0.60f, 1.00f);
     // Used only for interactive controls like sliders and checkmarks
-    ImVec4 accent       = ImVec4(0.20f, 0.55f, 0.90f, 1.00f);
+    ImVec4 accent = ImVec4(0.20f, 0.55f, 0.90f, 1.00f);
 
-    colors[ImGuiCol_Text]                 = textColor;
-    colors[ImGuiCol_TextDisabled]         = textDim;
+    colors[ImGuiCol_Text] = textColor;
+    colors[ImGuiCol_TextDisabled] = textDim;
 
-    colors[ImGuiCol_WindowBg]             = bgDeep;
-    colors[ImGuiCol_ChildBg]              = bgPanel;
-    colors[ImGuiCol_PopupBg]              = ImVec4(0.08f, 0.09f, 0.10f, 0.97f);
+    colors[ImGuiCol_WindowBg] = bgDeep;
+    colors[ImGuiCol_ChildBg] = bgPanel;
+    colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.09f, 0.10f, 0.97f);
 
-    colors[ImGuiCol_Border]               = borderColor;
-    colors[ImGuiCol_BorderShadow]         = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[ImGuiCol_Border] = borderColor;
+    colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    colors[ImGuiCol_FrameBg]              = bgWidget;
-    colors[ImGuiCol_FrameBgHovered]       = ImVec4(0.19f, 0.21f, 0.24f, 0.85f);
-    colors[ImGuiCol_FrameBgActive]        = ImVec4(0.15f, 0.17f, 0.20f, 1.00f);
+    colors[ImGuiCol_FrameBg] = bgWidget;
+    colors[ImGuiCol_FrameBgHovered] = ImVec4(0.19f, 0.21f, 0.24f, 0.85f);
+    colors[ImGuiCol_FrameBgActive] = ImVec4(0.15f, 0.17f, 0.20f, 1.00f);
 
-    colors[ImGuiCol_TitleBg]              = ImVec4(0.05f, 0.06f, 0.07f, 1.0f);
-    colors[ImGuiCol_TitleBgActive]        = ImVec4(0.08f, 0.09f, 0.10f, 1.0f);
-    colors[ImGuiCol_TitleBgCollapsed]     = ImVec4(0.05f, 0.05f, 0.05f, 0.5f);
+    colors[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.06f, 0.07f, 1.0f);
+    colors[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.09f, 0.10f, 1.0f);
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.05f, 0.05f, 0.05f, 0.5f);
 
-    colors[ImGuiCol_MenuBarBg]            = ImVec4(0.06f, 0.07f, 0.08f, 1.00f);
+    colors[ImGuiCol_MenuBarBg] = ImVec4(0.06f, 0.07f, 0.08f, 1.00f);
 
-    colors[ImGuiCol_ScrollbarBg]          = ImVec4(0.04f, 0.04f, 0.05f, 0.60f);
-    colors[ImGuiCol_ScrollbarGrab]        = ImVec4(0.22f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.04f, 0.04f, 0.05f, 0.60f);
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.22f, 0.25f, 0.29f, 1.00f);
     colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.30f, 0.33f, 0.38f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabActive]  = accent;
+    colors[ImGuiCol_ScrollbarGrabActive] = accent;
 
-    colors[ImGuiCol_CheckMark]            = accent;
-    colors[ImGuiCol_SliderGrab]           = accent;
-    colors[ImGuiCol_SliderGrabActive]     = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
+    colors[ImGuiCol_CheckMark] = accent;
+    colors[ImGuiCol_SliderGrab] = accent;
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
 
-    colors[ImGuiCol_Button]               = bgWidget;
-    colors[ImGuiCol_ButtonHovered]        = headerHover;
-    colors[ImGuiCol_ButtonActive]         = headerActive;
+    colors[ImGuiCol_Button] = bgWidget;
+    colors[ImGuiCol_ButtonHovered] = headerHover;
+    colors[ImGuiCol_ButtonActive] = headerActive;
 
-    colors[ImGuiCol_Header]               = headerGlass;
-    colors[ImGuiCol_HeaderHovered]        = headerHover;
-    colors[ImGuiCol_HeaderActive]         = headerActive;
+    colors[ImGuiCol_Header] = headerGlass;
+    colors[ImGuiCol_HeaderHovered] = headerHover;
+    colors[ImGuiCol_HeaderActive] = headerActive;
 
-    colors[ImGuiCol_Separator]            = borderColor;
-    colors[ImGuiCol_SeparatorHovered]     = ImVec4(0.30f, 0.33f, 0.38f, 0.90f);
-    colors[ImGuiCol_SeparatorActive]      = accent;
+    colors[ImGuiCol_Separator] = borderColor;
+    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.30f, 0.33f, 0.38f, 0.90f);
+    colors[ImGuiCol_SeparatorActive] = accent;
 
-    colors[ImGuiCol_ResizeGrip]           = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    colors[ImGuiCol_ResizeGripHovered]    = headerHover;
-    colors[ImGuiCol_ResizeGripActive]     = accent;
+    colors[ImGuiCol_ResizeGrip] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[ImGuiCol_ResizeGripHovered] = headerHover;
+    colors[ImGuiCol_ResizeGripActive] = accent;
 
     // Tabs - subtle steel, not blue
-    colors[ImGuiCol_Tab]                  = ImVec4(0.10f, 0.11f, 0.13f, 0.80f);
-    colors[ImGuiCol_TabHovered]           = headerHover;
-    colors[ImGuiCol_TabActive]            = tabActive;
-    colors[ImGuiCol_TabUnfocused]         = ImVec4(0.08f, 0.09f, 0.10f, 0.80f);
-    colors[ImGuiCol_TabUnfocusedActive]   = tabActive;
+    colors[ImGuiCol_Tab] = ImVec4(0.10f, 0.11f, 0.13f, 0.80f);
+    colors[ImGuiCol_TabHovered] = headerHover;
+    colors[ImGuiCol_TabActive] = tabActive;
+    colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.09f, 0.10f, 0.80f);
+    colors[ImGuiCol_TabUnfocusedActive] = tabActive;
 
-    colors[ImGuiCol_DockingPreview]       = ImVec4(accent.x, accent.y, accent.z, 0.5f);
-    colors[ImGuiCol_DockingEmptyBg]       = bgDeep;
+    colors[ImGuiCol_DockingPreview] = ImVec4(accent.x, accent.y, accent.z, 0.5f);
+    colors[ImGuiCol_DockingEmptyBg] = bgDeep;
 
-    colors[ImGuiCol_PlotLines]            = ImVec4(0.50f, 0.55f, 0.60f, 1.00f);
-    colors[ImGuiCol_PlotLinesHovered]     = accent;
-    colors[ImGuiCol_PlotHistogram]        = ImVec4(0.30f, 0.55f, 0.80f, 1.00f);
+    colors[ImGuiCol_PlotLines] = ImVec4(0.50f, 0.55f, 0.60f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered] = accent;
+    colors[ImGuiCol_PlotHistogram] = ImVec4(0.30f, 0.55f, 0.80f, 1.00f);
     colors[ImGuiCol_PlotHistogramHovered] = accent;
 
-    colors[ImGuiCol_TableHeaderBg]        = ImVec4(0.11f, 0.13f, 0.15f, 1.00f);
-    colors[ImGuiCol_TableBorderStrong]    = borderColor;
-    colors[ImGuiCol_TableBorderLight]     = ImVec4(0.14f, 0.16f, 0.18f, 0.60f);
-    colors[ImGuiCol_TableRowBg]           = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    colors[ImGuiCol_TableRowBgAlt]        = ImVec4(1.0f, 1.0f, 1.0f, 0.03f);
+    colors[ImGuiCol_TableHeaderBg] = ImVec4(0.11f, 0.13f, 0.15f, 1.00f);
+    colors[ImGuiCol_TableBorderStrong] = borderColor;
+    colors[ImGuiCol_TableBorderLight] = ImVec4(0.14f, 0.16f, 0.18f, 0.60f);
+    colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.03f);
 
-    colors[ImGuiCol_TextSelectedBg]       = ImVec4(accent.x, accent.y, accent.z, 0.35f);
-    colors[ImGuiCol_DragDropTarget]       = ImVec4(0.9f, 0.7f, 0.0f, 0.90f);
-    colors[ImGuiCol_NavHighlight]         = ImVec4(accent.x, accent.y, accent.z, 0.80f);
-    colors[ImGuiCol_NavWindowingHighlight]= ImVec4(1.0f, 1.0f, 1.0f, 0.70f);
-    colors[ImGuiCol_NavWindowingDimBg]    = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[ImGuiCol_ModalWindowDimBg]     = ImVec4(0.10f, 0.10f, 0.10f, 0.55f);
+    colors[ImGuiCol_TextSelectedBg] = ImVec4(accent.x, accent.y, accent.z, 0.35f);
+    colors[ImGuiCol_DragDropTarget] = ImVec4(0.9f, 0.7f, 0.0f, 0.90f);
+    colors[ImGuiCol_NavHighlight] = ImVec4(accent.x, accent.y, accent.z, 0.80f);
+    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.10f, 0.10f, 0.10f, 0.55f);
 }
 
 void EditorLayer::ProcessDeletionQueues()
@@ -2645,9 +2643,9 @@ void EditorLayer::ProcessDeletionQueues()
     if (m_EntitiesToDelete.empty() && m_ComponentsToDelete.empty())
         return;
 
-    auto& entityManager = m_ActiveScene->GetEntityManager();
+    auto &entityManager = m_ActiveScene->GetEntityManager();
 
-    for (auto& pair : m_ComponentsToDelete)
+    for (auto &pair : m_ComponentsToDelete)
     {
         entityManager.RemoveComponentInstance(pair.first, pair.second);
         if (m_SelectedComponent == pair.second)
@@ -2655,7 +2653,7 @@ void EditorLayer::ProcessDeletionQueues()
     }
     m_ComponentsToDelete.clear();
 
-    for (auto& entity : m_EntitiesToDelete)
+    for (auto &entity : m_EntitiesToDelete)
     {
         m_ActiveScene->DestroyEntity(entity);
         if (m_SelectedEntities.count(entity))
