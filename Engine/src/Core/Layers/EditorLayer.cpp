@@ -13,6 +13,9 @@
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "Core/Scene/TriangleComponent.hpp"
+#include "Editor/DefaultModes.hpp"
+#include "Editor/EditorToolbar.hpp"
+#include "Editor/SpriteMode.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
@@ -25,9 +28,6 @@
 #include "Utility/MathUtils.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "Editor/EditorToolbar.hpp"
-#include "Editor/DefaultModes.hpp"
-#include "Editor/SpriteMode.hpp"
 #include <cstring>
 #include <filesystem>
 
@@ -577,7 +577,7 @@ void EditorLayer::OnImGuiRender()
 
     EditorToolbar::OnImGuiRender();
 
-    EditorMode* activeMode = EditorModeRegistry::GetActiveMode();
+    EditorMode *activeMode = EditorModeRegistry::GetActiveMode();
     bool isSpriteMode = activeMode && std::string(activeMode->GetName()) == "Sprite Mode";
 
     if (isSpriteMode)
@@ -627,10 +627,10 @@ void EditorLayer::OnImGuiRender()
         UI_DrawProperties();
         UI_DrawViewport();
     }
-    
+
     if (!isSpriteMode)
     {
-        UI_DrawContentBrowser(); 
+        UI_DrawContentBrowser();
         UI_DrawSettingsPanel();
         UI_DrawProjectSettingsPanel();
     }

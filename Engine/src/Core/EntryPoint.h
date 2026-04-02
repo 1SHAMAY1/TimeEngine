@@ -38,10 +38,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return RunEngine(__argc, __argv);
 }
 #else
-int main(int argc, char **argv)
-{
-    return RunEngine(argc, argv);
-}
+int main(int argc, char **argv) { return RunEngine(argc, argv); }
 #endif
 
 #endif

@@ -23,7 +23,7 @@ public:
                 if (!startProject.empty() && std::filesystem::exists(startProject))
                 {
                     TE_CORE_INFO("Attempting to load project: ", startProject);
-                    // Load Project Directly
+                // Load Project Directly
 #ifdef TE_EDITOR
                     if (TE::Project::Load(startProject))
                     {

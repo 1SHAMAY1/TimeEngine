@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Layers/LayerStack.hpp"
 #include "PreRequisites.h"
 #include "Window/IWindow.hpp"
-#include "Layers/LayerStack.hpp"
 #ifdef TE_EDITOR
 #include "ImGUI/ImGuiLayer.hpp"
 #endif
@@ -10,62 +10,56 @@
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/VertexBuffer.hpp"
 
-
 namespace TE
 {
-    class TE_API Application
-    {
-    public:
-        Application();
-        virtual ~Application();
+class TE_API Application
+{
+public:
+    Application();
+    virtual ~Application();
 
-        void Run();
-        void Close();
+    void Run();
+    void Close();
 
-        virtual void OnUpdate() {}
+    virtual void OnUpdate() {}
 
-        void PushLayer(Layer* layer);
-        void PushOverlay(Layer* overlay);
-        void PopLayer(Layer* layer);
-        void PopOverlay(Layer* overlay);
-        void MarkLayerForRemoval(Layer* layer);
-        void MarkOverlayForRemoval(Layer* layer);
-        
-        // Deferred layer addition methods
-        void MarkLayerForAddition(Layer* layer);
-        void MarkOverlayForAddition(Layer* overlay);
-        void ProcessDeferredAdditions();
+    void PushLayer(Layer *layer);
+    void PushOverlay(Layer *overlay);
+    void PopLayer(Layer *layer);
+    void PopOverlay(Layer *overlay);
+    void MarkLayerForRemoval(Layer *layer);
+    void MarkOverlayForRemoval(Layer *layer);
 
+    // Deferred layer addition methods
+    void MarkLayerForAddition(Layer *layer);
+    void MarkOverlayForAddition(Layer *overlay);
+    void ProcessDeferredAdditions();
 
-        static Application& Get() { return *s_Instance; }
-        IWindow& GetWindow() const { return *m_Window; }
-    
+    static Application &Get() { return *s_Instance; }
+    IWindow &GetWindow() const { return *m_Window; }
 
-    private:
-        std::unique_ptr<IWindow> m_Window;
-        bool m_Running;
+private:
+    std::unique_ptr<IWindow> m_Window;
+    bool m_Running;
 
-        LayerStack m_LayerStack;
+    LayerStack m_LayerStack;
 #ifdef TE_EDITOR
-        ImGuiLayer* m_ImGuiLayer = nullptr;
+    ImGuiLayer *m_ImGuiLayer = nullptr;
 #endif
-        
-        // Deferred layer addition
-        std::vector<Layer*> m_LayersToAdd;
-        std::vector<Layer*> m_OverlaysToAdd;
 
-        static Application* s_Instance;
+    // Deferred layer addition
+    std::vector<Layer *> m_LayersToAdd;
+    std::vector<Layer *> m_OverlaysToAdd;
 
-        unsigned int I_IndexBuffer,I_VertexArray,I_VertexBuffer,I_ShaderProgram;
-        std::unique_ptr<VertexBuffer> m_VertexBuffer;
-        std::unique_ptr<VertexArray> m_VertexArray;
-        std::unique_ptr<IndexBuffer> m_IndexBuffer;
-        std::unique_ptr<Shader> m_Shader;
+    static Application *s_Instance;
 
-        
+    unsigned int I_IndexBuffer, I_VertexArray, I_VertexBuffer, I_ShaderProgram;
+    std::unique_ptr<VertexBuffer> m_VertexBuffer;
+    std::unique_ptr<VertexArray> m_VertexArray;
+    std::unique_ptr<IndexBuffer> m_IndexBuffer;
+    std::unique_ptr<Shader> m_Shader;
+};
 
-    };
-
-    // To be defined by the client (e.g., Sandbox app)
-    Application* CreateApplication(int argc, char** argv);
-}
+// To be defined by the client (e.g., Sandbox app)
+Application *CreateApplication(int argc, char **argv);
+} // namespace TE
