@@ -1,7 +1,9 @@
 #include "Core/Project/Project.hpp"
-#include "Layers/EditorLayer.hpp"
 #include "Layers/LogoLayer.hpp"
+#ifdef TE_EDITOR
+#include "Layers/EditorLayer.hpp"
 #include "Layers/ProjectHubLayer.hpp"
+#endif
 #include "Utils/PlatformUtils.hpp"
 #include <Engine.h>
 #include <filesystem>
@@ -21,7 +23,8 @@ public:
                 if (!startProject.empty() && std::filesystem::exists(startProject))
                 {
                     TE_CORE_INFO("Attempting to load project: ", startProject);
-                    // Load Project Directly
+                // Load Project Directly
+#ifdef TE_EDITOR
                     if (TE::Project::Load(startProject))
                     {
                         TE_CORE_INFO("Project loaded successfully. Pushing EditorLayer.");
@@ -32,12 +35,27 @@ public:
                         TE_CORE_ERROR("Failed to load project from args: ", startProject);
                         MarkLayerForAddition(new TE::ProjectHubLayer());
                     }
+#else
+                    if (TE::Project::Load(startProject))
+                    {
+                        TE_CORE_INFO("Project loaded successfully in runtime mode.");
+                    }
+                    else
+                    {
+                        TE_CORE_ERROR("Failed to load project from args: ", startProject);
+                    }
+#endif
                 }
                 else
                 {
+#ifdef TE_EDITOR
                     TE_CORE_INFO("No valid project argument. Starting Project Hub.");
                     // Start with the Project Hub (Launcher)
                     MarkLayerForAddition(new TE::ProjectHubLayer());
+#else
+                    TE_CORE_INFO("No project specified for runtime build. Exiting...");
+                    Close();
+#endif
                 }
             });
 

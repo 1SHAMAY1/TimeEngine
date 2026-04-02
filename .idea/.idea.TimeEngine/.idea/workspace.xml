@@ -14,32 +14,14 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Collision/BroadPhase.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Collision/BroadPhase.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionSystem.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionSystem.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionTypes.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionTypes.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/AmbientLightComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/AmbientLightComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/AnimatedSpriteComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/BoxComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/BoxComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/CircleComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/CircleComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/EntityManager.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/ParallaxComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/ParallaxComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/ProceduralSpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/ProceduralSpriteComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/TagComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/TagComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/TransformComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/TransformComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/TriangleComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/TriangleComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Collision/BroadPhase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Collision/BroadPhase.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Collision/CollisionSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Collision/CollisionSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/EntryPoint.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/EntryPoint.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/ProjectHubLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/ProjectHubLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Scene/EntityManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Scene/EntityManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Log.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Log.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Core_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,6 +50,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/Presentation.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.38.33130/include/vector" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/Camera.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/CameraController.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/OrthographicCamera.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -88,6 +71,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/ProceduralSpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TFunctionLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TObject.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -288,6 +272,10 @@
       <workItem from="1774343487872" duration="3035000" />
       <workItem from="1774353651114" duration="12576000" />
       <workItem from="1774368855644" duration="6169000" />
+      <workItem from="1774417974583" duration="891000" />
+      <workItem from="1774442961920" duration="10640000" />
+      <workItem from="1774455874342" duration="3312000" />
+      <workItem from="1775133762786" duration="2126000" />
     </task>
     <servers />
   </component>

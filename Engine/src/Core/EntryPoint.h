@@ -5,7 +5,7 @@
 
 extern TE::Application *TE::CreateApplication(int argc, char **argv);
 
-int main(int argc, char **argv)
+inline int RunEngine(int argc, char **argv)
 {
     try
     {
@@ -23,12 +23,22 @@ int main(int argc, char **argv)
     catch (const std::exception &e)
     {
         TE_CORE_CRITICAL("Unhandled Exception: {0}", e.what());
-        // Attempt to log to file explicitly if logging failed?
-        // Assuming Log is initialized enough.
     }
     catch (...)
     {
         TE_CORE_CRITICAL("Unknown Unhandled Exception!");
     }
+    return 0;
 }
+
+#ifdef TE_PACKAGED
+#include <windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    return RunEngine(__argc, __argv);
+}
+#else
+int main(int argc, char **argv) { return RunEngine(argc, argv); }
+#endif
+
 #endif
