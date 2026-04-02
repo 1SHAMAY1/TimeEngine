@@ -29,6 +29,7 @@ std::string LogFormat(Args&&... args) {
     return ss.str();
 }
 
+#ifndef TE_MINIMIZED
 // Support single argument (msg only)
 #define TE_CORE_INFO_1(msg)      ::TE::Log::GetCoreLogger().log("Core", msg, "INFO",     __FILE__, __LINE__)
 #define TE_CORE_WARN_1(msg)      ::TE::Log::GetCoreLogger().log("Core", msg, "WARNING",  __FILE__, __LINE__)
@@ -50,3 +51,25 @@ std::string LogFormat(Args&&... args) {
 #define TE_CLIENT_DEBUG(...)    ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "DEBUG",    __FILE__, __LINE__)
 #define TE_CLIENT_CRITICAL(...) ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "CRITICAL", __FILE__, __LINE__)
 #define TE_CLIENT_ASSERT(x, msg) if (!(x)) { TE_CLIENT_CRITICAL(msg); __debugbreak(); }
+#else
+// Minimized build logic: Strip INFO, WARN, and DEBUG, but keep ERROR/CRITICAL/ASSERT
+#define TE_CORE_INFO_1(msg)
+#define TE_CORE_WARN_1(msg)
+#define TE_CORE_ERROR_1(msg)     ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR",    __FILE__, __LINE__)
+#define TE_CORE_CRITICAL_1(msg)  ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL", __FILE__, __LINE__)
+
+#define TE_CORE_INFO(...)
+#define TE_CORE_WARN(...)
+#define TE_CORE_ERROR(...)     ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "ERROR",    __FILE__, __LINE__)
+#define TE_CORE_DEBUG(...)
+#define TE_CORE_CRITICAL(...)  ::TE::Log::GetCoreLogger().log("Core", LogFormat(__VA_ARGS__), "CRITICAL", __FILE__, __LINE__)
+
+#define TE_CORE_ASSERT(x, msg) if (!(x)) { TE_CORE_CRITICAL(msg); __debugbreak(); }
+
+#define TE_CLIENT_INFO(...)
+#define TE_CLIENT_WARN(...)
+#define TE_CLIENT_ERROR(...)    ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "ERROR",    __FILE__, __LINE__)
+#define TE_CLIENT_DEBUG(...)
+#define TE_CLIENT_CRITICAL(...) ::TE::Log::GetClientLogger().log("Client", LogFormat(__VA_ARGS__), "CRITICAL", __FILE__, __LINE__)
+#define TE_CLIENT_ASSERT(x, msg) if (!(x)) { TE_CLIENT_CRITICAL(msg); __debugbreak(); }
+#endif

@@ -67,9 +67,11 @@ Application::Application() : m_Running(true)
                 });
         });
 
+#ifdef TE_EDITOR
     // === ImGui Layer Setup ===
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
+#endif
 }
 
 Application::~Application() { TE_CORE_INFO("Application Destructor called."); }
@@ -97,6 +99,7 @@ void Application::Run()
                 layer->OnUpdate();
         }
 
+#ifdef TE_EDITOR
         // ImGui Rendering
         m_ImGuiLayer->Begin();
         for (Layer *layer : m_LayerStack)
@@ -105,6 +108,7 @@ void Application::Run()
                 layer->OnImGuiRender();
         }
         m_ImGuiLayer->End();
+#endif
 
         // Process any deferred layer removals after all layer operations are complete
         m_LayerStack.ProcessDeferredRemovals();

@@ -25,6 +25,9 @@
 #include "Utility/MathUtils.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "Editor/EditorToolbar.hpp"
+#include "Editor/DefaultModes.hpp"
+#include "Editor/SpriteMode.hpp"
 #include <cstring>
 #include <filesystem>
 
@@ -133,6 +136,7 @@ void EditorLayer::OnAttach()
         m_EditorSettings.Shortcuts["Select"] = Key::Q;
     }
 
+    InitEditorModes();
     TE_CORE_INFO("EditorLayer::OnAttach Finished.");
 }
 
@@ -569,49 +573,67 @@ void EditorLayer::OnImGuiRender()
     if (opt_fullscreen)
         ImGui::PopStyleVar(2);
 
-    // DockSpace
-    ImGuiIO &io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-    {
-        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-        static bool s_FirstTime = true;
-        if (s_FirstTime)
-        {
-            s_FirstTime = false;
-
-            ImGui::DockBuilderRemoveNode(dockspace_id);
-            ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
-            ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
-
-            ImGuiID dock_main_id = dockspace_id;
-            ImGuiID dock_id_right =
-                ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
-            ImGuiID dock_id_bottom =
-                ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
-
-            // Split the right panel into Top (Hierarchy) and Bottom (Properties)
-            ImGuiID dock_id_right_bottom =
-                ImGui::DockBuilderSplitNode(dock_id_right, ImGuiDir_Down, 0.5f, nullptr, &dock_id_right);
-
-            ImGui::DockBuilderDockWindow("Viewport", dock_main_id);
-            ImGui::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
-            ImGui::DockBuilderDockWindow("Properties", dock_id_right_bottom);
-            ImGui::DockBuilderDockWindow("Content Browser", dock_id_bottom);
-
-            ImGui::DockBuilderFinish(dockspace_id);
-        }
-    }
-
     UI_DrawMenubar();
 
-    UI_DrawSceneHierarchy();
-    UI_DrawProperties();
-    UI_DrawContentBrowser();
-    UI_DrawViewport();
-    UI_DrawSettingsPanel();
-    UI_DrawProjectSettingsPanel();
+    EditorToolbar::OnImGuiRender();
+
+    EditorMode* activeMode = EditorModeRegistry::GetActiveMode();
+    bool isSpriteMode = activeMode && std::string(activeMode->GetName()) == "Sprite Mode";
+
+    if (isSpriteMode)
+    {
+        TE_CORE_DEBUG("EditorLayer::OnImGuiRender - Active Mode: {0}", activeMode->GetName());
+        activeMode->OnImGuiRender();
+    }
+    else
+    {
+        TE_CORE_DEBUG("EditorLayer::OnImGuiRender - Active Mode: Level Editor (Default)");
+        // DockSpace
+        ImGuiIO &io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+
+            static bool s_FirstTime = true;
+            if (s_FirstTime)
+            {
+                s_FirstTime = false;
+
+                ImGui::DockBuilderRemoveNode(dockspace_id);
+                ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+                ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
+
+                ImGuiID dock_main_id = dockspace_id;
+                ImGuiID dock_id_right =
+                    ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
+                ImGuiID dock_id_bottom =
+                    ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
+
+                // Split the right panel into Top (Hierarchy) and Bottom (Properties)
+                ImGuiID dock_id_right_bottom =
+                    ImGui::DockBuilderSplitNode(dock_id_right, ImGuiDir_Down, 0.5f, nullptr, &dock_id_right);
+
+                ImGui::DockBuilderDockWindow("Viewport", dock_main_id);
+                ImGui::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
+                ImGui::DockBuilderDockWindow("Properties", dock_id_right_bottom);
+                ImGui::DockBuilderDockWindow("Content Browser", dock_id_bottom);
+
+                ImGui::DockBuilderFinish(dockspace_id);
+            }
+        }
+
+        UI_DrawSceneHierarchy();
+        UI_DrawProperties();
+        UI_DrawViewport();
+    }
+    
+    if (!isSpriteMode)
+    {
+        UI_DrawContentBrowser(); 
+        UI_DrawSettingsPanel();
+        UI_DrawProjectSettingsPanel();
+    }
 
     ProcessDeletionQueues();
 

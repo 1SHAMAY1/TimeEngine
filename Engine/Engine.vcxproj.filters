@@ -79,6 +79,9 @@
     <Filter Include="Header Files\Core\Threading">
       <UniqueIdentifier>{9E15D458-0A23-023F-9309-FE29FF15CEF5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Editor">
+      <UniqueIdentifier>{373999AD-A39A-76BB-2C08-BD6D9868AD7A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\GameFrameWork">
       <UniqueIdentifier>{F8A3361F-E4B3-E2EF-4D6D-470E399CD188}</UniqueIdentifier>
     </Filter>
@@ -243,6 +246,9 @@
     <ClInclude Include="Include\Core\Scene\CircleComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Scene\ComponentRegistry.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\Scene\EntityManager.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
@@ -262,6 +268,9 @@
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Scene\ProceduralSpriteComponent.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene\PropertyDrawers.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Scene\Scene.hpp">
@@ -287,6 +296,18 @@
     </ClInclude>
     <ClInclude Include="Include\Core\Threading\ThreadingMacros.hpp">
       <Filter>Header Files\Core\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Editor\DefaultModes.hpp">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Editor\EditorMode.hpp">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Editor\EditorToolbar.hpp">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Editor\SpriteMode.hpp">
+      <Filter>Header Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Include\GameFrameWork\TComponent.hpp">
       <Filter>Header Files\GameFrameWork</Filter>
@@ -442,6 +463,9 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Utility\MathUtils.hpp">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Utility\UIUtils.hpp">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Include\Utils\PlatformUtils.hpp">

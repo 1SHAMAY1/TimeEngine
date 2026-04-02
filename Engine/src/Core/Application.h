@@ -3,7 +3,9 @@
 #include "PreRequisites.h"
 #include "Window/IWindow.hpp"
 #include "Layers/LayerStack.hpp"
+#ifdef TE_EDITOR
 #include "ImGUI/ImGuiLayer.hpp"
+#endif
 #include "Renderer/Shader.hpp"
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/VertexBuffer.hpp"
@@ -44,7 +46,9 @@ namespace TE
         bool m_Running;
 
         LayerStack m_LayerStack;
+#ifdef TE_EDITOR
         ImGuiLayer* m_ImGuiLayer = nullptr;
+#endif
         
         // Deferred layer addition
         std::vector<Layer*> m_LayersToAdd;

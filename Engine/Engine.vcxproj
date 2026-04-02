@@ -195,6 +195,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Core\Scene\AnimatedSpriteComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\BoxComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\CircleComponent.hpp" />
+    <ClInclude Include="Include\Core\Scene\ComponentRegistry.hpp" />
     <ClInclude Include="Include\Core\Scene\EntityManager.hpp" />
     <ClInclude Include="Include\Core\Scene\GameManager.hpp" />
     <ClInclude Include="Include\Core\Scene\LightComponent.hpp" />
@@ -202,6 +203,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Core\Scene\PlayerBase.hpp" />
     <ClInclude Include="Include\Core\Scene\PlayerControllerBase.hpp" />
     <ClInclude Include="Include\Core\Scene\ProceduralSpriteComponent.hpp" />
+    <ClInclude Include="Include\Core\Scene\PropertyDrawers.hpp" />
     <ClInclude Include="Include\Core\Scene\Scene.hpp" />
     <ClInclude Include="Include\Core\Scene\SpriteComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\TagComponent.hpp" />
@@ -210,6 +212,10 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Core\Threading\TaskSystem.hpp" />
     <ClInclude Include="Include\Core\Threading\ThreadPool.hpp" />
     <ClInclude Include="Include\Core\Threading\ThreadingMacros.hpp" />
+    <ClInclude Include="Include\Editor\DefaultModes.hpp" />
+    <ClInclude Include="Include\Editor\EditorMode.hpp" />
+    <ClInclude Include="Include\Editor\EditorToolbar.hpp" />
+    <ClInclude Include="Include\Editor\SpriteMode.hpp" />
     <ClInclude Include="Include\GameFrameWork\TComponent.hpp" />
     <ClInclude Include="Include\GameFrameWork\TFunctionLibrary.hpp" />
     <ClInclude Include="Include\GameFrameWork\TObject.hpp" />
@@ -262,6 +268,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Renderer\VertexArray.hpp" />
     <ClInclude Include="Include\Renderer\VertexBuffer.hpp" />
     <ClInclude Include="Include\Utility\MathUtils.hpp" />
+    <ClInclude Include="Include\Utility\UIUtils.hpp" />
     <ClInclude Include="Include\Utils\PlatformUtils.hpp" />
     <ClInclude Include="Include\Window\IWindow.hpp" />
     <ClInclude Include="Include\Window\WindowsWindow.hpp" />
