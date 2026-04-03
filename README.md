@@ -1,8 +1,8 @@
 # 🌀 Time Engine
 
-**Time Engine** is a high-performance C++ game engine designed for sophisticated 2D and 3D application development. Built with a modular, data-driven architecture, it provides a professional-grade suite of tools for rendering, physics, and real-time editing.
+**Time Engine** is a high-performance C++ game engine designed for sophisticated 2D application development. Built with a modular, data-driven architecture, it provides a professional-grade suite of tools for rendering, physics, and real-time editing.
 
-<sc here>
+<img width="1264" height="701" alt="image" src="https://github.com/user-attachments/assets/d48599c2-300e-4cfb-9022-af682d60252f" />
 
 ---
 
@@ -15,7 +15,8 @@
 *   **Overhauled Hierarchy**: Standardized 34px row scaling with hierarchical icon font sizing for better scene organization.
 *   **TEPropertyDrawer**: A modular system for generating consistent and stable property inspectors automatically.
 
-<sc here>
+<img width="1266" height="698" alt="image" src="https://github.com/user-attachments/assets/8e2ae8d9-fd04-4680-a0cb-19b1c76fbfdd" />
+<img width="1919" height="1093" alt="image" src="https://github.com/user-attachments/assets/73eb1567-28cc-407b-bec5-3bb0841fad17" />
 
 ### ⚡ Sprite Mode IDE (Procedural Engine)
 A core refactor has introduced a fully data-driven, modular scripting environment within the engine:
@@ -42,14 +43,17 @@ A core refactor has introduced a fully data-driven, modular scripting environmen
 *   **Batch Rendering**: Optimized draw calls for quads, sprites, and procedural primitives.
 *   **Material System**: Flexible shader and texture management via a centralized library.
 
-<sc here>
+<img width="1919" height="1042" alt="image" src="https://github.com/user-attachments/assets/70832966-b5c1-4a41-aeb6-f8c45bc86754" />
 
 ---
 
-## 🤖 Automation & CI/CD
-*   **Clang-Format Integration**: Automated code styling via GitHub Actions ensuring a consistent codebase.
-*   **Merge Safety**: Workflows to prevent broken builds and maintain repository integrity.
-*   **Integrated Logger**: Separate Core and Client logging channels for targeted debugging.
+## 🤝 Contributing
+
+**Time Engine** is an open-source project, and we welcome contributions from the community! Whether you are a developer, artist, or designer, your help is appreciated:
+
+*   **💻 Code & Features**: Optimizing the renderer, adding new ECS components, or porting to other platforms.
+*   **🎨 Media & Documentation**: Providing high-quality screenshots (`<sc here>`), demonstration videos (`<vid here>`), or improving the wiki.
+*   **🐛 Bug Reports**: Reporting issues or suggesting new ideas through the GitHub Issues tab.
 
 ---
 
@@ -64,5 +68,5 @@ A core refactor has introduced a fully data-driven, modular scripting environmen
 
 ---
 
-> [!NOTE]
-> This engine is under active development. If you notice any area marked with `<sc here>` or `<vid here>` and want to contribute media, feel free to reach out!
+> [!IMPORTANT]
+> This engine is under **Active Development**. We are constantly adding new modules and refining the core. If you'd like to contribute code or media, feel free to open a Pull Request or reach out!
