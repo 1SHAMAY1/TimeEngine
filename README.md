@@ -16,7 +16,6 @@
 *   **TEPropertyDrawer**: A modular system for generating consistent and stable property inspectors automatically.
 
 <img width="1266" height="698" alt="image" src="https://github.com/user-attachments/assets/8e2ae8d9-fd04-4680-a0cb-19b1c76fbfdd" />
-<img width="1919" height="1093" alt="image" src="https://github.com/user-attachments/assets/73eb1567-28cc-407b-bec5-3bb0841fad17" />
 
 ### ⚡ Sprite Mode IDE (Procedural Engine)
 A core refactor has introduced a fully data-driven, modular scripting environment within the engine:
@@ -24,6 +23,8 @@ A core refactor has introduced a fully data-driven, modular scripting environmen
 *   **Unified Block Executor**: A robust pipeline handling draw calls, assignments, and control flow (if/else, for-loops) in a single unified script.
 *   **Dynamic Keyword Registry**: Variables are automatically registered as keywords upon assignment, enabling live code interaction.
 *   **ISpriteLibrary Interface**: Decoupled rendering logic allowing for custom procedural extensions and plugins.
+
+<img width="1919" height="1042" alt="image" src="https://github.com/user-attachments/assets/70832966-b5c1-4a41-aeb6-f8c45bc86754" />
 
 <vid here>
 
@@ -43,7 +44,7 @@ A core refactor has introduced a fully data-driven, modular scripting environmen
 *   **Batch Rendering**: Optimized draw calls for quads, sprites, and procedural primitives.
 *   **Material System**: Flexible shader and texture management via a centralized library.
 
-<img width="1919" height="1042" alt="image" src="https://github.com/user-attachments/assets/70832966-b5c1-4a41-aeb6-f8c45bc86754" />
+<img width="1919" height="1093" alt="image" src="https://github.com/user-attachments/assets/73eb1567-28cc-407b-bec5-3bb0841fad17" />
 
 ---
 
