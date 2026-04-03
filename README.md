@@ -16,6 +16,7 @@
 *   **TEPropertyDrawer**: A modular system for generating consistent and stable property inspectors automatically.
 
 <img width="1266" height="698" alt="image" src="https://github.com/user-attachments/assets/8e2ae8d9-fd04-4680-a0cb-19b1c76fbfdd" />
+<img width="1919" height="1089" alt="image" src="https://github.com/user-attachments/assets/e794acb5-7ada-4c5e-a673-c88d68d6be7c" />
 
 ### ⚡ Sprite Mode IDE (Procedural Engine)
 A core refactor has introduced a fully data-driven, modular scripting environment within the engine:
