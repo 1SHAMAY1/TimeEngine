@@ -27,7 +27,9 @@ A core refactor has introduced a fully data-driven, modular scripting environmen
 
 <img width="1919" height="1042" alt="image" src="https://github.com/user-attachments/assets/70832966-b5c1-4a41-aeb6-f8c45bc86754" />
 
-<vid here>
+https://github.com/user-attachments/assets/a91635ad-7f87-45c2-af39-fb66095ceb2b
+
+
 
 ### 🛠️ Advanced ECS & Physics
 *   **Component Suite**: Beyond basic transforms, the engine now supports:
