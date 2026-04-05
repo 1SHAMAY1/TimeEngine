@@ -2001,3 +2001,157 @@
 {"timestamp":"2026-04-02 19:44:59.565","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
 {"timestamp":"2026-04-02 19:46:47.539","level":"INFO","category":"Client","message":"Window close event received."}
 {"timestamp":"2026-04-02 19:47:54.312","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 09:27:03.563","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 09:27:04.003","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 09:27:11.337","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 09:28:38.168","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 09:28:43.791","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 09:28:51.137","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 09:40:35.627","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 09:40:36.245","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 09:40:42.856","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 09:41:20.875","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 09:41:24.283","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 10:30:16.583","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 10:30:27.161","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 10:30:54.462","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 10:39:12.305","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 10:39:21.264","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 10:40:45.051","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 10:40:51.722","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 10:41:07.650","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 10:49:36.374","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 10:49:50.012","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 10:50:52.830","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 11:01:50.963","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 11:16:35.805","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 15:07:16.445","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 15:07:46.667","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 15:12:21.684","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 15:16:12.379","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 15:33:58.169","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 15:34:17.616","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 15:41:37.653","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 16:03:08.202","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 16:03:59.982","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 16:04:32.462","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 16:07:47.233","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 16:09:23.513","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 16:09:30.575","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 16:09:37.625","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 16:09:47.979","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 17:45:51.625","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 17:45:53.863","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 17:46:28.492","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 17:55:15.399","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 17:56:36.524","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 17:56:52.772","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 17:57:59.447","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 17:58:44.575","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 18:23:30.120","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 19:08:29.780","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:09:26.477","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 19:26:46.782","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:28:12.975","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 19:31:05.815","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 19:31:32.169","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:33:29.289","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:35:30.005","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:35:51.102","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 19:35:56.990","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:36:26.468","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 19:36:57.563","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:38:57.555","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 19:39:12.011","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 19:39:24.112","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 20:17:34.458","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:19:00.736","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 20:21:41.842","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:28:11.023","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:32:12.830","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:32:49.828","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:36:23.040","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:39:05.079","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:39:17.572","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 20:40:09.582","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 20:48:56.274","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:52:34.541","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 20:54:12.142","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 20:54:25.657","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 21:05:15.661","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 21:05:36.131","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 21:06:49.555","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-04 21:16:37.711","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-04 21:18:07.401","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-04 21:18:15.206","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 08:31:59.624","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 08:32:00.325","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 08:32:52.211","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 08:33:05.768","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 08:33:13.119","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 08:40:06.627","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 08:41:57.133","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 09:07:23.565","level":"INFO","category":"Client","message":"Window lost focus"}
+{"timestamp":"2026-04-05 09:07:23.567","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 0, 0"}
+{"timestamp":"2026-04-05 09:07:29.156","level":"INFO","category":"Client","message":"Window gained focus"}
+{"timestamp":"2026-04-05 09:07:29.159","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 09:07:36.716","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 09:07:58.460","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 09:08:00.951","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 09:11:24.938","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 09:12:30.555","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 09:14:33.394","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 09:27:25.016","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 09:27:44.444","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 09:28:30.065","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 09:32:30.214","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 09:32:34.608","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 09:36:03.791","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 09:41:30.382","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:03:37.792","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:05:06.703","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:16:45.319","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:17:03.711","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 10:19:23.446","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:19:41.411","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 10:20:24.593","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:20:41.268","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 10:24:24.579","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 10:26:08.883","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:29:42.474","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:34:54.694","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 10:45:05.917","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:49:27.808","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 10:49:41.447","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 10:58:24.937","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:01:40.158","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:01:56.909","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 11:05:22.650","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:07:51.038","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:08:18.499","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 11:10:09.447","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:15:10.060","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:15:32.758","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 11:19:41.365","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 11:42:38.987","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:52:52.567","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 11:58:32.097","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 12:03:25.494","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 12:05:23.236","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 12:05:33.594","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 12:35:23.706","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 12:42:30.197","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 12:43:29.513","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 12:48:27.113","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 12:49:56.343","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 12:51:17.397","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 13:14:12.473","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 18:57:32.466","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 18:57:33.286","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 18:57:41.372","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 19:00:04.927","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 19:00:17.945","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-04-05 19:00:24.152","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 19:00:49.762","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-04-05 19:01:00.481","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-04-05 19:02:09.004","level":"INFO","category":"Client","message":"Welcome to Time Engine."}

@@ -1,0 +1,49 @@
+Scene: TestScene02.tescene
+Entities:
+  - Entity: 1
+    Tag: Line Light
+    TransformComponent:
+      Position: 0.543478 -4.076087 0.000000
+      Rotation: 0.000000 0.000000 0.000000
+      Scale: 1.000000 1.000000 1.000000
+      Parent: 0
+    LightComponent:
+      Type: 2
+      Intensity: 8.500000
+      Color: 0.114082 0.349747 0.484076 1.000000
+      Radius: 5.000000
+      FalloffExponent: 2.000000
+      InnerAngle: 15.000000
+      OuterAngle: 30.000000
+      Direction: 0.000000 -1.000000
+      LineOffset: 0.000000 2.000000
+      Width: 0.500000
+  - Entity: 2
+    Tag: Spot Light
+    TransformComponent:
+      Position: 5.500664 1.134006 0.000000
+      Rotation: 0.000000 0.000000 0.000000
+      Scale: 1.000000 1.000000 1.000000
+      Parent: 0
+    LightComponent:
+      Type: 1
+      Intensity: 1.000000
+      Color: 0.057769 0.573248 0.051118 1.000000
+      Radius: 15.800000
+      FalloffExponent: 7.700000
+      InnerAngle: 28.400000
+      OuterAngle: 42.700001
+      Direction: 0.000000 -1.000000
+      LineOffset: 0.000000 2.000000
+      Width: 0.500000
+  - Entity: 3
+    Tag: Circle
+    TransformComponent:
+      Position: 4.741510 -4.483695 0.000000
+      Rotation: 0.000000 0.000000 0.000000
+      Scale: 1.000000 1.000000 1.000000
+      Parent: 0
+    CircleComponent:
+      Radius: 4.100000
+      BaseColor: 0.166619 0.181573 0.235669 1.000000
+      bIsVisible: true

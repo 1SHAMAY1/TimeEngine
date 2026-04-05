@@ -126,8 +126,8 @@ project "Engine"
 
         postbuildcommands {
             -- Copy DLL and LIB to Sandbox
-            'xcopy /Y /D /Q "%{wks.location}Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "%{wks.location}Bin\\' .. outputdir .. '\\Sandbox\\" > nul',
-            'xcopy /Y /D /Q "%{wks.location}Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "%{wks.location}Bin\\' .. outputdir .. '\\Sandbox\\" > nul'
+            'xcopy /Y /D /Q "..\\Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "..\\Bin\\' .. outputdir .. '\\Sandbox\\" > nul',
+            'xcopy /Y /D /Q "..\\Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "..\\Bin\\' .. outputdir .. '\\Sandbox\\" > nul'
         }
 
     filter "configurations:Debug"

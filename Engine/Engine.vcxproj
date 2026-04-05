@@ -95,8 +95,8 @@
       <ImportLibrary>..\Bin\Debug-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\Engine.dll" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul
-xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\Engine.lib" "$(SolutionDir)Bin\Debug-windows-x86_64\Sandbox\" &gt; nul</Command>
+      <Command>xcopy /Y /D /Q "..\Bin\Debug-windows-x86_64\Engine\Engine.dll" "..\Bin\Debug-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "..\Bin\Debug-windows-x86_64\Engine\Engine.lib" "..\Bin\Debug-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,8 +124,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Debug-windows-x86_64\Engine\Engine.lib" "$(Sol
       <ImportLibrary>..\Bin\Release-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\Engine.dll" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul
-xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\Engine.lib" "$(SolutionDir)Bin\Release-windows-x86_64\Sandbox\" &gt; nul</Command>
+      <Command>xcopy /Y /D /Q "..\Bin\Release-windows-x86_64\Engine\Engine.dll" "..\Bin\Release-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "..\Bin\Release-windows-x86_64\Engine\Engine.lib" "..\Bin\Release-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -153,8 +153,8 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Release-windows-x86_64\Engine\Engine.lib" "$(S
       <ImportLibrary>..\Bin\Dist-windows-x86_64\Engine\Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.dll" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul
-xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(SolutionDir)Bin\Dist-windows-x86_64\Sandbox\" &gt; nul</Command>
+      <Command>xcopy /Y /D /Q "..\Bin\Dist-windows-x86_64\Engine\Engine.dll" "..\Bin\Dist-windows-x86_64\Sandbox\" &gt; nul
+xcopy /Y /D /Q "..\Bin\Dist-windows-x86_64\Engine\Engine.lib" "..\Bin\Dist-windows-x86_64\Sandbox\" &gt; nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -205,6 +205,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Core\Scene\ProceduralSpriteComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\PropertyDrawers.hpp" />
     <ClInclude Include="Include\Core\Scene\Scene.hpp" />
+    <ClInclude Include="Include\Core\Scene\SceneSerializer.hpp" />
     <ClInclude Include="Include\Core\Scene\SpriteComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\TagComponent.hpp" />
     <ClInclude Include="Include\Core\Scene\TransformComponent.hpp" />
@@ -216,6 +217,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Editor\EditorMode.hpp" />
     <ClInclude Include="Include\Editor\EditorToolbar.hpp" />
     <ClInclude Include="Include\Editor\SpriteMode.hpp" />
+    <ClInclude Include="Include\Editor\SpriteModeLibrary.hpp" />
     <ClInclude Include="Include\GameFrameWork\TComponent.hpp" />
     <ClInclude Include="Include\GameFrameWork\TFunctionLibrary.hpp" />
     <ClInclude Include="Include\GameFrameWork\TObject.hpp" />
@@ -267,6 +269,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClInclude Include="Include\Renderer\Texture.hpp" />
     <ClInclude Include="Include\Renderer\VertexArray.hpp" />
     <ClInclude Include="Include\Renderer\VertexBuffer.hpp" />
+    <ClInclude Include="Include\Utility\ImageUtils.hpp" />
     <ClInclude Include="Include\Utility\MathUtils.hpp" />
     <ClInclude Include="Include\Utility\UIUtils.hpp" />
     <ClInclude Include="Include\Utils\PlatformUtils.hpp" />
@@ -319,6 +322,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Core\Project\ProjectSerializer.cpp" />
     <ClCompile Include="src\Core\Scene\EntityManager.cpp" />
     <ClCompile Include="src\Core\Scene\Scene.cpp" />
+    <ClCompile Include="src\Core\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Core\Time\Ticker.cpp" />
     <ClCompile Include="src\Core\Time\Timer.cpp" />
     <ClCompile Include="src\ImGUI\ImGuiLayer.cpp" />
@@ -351,6 +355,7 @@ xcopy /Y /D /Q "$(SolutionDir)Bin\Dist-windows-x86_64\Engine\Engine.lib" "$(Solu
     <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Utility\ImageUtils.cpp" />
     <ClCompile Include="src\Window\IWindow.cpp" />
     <ClCompile Include="src\Window\WindowsWindow.cpp" />
   </ItemGroup>

@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Renderer\OpenGL">
       <UniqueIdentifier>{0310E9CB-EFCA-D877-9882-51C2841C2308}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{2C5F8342-18EE-0C0C-C10C-2107AD7A1DB2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Window">
       <UniqueIdentifier>{B0B44E99-1C16-2CA7-A583-725911E46266}</UniqueIdentifier>
     </Filter>
@@ -276,6 +279,9 @@
     <ClInclude Include="Include\Core\Scene\Scene.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Scene\SceneSerializer.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Core\Scene\SpriteComponent.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
@@ -307,6 +313,9 @@
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Include\Editor\SpriteMode.hpp">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Editor\SpriteModeLibrary.hpp">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Include\GameFrameWork\TComponent.hpp">
@@ -462,6 +471,9 @@
     <ClInclude Include="Include\Renderer\VertexBuffer.hpp">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Utility\ImageUtils.hpp">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Utility\MathUtils.hpp">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -614,6 +626,9 @@
     <ClCompile Include="src\Core\Scene\Scene.cpp">
       <Filter>Source Files\Core\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Scene\SceneSerializer.cpp">
+      <Filter>Source Files\Core\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Time\Ticker.cpp">
       <Filter>Source Files\Core\Time</Filter>
     </ClCompile>
@@ -697,6 +712,9 @@
     </ClCompile>
     <ClCompile Include="src\Renderer\VertexBuffer.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utility\ImageUtils.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="src\Window\IWindow.cpp">
       <Filter>Source Files\Window</Filter>

@@ -5,11 +5,13 @@
 #include "Core/Log.h"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Project/Project.hpp"
+#include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Scene/AmbientLightComponent.hpp"
 #include "Core/Scene/BoxComponent.hpp"
 #include "Core/Scene/CircleComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/LightComponent.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "Core/Scene/TriangleComponent.hpp"
@@ -115,11 +117,17 @@ void EditorLayer::OnAttach()
     else if (std::filesystem::exists("e:/TimeEngine/Resources/Branding/Icon.png"))
         m_FileIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Branding/Icon.png"); // Fallback
 
-    std::string folderPath = "Resources/Icons/Folder.png";
+    std::string folderPath = "Assets/Editor/FolderIcon.png";
     if (std::filesystem::exists(folderPath))
         m_FolderIcon = std::make_shared<Texture>(folderPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Resources/Icons/Folder.png"))
-        m_FolderIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Icons/Folder.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/FolderIcon.png"))
+        m_FolderIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/FolderIcon.png");
+
+    std::string leftArrowPath = "Assets/Editor/LeftArrowIcon.png";
+    if (std::filesystem::exists(leftArrowPath))
+        m_LeftArrowIcon = std::make_shared<Texture>(leftArrowPath);
+    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/LeftArrowIcon.png"))
+        m_LeftArrowIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/LeftArrowIcon.png");
 
     // Default Shortcuts if not present
     if (m_EditorSettings.Shortcuts.empty())
@@ -134,9 +142,20 @@ void EditorLayer::OnAttach()
         m_EditorSettings.Shortcuts["Rotate"] = Key::E;
         m_EditorSettings.Shortcuts["Scale"] = Key::R;
         m_EditorSettings.Shortcuts["Select"] = Key::Q;
+        m_EditorSettings.Shortcuts["Save"] = Key::S;
+        m_EditorSettings.Shortcuts["SaveAll"] = Key::S; // Ctrl + Shift + S handled via modifiers
     }
 
     InitEditorModes();
+
+    // Register Core Component Properties for Serialization
+    auto& registry = ComponentRegistry::Get();
+    registry.RegisterComponent<TransformComponent>("TransformComponent", "Transform Component");
+    registry.RegisterProperty<TransformComponent, glm::vec3>("TransformComponent", "Position", "Position", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Transform.Position; });
+    registry.RegisterProperty<TransformComponent, TERotator>("TransformComponent", "Rotation", "Rotation", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Transform.Rotation; });
+    registry.RegisterProperty<TransformComponent, TEScale>("TransformComponent", "Scale", "Scale", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Transform.Scale; });
+    registry.RegisterProperty<TransformComponent, EntityID>("TransformComponent", "Parent", "Parent", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Parent; });
+
     TE_CORE_INFO("EditorLayer::OnAttach Finished.");
 }
 
@@ -158,6 +177,9 @@ void EditorLayer::OnUpdate()
     UpdateCamera(dt);
     HandleViewportInput();
 
+    if (m_SaveMessageTimer > 0.0f)
+        m_SaveMessageTimer -= dt;
+
     // Physics Step
     if (m_PhysicsWorld)
         m_PhysicsWorld->Step(dt);
@@ -171,6 +193,10 @@ void EditorLayer::OnUpdate()
             m_LightMapFramebuffer->Resize((uint32_t)m_LastViewportX, (uint32_t)m_LastViewportY);
         m_ViewportSizeChanged = false;
     }
+
+    // Update Active Mode
+    if (EditorMode *activeMode = EditorModeRegistry::GetActiveMode())
+        activeMode->OnUpdate(dt);
 
     // 1. LightMap Pass
     if (m_LightMapFramebuffer && m_LightBlendMaterial)
@@ -631,6 +657,7 @@ void EditorLayer::OnImGuiRender()
     if (!isSpriteMode)
     {
         UI_DrawContentBrowser();
+        UI_DrawSaveScenePopup();
         UI_DrawSettingsPanel();
         UI_DrawProjectSettingsPanel();
     }
@@ -649,14 +676,20 @@ void EditorLayer::UI_DrawMenubar()
             if (ImGui::MenuItem("New Project...", "Ctrl+N"))
             {
             }
-            if (ImGui::MenuItem("Open Project...", "Ctrl+O"))
+            std::string saveShortcutStr = "Ctrl+" + GetKeyName(m_EditorSettings.Shortcuts["Save"]);
+            if (ImGui::MenuItem("Save Scene", saveShortcutStr.c_str()))
             {
+                SaveScene();
             }
-            if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
+            if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S"))
             {
+                m_ShowSaveScenePopup = true;
+                m_SaveSceneAs = true;
             }
-            if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S"))
+            std::string saveAllShortcutStr = "Ctrl+Shift+A"; // Adjusted to avoid conflict with Save As if needed
+            if (ImGui::MenuItem("Save Project", saveAllShortcutStr.c_str()))
             {
+                SaveProject();
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Exit"))
@@ -1101,7 +1134,10 @@ void EditorLayer::UI_DrawProperties()
 
                         void *addr = (char *)m_SelectedComponent + prop.Offset;
                         ImGui::PushID(prop.Name.c_str());
-                        prop.DrawFunc(addr, prop.DisplayName);
+                        if (prop.DrawFunc)
+                            prop.DrawFunc(addr, prop.DisplayName);
+                        else
+                            ImGui::TextDisabled("%s (No Drawer)", prop.DisplayName.c_str());
                         ImGui::PopID();
                     }
                 }
@@ -1210,8 +1246,6 @@ void EditorLayer::UI_DrawContentBrowser()
         ImGui::EndTabBar();
     }
 
-    ImGui::Columns(columnCount, 0, false);
-
     std::filesystem::path rootPath;
     if (s_CurrentTab == ContentTab::Assets)
     {
@@ -1219,6 +1253,53 @@ void EditorLayer::UI_DrawContentBrowser()
         if (assetDir.empty())
             assetDir = "Assets";
         rootPath = Project::GetProjectDirectory() / assetDir;
+        
+        // Navigation: Back Button + Editable Path Toolbar
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
+        if (m_LeftArrowIcon)
+        {
+            ImTextureID leftArrowID = (ImTextureID)(uintptr_t)m_LeftArrowIcon->GetRendererID();
+            if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(10, 10)))
+            {
+                m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
+            }
+        }
+        else if (ImGui::Button(" <- "))
+        {
+            m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
+        }
+        
+        ImGui::SameLine();
+        
+        // Sync buffer if not being edited
+        if (!ImGui::IsItemActive() && !ImGui::IsItemFocused())
+        {
+            strcpy_s(m_ContentBrowserPathBuffer, m_ContentBrowserCurrentDirectory.string().c_str());
+        }
+
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 4.0f);
+        if (ImGui::InputText("##PathInput", m_ContentBrowserPathBuffer, 512, ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            std::filesystem::path assetPath = Project::GetAssetDirectory();
+            std::filesystem::path targetPath = assetPath / m_ContentBrowserPathBuffer;
+            
+            if (std::filesystem::exists(targetPath) && std::filesystem::is_directory(targetPath))
+            {
+                // Make relative to AssetDir to update m_ContentBrowserCurrentDirectory
+                m_ContentBrowserCurrentDirectory = std::filesystem::relative(targetPath, assetPath);
+            }
+            else
+            {
+                // Snap back to current valid path
+                strcpy_s(m_ContentBrowserPathBuffer, m_ContentBrowserCurrentDirectory.string().c_str());
+            }
+        }
+        ImGui::PopStyleVar();
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        rootPath /= m_ContentBrowserCurrentDirectory;
     }
     else if (s_CurrentTab == ContentTab::Scripts)
     {
@@ -1231,11 +1312,12 @@ void EditorLayer::UI_DrawContentBrowser()
 
     if (std::filesystem::exists(rootPath))
     {
+        ImGui::Columns(columnCount, 0, false);
         for (auto &directoryEntry : std::filesystem::directory_iterator(rootPath))
         {
             const auto &path = directoryEntry.path();
             auto relativePath = std::filesystem::relative(path, rootPath);
-            std::string filenameString = relativePath.filename().string();
+            std::string filenameString = relativePath.stem().string();
 
             // Filter .teproj and meta files
             if (path.extension() == ".teproj")
@@ -1262,6 +1344,18 @@ void EditorLayer::UI_DrawContentBrowser()
             else
             {
                 ImGui::Button(filenameString.c_str(), ImVec2(thumbnailSize, thumbnailSize));
+            }
+
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            {
+                if (isDir)
+                {
+                    m_ContentBrowserCurrentDirectory /= relativePath;
+                }
+                else if (path.extension() == ".tescene")
+                {
+                    LoadScene(path);
+                }
             }
 
             // Drag Drop Source (Future)
@@ -1448,6 +1542,26 @@ void EditorLayer::UI_DrawViewport()
             checkGizmo("Scale", GizmoType::Scale);
             checkGizmo("Select", GizmoType::None);
         }
+    }
+
+    // Save Message Overlay
+    if (m_SaveMessageTimer > 0.0f)
+    {
+        ImVec2 size = ImGui::GetWindowSize();
+        ImGui::SetCursorPos(ImVec2(size.x / 2.0f - 100.0f, size.y - 80.0f));
+        
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.6f, 0.2f, 0.8f));
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
+        
+        if (ImGui::BeginChild("SaveMessage", ImVec2(200.0f, 40.0f), false, ImGuiWindowFlags_NoScrollbar))
+        {
+            ImVec2 textSize = ImGui::CalcTextSize("Saving Scene...");
+            ImGui::SetCursorPos(ImVec2((200.0f - textSize.x) * 0.5f, (40.0f - textSize.y) * 0.5f));
+            ImGui::Text("Saving Scene...");
+            ImGui::EndChild();
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
     }
 
     // Removed Navigation Text
@@ -1797,6 +1911,23 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
     if (e.GetKeyCode() == deleteKey || e.GetKeyCode() == Key::Backspace)
     {
         DeleteSelectedEntities();
+        return true;
+    }
+
+    // Save and SaveAll Shortcuts
+    KeyCode saveKey = Key::S;
+    if (shortcuts.count("Save")) saveKey = shortcuts.at("Save");
+    KeyCode saveAllKey = Key::S;
+    if (shortcuts.count("SaveAll")) saveAllKey = shortcuts.at("SaveAll");
+
+    if (control && !shift && e.GetKeyCode() == saveKey)
+    {
+        SaveScene();
+        return true;
+    }
+    else if (control && shift && e.GetKeyCode() == saveAllKey)
+    {
+        SaveProject();
         return true;
     }
 
@@ -2657,7 +2788,135 @@ void EditorLayer::SetDarkThemeColors()
     colors[ImGuiCol_NavHighlight] = ImVec4(accent.x, accent.y, accent.z, 0.80f);
     colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.70f);
     colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.10f, 0.10f, 0.10f, 0.55f);
+}
+
+void EditorLayer::UI_DrawSaveScenePopup()
+{
+    if (m_ShowSaveScenePopup)
+    {
+        ImGui::OpenPopup("Save Scene As");
+    }
+
+    if (ImGui::BeginPopupModal("Save Scene As", &m_ShowSaveScenePopup, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Enter Scene Name and Sub-path:");
+        ImGui::InputText("Name", m_SaveSceneNameBuffer, 256);
+        ImGui::InputText("Path", m_SaveScenePathBuffer, 256);
+        ImGui::TextDisabled("(Example: Folders/MyLevel - No spaces allowed in name)");
+
+        bool valid = true;
+        std::string name = m_SaveSceneNameBuffer;
+        if (name.empty() || name.find(' ') != std::string::npos || name.find('/') != std::string::npos || name.find('\\') != std::string::npos)
+        {
+            valid = false;
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Invalid Name: No spaces or slashes allowed.");
+        }
+
+        if (ImGui::Button("Save", ImVec2(120, 0)) && valid)
+        {
+            std::filesystem::path assetPath = Project::GetAssetDirectory();
+            std::filesystem::path finalDir = assetPath / "Scenes" / m_SaveScenePathBuffer;
+            std::filesystem::create_directories(finalDir);
+            
+            std::filesystem::path finalPath = finalDir / (name + ".tescene");
+            
+            SceneSerializer serializer(m_ActiveScene);
+            if (serializer.Serialize(finalPath))
+            {
+                TE_CORE_INFO("Saved Scene to {0}", finalPath.string());
+                m_SaveMessageTimer = 2.0f;
+            }
+            
+            m_ShowSaveScenePopup = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+        {
+            m_ShowSaveScenePopup = false;
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+void EditorLayer::SaveScene()
+{
+    if (!m_ActiveScene)
+        return;
+
+    // Simulate saving scene to the active project's AssetDirectory
+    auto activeConfig = Project::GetActiveConfig();
+    std::filesystem::path scenePath = Project::GetAssetDirectory();
+    if (!std::filesystem::exists(scenePath))
+    {
+        std::filesystem::create_directories(scenePath);
+    }
+
+    std::filesystem::path finalPath = scenePath / "Scenes";
+    if (!std::filesystem::exists(finalPath))
+    {
+        std::filesystem::create_directories(finalPath);
+    }
+    
+    // For now we hardcode "CurrentScene.tescene" as requested in UE5 style level workflow
+    finalPath = finalPath / "CurrentScene.tescene";
+
+    SceneSerializer serializer(m_ActiveScene);
+    if (serializer.Serialize(finalPath))
+    {
+        TE_CORE_INFO("Saved Scene to {0}", finalPath.string());
+        m_SaveMessageTimer = 2.0f;
+    }
+    else
+    {
+        TE_CORE_ERROR("Failed to save Scene to {0}", finalPath.string());
+    }
+
+    // Refresh Visuals / Load Changes
+    ClearSelection();
+}
+
+void EditorLayer::SaveProject()
+{
+    if (!Project::GetActive())
+        return;
+
+    // Save project config
+    std::filesystem::path projPath = Project::GetProjectDirectory() / (Project::GetActiveConfig().Name + ".teproj");
+    
+    ProjectSerializer projSerializer(Project::GetActive());
+    if (projSerializer.Serialize(projPath))
+    {
+        TE_CORE_INFO("Saved Project to {0}", projPath.string());
+    }
+    else
+    {
+        TE_CORE_ERROR("Failed to save Project to {0}", projPath.string());
+    }
+
+    // Also save scene
+    SaveScene();
+}
+
+void EditorLayer::LoadScene(const std::filesystem::path& filepath)
+{
+    try {
+        m_ActiveScene = std::make_shared<Scene>();
+        SceneSerializer serializer(m_ActiveScene);
+        if (serializer.Deserialize(filepath))
+        {
+            TE_CORE_INFO("Loaded Scene: {0}", filepath.string());
+        }
+        else
+        {
+            TE_CORE_ERROR("Failed to load Scene: {0}", filepath.string());
+        }
+        ClearSelection();
+    } catch (const std::exception& e) {
+        TE_CORE_ERROR("Exception during LoadScene: {0}", e.what());
+    }
 }
 
 void EditorLayer::ProcessDeletionQueues()
