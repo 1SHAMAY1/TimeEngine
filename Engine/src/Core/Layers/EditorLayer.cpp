@@ -111,41 +111,41 @@ void EditorLayer::OnAttach()
 
     // Load Icons
     TE_CORE_INFO("Loading Icons...");
-    std::string brandingIconPath = "Assets/Editor/TimeEngineIcon.png";
+    std::string brandingIconPath = "Resources/Branding/TimeEngineIcon.png";
     if (std::filesystem::exists(brandingIconPath))
         m_BrandingIcon = std::make_shared<Texture>(brandingIconPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/TimeEngineIcon.png"))
-        m_BrandingIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/TimeEngineIcon.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Resources/Branding/TimeEngineIcon.png"))
+        m_BrandingIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Branding/TimeEngineIcon.png");
 
-    std::string fileIconPath = "Assets/Editor/FileIcon.png";
+    std::string fileIconPath = "Resources/Editor/FileIcon.png";
     if (std::filesystem::exists(fileIconPath))
         m_FileIcon = std::make_shared<Texture>(fileIconPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/FileIcon.png"))
-        m_FileIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/FileIcon.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Resources/Editor/FileIcon.png"))
+        m_FileIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Editor/FileIcon.png");
 
-    std::string folderPath = "Assets/Editor/FolderIcon.png";
+    std::string folderPath = "Resources/Editor/FolderIcon.png";
     if (std::filesystem::exists(folderPath))
         m_FolderIcon = std::make_shared<Texture>(folderPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/FolderIcon.png"))
-        m_FolderIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/FolderIcon.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Resources/Editor/FolderIcon.png"))
+        m_FolderIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Editor/FolderIcon.png");
 
-    std::string leftArrowPath = "Assets/Editor/LeftArrowIcon.png";
+    std::string leftArrowPath = "Resources/Editor/LeftArrowIcon.png";
     if (std::filesystem::exists(leftArrowPath))
         m_LeftArrowIcon = std::make_shared<Texture>(leftArrowPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/LeftArrowIcon.png"))
-        m_LeftArrowIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/LeftArrowIcon.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Resources/Editor/LeftArrowIcon.png"))
+        m_LeftArrowIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Editor/LeftArrowIcon.png");
 
-    std::string saveIconPath = "Assets/Editor/SaveIcon.png";
+    std::string saveIconPath = "Resources/Editor/SaveIcon.png";
     if (std::filesystem::exists(saveIconPath))
         m_SaveIcon = std::make_shared<Texture>(saveIconPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/SaveIcon.png"))
-        m_SaveIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/SaveIcon.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Resources/Editor/SaveIcon.png"))
+        m_SaveIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Editor/SaveIcon.png");
 
-    std::string playIconPath = "Assets/Editor/PlayButtonIcon.png";
+    std::string playIconPath = "Resources/Editor/PlayButtonIcon.png";
     if (std::filesystem::exists(playIconPath))
         m_PlayIcon = std::make_shared<Texture>(playIconPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/PlayButtonIcon.png"))
-        m_PlayIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/PlayButtonIcon.png");
+    else if (std::filesystem::exists("e:/TimeEngine/Resources/Editor/PlayButtonIcon.png"))
+        m_PlayIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Editor/PlayButtonIcon.png");
 
     // Default Shortcuts if not present
     if (m_EditorSettings.Shortcuts.empty())

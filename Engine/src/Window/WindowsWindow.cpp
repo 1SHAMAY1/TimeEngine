@@ -62,9 +62,9 @@ void WindowsWindow::Init(const WindowProps &props)
         int width, height, channels;
         // Use standard stbi_load (declarations available if Texture.cpp compiled effectively, assuming stb_image.h
         // included) We need to include stb_image.h Note: We use a hardcoded path or relative to execution directory
-        std::string iconPath = "Assets/Editor/TimeEngineIcon.png";
+        std::string iconPath = "Resources/Branding/TimeEngineIcon.png";
         if (!std::filesystem::exists(iconPath))
-            iconPath = "e:/TimeEngine/Engine/Assets/Editor/TimeEngineIcon.png";
+            iconPath = "e:/TimeEngine/Resources/Branding/TimeEngineIcon.png";
 
         if (std::filesystem::exists(iconPath))
         {
