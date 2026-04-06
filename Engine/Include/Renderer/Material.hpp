@@ -1,4 +1,6 @@
 #pragma once
+#include "Core/Asset/Asset.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TEColor.hpp"
 #include <glm/glm.hpp>
@@ -7,11 +9,11 @@
 namespace TE
 {
 
-class TE_API Material
+class TE_API Material : public Asset
 {
 public:
     Material(const std::shared_ptr<Shader> &shader);
-    ~Material();
+    virtual ~Material();
 
     void SetColor(const TEColor &color);
     const TEColor &GetColor() const;
@@ -29,6 +31,22 @@ public:
     // Set all uniforms (for now, just color and custom ones)
     void ApplyUniforms();
 
+    // Asset Interface
+    virtual AssetHandle GetHandle() const override { return m_Handle; }
+    virtual const std::string &GetType() const override
+    {
+        static std::string type = "Material";
+        return type;
+    }
+    virtual const std::string &GetName() const override { return m_Name; }
+    virtual const std::string &GetHoverDescription() const override { return "Material Asset"; }
+
+    virtual std::shared_ptr<class Texture> GetIcon() const override { return nullptr; }
+    virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
+
+    void SetName(const std::string &name) { m_Name = name; }
+    void SetHandle(AssetHandle handle) { m_Handle = handle; }
+
 private:
     std::shared_ptr<Shader> m_Shader;
     TEColor m_Color;
@@ -39,6 +57,9 @@ private:
     std::unordered_map<std::string, glm::vec3> m_Vec3Uniforms;
     std::unordered_map<std::string, glm::vec4> m_Vec4Uniforms;
     std::unordered_map<std::string, glm::mat4> m_Mat4Uniforms;
+
+    AssetHandle m_Handle = 0;
+    std::string m_Name = "Unnamed Material";
 };
 
 } // namespace TE

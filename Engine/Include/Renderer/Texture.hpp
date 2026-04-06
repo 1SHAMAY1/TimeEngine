@@ -1,19 +1,42 @@
 #pragma once
-#include "Core/PreRequisites.h"
+#include "Core/Asset/Asset.hpp"
+#include <string>
 
-namespace TE {
-	class Texture {
-	public:
-		Texture(const std::string& path);
-		~Texture();
+namespace TE
+{
 
-		void Bind(uint32_t slot = 0) const;
-		void Unbind() const;
+class Texture : public Asset
+{
+public:
+    Texture(const std::string &path);
+    virtual ~Texture();
 
-		uint32_t GetRendererID() const { return m_RendererID; }
+    void Bind(uint32_t slot = 0) const;
+    void Unbind() const;
 
-	private:
-		uint32_t m_RendererID;
-		std::string m_FilePath;
-	};
-}
+    uint32_t GetRendererID() const { return m_RendererID; }
+
+    // Asset interface
+    virtual AssetHandle GetHandle() const override { return m_Handle; }
+    virtual const std::string &GetType() const override
+    {
+        static std::string type = "Texture2D";
+        return type;
+    }
+    virtual const std::string &GetName() const override { return m_Name; }
+    virtual const std::string &GetHoverDescription() const override { return m_FilePath; }
+
+    virtual std::shared_ptr<class Texture> GetIcon() const override
+    {
+        return nullptr;
+    } // Will be handled by AssetManager
+    virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
+
+private:
+    uint32_t m_RendererID;
+    std::string m_FilePath;
+    std::string m_Name;
+    AssetHandle m_Handle;
+};
+
+} // namespace TE

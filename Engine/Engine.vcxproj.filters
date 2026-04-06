@@ -10,6 +10,9 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{E145AD0A-4D5C-ABA0-96D3-36C202297C28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Asset">
+      <UniqueIdentifier>{301F3825-9C56-80BC-A560-E4DF1117A7B5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Core\Collision">
       <UniqueIdentifier>{3C087C62-A815-AA48-31FC-A5339D0876FF}</UniqueIdentifier>
     </Filter>
@@ -63,6 +66,9 @@
     </Filter>
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{192C3F5D-8542-3DF3-CEB9-C8143A0F0E7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Asset">
+      <UniqueIdentifier>{68CFDB09-D406-24A1-DD10-88C449C74A9A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Core\Collision">
       <UniqueIdentifier>{74146D55-E021-9B3B-6908-9726D51467F2}</UniqueIdentifier>
@@ -173,6 +179,15 @@
     </ClInclude>
     <ClInclude Include="Include\Camera\PerspectiveCamera.hpp">
       <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Asset\Asset.hpp">
+      <Filter>Header Files\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Asset\AssetManager.hpp">
+      <Filter>Header Files\Core\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Asset\AssetRegistry.hpp">
+      <Filter>Header Files\Core\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Collision\BoxColliderComponent.hpp">
       <Filter>Header Files\Core\Collision</Filter>
@@ -559,6 +574,12 @@
     </ClCompile>
     <ClCompile Include="src\Core\Application.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Asset\AssetManager.cpp">
+      <Filter>Source Files\Core\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Asset\AssetRegistry.cpp">
+      <Filter>Source Files\Core\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Collision\BroadPhase.cpp">
       <Filter>Source Files\Core\Collision</Filter>
