@@ -170,6 +170,9 @@ xcopy /Y /D /Q "..\Bin\Dist-windows-x86_64\Engine\Engine.lib" "..\Bin\Dist-windo
     <ClInclude Include="Include\Camera\CameraController.hpp" />
     <ClInclude Include="Include\Camera\OrthographicCamera.hpp" />
     <ClInclude Include="Include\Camera\PerspectiveCamera.hpp" />
+    <ClInclude Include="Include\Core\Asset\Asset.hpp" />
+    <ClInclude Include="Include\Core\Asset\AssetManager.hpp" />
+    <ClInclude Include="Include\Core\Asset\AssetRegistry.hpp" />
     <ClInclude Include="Include\Core\Collision\BoxColliderComponent.hpp" />
     <ClInclude Include="Include\Core\Collision\BroadPhase.hpp" />
     <ClInclude Include="Include\Core\Collision\CircleColliderComponent.hpp" />
@@ -300,6 +303,8 @@ xcopy /Y /D /Q "..\Bin\Dist-windows-x86_64\Engine\Engine.lib" "..\Bin\Dist-windo
     <ClCompile Include="src\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="src\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Core\Asset\AssetManager.cpp" />
+    <ClCompile Include="src\Core\Asset\AssetRegistry.cpp" />
     <ClCompile Include="src\Core\Collision\BroadPhase.cpp" />
     <ClCompile Include="src\Core\Collision\CollisionSystem.cpp" />
     <ClCompile Include="src\Core\Core.cpp" />

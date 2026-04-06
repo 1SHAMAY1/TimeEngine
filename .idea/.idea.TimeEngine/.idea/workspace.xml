@@ -11,11 +11,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Material.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Material.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Texture.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Texture.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/Assets/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/Branding/Icon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/Texture.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/Texture.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -278,6 +286,7 @@
       <workItem from="1775356135750" duration="14167000" />
       <workItem from="1775395544847" duration="476000" />
       <workItem from="1775479862674" duration="2311000" />
+      <workItem from="1775488468197" duration="324000" />
     </task>
     <servers />
   </component>

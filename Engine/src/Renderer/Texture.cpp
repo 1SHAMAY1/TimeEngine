@@ -4,11 +4,16 @@
 #include <stb_image.h>
 #include "Core/Log.h"
 
+#include "Core/Asset/AssetRegistry.hpp"
+#include <filesystem>
+
 namespace TE {
 
     Texture::Texture(const std::string& path)
         : m_FilePath(path), m_RendererID(0)
     {
+        m_Handle = AssetRegistry::RegisterPath(path);
+        m_Name = std::filesystem::path(path).filename().string();
         int width, height, channels;
         stbi_set_flip_vertically_on_load(1);
         stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);

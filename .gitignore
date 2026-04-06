@@ -19,6 +19,11 @@ Bin-Intermediate/
 *.user
 *.vcxproj.user
 
+# Rider
+.idea/
+*.user
+*.vcxproj.user
+
 # Mac
 .DS_Store
 
@@ -26,7 +31,12 @@ Bin-Intermediate/
 *.png
 *.jpg
 
+
 # Agents
 .agents/
+
+# JetBrains Rider
+.idea/
+*.sln.DotSettings.user
 
 Sandbox/Core_TimeEngineLog.json

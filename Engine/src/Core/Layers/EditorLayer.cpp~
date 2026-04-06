@@ -136,12 +136,12 @@ void EditorLayer::OnAttach()
         return nullptr;
     };
 
-    m_BrandingIcon = LoadIcon("Branding", "Resources/Branding/TimeEngineIcon.png");
-    m_FileIcon = LoadIcon("File", "Resources/Editor/FileIcon.png");
-    m_FolderIcon = LoadIcon("Folder", "Resources/Editor/FolderIcon.png");
-    m_LeftArrowIcon = LoadIcon("LeftArrow", "Resources/Editor/LeftArrowIcon.png");
-    m_SaveIcon = LoadIcon("Save", "Resources/Editor/SaveIcon.png");
-    m_PlayIcon = LoadIcon("Play", "Resources/Editor/PlayButtonIcon.png");
+    m_BrandingIcon = LoadIcon("Branding", "Assets/Editor/TimeEngineIcon.png");
+    m_FileIcon = LoadIcon("File", "Resources/Editor/FileIcon.png"); // Using specific path requested by user
+    m_FolderIcon = LoadIcon("Folder", "Assets/Editor/FolderIcon.png");
+    m_LeftArrowIcon = LoadIcon("LeftArrow", "Assets/Editor/LeftArrowIcon.png");
+    m_SaveIcon = LoadIcon("Save", "Assets/Editor/SaveIcon.png");
+    m_PlayIcon = LoadIcon("Play", "Assets/Editor/PlayButtonIcon.png");
 
     // Default Shortcuts if not present
     if (m_EditorSettings.Shortcuts.empty())
@@ -1281,7 +1281,7 @@ void EditorLayer::UI_DrawContentBrowser()
         if (m_LeftArrowIcon)
         {
             ImTextureID leftArrowID = (ImTextureID)(uintptr_t)m_LeftArrowIcon->GetRendererID();
-            if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(18, 18)))
+            if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(10, 10)))
             {
                 m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
             }
