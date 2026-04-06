@@ -52,7 +52,7 @@ EditorLayer::~EditorLayer() {}
 void EditorLayer::OnAttach()
 {
     TE_CORE_INFO("EditorLayer::OnAttach processing...");
-    
+
     // Initialize Asset System
     AssetManager::Init();
     std::filesystem::path projectDir = Project::GetProjectDirectory();
@@ -122,13 +122,16 @@ void EditorLayer::OnAttach()
 
     // Load Icons via AssetManager
     TE_CORE_INFO("Loading Icons...");
-    auto LoadIcon = [&](const std::string& name, const std::string& path) -> std::shared_ptr<Texture> {
+    auto LoadIcon = [&](const std::string &name, const std::string &path) -> std::shared_ptr<Texture>
+    {
         std::string fullPath = path;
-        if (!std::filesystem::exists(fullPath)) {
-             fullPath = "e:/TimeEngine/" + path; // Fallback for local dev
+        if (!std::filesystem::exists(fullPath))
+        {
+            fullPath = "e:/TimeEngine/" + path; // Fallback for local dev
         }
-        
-        if (std::filesystem::exists(fullPath)) {
+
+        if (std::filesystem::exists(fullPath))
+        {
             auto tex = std::make_shared<Texture>(fullPath);
             AssetManager::AddAsset(tex->GetHandle(), tex);
             return tex;

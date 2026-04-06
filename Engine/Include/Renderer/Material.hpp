@@ -33,14 +33,18 @@ public:
 
     // Asset Interface
     virtual AssetHandle GetHandle() const override { return m_Handle; }
-    virtual const std::string& GetType() const override { static std::string type = "Material"; return type; }
-    virtual const std::string& GetName() const override { return m_Name; }
-    virtual const std::string& GetHoverDescription() const override { return "Material Asset"; }
-    
+    virtual const std::string &GetType() const override
+    {
+        static std::string type = "Material";
+        return type;
+    }
+    virtual const std::string &GetName() const override { return m_Name; }
+    virtual const std::string &GetHoverDescription() const override { return "Material Asset"; }
+
     virtual std::shared_ptr<class Texture> GetIcon() const override { return nullptr; }
     virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
 
-    void SetName(const std::string& name) { m_Name = name; }
+    void SetName(const std::string &name) { m_Name = name; }
     void SetHandle(AssetHandle handle) { m_Handle = handle; }
 
 private:
