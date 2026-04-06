@@ -58,9 +58,10 @@ public:
     static void DrawCircle(ImDrawList *dl, ImVec2 c, float r, ImU32 col) { dl->AddCircleFilled(c, r, col, 64); }
     static void DrawBox(ImDrawList *dl, ImVec2 c, ImVec2 sz, float rot, ImU32 col)
     {
-        if (std::abs(rot) < 0.001f) {
-            dl->AddRectFilled(ImVec2(c.x - sz.x * 0.5f, c.y - sz.y * 0.5f), ImVec2(c.x + sz.x * 0.5f, c.y + sz.y * 0.5f),
-                              col, 8.0f);
+        if (std::abs(rot) < 0.001f)
+        {
+            dl->AddRectFilled(ImVec2(c.x - sz.x * 0.5f, c.y - sz.y * 0.5f),
+                              ImVec2(c.x + sz.x * 0.5f, c.y + sz.y * 0.5f), col, 8.0f);
             return;
         }
 
@@ -68,9 +69,11 @@ public:
         const float rounding = 8.0f;
         std::vector<ImVec2> points;
         float cR = std::cos(rot), sR = std::sin(rot);
-        
-        auto AddCorner = [&](ImVec2 center, float startAngle) {
-            for (int i = 0; i <= segments; i++) {
+
+        auto AddCorner = [&](ImVec2 center, float startAngle)
+        {
+            for (int i = 0; i <= segments; i++)
+            {
                 float t = startAngle + (float)i * (3.14159265f * 0.5f) / (float)segments;
                 float lx = center.x + std::cos(t) * rounding;
                 float ly = center.y + std::sin(t) * rounding;
@@ -104,7 +107,8 @@ public:
         const int segments = 64;
         ImVec2 points[segments];
         float cR = std::cos(rot), sR = std::sin(rot);
-        for (int i = 0; i < segments; i++) {
+        for (int i = 0; i < segments; i++)
+        {
             float t = (float)i * 2.0f * 3.14159265f / (float)segments;
             float lx = rx * std::cos(t), ly = ry * std::sin(t);
             points[i] = ImVec2(c.x + lx * cR - ly * sR, c.y + lx * sR + ly * cR);
@@ -117,7 +121,8 @@ public:
         const int segments = 64;
         ImVec2 points[segments];
         float cR = std::cos(rot), sR = std::sin(rot);
-        for (int i = 0; i < segments; i++) {
+        for (int i = 0; i < segments; i++)
+        {
             float t = (float)i * 2.0f * 3.14159265f / (float)segments;
             float lx = rx * std::cos(t), ly = ry * std::sin(t);
             points[i] = ImVec2(c.x + lx * cR - ly * sR, c.y + lx * sR + ly * cR);
@@ -146,8 +151,9 @@ public:
                                DrawCircle(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], GCol(args, 3));
                        }});
 
-        reg.push_back({"CircleOutline", "CircleOutline(pos, radius, thickness, color)", "Draws a circle border.", "Primitives",
-                       ImVec4(0.6f, 0.9f, 1, 1), [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
+        reg.push_back({"CircleOutline", "CircleOutline(pos, radius, thickness, color)", "Draws a circle border.",
+                       "Primitives", ImVec4(0.6f, 0.9f, 1, 1),
+                       [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
                        {
                            if (args.size() >= 4)
                                dl->AddCircle(ImVec2(p.x + args[0], p.y + args[1]), args[2], GCol(args, 4), 64, args[3]);
@@ -156,35 +162,41 @@ public:
         reg.push_back({"Ring", "Ring(pos, outer_radius, inner_radius, color)", "Draws a hollow ring.", "Primitives",
                        ImVec4(0.6f, 0.9f, 1, 1), [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
                        {
-                           if (args.size() >= 4) {
+                           if (args.size() >= 4)
+                           {
                                float outer = args[2];
                                float inner = args[3];
                                float thickness = outer - inner;
                                float midRadius = inner + (thickness * 0.5f);
-                               dl->AddCircle(ImVec2(p.x + args[0], p.y + args[1]), midRadius, GCol(args, 4), 64, thickness);
+                               dl->AddCircle(ImVec2(p.x + args[0], p.y + args[1]), midRadius, GCol(args, 4), 64,
+                                             thickness);
                            }
                        }});
 
-        reg.push_back({"Ellipse", "Ellipse(pos, rx, ry, rotation, color)", "Draws a filled ellipse.", "Primitives",
-                       ImVec4(0.6f, 0.9f, 1, 1), [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
-                       {
-                           if (args.size() >= 5)
-                               DrawEllipse(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], args[4], GCol(args, 5));
-                           else if (args.size() >= 4)
-                               DrawEllipse(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f, GCol(args, 4));
-                       }});
+        reg.push_back(
+            {"Ellipse", "Ellipse(pos, rx, ry, rotation, color)", "Draws a filled ellipse.", "Primitives",
+             ImVec4(0.6f, 0.9f, 1, 1), [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
+             {
+                 if (args.size() >= 5)
+                     DrawEllipse(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], args[4], GCol(args, 5));
+                 else if (args.size() >= 4)
+                     DrawEllipse(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f, GCol(args, 4));
+             }});
 
-        reg.push_back({"EllipseOutline", "EllipseOutline(pos, rx, ry, rotation, thickness, color)", "Draws a hollow ellipse.", "Primitives",
-                       ImVec4(0.6f, 0.9f, 1, 1), [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
+        reg.push_back({"EllipseOutline", "EllipseOutline(pos, rx, ry, rotation, thickness, color)",
+                       "Draws a hollow ellipse.", "Primitives", ImVec4(0.6f, 0.9f, 1, 1),
+                       [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
                        {
                            if (args.size() >= 6)
-                               DrawEllipseOutline(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], args[4], GCol(args, 6), args[5]);
+                               DrawEllipseOutline(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], args[4],
+                                                  GCol(args, 6), args[5]);
                            else if (args.size() >= 5)
-                               DrawEllipseOutline(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f, GCol(args, 5), args[4]);
+                               DrawEllipseOutline(dl, ImVec2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f,
+                                                  GCol(args, 5), args[4]);
                        }});
 
-        reg.push_back({"Box", "Box(pos, size, rotation, color)", "Renders a rounded box.", "Primitives", ImVec4(0.6f, 0.9f, 1, 1),
-                       [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
+        reg.push_back({"Box", "Box(pos, size, rotation, color)", "Renders a rounded box.", "Primitives",
+                       ImVec4(0.6f, 0.9f, 1, 1), [GCol](ImDrawList *dl, ImVec2 p, const std::vector<float> &args)
                        {
                            if (args.size() >= 5)
                                DrawBox(dl, ImVec2(p.x + args[0], p.y + args[1]), ImVec2(args[2], args[3]), args[4],
@@ -375,14 +387,14 @@ public:
         reg.push_back({"Colors::SkyBlue", "Colors::SkyBlue", "Sky Blue preset.", "Constants", ImVec4(0.5f, 0.8f, 1, 1),
                        nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
                        { return {0.5f, 0.8f, 1, 1}; }});
-        reg.push_back({"Colors::Red", "Colors::Red", "Red preset.", "Constants", ImVec4(1, 0.2f, 0.2f, 1),
-                       nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
+        reg.push_back({"Colors::Red", "Colors::Red", "Red preset.", "Constants", ImVec4(1, 0.2f, 0.2f, 1), nullptr,
+                       [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
                        { return {1, 0, 0, 1}; }});
         reg.push_back({"Colors::Green", "Colors::Green", "Green preset.", "Constants", ImVec4(0.2f, 1, 0.2f, 1),
                        nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
                        { return {0, 1, 0, 1}; }});
-        reg.push_back({"Colors::Blue", "Colors::Blue", "Blue preset.", "Constants", ImVec4(0.2f, 0.2f, 1, 1),
-                       nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
+        reg.push_back({"Colors::Blue", "Colors::Blue", "Blue preset.", "Constants", ImVec4(0.2f, 0.2f, 1, 1), nullptr,
+                       [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
                        { return {0, 0, 1, 1}; }});
         reg.push_back({"Colors::Yellow", "Colors::Yellow", "Yellow preset.", "Constants", ImVec4(1, 1, 0.2f, 1),
                        nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
@@ -393,8 +405,8 @@ public:
         reg.push_back({"Colors::Purple", "Colors::Purple", "Purple preset.", "Constants", ImVec4(0.8f, 0.2f, 1, 1),
                        nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
                        { return {0.6f, 0, 1, 1}; }});
-        reg.push_back({"Colors::Cyan", "Colors::Cyan", "Cyan preset.", "Constants", ImVec4(0.2f, 1, 1, 1),
-                       nullptr, [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
+        reg.push_back({"Colors::Cyan", "Colors::Cyan", "Cyan preset.", "Constants", ImVec4(0.2f, 1, 1, 1), nullptr,
+                       [](const std::vector<float> &a, ImVec2 p, ImVec2 sz, float dt) -> std::vector<float>
                        { return {0, 1, 1, 1}; }});
     }
 };

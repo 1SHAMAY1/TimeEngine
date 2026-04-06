@@ -26,8 +26,8 @@ struct PropertyMetadata
     size_t Offset;
     std::function<bool(void *)> Condition = nullptr; // Returns true if property should be visible
     std::string EnumName;                            // If set, this property is an enum
-    std::function<std::string(void*)> SerializeFunc = nullptr;
-    std::function<void(void*, const std::string&)> DeserializeFunc = nullptr;
+    std::function<std::string(void *)> SerializeFunc = nullptr;
+    std::function<void(void *, const std::string &)> DeserializeFunc = nullptr;
 };
 
 using ComponentFactory = std::function<TComponent *(EntityManager *, EntityID)>;
@@ -96,13 +96,14 @@ public:
                                        ::TE::TEPropertyDrawer<Type>::Draw(ptr, imguiLabel);
                                    },
                                    0, // Offset no longer used directly, but kept in struct for ABI or other uses
-                                   condition,
-                                   "",
-                                   [member](void *instance) -> std::string {
+                                   condition, "",
+                                   [member](void *instance) -> std::string
+                                   {
                                        Type *ptr = &(static_cast<Class *>(instance)->*member);
                                        return TEPropertyDrawer<Type>::Serialize(ptr);
                                    },
-                                   [member](void *instance, const std::string& data) {
+                                   [member](void *instance, const std::string &data)
+                                   {
                                        Type *ptr = &(static_cast<Class *>(instance)->*member);
                                        TEPropertyDrawer<Type>::Deserialize(ptr, data);
                                    }});
@@ -124,18 +125,20 @@ public:
                                    {
                                        std::string imguiLabel = label + "###" + propName;
                                        Type *ptr = getPtr(instance);
-                                       if (ptr) ::TE::TEPropertyDrawer<Type>::Draw(ptr, imguiLabel);
+                                       if (ptr)
+                                           ::TE::TEPropertyDrawer<Type>::Draw(ptr, imguiLabel);
                                    },
-                                   0,
-                                   condition,
-                                   "",
-                                   [getPtr](void *instance) -> std::string {
+                                   0, condition, "",
+                                   [getPtr](void *instance) -> std::string
+                                   {
                                        Type *ptr = getPtr(instance);
                                        return ptr ? TEPropertyDrawer<Type>::Serialize(ptr) : "";
                                    },
-                                   [getPtr](void *instance, const std::string& data) {
+                                   [getPtr](void *instance, const std::string &data)
+                                   {
                                        Type *ptr = getPtr(instance);
-                                       if (ptr) TEPropertyDrawer<Type>::Deserialize(ptr, data);
+                                       if (ptr)
+                                           TEPropertyDrawer<Type>::Deserialize(ptr, data);
                                    }});
         return true;
     }
@@ -195,13 +198,16 @@ public:
                                        }
                                    },
                                    0, nullptr, enumName,
-                                   [member](void *instance) -> std::string {
+                                   [member](void *instance) -> std::string
+                                   {
                                        // Enums will be stored as integers
                                        EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
                                        return std::to_string(static_cast<int>(*valPtr));
                                    },
-                                   [member](void *instance, const std::string& data) {
-                                       if(data.empty()) return;
+                                   [member](void *instance, const std::string &data)
+                                   {
+                                       if (data.empty())
+                                           return;
                                        EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
                                        *valPtr = static_cast<EnumType>(std::stoi(data));
                                    }});

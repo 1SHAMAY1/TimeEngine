@@ -6,10 +6,9 @@
 #include "Core/Scene/Scene.hpp"
 #include "Layers/Layer.hpp"
 #include "Renderer/Framebuffer.hpp"
+#include <filesystem>
 #include <glm/glm.hpp>
 #include <memory>
-#include <filesystem>
-#include <set>
 #include <set>
 #include <string>
 #include <vector>
@@ -72,7 +71,7 @@ private:
     // Save Helpers
     void SaveScene();
     void SaveProject();
-    void LoadScene(const std::filesystem::path& filepath);
+    void LoadScene(const std::filesystem::path &filepath);
     void UI_DrawSaveScenePopup();
 
     // Gizmo Helpers

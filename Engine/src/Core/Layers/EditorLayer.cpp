@@ -167,12 +167,20 @@ void EditorLayer::OnAttach()
     InitEditorModes();
 
     // Register Core Component Properties for Serialization
-    auto& registry = ComponentRegistry::Get();
+    auto &registry = ComponentRegistry::Get();
     registry.RegisterComponent<TransformComponent>("TransformComponent", "Transform Component");
-    registry.RegisterProperty<TransformComponent, glm::vec3>("TransformComponent", "Position", "Position", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Transform.Position; });
-    registry.RegisterProperty<TransformComponent, TERotator>("TransformComponent", "Rotation", "Rotation", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Transform.Rotation; });
-    registry.RegisterProperty<TransformComponent, TEScale>("TransformComponent", "Scale", "Scale", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Transform.Scale; });
-    registry.RegisterProperty<TransformComponent, EntityID>("TransformComponent", "Parent", "Parent", [](void* instance) { return &static_cast<TransformComponent*>(instance)->Parent; });
+    registry.RegisterProperty<TransformComponent, glm::vec3>(
+        "TransformComponent", "Position", "Position",
+        [](void *instance) { return &static_cast<TransformComponent *>(instance)->Transform.Position; });
+    registry.RegisterProperty<TransformComponent, TERotator>(
+        "TransformComponent", "Rotation", "Rotation",
+        [](void *instance) { return &static_cast<TransformComponent *>(instance)->Transform.Rotation; });
+    registry.RegisterProperty<TransformComponent, TEScale>(
+        "TransformComponent", "Scale", "Scale",
+        [](void *instance) { return &static_cast<TransformComponent *>(instance)->Transform.Scale; });
+    registry.RegisterProperty<TransformComponent, EntityID>(
+        "TransformComponent", "Parent", "Parent",
+        [](void *instance) { return &static_cast<TransformComponent *>(instance)->Parent; });
 
     TE_CORE_INFO("EditorLayer::OnAttach Finished.");
 }
@@ -1271,7 +1279,7 @@ void EditorLayer::UI_DrawContentBrowser()
         if (assetDir.empty())
             assetDir = "Assets";
         rootPath = Project::GetProjectDirectory() / assetDir;
-        
+
         // Navigation: Back Button + Editable Path Toolbar
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
         if (m_LeftArrowIcon)
@@ -1286,9 +1294,9 @@ void EditorLayer::UI_DrawContentBrowser()
         {
             m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
         }
-        
+
         ImGui::SameLine();
-        
+
         // Sync buffer if not being edited
         if (!ImGui::IsItemActive() && !ImGui::IsItemFocused())
         {
@@ -1300,7 +1308,7 @@ void EditorLayer::UI_DrawContentBrowser()
         {
             std::filesystem::path assetPath = Project::GetAssetDirectory();
             std::filesystem::path targetPath = assetPath / m_ContentBrowserPathBuffer;
-            
+
             if (std::filesystem::exists(targetPath) && std::filesystem::is_directory(targetPath))
             {
                 // Make relative to AssetDir to update m_ContentBrowserCurrentDirectory
@@ -1567,10 +1575,10 @@ void EditorLayer::UI_DrawViewport()
     {
         ImVec2 size = ImGui::GetWindowSize();
         ImGui::SetCursorPos(ImVec2(size.x / 2.0f - 100.0f, size.y - 80.0f));
-        
+
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.6f, 0.2f, 0.8f));
         ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
-        
+
         if (ImGui::BeginChild("SaveMessage", ImVec2(200.0f, 40.0f), false, ImGuiWindowFlags_NoScrollbar))
         {
             ImVec2 textSize = ImGui::CalcTextSize("Saving Scene...");
@@ -1934,9 +1942,11 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
 
     // Save and SaveAll Shortcuts
     KeyCode saveKey = Key::S;
-    if (shortcuts.count("Save")) saveKey = shortcuts.at("Save");
+    if (shortcuts.count("Save"))
+        saveKey = shortcuts.at("Save");
     KeyCode saveAllKey = Key::S;
-    if (shortcuts.count("SaveAll")) saveAllKey = shortcuts.at("SaveAll");
+    if (shortcuts.count("SaveAll"))
+        saveAllKey = shortcuts.at("SaveAll");
 
     if (control && !shift && e.GetKeyCode() == saveKey)
     {
@@ -2826,7 +2836,8 @@ void EditorLayer::UI_DrawSaveScenePopup()
 
         bool valid = true;
         std::string name = m_SaveSceneNameBuffer;
-        if (name.empty() || name.find(' ') != std::string::npos || name.find('/') != std::string::npos || name.find('\\') != std::string::npos)
+        if (name.empty() || name.find(' ') != std::string::npos || name.find('/') != std::string::npos ||
+            name.find('\\') != std::string::npos)
         {
             valid = false;
             ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Invalid Name: No spaces or slashes allowed.");
@@ -2837,16 +2848,16 @@ void EditorLayer::UI_DrawSaveScenePopup()
             std::filesystem::path assetPath = Project::GetAssetDirectory();
             std::filesystem::path finalDir = assetPath / "Scenes" / m_SaveScenePathBuffer;
             std::filesystem::create_directories(finalDir);
-            
+
             std::filesystem::path finalPath = finalDir / (name + ".tescene");
-            
+
             SceneSerializer serializer(m_ActiveScene);
             if (serializer.Serialize(finalPath))
             {
                 TE_CORE_INFO("Saved Scene to {0}", finalPath.string());
                 m_SaveMessageTimer = 2.0f;
             }
-            
+
             m_ShowSaveScenePopup = false;
         }
         ImGui::SameLine();
@@ -2877,7 +2888,7 @@ void EditorLayer::SaveScene()
     {
         std::filesystem::create_directories(finalPath);
     }
-    
+
     // For now we hardcode "CurrentScene.tescene" as requested in UE5 style level workflow
     finalPath = finalPath / "CurrentScene.tescene";
 
@@ -2903,7 +2914,7 @@ void EditorLayer::SaveProject()
 
     // Save project config
     std::filesystem::path projPath = Project::GetProjectDirectory() / (Project::GetActiveConfig().Name + ".teproj");
-    
+
     ProjectSerializer projSerializer(Project::GetActive());
     if (projSerializer.Serialize(projPath))
     {
@@ -2918,9 +2929,10 @@ void EditorLayer::SaveProject()
     SaveScene();
 }
 
-void EditorLayer::LoadScene(const std::filesystem::path& filepath)
+void EditorLayer::LoadScene(const std::filesystem::path &filepath)
 {
-    try {
+    try
+    {
         m_ActiveScene = std::make_shared<Scene>();
         SceneSerializer serializer(m_ActiveScene);
         if (serializer.Deserialize(filepath))
@@ -2932,7 +2944,9 @@ void EditorLayer::LoadScene(const std::filesystem::path& filepath)
             TE_CORE_ERROR("Failed to load Scene: {0}", filepath.string());
         }
         ClearSelection();
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         TE_CORE_ERROR("Exception during LoadScene: {0}", e.what());
     }
 }

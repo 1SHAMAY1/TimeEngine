@@ -4,13 +4,13 @@
 #include "Renderer/Framebuffer.hpp"
 #include "Utility/ImageUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
-#include <glad/glad.h>
-#include <backends/imgui_impl_opengl3.h>
 #include "imgui.h"
-#include <cstring>
 #include <algorithm>
+#include <backends/imgui_impl_opengl3.h>
 #include <cmath>
+#include <cstring>
 #include <functional>
+#include <glad/glad.h>
 #include <regex>
 #include <set>
 #include <sstream>
@@ -187,7 +187,8 @@ public:
 
         auto Scan = [&](const char *buf)
         {
-            if (!buf) return;
+            if (!buf)
+                return;
             std::string c = buf;
             std::istringstream ss(c);
             std::string line;
@@ -199,19 +200,21 @@ public:
                 {
                     std::string var = line.substr(0, eq);
                     var.erase(remove_if(var.begin(), var.end(), isspace), var.end());
-                    
+
                     std::string val = line.substr(eq + 1);
                     val.erase(remove_if(val.begin(), val.end(), isspace), val.end());
 
                     if (!var.empty())
                     {
                         // Check if variable already exists
-                        auto it = std::find_if(m_Keywords.begin(), m_Keywords.end(), 
-                            [&](const CustomKeyword& k) { return std::string(k.Name) == var; });
+                        auto it = std::find_if(m_Keywords.begin(), m_Keywords.end(),
+                                               [&](const CustomKeyword &k) { return std::string(k.Name) == var; });
 
                         KeyType detected = KeyType::Float;
-                        if (val.find("Color(") == 0 || val.find("HSV(") == 0 || val.find("LerpColor(") == 0) detected = KeyType::Color;
-                        else if (val.find("GetCenter(") == 0 || val.find("Vec2(") == 0 || val.find("GetMousePos(") == 0) detected = KeyType::Vec2;
+                        if (val.find("Color(") == 0 || val.find("HSV(") == 0 || val.find("LerpColor(") == 0)
+                            detected = KeyType::Color;
+                        else if (val.find("GetCenter(") == 0 || val.find("Vec2(") == 0 || val.find("GetMousePos(") == 0)
+                            detected = KeyType::Vec2;
 
                         if (it == m_Keywords.end())
                         {
@@ -223,7 +226,8 @@ public:
                         else
                         {
                             // Update type if it was just a default float
-                            if (it->Type == KeyType::Float && detected != KeyType::Float) it->Type = detected;
+                            if (it->Type == KeyType::Float && detected != KeyType::Float)
+                                it->Type = detected;
                         }
                     }
                 }
@@ -267,7 +271,7 @@ public:
             }
             ImGui::EndChild();
 
-            ImGui::TableNextColumn(); 
+            ImGui::TableNextColumn();
             if (ImGui::BeginChild("##Key", ImVec2(0, 0), false))
             {
                 DrawGlassHeader("Keywords", ImVec4(1, 1, 0.4f, 1));
@@ -370,46 +374,67 @@ public:
 
             UI_DrawExportPopup();
             UI_DrawLoadingOverlay();
-            ImGui::TableNextColumn(); 
+            ImGui::TableNextColumn();
             ImGui::EndTable();
         }
         ImGui::PopStyleVar(3);
     }
 
 private:
-    void ExecuteProceduralCode(ImDrawList* dl, ImVec2 p, ImVec2 sz, float dt)
+    void ExecuteProceduralCode(ImDrawList *dl, ImVec2 p, ImVec2 sz, float dt)
     {
         std::function<std::vector<float>(std::string)> Res = [&](std::string e) -> std::vector<float>
         {
             e.erase(remove_if(e.begin(), e.end(), isspace), e.end());
             e.erase(remove(e.begin(), e.end(), ';'), e.end());
-            if (e.empty()) return {0};
-            if (e.find("s.") == 0) e = e.substr(2);
+            if (e.empty())
+                return {0};
+            if (e.find("s.") == 0)
+                e = e.substr(2);
 
             const char *opLevels[][3] = {{"==", ">", "<"}, {"+", "-", nullptr}, {"*", "/", nullptr}};
-            for (auto &level : opLevels) {
-                for (int g = 0; level[g]; g++) {
+            for (auto &level : opLevels)
+            {
+                for (int g = 0; level[g]; g++)
+                {
                     std::string sOp = level[g];
                     int d = 0;
-                    for (int i = (int)e.length() - 1; i >= 0; i--) {
-                        if (e[i] == ')') d++; else if (e[i] == '(') d--;
-                        if (d == 0 && (size_t)i + sOp.length() <= e.length() && e.substr(i, sOp.length()) == sOp && i > 0) {
-                            if (sOp == "-") {
+                    for (int i = (int)e.length() - 1; i >= 0; i--)
+                    {
+                        if (e[i] == ')')
+                            d++;
+                        else if (e[i] == '(')
+                            d--;
+                        if (d == 0 && (size_t)i + sOp.length() <= e.length() && e.substr(i, sOp.length()) == sOp &&
+                            i > 0)
+                        {
+                            if (sOp == "-")
+                            {
                                 char pr = e[i - 1];
-                                if (pr == '+' || pr == '-' || pr == '*' || pr == '/' || pr == '(' || pr == ',' || pr == '=') continue;
+                                if (pr == '+' || pr == '-' || pr == '*' || pr == '/' || pr == '(' || pr == ',' ||
+                                    pr == '=')
+                                    continue;
                             }
                             auto v1 = Res(e.substr(0, i)), v2 = Res(e.substr(i + sOp.length()));
                             std::vector<float> r;
                             size_t mx = std::max(v1.size(), v2.size());
-                            for (size_t j = 0; j < mx; j++) {
+                            for (size_t j = 0; j < mx; j++)
+                            {
                                 float f1 = v1[j % v1.size()], f2 = v2[j % v2.size()];
-                                if (sOp == "+") r.push_back(f1 + f2);
-                                else if (sOp == "-") r.push_back(f1 - f2);
-                                else if (sOp == "*") r.push_back(f1 * f2);
-                                else if (sOp == "/") r.push_back(f2 != 0 ? f1 / f2 : 0);
-                                else if (sOp == ">") r.push_back(f1 > f2 ? 1.f : 0.f);
-                                else if (sOp == "<") r.push_back(f1 < f2 ? 1.f : 0.f);
-                                else if (sOp == "==") r.push_back(std::abs(f1 - f2) < 0.001f ? 1.f : 0.f);
+                                if (sOp == "+")
+                                    r.push_back(f1 + f2);
+                                else if (sOp == "-")
+                                    r.push_back(f1 - f2);
+                                else if (sOp == "*")
+                                    r.push_back(f1 * f2);
+                                else if (sOp == "/")
+                                    r.push_back(f2 != 0 ? f1 / f2 : 0);
+                                else if (sOp == ">")
+                                    r.push_back(f1 > f2 ? 1.f : 0.f);
+                                else if (sOp == "<")
+                                    r.push_back(f1 < f2 ? 1.f : 0.f);
+                                else if (sOp == "==")
+                                    r.push_back(std::abs(f1 - f2) < 0.001f ? 1.f : 0.f);
                             }
                             return r;
                         }
@@ -417,52 +442,116 @@ private:
                 }
             }
 
-            for (auto &f : m_Registry) if (f.ValueHook) {
-                if (e.find(f.Name + "(") == 0) {
-                    int depth = 0; size_t closeP = std::string::npos;
-                    for (size_t i = f.Name.length(); i < e.length(); i++) {
-                        if (e[i] == '(') depth++; else if (e[i] == ')') { depth--; if (depth == 0) { closeP = i; break; } }
+            for (auto &f : m_Registry)
+                if (f.ValueHook)
+                {
+                    if (e.find(f.Name + "(") == 0)
+                    {
+                        int depth = 0;
+                        size_t closeP = std::string::npos;
+                        for (size_t i = f.Name.length(); i < e.length(); i++)
+                        {
+                            if (e[i] == '(')
+                                depth++;
+                            else if (e[i] == ')')
+                            {
+                                depth--;
+                                if (depth == 0)
+                                {
+                                    closeP = i;
+                                    break;
+                                }
+                            }
+                        }
+                        if (closeP == std::string::npos)
+                            continue;
+                        std::string inner = e.substr(f.Name.length() + 1, closeP - f.Name.length() - 1);
+                        std::vector<float> fargs;
+                        std::string curA;
+                        int d = 0;
+                        for (char c : inner)
+                        {
+                            if (c == '(')
+                                d++;
+                            if (c == ')')
+                                d--;
+                            if (c == ',' && d == 0)
+                            {
+                                auto v = Res(curA);
+                                fargs.insert(fargs.end(), v.begin(), v.end());
+                                curA.clear();
+                            }
+                            else
+                                curA += c;
+                        }
+                        if (!curA.empty())
+                        {
+                            auto v = Res(curA);
+                            fargs.insert(fargs.end(), v.begin(), v.end());
+                        }
+                        return f.ValueHook(fargs, p, sz, dt);
                     }
-                    if (closeP == std::string::npos) continue;
-                    std::string inner = e.substr(f.Name.length() + 1, closeP - f.Name.length() - 1);
-                    std::vector<float> fargs; std::string curA; int d = 0;
-                    for (char c : inner) {
-                        if (c == '(') d++; if (c == ')') d--;
-                        if (c == ',' && d == 0) { auto v = Res(curA); fargs.insert(fargs.end(), v.begin(), v.end()); curA.clear(); }
-                        else curA += c;
-                    }
-                    if (!curA.empty()) { auto v = Res(curA); fargs.insert(fargs.end(), v.begin(), v.end()); }
-                    return f.ValueHook(fargs, p, sz, dt);
-                } else if (e == f.Name) return f.ValueHook({}, p, sz, dt);
-            }
+                    else if (e == f.Name)
+                        return f.ValueHook({}, p, sz, dt);
+                }
 
-            for (auto &k : m_Keywords) {
-                if (e == k.Name) {
-                    if (k.Type == KeyType::Vec2) return {k.ValVec2[0], k.ValVec2[1]};
-                    if (k.Type == KeyType::Color) return {k.ValColor[0], k.ValColor[1], k.ValColor[2], k.ValColor[3]};
+            for (auto &k : m_Keywords)
+            {
+                if (e == k.Name)
+                {
+                    if (k.Type == KeyType::Vec2)
+                        return {k.ValVec2[0], k.ValVec2[1]};
+                    if (k.Type == KeyType::Color)
+                        return {k.ValColor[0], k.ValColor[1], k.ValColor[2], k.ValColor[3]};
                     return {k.ValFloat};
                 }
                 // --- Support Dot Notation (.x, .y, .r, .g, .b, .a) ---
-                if (e.find(std::string(k.Name) + ".") == 0) {
+                if (e.find(std::string(k.Name) + ".") == 0)
+                {
                     std::string prop = e.substr(std::string(k.Name).length() + 1);
-                    if (k.Type == KeyType::Vec2) {
-                        if (prop == "x") return {k.ValVec2[0]};
-                        if (prop == "y") return {k.ValVec2[1]};
-                    } else if (k.Type == KeyType::Color) {
-                        if (prop == "r") return {k.ValColor[0]};
-                        if (prop == "g") return {k.ValColor[1]};
-                        if (prop == "b") return {k.ValColor[2]};
-                        if (prop == "a") return {k.ValColor[3]};
+                    if (k.Type == KeyType::Vec2)
+                    {
+                        if (prop == "x")
+                            return {k.ValVec2[0]};
+                        if (prop == "y")
+                            return {k.ValVec2[1]};
+                    }
+                    else if (k.Type == KeyType::Color)
+                    {
+                        if (prop == "r")
+                            return {k.ValColor[0]};
+                        if (prop == "g")
+                            return {k.ValColor[1]};
+                        if (prop == "b")
+                            return {k.ValColor[2]};
+                        if (prop == "a")
+                            return {k.ValColor[3]};
                     }
                 }
             }
-            try { return {std::stof(e)}; } catch (...) { return {0}; }
+            try
+            {
+                return {std::stof(e)};
+            }
+            catch (...)
+            {
+                return {0};
+            }
         };
 
-        auto FindClose = [](const std::string &s, size_t openPos) -> size_t {
+        auto FindClose = [](const std::string &s, size_t openPos) -> size_t
+        {
             int d = 0;
-            for (size_t i = openPos; i < s.length(); i++) {
-                if (s[i] == '(') d++; else if (s[i] == ')') { d--; if (d == 0) return i; }
+            for (size_t i = openPos; i < s.length(); i++)
+            {
+                if (s[i] == '(')
+                    d++;
+                else if (s[i] == ')')
+                {
+                    d--;
+                    if (d == 0)
+                        return i;
+                }
             }
             return std::string::npos;
         };
@@ -473,55 +562,106 @@ private:
             std::istringstream ss(code);
             std::string ln;
             bool sk = false;
-            while (std::getline(ss, ln)) {
+            while (std::getline(ss, ln))
+            {
                 std::string cl = ln;
                 cl.erase(remove_if(cl.begin(), cl.end(), isspace), cl.end());
-                if (cl.empty() || cl.find("//") == 0 || cl.find("void") == 0) continue;
+                if (cl.empty() || cl.find("//") == 0 || cl.find("void") == 0)
+                    continue;
 
-                if (cl.find("if(") == 0) {
+                if (cl.find("if(") == 0)
+                {
                     size_t start = cl.find("("), end = cl.find_last_of(")");
-                    if (start != std::string::npos && end != std::string::npos) {
+                    if (start != std::string::npos && end != std::string::npos)
+                    {
                         auto r = Res(cl.substr(start + 1, end - start - 1));
-                        if (!r.empty() && r[0] < 0.5f) sk = true; else sk = false;
+                        if (!r.empty() && r[0] < 0.5f)
+                            sk = true;
+                        else
+                            sk = false;
                     }
                     continue;
                 }
-                if (cl.find("}") != std::string::npos) { sk = false; continue; }
-                if (sk) continue;
+                if (cl.find("}") != std::string::npos)
+                {
+                    sk = false;
+                    continue;
+                }
+                if (sk)
+                    continue;
 
                 bool drew = false;
-                for (auto &f : m_Registry) if (f.DrawHook) {
-                    size_t fpos = cl.find(f.Name + "(");
-                    if (fpos != std::string::npos) {
-                        size_t openP = fpos + f.Name.length();
-                        size_t closeP = FindClose(cl, openP);
-                        if (closeP == std::string::npos) break;
-                        std::string argsS = cl.substr(openP + 1, closeP - openP - 1);
-                        std::vector<float> args; std::string cur; int d2 = 0;
-                        for (char c : argsS) {
-                            if (c == '(') d2++; if (c == ')') d2--;
-                            if (c == ',' && d2 == 0) { auto v = Res(cur); args.insert(args.end(), v.begin(), v.end()); cur.clear(); }
-                            else cur += c;
-                        }
-                        if (!cur.empty()) { auto v = Res(cur); args.insert(args.end(), v.begin(), v.end()); }
-                        f.DrawHook(dl, p, args); drew = true; break;
-                    }
-                }
-                if (drew) continue;
-
-                if (cl.find("=") != std::string::npos && cl.find("==") == std::string::npos) {
-                    size_t eq = cl.find("=");
-                    std::string vr = cl.substr(0, eq);
-                    if (vr.find("s.") == 0) vr = vr.substr(2);
-                    std::string ex = cl.substr(eq + 1);
-                    auto targetRes = Res(ex);
-                    if (targetRes.size() > 0 && !vr.empty()) {
-                        for (auto &kv : m_Keywords) if (vr == std::string(kv.Name)) {
-                            if (kv.Type == KeyType::Vec2 && targetRes.size() >= 2) { kv.ValVec2[0] = targetRes[0]; kv.ValVec2[1] = targetRes[1]; }
-                            else if (kv.Type == KeyType::Color && targetRes.size() >= 4) { kv.ValColor[0] = targetRes[0]; kv.ValColor[1] = targetRes[1]; kv.ValColor[2] = targetRes[2]; kv.ValColor[3] = targetRes[3]; }
-                            else if (kv.Type == KeyType::Float) kv.ValFloat = targetRes[0];
+                for (auto &f : m_Registry)
+                    if (f.DrawHook)
+                    {
+                        size_t fpos = cl.find(f.Name + "(");
+                        if (fpos != std::string::npos)
+                        {
+                            size_t openP = fpos + f.Name.length();
+                            size_t closeP = FindClose(cl, openP);
+                            if (closeP == std::string::npos)
+                                break;
+                            std::string argsS = cl.substr(openP + 1, closeP - openP - 1);
+                            std::vector<float> args;
+                            std::string cur;
+                            int d2 = 0;
+                            for (char c : argsS)
+                            {
+                                if (c == '(')
+                                    d2++;
+                                if (c == ')')
+                                    d2--;
+                                if (c == ',' && d2 == 0)
+                                {
+                                    auto v = Res(cur);
+                                    args.insert(args.end(), v.begin(), v.end());
+                                    cur.clear();
+                                }
+                                else
+                                    cur += c;
+                            }
+                            if (!cur.empty())
+                            {
+                                auto v = Res(cur);
+                                args.insert(args.end(), v.begin(), v.end());
+                            }
+                            f.DrawHook(dl, p, args);
+                            drew = true;
                             break;
                         }
+                    }
+                if (drew)
+                    continue;
+
+                if (cl.find("=") != std::string::npos && cl.find("==") == std::string::npos)
+                {
+                    size_t eq = cl.find("=");
+                    std::string vr = cl.substr(0, eq);
+                    if (vr.find("s.") == 0)
+                        vr = vr.substr(2);
+                    std::string ex = cl.substr(eq + 1);
+                    auto targetRes = Res(ex);
+                    if (targetRes.size() > 0 && !vr.empty())
+                    {
+                        for (auto &kv : m_Keywords)
+                            if (vr == std::string(kv.Name))
+                            {
+                                if (kv.Type == KeyType::Vec2 && targetRes.size() >= 2)
+                                {
+                                    kv.ValVec2[0] = targetRes[0];
+                                    kv.ValVec2[1] = targetRes[1];
+                                }
+                                else if (kv.Type == KeyType::Color && targetRes.size() >= 4)
+                                {
+                                    kv.ValColor[0] = targetRes[0];
+                                    kv.ValColor[1] = targetRes[1];
+                                    kv.ValColor[2] = targetRes[2];
+                                    kv.ValColor[3] = targetRes[3];
+                                }
+                                else if (kv.Type == KeyType::Float)
+                                    kv.ValFloat = targetRes[0];
+                                break;
+                            }
                     }
                 }
             }
@@ -533,7 +673,11 @@ private:
 
     void UI_DrawExportPopup()
     {
-        if (!m_ShowExportPopup) { m_PreviewFB = nullptr; return; }
+        if (!m_ShowExportPopup)
+        {
+            m_PreviewFB = nullptr;
+            return;
+        }
         ImGui::OpenPopup("Export Sprite Properties");
         ImGui::SetNextWindowSize(ImVec2(520, 700));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.14f, 0.98f));
@@ -543,34 +687,44 @@ private:
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.3f, 0.6f, 1.0f, 0.4f));
 
         if (ImGui::BeginPopupModal("Export Sprite Properties", &m_ShowExportPopup,
-                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar))
+                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar |
+                                       ImGuiWindowFlags_NoTitleBar))
         {
             ImDrawList *dl = ImGui::GetWindowDrawList();
             ImVec2 p = ImGui::GetCursorScreenPos();
             ImVec2 sz = ImGui::GetWindowSize();
-            dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + 48), IM_COL32(45, 55, 80, 200), 16.0f, ImDrawFlags_RoundCornersTop);
+            dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + 48), IM_COL32(45, 55, 80, 200), 16.0f,
+                              ImDrawFlags_RoundCornersTop);
             dl->AddLine(ImVec2(p.x, p.y + 48), ImVec2(p.x + sz.x, p.y + 48), IM_COL32(80, 140, 255, 100), 1.5f);
             ImGui::SetCursorPosY(14);
             ImGui::Indent(20);
             ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "SPRITE EXPORT SETTINGS");
             ImGui::SameLine(sz.x - 35);
-            if (ImGui::Button("X", ImVec2(24, 24))) m_ShowExportPopup = false;
+            if (ImGui::Button("X", ImVec2(24, 24)))
+                m_ShowExportPopup = false;
             ImGui::Unindent(20);
             ImGui::SetCursorPosY(65);
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 20));
             ImGui::Columns(2, "##ExpCols", false);
             ImGui::SetColumnWidth(0, 150);
-            auto StyledLabel = [](const char* label) { ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4); ImGui::Text(label); };
+            auto StyledLabel = [](const char *label)
+            {
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
+                ImGui::Text(label);
+            };
 
             StyledLabel("Output Path");
             ImGui::NextColumn();
             ImGui::SetNextItemWidth(sz.x - 220);
             ImGui::InputText("##Path", m_ExportPath, 256);
             ImGui::SameLine();
-            if (ImGui::Button("...")) {
+            if (ImGui::Button("..."))
+            {
                 std::string picked = PlatformUtils::SaveFile("PNG Files (*.png)\0*.png\0");
-                if (!picked.empty()) {
-                    if (picked.find(".png") == std::string::npos) picked += ".png";
+                if (!picked.empty())
+                {
+                    if (picked.find(".png") == std::string::npos)
+                        picked += ".png";
                     strncpy_s(m_ExportPath, picked.c_str(), 256);
                 }
             }
@@ -578,20 +732,30 @@ private:
 
             StyledLabel("Export Mode");
             ImGui::NextColumn();
-            if (ImGui::RadioButton("Single", !m_ExportIsSheet)) { m_ExportIsSheet = false; m_ExportFrames = 1; m_ExportCols = 1; m_ExportRows = 1; }
+            if (ImGui::RadioButton("Single", !m_ExportIsSheet))
+            {
+                m_ExportIsSheet = false;
+                m_ExportFrames = 1;
+                m_ExportCols = 1;
+                m_ExportRows = 1;
+            }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Sprite Sheet", m_ExportIsSheet)) m_ExportIsSheet = true;
+            if (ImGui::RadioButton("Sprite Sheet", m_ExportIsSheet))
+                m_ExportIsSheet = true;
             ImGui::NextColumn();
 
             StyledLabel("Match IDE Size");
             ImGui::NextColumn();
-            if (ImGui::Checkbox("##MatchIDE", &m_ExportMatchIDE)) {
-                if (m_ExportMatchIDE && m_LastSimSize.x > 0) {
+            if (ImGui::Checkbox("##MatchIDE", &m_ExportMatchIDE))
+            {
+                if (m_ExportMatchIDE && m_LastSimSize.x > 0)
+                {
                     m_ExportSize = m_LastSimSize;
                     m_PreviewDirty = true;
                 }
             }
-            if (m_ExportMatchIDE && m_LastSimSize.x > 0) {
+            if (m_ExportMatchIDE && m_LastSimSize.x > 0)
+            {
                 m_ExportSize = m_LastSimSize; // Active sync
                 ImGui::SameLine();
                 ImGui::TextColored(ImVec4(0.5f, 0.7f, 1.0f, 1.0f), "(%.0f x %.0f)", m_LastSimSize.x, m_LastSimSize.y);
@@ -601,22 +765,28 @@ private:
             StyledLabel("Cell Resolution");
             ImGui::NextColumn();
             ImGui::SetNextItemWidth(-1);
-            if (m_ExportMatchIDE) {
+            if (m_ExportMatchIDE)
+            {
                 ImGui::BeginDisabled();
                 ImGui::DragFloat2("##Res", (float *)&m_ExportSize, 1.0f, 1.0f, 4096.0f, "%.0f px");
                 ImGui::EndDisabled();
-            } else {
+            }
+            else
+            {
                 if (ImGui::DragFloat2("##Res", (float *)&m_ExportSize, 1.0f, 1.0f, 4096.0f, "%.0f px"))
                     m_PreviewDirty = true;
             }
             ImGui::NextColumn();
 
-            if (m_ExportIsSheet) {
+            if (m_ExportIsSheet)
+            {
                 StyledLabel("Total Frames");
                 ImGui::NextColumn();
                 ImGui::SetNextItemWidth(-1);
-                if (ImGui::InputInt("##F", &m_ExportFrames)) {
-                    if (m_ExportFrames < 1) m_ExportFrames = 1;
+                if (ImGui::InputInt("##F", &m_ExportFrames))
+                {
+                    if (m_ExportFrames < 1)
+                        m_ExportFrames = 1;
                     m_ExportCols = (int)ceil(sqrt(m_ExportFrames));
                     m_ExportRows = (int)ceil((float)m_ExportFrames / m_ExportCols);
                 }
@@ -624,16 +794,20 @@ private:
                 StyledLabel("Grid Layout");
                 ImGui::NextColumn();
                 ImGui::PushItemWidth(70);
-                if (ImGui::DragInt("##C", &m_ExportCols, 1, 1, 64)) m_ExportFrames = m_ExportCols * m_ExportRows;
-                ImGui::SameLine(); ImGui::Text("x"); ImGui::SameLine();
-                if (ImGui::DragInt("##R", &m_ExportRows, 1, 1, 64)) m_ExportFrames = m_ExportCols * m_ExportRows;
+                if (ImGui::DragInt("##C", &m_ExportCols, 1, 1, 64))
+                    m_ExportFrames = m_ExportCols * m_ExportRows;
+                ImGui::SameLine();
+                ImGui::Text("x");
+                ImGui::SameLine();
+                if (ImGui::DragInt("##R", &m_ExportRows, 1, 1, 64))
+                    m_ExportFrames = m_ExportCols * m_ExportRows;
                 ImGui::PopItemWidth();
             }
-            
+
             StyledLabel("Transparent");
             ImGui::NextColumn();
             ImGui::Checkbox("##Trans", &m_ExportTransparent);
-            
+
             ImGui::Columns(1);
             ImGui::PopStyleVar();
 
@@ -643,37 +817,49 @@ private:
             ImGui::Spacing();
             ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "PREVIEW");
             ImGui::SameLine(sz.x - 100);
-            if (ImGui::SmallButton("Refresh")) m_PreviewDirty = true;
+            if (ImGui::SmallButton("Refresh"))
+                m_PreviewDirty = true;
 
             // Generate preview if needed
-            if (!m_PreviewFB || m_PreviewDirty) {
+            if (!m_PreviewFB || m_PreviewDirty)
+            {
                 RefreshPreview();
                 m_PreviewDirty = false;
             }
 
-            if (m_PreviewFB) {
+            if (m_PreviewFB)
+            {
                 float previewW = sz.x - 40.0f;
-                float aspect = (float)m_PreviewFB->GetSpecification().Height / (float)m_PreviewFB->GetSpecification().Width;
+                float aspect =
+                    (float)m_PreviewFB->GetSpecification().Height / (float)m_PreviewFB->GetSpecification().Width;
                 float previewH = std::min(previewW * aspect, 200.0f);
-                if (previewH < previewW * aspect) previewW = previewH / aspect;
+                if (previewH < previewW * aspect)
+                    previewW = previewH / aspect;
 
                 float indent = (sz.x - previewW) * 0.5f;
                 ImGui::SetCursorPosX(indent);
 
                 ImVec2 previewPos = ImGui::GetCursorScreenPos();
-                ImDrawList* pdl = ImGui::GetWindowDrawList();
-                pdl->AddRectFilled(previewPos, ImVec2(previewPos.x + previewW, previewPos.y + previewH), IM_COL32(40, 40, 45, 255), 6.0f);
+                ImDrawList *pdl = ImGui::GetWindowDrawList();
+                pdl->AddRectFilled(previewPos, ImVec2(previewPos.x + previewW, previewPos.y + previewH),
+                                   IM_COL32(40, 40, 45, 255), 6.0f);
 
                 ImGui::Image((ImTextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
                              ImVec2(previewW, previewH), ImVec2(0, 1), ImVec2(1, 0));
-                pdl->AddRect(previewPos, ImVec2(previewPos.x + previewW, previewPos.y + previewH), IM_COL32(80, 140, 255, 80), 6.0f);
+                pdl->AddRect(previewPos, ImVec2(previewPos.x + previewW, previewPos.y + previewH),
+                             IM_COL32(80, 140, 255, 80), 6.0f);
             }
             ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 65);
-            if (ImGui::Button("Cancel", ImVec2(130, 38))) m_ShowExportPopup = false;
+            if (ImGui::Button("Cancel", ImVec2(130, 38)))
+                m_ShowExportPopup = false;
             ImGui::SameLine(sz.x - 150);
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.5f, 0.25f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.6f, 0.3f, 1.0f));
-            if (ImGui::Button("EXPORT NOW", ImVec2(130, 38))) { m_ExportRequested = true; m_ShowExportPopup = false; }
+            if (ImGui::Button("EXPORT NOW", ImVec2(130, 38)))
+            {
+                m_ExportRequested = true;
+                m_ShowExportPopup = false;
+            }
             ImGui::PopStyleColor(2);
             ImGui::EndPopup();
         }
@@ -683,23 +869,29 @@ private:
 
     void UI_DrawLoadingOverlay()
     {
-        if (!m_ExportRequested) return;
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        if (!m_ExportRequested)
+            return;
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize;
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
+                                 ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollWithMouse |
+                                 ImGuiWindowFlags_AlwaysAutoResize;
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         ImGui::Begin("##LoadingOverlay", nullptr, flags);
-        ImDrawList* dl = ImGui::GetWindowDrawList();
+        ImDrawList *dl = ImGui::GetWindowDrawList();
         ImVec2 center = ImVec2(viewport->Pos.x + viewport->Size.x * 0.5f, viewport->Pos.y + viewport->Size.y * 0.5f);
-        dl->AddRectFilled(viewport->Pos, ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), IM_COL32(15, 15, 20, 180));
+        dl->AddRectFilled(viewport->Pos, ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
+                          IM_COL32(15, 15, 20, 180));
         float t = (float)ImGui::GetTime();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++)
+        {
             float ang = t * 6.0f + i * (6.28f / 8.0f);
             float off = 30.0f;
             float r = (1.0f + sinf(ang)) * 4.0f + 2.0f;
-            dl->AddCircleFilled(ImVec2(center.x + cosf(ang) * off, center.y + sinf(ang) * off), r, IM_COL32(200, 220, 255, 200));
+            dl->AddCircleFilled(ImVec2(center.x + cosf(ang) * off, center.y + sinf(ang) * off), r,
+                                IM_COL32(200, 220, 255, 200));
         }
         ImGui::SetCursorPos(ImVec2(viewport->Size.x * 0.5f - 80.0f, viewport->Size.y * 0.5f + 60.0f));
         ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "GENERATING SPRITE SHEET...");
@@ -710,7 +902,8 @@ private:
     void PerformExport()
     {
         // If Match IDE Size, sync export resolution to IDE viewport
-        if (m_ExportMatchIDE && m_LastSimSize.x > 0 && m_LastSimSize.y > 0) {
+        if (m_ExportMatchIDE && m_LastSimSize.x > 0 && m_LastSimSize.y > 0)
+        {
             m_ExportSize = m_LastSimSize;
         }
 
@@ -721,7 +914,8 @@ private:
 
         // 1. Create FBO at exact export pixel dimensions
         FramebufferSpecification spec;
-        spec.Width = totalW; spec.Height = totalH;
+        spec.Width = totalW;
+        spec.Height = totalH;
         auto fb = Framebuffer::Create(spec);
         fb->Bind();
         glViewport(0, 0, totalW, totalH);
@@ -729,30 +923,37 @@ private:
         glClear(GL_COLOR_BUFFER_BIT);
 
         // 2. Stub input state (strip hover/click from export)
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         srand(0);
         ImVec2 savedMousePos = io.MousePos;
         bool savedMouseDown[5];
-        for (int i = 0; i < 5; i++) { savedMouseDown[i] = io.MouseDown[i]; io.MouseDown[i] = false; }
+        for (int i = 0; i < 5; i++)
+        {
+            savedMouseDown[i] = io.MouseDown[i];
+            io.MouseDown[i] = false;
+        }
         io.MousePos = ImVec2(-9999.0f, -9999.0f);
         auto savedKeywords = m_Keywords;
 
         // 3. Build draw list in FRAMEBUFFER-NATIVE coordinates
-        ImDrawList* dl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
+        ImDrawList *dl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
         dl->_ResetForNewFrame();
         dl->PushTextureID(io.Fonts->TexID);
         dl->AddDrawCmd();
 
         // Force a non-intersecting clip rect for the whole FBO
-        dl->PushClipRect(ImVec2(0,0), ImVec2((float)totalW, (float)totalH), false);
+        dl->PushClipRect(ImVec2(0, 0), ImVec2((float)totalW, (float)totalH), false);
 
-        for (int i = 0; i < m_ExportFrames; i++) {
+        for (int i = 0; i < m_ExportFrames; i++)
+        {
             int cx = i % m_ExportCols, cy = i / m_ExportCols;
             ImVec2 origin = ImVec2((float)(cx * cellW), (float)(cy * cellH));
             ImVec2 cellSize = ImVec2((float)cellW, (float)cellH);
-            
-            if (!m_ExportTransparent) {
-                dl->AddRectFilled(origin, ImVec2(origin.x + cellSize.x, origin.y + cellSize.y), IM_COL32(30, 30, 35, 255), 12.0f);
+
+            if (!m_ExportTransparent)
+            {
+                dl->AddRectFilled(origin, ImVec2(origin.x + cellSize.x, origin.y + cellSize.y),
+                                  IM_COL32(30, 30, 35, 255), 12.0f);
             }
             ExecuteProceduralCode(dl, origin, cellSize, 1.0f / 30.0f);
         }
@@ -772,12 +973,13 @@ private:
         drawData.FramebufferScale = ImVec2(1.0f, 1.0f);
 
         ImGui_ImplOpenGL3_RenderDrawData(&drawData);
-        
+
         // 6. Restore IO state
         io.DisplaySize = savedDisplaySize;
         m_Keywords = savedKeywords;
         io.MousePos = savedMousePos;
-        for (int i = 0; i < 5; i++) io.MouseDown[i] = savedMouseDown[i];
+        for (int i = 0; i < 5; i++)
+            io.MouseDown[i] = savedMouseDown[i];
 
         // 6. Read pixels, flip Y, save
         std::vector<uint32_t> pixels(totalW * totalH);
@@ -798,40 +1000,46 @@ private:
     void RefreshPreview()
     {
         int cellW = (int)m_ExportSize.x, cellH = (int)m_ExportSize.y;
-        if (cellW <= 0 || cellH <= 0) return;
+        if (cellW <= 0 || cellH <= 0)
+            return;
 
         // Render at FULL RESOLUTION to match IDE coordinates exactly
         FramebufferSpecification spec;
-        spec.Width = cellW; spec.Height = cellH;
+        spec.Width = cellW;
+        spec.Height = cellH;
         m_PreviewFB = Framebuffer::Create(spec);
         m_PreviewFB->Bind();
         glViewport(0, 0, cellW, cellH);
-        
+
         // Neutral background for preview
-        glClearColor(0.12f, 0.12f, 0.15f, 1.0f); 
+        glClearColor(0.12f, 0.12f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         srand(0);
         ImVec2 savedMP = io.MousePos;
         bool savedMD[5];
-        for (int i = 0; i < 5; i++) { savedMD[i] = io.MouseDown[i]; io.MouseDown[i] = false; }
+        for (int i = 0; i < 5; i++)
+        {
+            savedMD[i] = io.MouseDown[i];
+            io.MouseDown[i] = false;
+        }
         io.MousePos = ImVec2(-9999.0f, -9999.0f);
         auto savedKW = m_Keywords;
 
-        ImDrawList* dl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
+        ImDrawList *dl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
         dl->_ResetForNewFrame();
         dl->PushTextureID(io.Fonts->TexID);
-        
+
         ImVec2 origin(0, 0);
         ImVec2 cellSize((float)cellW, (float)cellH);
-        
+
         // Force the first command to use the FULL FBO size as its ClipRect
         dl->PushClipRect(ImVec2(0, 0), ImVec2((float)cellW, (float)cellH), false);
-        
+
         // Draw sprite
         ExecuteProceduralCode(dl, origin, cellSize, 1.0f / 60.0f);
-        
+
         dl->PopClipRect();
 
         m_LastVtxCount = dl->VtxBuffer.Size;
@@ -839,7 +1047,8 @@ private:
 
         m_Keywords = savedKW;
         io.MousePos = savedMP;
-        for (int i = 0; i < 5; i++) io.MouseDown[i] = savedMD[i];
+        for (int i = 0; i < 5; i++)
+            io.MouseDown[i] = savedMD[i];
 
         ImDrawData drawData;
         drawData.Valid = true;
@@ -868,4 +1077,4 @@ private:
     std::shared_ptr<Framebuffer> m_PreviewFB = nullptr;
 };
 T_REGISTER_EDITOR_MODE(SpriteMode);
-} 
+} // namespace TE

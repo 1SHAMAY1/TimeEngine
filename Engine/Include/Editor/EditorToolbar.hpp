@@ -1,9 +1,9 @@
 #pragma once
 #include "Editor/EditorMode.hpp"
+#include "Renderer/Texture.hpp"
 #include "Utility/UIUtils.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "Renderer/Texture.hpp"
 #include <string>
 #include <vector>
 
@@ -13,7 +13,9 @@ namespace TE
 class EditorToolbar
 {
 public:
-    static void OnImGuiRender(const std::shared_ptr<Texture>& saveIcon = nullptr, const std::shared_ptr<Texture>& playIcon = nullptr, const std::shared_ptr<Texture>& brandIcon = nullptr)
+    static void OnImGuiRender(const std::shared_ptr<Texture> &saveIcon = nullptr,
+                              const std::shared_ptr<Texture> &playIcon = nullptr,
+                              const std::shared_ptr<Texture> &brandIcon = nullptr)
     {
         float toolbarHeight = 48.0f;
 
