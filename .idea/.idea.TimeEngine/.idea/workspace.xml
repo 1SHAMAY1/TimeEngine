@@ -12,14 +12,11 @@
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/ComponentRegistry.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/ComponentRegistry.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/PropertyDrawers.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/PropertyDrawers.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/SpriteMode.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/SpriteMode.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/EditorToolbar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/EditorToolbar.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Premake5.lua" beforeDir="false" afterPath="$PROJECT_DIR$/Premake5.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" afterDir="false" />
@@ -284,6 +281,7 @@
       <workItem from="1775313750890" duration="3717000" />
       <workItem from="1775356135750" duration="14167000" />
       <workItem from="1775395544847" duration="476000" />
+      <workItem from="1775479862674" duration="2311000" />
     </task>
     <servers />
   </component>

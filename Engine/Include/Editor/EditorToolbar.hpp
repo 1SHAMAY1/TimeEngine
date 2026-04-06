@@ -3,6 +3,7 @@
 #include "Utility/UIUtils.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "Renderer/Texture.hpp"
 #include <string>
 #include <vector>
 
@@ -12,7 +13,7 @@ namespace TE
 class EditorToolbar
 {
 public:
-    static void OnImGuiRender()
+    static void OnImGuiRender(const std::shared_ptr<Texture>& saveIcon = nullptr, const std::shared_ptr<Texture>& playIcon = nullptr, const std::shared_ptr<Texture>& brandIcon = nullptr)
     {
         float toolbarHeight = 48.0f;
 
@@ -22,6 +23,16 @@ public:
         if (ImGui::BeginChild("##ToolbarRegion", ImVec2(0, toolbarHeight), false,
                               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
         {
+            // 0. Branding Icon (Thumbnail)
+            if (brandIcon)
+            {
+                ImGui::SetCursorPos(ImVec2(10, 8));
+                ImTextureID brandIconID = (ImTextureID)(uintptr_t)brandIcon->GetRendererID();
+                ImGui::Image(brandIconID, ImVec2(32, 32));
+                ImGui::SameLine(0, 15);
+            }
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
 
             // 1. Editor Mode Selector (UE5 style)
             EditorMode *activeMode = EditorModeRegistry::GetActiveMode();
@@ -59,7 +70,15 @@ public:
             float btnSize = ImGui::GetFrameHeight();
 
             // Save Button
-            if (ImGui::Button("S", ImVec2(btnSize, btnSize)))
+            if (saveIcon)
+            {
+                ImTextureID saveIconID = (ImTextureID)(uintptr_t)saveIcon->GetRendererID();
+                if (ImGui::ImageButton("##SaveIconBtn", saveIconID, ImVec2(btnSize, btnSize)))
+                {
+                    // Placeholder for Save
+                }
+            }
+            else if (ImGui::Button("S", ImVec2(btnSize, btnSize)))
             {
                 // Placeholder for Save
             }
@@ -79,10 +98,22 @@ public:
             }
             else
             {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
-                if (ImGui::Button("Play", ImVec2(btnSize * 1.5f, btnSize)))
-                    isPlaying = true;
-                ImGui::PopStyleColor();
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.7f, 0.2f, 0.4f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 0.6f));
+
+                if (playIcon)
+                {
+                    ImTextureID playIconID = (ImTextureID)(uintptr_t)playIcon->GetRendererID();
+                    if (ImGui::ImageButton("##PlayIconBtn", playIconID, ImVec2(btnSize * 1.5f - 6, btnSize - 6)))
+                        isPlaying = true;
+                }
+                else
+                {
+                    if (ImGui::Button("Play", ImVec2(btnSize * 1.5f, btnSize)))
+                        isPlaying = true;
+                }
+                ImGui::PopStyleColor(3);
             }
 
             ImGui::SameLine(0, 20);

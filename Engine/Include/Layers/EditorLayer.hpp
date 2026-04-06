@@ -156,6 +156,9 @@ private:
     std::shared_ptr<class Texture> m_FileIcon;
     std::shared_ptr<class Texture> m_FolderIcon;
     std::shared_ptr<class Texture> m_LeftArrowIcon;
+    std::shared_ptr<class Texture> m_SaveIcon;
+    std::shared_ptr<class Texture> m_PlayIcon;
+    std::shared_ptr<class Texture> m_BrandingIcon;
     std::shared_ptr<class Framebuffer> m_Framebuffer;
     std::shared_ptr<class Framebuffer> m_LightMapFramebuffer;
     std::shared_ptr<class Renderer2D> m_Renderer2D;

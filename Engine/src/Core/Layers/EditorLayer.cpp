@@ -111,11 +111,17 @@ void EditorLayer::OnAttach()
 
     // Load Icons
     TE_CORE_INFO("Loading Icons...");
-    std::string iconPath = "Resources/Branding/Icon.png";
-    if (std::filesystem::exists(iconPath))
-        m_FileIcon = std::make_shared<Texture>(iconPath);
-    else if (std::filesystem::exists("e:/TimeEngine/Resources/Branding/Icon.png"))
-        m_FileIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Branding/Icon.png"); // Fallback
+    std::string brandingIconPath = "Assets/Editor/TimeEngineIcon.png";
+    if (std::filesystem::exists(brandingIconPath))
+        m_BrandingIcon = std::make_shared<Texture>(brandingIconPath);
+    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/TimeEngineIcon.png"))
+        m_BrandingIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/TimeEngineIcon.png");
+
+    std::string fileIconPath = "Assets/Editor/FileIcon.png";
+    if (std::filesystem::exists(fileIconPath))
+        m_FileIcon = std::make_shared<Texture>(fileIconPath);
+    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/FileIcon.png"))
+        m_FileIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/FileIcon.png");
 
     std::string folderPath = "Assets/Editor/FolderIcon.png";
     if (std::filesystem::exists(folderPath))
@@ -128,6 +134,18 @@ void EditorLayer::OnAttach()
         m_LeftArrowIcon = std::make_shared<Texture>(leftArrowPath);
     else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/LeftArrowIcon.png"))
         m_LeftArrowIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/LeftArrowIcon.png");
+
+    std::string saveIconPath = "Assets/Editor/SaveIcon.png";
+    if (std::filesystem::exists(saveIconPath))
+        m_SaveIcon = std::make_shared<Texture>(saveIconPath);
+    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/SaveIcon.png"))
+        m_SaveIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/SaveIcon.png");
+
+    std::string playIconPath = "Assets/Editor/PlayButtonIcon.png";
+    if (std::filesystem::exists(playIconPath))
+        m_PlayIcon = std::make_shared<Texture>(playIconPath);
+    else if (std::filesystem::exists("e:/TimeEngine/Engine/Assets/Editor/PlayButtonIcon.png"))
+        m_PlayIcon = std::make_shared<Texture>("e:/TimeEngine/Engine/Assets/Editor/PlayButtonIcon.png");
 
     // Default Shortcuts if not present
     if (m_EditorSettings.Shortcuts.empty())
@@ -601,7 +619,7 @@ void EditorLayer::OnImGuiRender()
 
     UI_DrawMenubar();
 
-    EditorToolbar::OnImGuiRender();
+    EditorToolbar::OnImGuiRender(m_SaveIcon, m_PlayIcon, m_BrandingIcon);
 
     EditorMode *activeMode = EditorModeRegistry::GetActiveMode();
     bool isSpriteMode = activeMode && std::string(activeMode->GetName()) == "Sprite Mode";
