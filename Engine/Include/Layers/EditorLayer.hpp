@@ -6,6 +6,7 @@
 #include "Core/Scene/Scene.hpp"
 #include "Layers/Layer.hpp"
 #include "Renderer/Framebuffer.hpp"
+#include <filesystem>
 #include <glm/glm.hpp>
 #include <memory>
 #include <set>
@@ -67,6 +68,12 @@ private:
     void ClearSelection();
     void DeleteSelectedEntities();
 
+    // Save Helpers
+    void SaveScene();
+    void SaveProject();
+    void LoadScene(const std::filesystem::path &filepath);
+    void UI_DrawSaveScenePopup();
+
     // Gizmo Helpers
     void UI_DrawGizmos();
 
@@ -100,6 +107,13 @@ private:
     bool m_ShowViewport = true;
     bool m_ShowSettings = false;
     bool m_ShowProjectSettings = false;
+    bool m_ShowSaveScenePopup = false;
+    bool m_SaveSceneAs = false;
+    char m_SaveSceneNameBuffer[256] = "";
+    char m_SaveScenePathBuffer[256] = "";
+
+    std::filesystem::path m_ContentBrowserCurrentDirectory;
+    char m_ContentBrowserPathBuffer[512] = "";
 
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
@@ -140,6 +154,10 @@ private:
     // Resources
     std::shared_ptr<class Texture> m_FileIcon;
     std::shared_ptr<class Texture> m_FolderIcon;
+    std::shared_ptr<class Texture> m_LeftArrowIcon;
+    std::shared_ptr<class Texture> m_SaveIcon;
+    std::shared_ptr<class Texture> m_PlayIcon;
+    std::shared_ptr<class Texture> m_BrandingIcon;
     std::shared_ptr<class Framebuffer> m_Framebuffer;
     std::shared_ptr<class Framebuffer> m_LightMapFramebuffer;
     std::shared_ptr<class Renderer2D> m_Renderer2D;
@@ -163,6 +181,9 @@ private:
     glm::vec3 m_GizmoDragStartEntityPos = {0.0f, 0.0f, 0.0f};
     glm::vec3 m_GizmoDragStartEntityScale = {1.0f, 1.0f, 1.0f};
     float m_GizmoDragStartEntityRotation = 0.0f;
+
+    // Save Display
+    float m_SaveMessageTimer = 0.0f;
 
     // Deletion Queues
     std::vector<Entity> m_EntitiesToDelete;

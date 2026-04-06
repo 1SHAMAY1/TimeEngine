@@ -12,16 +12,13 @@
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Application.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Application.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/EntryPoint.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/EntryPoint.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/EditorToolbar.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/EditorToolbar.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Layers/EditorLayer.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Log.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Log.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Window/WindowsWindow.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/src/SandboxApplication.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" beforeDir="false" afterPath="$PROJECT_DIR$/Vendor/IMGUI/ImGui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -71,7 +68,8 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/LightComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/ProceduralSpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Scene/SpriteComponent.hpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Editor/SpriteMode.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TComponent.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TFunctionLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/GameFrameWork/TObject.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -276,6 +274,14 @@
       <workItem from="1774442961920" duration="10640000" />
       <workItem from="1774455874342" duration="3312000" />
       <workItem from="1775133762786" duration="2126000" />
+      <workItem from="1775274995361" duration="538000" />
+      <workItem from="1775275549402" duration="4659000" />
+      <workItem from="1775295332217" duration="2381000" />
+      <workItem from="1775298684292" duration="12736000" />
+      <workItem from="1775313750890" duration="3717000" />
+      <workItem from="1775356135750" duration="14167000" />
+      <workItem from="1775395544847" duration="476000" />
+      <workItem from="1775479862674" duration="2311000" />
     </task>
     <servers />
   </component>
