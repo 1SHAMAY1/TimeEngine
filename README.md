@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Resources/Branding/TimeEngineIcon.png" alt="TimeEngine Logo" width="180">
+<img width="130" height="130" alt="TimeEngineIcon" src="https://github.com/user-attachments/assets/97592994-22ae-4371-8024-3b3c35344666" />
 </p>
 
 <h1 align="center">Time Engine</h1>
