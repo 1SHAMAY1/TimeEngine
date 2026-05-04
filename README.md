@@ -62,38 +62,38 @@ https://github.com/user-attachments/assets/a91635ad-7f87-45c2-af39-fb66095ceb2b
 ---
 
 ## 🛠️ Component System (ECS)
-The engine utilizes a modular ECS architecture for high performance and flexibility.
+The engine utilizes a modular ECS architecture. Below is the current development status and use case for each component:
 
 ### ✅ Tested & Stable
 | Component | Use Case |
 | :--- | :--- |
-| **Box/Circle/Triangle/Polygon** | Procedural geometric shapes with integrated collision detection. |
-| **LightComponent** | Point and directional lights interacting with materials for depth. |
+| **Box/Circle/Triangle/Polygon** | Procedural geometric shapes with integrated collision detection. Perfect for prototyping and geometric art. |
+| **LightComponent** | Point and directional lights that interact with materials to create depth and atmosphere. |
 | **TransformComponent** | Essential spatial data (X, Y, Rotation, Scale) for every entity. |
-| **TagComponent** | Unique identification and organization. |
+| **TagComponent** | Unique identification for entity organization and retrieval. |
 
 ### 🛠️ Nearly Stable (Final Testing)
 | Component | Use Case |
 | :--- | :--- |
-| **Sprite / Animated Sprite** | Texture rendering and flipbook-style animations. |
-| **ProceduralSpriteComponent** | Custom, code-driven visual elements via scripting. |
+| **Sprite / Animated Sprite** | Texture rendering and flipbook-style animations for characters and environments. |
+| **ProceduralSpriteComponent** | The base class for custom, code-driven visual elements via scripting. |
 
 ### 🚧 In Development
 | Component | Use Case |
 | :--- | :--- |
-| **Input System** | Action-based input mapping for rebindable controls. |
-| **AmbientLightComponent** | Global illumination settings. |
-| **ParallaxComponent** | Layered background scrolling for 2D depth. |
+| **Input System** | Action-based input mapping for rebindable controls (Mouse/Keyboard). |
+| **AmbientLightComponent** | Global illumination settings for the entire scene. |
+| **ParallaxComponent** | Layered background scrolling to create a 2D sense of depth. |
 
-### 🧪 Experimental Modules
-*   **Physics Engine (`PhysicsWorld`)**: Rigid body physics and simulation.
-*   **Particle System**: Emitters and particle pools for visual effects.
+### 🧪 Experimental / Early Modules
+*   **Physics Engine (`PhysicsWorld`)**: Initial support for rigid body physics and simulation (not yet production-ready).
+*   **Particle System**: Components for building emitters and managing particle pools for visual effects.
 
 ---
 
 ### 🎨 Rendering & Lighting
-*   **OpenGL 4.5 Backend**: Modern rendering techniques for maximum efficiency.
-*   **Batch Rendering**: Optimized draw calls for quads, sprites, and procedural primitives.
+*   **OpenGL 4.5 Backend**: Utilizes modern rendering techniques for maximum efficiency.
+*   **Batch Rendering**: Optimized draw calls for quads, sprites, and procedural primitives to handle millions of objects.
 *   **Material System**: Flexible shader and texture management via a centralized library.
 
 <p align="center">
@@ -112,7 +112,7 @@ The engine utilizes a modular ECS architecture for high performance and flexibil
 ---
 
 ## 🤝 Contributing
-We welcome contributions to the renderer, component systems, or documentation. Please see [CONTRIBUTING.md](CONTRIBUTING.md) and our [Roadmap](ROADMAP.md) for more details.
+**Time Engine** is an open-source project, and we welcome contributions. Please see [CONTRIBUTING.md](CONTRIBUTING.md) and our [Roadmap](ROADMAP.md) for more details.
 
 ---
 
