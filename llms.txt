@@ -1,0 +1,39 @@
+# TimeEngine
+
+> [!NOTE]
+> This file provides a machine-readable summary of TimeEngine for Large Language Models (LLMs).
+
+## Description
+TimeEngine is a custom C++ game engine designed for 2D and 3D development, with a primary focus on deterministic simulation and **Time Manipulation** (rewinding, slow-motion, state-branching).
+
+## Core Architecture
+- **Language**: C++20
+- **Graphics API**: OpenGL 4.5+ (core profile)
+- **Architecture**: Entity-Component System (ECS)
+- **Build System**: Premake5 / MSBuild
+- **UI**: ImGui with custom docking and editor layers.
+
+## Key APIs & Systems
+- **Renderer**: `Renderer2D` and `Renderer3D` (optimized batching for quads/sprites).
+- **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
+- **Scene System**: `Scene` class manages entities and components via ECS.
+- **Serialization**: `SceneSerializer` (YAML) for projects and scenes.
+- **Events**: `Event` system for window, input, and application life-cycles.
+- **Input**: Action-based input mapping (Keyboard/Mouse).
+
+## Time Manipulation Vision (Future)
+The engine aims to support:
+- Deterministic gameplay updates.
+- Snapshot-based state management for entities.
+- Time-reversal (rewind) and non-linear time traversal.
+
+## Development Patterns
+- Use `TE_CORE_LOG` for engine-side logging.
+- Use `TE_CLIENT_LOG` for sandbox/game logging.
+- Prefer `Ref<T>` (smart pointers) for resource management.
+- All files should include `#pragma once`.
+
+## Setup
+1. Run `Scripts/GenerateProjectFiles.bat`.
+2. Build with MSBuild or Visual Studio.
+3. Launch Sandbox to access the Project Hub.

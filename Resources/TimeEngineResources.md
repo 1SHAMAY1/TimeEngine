@@ -1,6 +1,6 @@
-# TimeEngine Resources
+# TimeEngine | Resources 📦
 
-This directory contains all the static assets and resources used by the TimeEngine Editor and Sandbox.
+This directory contains the static assets and identity files for the engine.
 
 ## Directory Structure
 

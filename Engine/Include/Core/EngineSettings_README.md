@@ -1,6 +1,6 @@
-# EngineSettings System
+# TimeEngine | EngineSettings System 
 
-The EngineSettings system provides a comprehensive way to control global engine settings including frame rate, logging options, performance limits, and more.
+The EngineSettings system provides a comprehensive way to control global engine state, including performance limits and simulation parameters.
 
 ## Overview
 
