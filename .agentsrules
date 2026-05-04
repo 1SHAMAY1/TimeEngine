@@ -1,0 +1,26 @@
+# TimeEngine Agent Rules
+
+When assisting with the TimeEngine codebase, follow these rules:
+
+## 1. Coding Standards
+- **Always** use `#pragma once` in headers.
+- **Naming Conventions**:
+  - Classes/Structs: `PascalCase`
+  - Variables/Members: `camelCase` (or `m_camelCase` for private members)
+  - Macros: `SCREAMING_SNAKE_CASE` (prefixed with `TE_`)
+- **Logging**: Use `TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR` for engine code.
+- **Resources**: Use existing classes like `Texture2D`, `Shader`, and `VertexArray` instead of raw OpenGL calls where possible.
+
+## 2. Architecture Guidelines
+- Follow the **ECS** (Entity-Component System) pattern for scene objects.
+- Ensure new components are serializable via `SceneSerializer`.
+- Keep the **Editor** logic separate from core engine logic (use `EditorLayer`).
+
+## 3. Tool Usage
+- **Build**: Use `D:\Installed\VisualStudio\VisualStudioIDE\MSBuild\Current\Bin\amd64\MSBuild.exe Engine\Engine.vcxproj /p:Configuration=Debug /p:Platform=x64` after changes.
+- **Search**: Search locally or via backend tools. Do not use Chrome.
+- **Clang Format**: Adhere to the `.clang-format` file in the root.
+
+## 4. Vision: Time Manipulation
+- When implementing new logic, consider if it is **deterministic**.
+- Avoid storing non-serializable state in components if they need to support time-reversal in the future.
