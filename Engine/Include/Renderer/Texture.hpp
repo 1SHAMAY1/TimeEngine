@@ -18,19 +18,15 @@ public:
 
     // Asset interface
     virtual AssetHandle GetHandle() const override { return m_Handle; }
-    virtual const std::string &GetType() const override
-    {
-        static std::string type = "Texture2D";
-        return type;
-    }
-    virtual const std::string &GetName() const override { return m_Name; }
-    virtual const std::string &GetHoverDescription() const override { return m_FilePath; }
-
-    virtual std::shared_ptr<class Texture> GetIcon() const override
-    {
-        return nullptr;
-    } // Will be handled by AssetManager
+    virtual const std::string& GetType() const override { static std::string type = "Texture2D"; return type; }
+    virtual std::string GetDefaultIconPath() const override { return "Resources/Editor/TextureIcon.png"; }
+    virtual const std::string& GetName() const override { return m_Name; }
+    virtual const std::string& GetHoverDescription() const override { return m_FilePath; }
+    
+    virtual std::shared_ptr<class Texture> GetIcon() const override { return nullptr; } // Will be handled by AssetManager
     virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
+
+    virtual void OnContentBrowserCreate(const std::filesystem::path& path) override {}
 
 private:
     uint32_t m_RendererID;

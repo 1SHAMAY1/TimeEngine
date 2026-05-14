@@ -14,15 +14,19 @@ Bin-Intermediate/
 *.idb
 *.tlog
 
-# Visual Studio
+# Visual Studio / IDE
 .vs/
 *.user
 *.vcxproj.user
+*.sln
+*.sln.DotSettings.user
+*.vcxproj
+*.vcxproj.filters
+recent_projects.txt
 
-# Rider
+# JetBrains Rider
 .idea/
-*.user
-*.vcxproj.user
+.Rider*/
 
 # Mac
 .DS_Store
@@ -35,8 +39,6 @@ Bin-Intermediate/
 # Agents
 .agents/
 
-# JetBrains Rider
-.idea/
-*.sln.DotSettings.user
-
-Sandbox/Core_TimeEngineLog.json
+# Sandbox
+Sandbox/*
+!Sandbox/src/

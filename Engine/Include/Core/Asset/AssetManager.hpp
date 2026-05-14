@@ -3,9 +3,19 @@
 #include <filesystem>
 #include <memory>
 #include <unordered_map>
+#include <string>
+#include "Utility/MathUtils.hpp"
 
 namespace TE
 {
+
+struct AssetTypeMetadata {
+    std::string Type;
+    std::string Extension;
+    std::string IconPath;
+    TEVector2 IconSize = { 64.0f, 64.0f };
+    std::shared_ptr<Asset> Prototype;
+};
 
 class AssetManager
 {
@@ -27,8 +37,17 @@ public:
     static void AddAsset(AssetHandle handle, const std::shared_ptr<Asset> &asset);
     static bool HasAsset(AssetHandle handle);
 
+    // Modular Registration
+    static void RegisterAssetType(std::shared_ptr<Asset> prototype);
+    static const std::unordered_map<std::string, AssetTypeMetadata>& GetRegisteredAssetTypes() { return s_AssetTypeRegistry; }
+    
+    static std::shared_ptr<class Texture> GetDefaultIcon(const std::string& type);
+    static std::shared_ptr<class Texture> GetIconForExtension(const std::string& extension);
+    static TEVector2 GetDefaultIconSize(const std::string& type);
+
 private:
     static std::unordered_map<AssetHandle, std::shared_ptr<Asset>> s_LoadedAssets;
+    static std::unordered_map<std::string, AssetTypeMetadata> s_AssetTypeRegistry;
 };
 
 } // namespace TE
