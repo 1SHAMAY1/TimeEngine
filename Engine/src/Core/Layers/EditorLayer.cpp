@@ -1284,7 +1284,7 @@ void EditorLayer::UI_DrawContentBrowser()
         if (m_LeftArrowIcon)
         {
             ImTextureID leftArrowID = (ImTextureID)(uintptr_t)m_LeftArrowIcon->GetRendererID();
-            if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(18, 18)))
+            if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(10, 10)))
             {
                 m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
             }
@@ -1354,10 +1354,24 @@ void EditorLayer::UI_DrawContentBrowser()
             ImTextureID iconId = 0;
             bool isDir = directoryEntry.is_directory();
 
-            if (isDir && m_FolderIcon)
-                iconId = (ImTextureID)(uint64_t)m_FolderIcon->GetRendererID();
-            else if (!isDir && m_FileIcon)
-                iconId = (ImTextureID)(uint64_t)m_FileIcon->GetRendererID();
+            if (isDir)
+            {
+                if (m_FolderIcon)
+                    iconId = (ImTextureID)(uint64_t)m_FolderIcon->GetRendererID();
+            }
+            else
+            {
+                std::shared_ptr<Texture> icon = AssetManager::GetIconForExtension(path.extension().string());
+
+                if (icon)
+                {
+                    iconId = (ImTextureID)(uint64_t)icon->GetRendererID();
+                }
+                else if (m_FileIcon)
+                {
+                    iconId = (ImTextureID)(uint64_t)m_FileIcon->GetRendererID();
+                }
+            }
 
             if (iconId != 0)
             {
@@ -1398,6 +1412,73 @@ void EditorLayer::UI_DrawContentBrowser()
     }
 
     ImGui::Columns(1);
+
+    if (ImGui::BeginPopupContextWindow("ContentBrowserContextMenu", ImGuiPopupFlags_MouseButtonRight))
+    {
+        // Glass AAA Style settings for this specific popup
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
+        ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 8.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 8));
+
+        ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.08f, 0.08f, 0.09f, 0.94f));
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.2f, 0.45f, 0.9f, 0.4f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.2f, 0.45f, 0.9f, 0.6f));
+
+        ImGui::TextDisabled("CREATE ASSET");
+        ImGui::Separator();
+
+        // Dynamically populate from Asset Registry
+        const auto &assetTypes = AssetManager::GetRegisteredAssetTypes();
+        for (const auto &[type, entry] : assetTypes)
+        {
+            if (!entry.Prototype)
+                continue;
+
+            ImGui::PushID(type.c_str());
+
+            // Begin a group so we can treat icon + text as one selectable unit
+            ImGui::BeginGroup();
+
+            ImVec2 cursorPos = ImGui::GetCursorPos();
+
+            // Draw an invisible selectable that covers the entire row
+            bool selected = false;
+            if (ImGui::Selectable("##AssetTypeRow", &selected,
+                                  ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                                  ImVec2(0, 32)))
+            {
+                entry.Prototype->OnContentBrowserCreate(m_ContentBrowserCurrentDirectory);
+                ImGui::CloseCurrentPopup();
+            }
+
+            // Move cursor back to the start of the row to draw icon and text on top
+            ImGui::SetCursorPos(ImVec2(cursorPos.x + 4.0f, cursorPos.y + 5.0f));
+
+            auto icon = AssetManager::GetDefaultIcon(type);
+            if (icon)
+            {
+                ImGui::Image((ImTextureID)(uintptr_t)icon->GetRendererID(), ImVec2(22, 22), ImVec2(0, 0), ImVec2(1, 1));
+            }
+            else
+            {
+                // Reserve space for missing icons to maintain alignment
+                ImGui::Dummy(ImVec2(22, 22));
+            }
+            ImGui::SameLine(0, 12); // Consistent spacing after icon
+
+            ImGui::SetCursorPosY(cursorPos.y + 7.0f); // Center text
+            ImGui::Text(type.c_str());
+
+            ImGui::EndGroup();
+            ImGui::PopID();
+        }
+
+        ImGui::PopStyleColor(4);
+        ImGui::PopStyleVar(3);
+        ImGui::EndPopup();
+    }
+
     ImGui::End();
 }
 

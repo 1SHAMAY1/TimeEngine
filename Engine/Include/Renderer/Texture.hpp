@@ -23,6 +23,7 @@ public:
         static std::string type = "Texture2D";
         return type;
     }
+    virtual std::string GetDefaultIconPath() const override { return "Resources/Editor/TextureIcon.png"; }
     virtual const std::string &GetName() const override { return m_Name; }
     virtual const std::string &GetHoverDescription() const override { return m_FilePath; }
 
@@ -31,6 +32,8 @@ public:
         return nullptr;
     } // Will be handled by AssetManager
     virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
+
+    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override {}
 
 private:
     uint32_t m_RendererID;

@@ -15,7 +15,7 @@ Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0)
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Name = std::filesystem::path(path).filename().string();
     int width, height, channels;
-    stbi_set_flip_vertically_on_load(1);
+    stbi_set_flip_vertically_on_load(0);
     stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 
     if (data)
@@ -31,6 +31,16 @@ Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0)
             internalFormat = GL_RGB8;
             dataFormat = GL_RGB;
         }
+        else if (channels == 2)
+        {
+            internalFormat = GL_RG8;
+            dataFormat = GL_RG;
+        }
+        else if (channels == 1)
+        {
+            internalFormat = GL_R8;
+            dataFormat = GL_RED;
+        }
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glTextureStorage2D(m_RendererID, 1, internalFormat, width, height);
@@ -41,6 +51,7 @@ Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0)
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTextureSubImage2D(m_RendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
 
         stbi_image_free(data);

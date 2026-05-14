@@ -29,10 +29,17 @@ public:
         return type;
     }
     virtual const std::string &GetName() const override { return m_Name; }
-    virtual const std::string &GetHoverDescription() const override { return "Shader Asset"; }
+    virtual const std::string &GetHoverDescription() const override
+    {
+        static std::string desc = "Shader Asset";
+        return desc;
+    }
+    virtual std::string GetDefaultIconPath() const override { return "Resources/Editor/ShaderIcon.png"; }
 
     virtual std::shared_ptr<class Texture> GetIcon() const override { return nullptr; }
     virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
+
+    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override {}
 
 protected:
     AssetHandle m_Handle = 0;

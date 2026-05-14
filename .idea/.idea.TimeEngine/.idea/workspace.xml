@@ -11,15 +11,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9600a28f-9b34-44df-8141-82da74552c3c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.clang-format" beforeDir="false" afterPath="$PROJECT_DIR$/.clang-format" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TimeEngine/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj.filters" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Asset/Asset.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Asset/Asset.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Asset/AssetManager.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Asset/AssetManager.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Core/Scene/Scene.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Core/Scene/Scene.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/SpriteMode.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/SpriteMode.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Editor/SpriteModeLibrary.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Material.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Material.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Include/Renderer/Texture.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Include/Renderer/Texture.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Asset/AssetManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Asset/AssetManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Layers/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/src/Core/Scene/Scene.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Core/Scene/Scene.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/src/Renderer/Texture.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/src/Renderer/Texture.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/Client_TimeEngineLog.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sandbox/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Sandbox/imgui.ini" afterDir="false" />
@@ -52,10 +58,12 @@
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/Presentation.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um/gl/GL.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.38.33130/include/vector" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://D:/Installed/VisualStudio/VisualStudioIDE/VC/Tools/MSVC/14.38.33130/include/xutility" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/Camera.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/CameraController.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/OrthographicCamera.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Camera/PerspectiveCamera.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Asset/AssetManager.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Collision/BroadPhase.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionSystem.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Core/Collision/CollisionTypes.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -106,6 +114,7 @@
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/RendererContext.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Shader.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/ShaderLibrary.hpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/SpriteSheet.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/TEColor.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/Texture.hpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/Include/Renderer/VertexArray.hpp" root0="FORCE_HIGHLIGHTING" />
@@ -170,7 +179,9 @@
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/Shader.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/ShaderLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/TEColor.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://E:/TimeEngine/Engine/src/Renderer/Texture.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/Texture.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://E:/TimeEngine/Engine/src/Renderer/Texture.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/VertexArray.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Renderer/VertexBuffer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Engine/src/Window/IWindow.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -287,6 +298,16 @@
       <workItem from="1775395544847" duration="476000" />
       <workItem from="1775479862674" duration="2311000" />
       <workItem from="1775488468197" duration="324000" />
+      <workItem from="1775653328510" duration="319000" />
+      <workItem from="1775653655485" duration="5623000" />
+      <workItem from="1775661797561" duration="261000" />
+      <workItem from="1775912758180" duration="2840000" />
+      <workItem from="1775916194335" duration="66000" />
+      <workItem from="1775916290318" duration="4924000" />
+      <workItem from="1775922401927" duration="3058000" />
+      <workItem from="1775960385155" duration="5614000" />
+      <workItem from="1778759721659" duration="2202000" />
+      <workItem from="1778766833658" duration="1578000" />
     </task>
     <servers />
   </component>

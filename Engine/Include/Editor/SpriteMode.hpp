@@ -603,8 +603,29 @@ private:
                                 break;
                             std::string argsS = cl.substr(openP + 1, closeP - openP - 1);
                             std::vector<float> args;
+                            std::vector<std::string> strings;
                             std::string cur;
                             int d2 = 0;
+                            auto ProcessArg = [&](std::string a)
+                            {
+                                size_t first = a.find_first_not_of(" \t\n\r");
+                                if (first == std::string::npos)
+                                    return;
+                                size_t last = a.find_last_not_of(" \t\n\r");
+                                std::string arg = a.substr(first, (last - first + 1));
+
+                                if (arg.size() >= 2 && arg.front() == '"' && arg.back() == '"')
+                                {
+                                    strings.push_back(arg.substr(1, arg.length() - 2));
+                                    args.push_back((float)(strings.size() - 1));
+                                }
+                                else
+                                {
+                                    auto v = Res(arg);
+                                    args.insert(args.end(), v.begin(), v.end());
+                                }
+                            };
+
                             for (char c : argsS)
                             {
                                 if (c == '(')
@@ -613,19 +634,16 @@ private:
                                     d2--;
                                 if (c == ',' && d2 == 0)
                                 {
-                                    auto v = Res(cur);
-                                    args.insert(args.end(), v.begin(), v.end());
+                                    ProcessArg(cur);
                                     cur.clear();
                                 }
                                 else
                                     cur += c;
                             }
                             if (!cur.empty())
-                            {
-                                auto v = Res(cur);
-                                args.insert(args.end(), v.begin(), v.end());
-                            }
-                            f.DrawHook(dl, p, args);
+                                ProcessArg(cur);
+
+                            f.DrawHook(dl, p, args, strings);
                             drew = true;
                             break;
                         }
