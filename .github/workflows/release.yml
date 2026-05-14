@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: windows-2022
     permissions:
       contents: write
 
@@ -17,9 +17,6 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
 
       - name: Build Logger Dependency
         shell: cmd
@@ -42,6 +39,9 @@ jobs:
       - name: Generate Solution with Premake
         shell: cmd
         run: Vendor\Premake\premake5.exe vs2022
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
       - name: Build Solution
         shell: cmd
