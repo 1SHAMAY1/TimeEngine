@@ -1429,21 +1429,24 @@ void EditorLayer::UI_DrawContentBrowser()
         ImGui::Separator();
 
         // Dynamically populate from Asset Registry
-        const auto& assetTypes = AssetManager::GetRegisteredAssetTypes();
-        for (const auto& [type, entry] : assetTypes)
+        const auto &assetTypes = AssetManager::GetRegisteredAssetTypes();
+        for (const auto &[type, entry] : assetTypes)
         {
-            if (!entry.Prototype) continue;
+            if (!entry.Prototype)
+                continue;
 
             ImGui::PushID(type.c_str());
-            
+
             // Begin a group so we can treat icon + text as one selectable unit
             ImGui::BeginGroup();
-            
+
             ImVec2 cursorPos = ImGui::GetCursorPos();
-            
+
             // Draw an invisible selectable that covers the entire row
             bool selected = false;
-            if (ImGui::Selectable("##AssetTypeRow", &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(0, 32)))
+            if (ImGui::Selectable("##AssetTypeRow", &selected,
+                                  ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                                  ImVec2(0, 32)))
             {
                 entry.Prototype->OnContentBrowserCreate(m_ContentBrowserCurrentDirectory);
                 ImGui::CloseCurrentPopup();

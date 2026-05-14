@@ -1,9 +1,9 @@
 #pragma once
 #include "Core/KeyCodes.hpp"
 #include "Utility/MathUtils.hpp"
+#include <filesystem>
 #include <memory>
 #include <string>
-#include <filesystem>
 
 namespace TE
 {
@@ -28,7 +28,8 @@ public:
     virtual std::string GetDefaultIconPath() const { return "Resources/Editor/FileIcon.png"; }
     virtual TEVector2 GetDefaultIconSize() const { return {64.0f, 64.0f}; }
 
-    virtual void SetIcon(const std::string &path, const TEVector2 &size = {64.0f, 64.0f}, const std::string &extension = "")
+    virtual void SetIcon(const std::string &path, const TEVector2 &size = {64.0f, 64.0f},
+                         const std::string &extension = "")
     {
         // This now just acts as an interface helper if needed,
         // but the metadata is primarily retrieved via virtual overrides.
