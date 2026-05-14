@@ -12,54 +12,54 @@ namespace TE
 
 Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0)
 {
-        m_Handle = AssetRegistry::RegisterPath(path);
-        m_Name = std::filesystem::path(path).filename().string();
-        int width, height, channels;
-        stbi_set_flip_vertically_on_load(0);
-        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    m_Handle = AssetRegistry::RegisterPath(path);
+    m_Name = std::filesystem::path(path).filename().string();
+    int width, height, channels;
+    stbi_set_flip_vertically_on_load(0);
+    stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 
-        if (data)
+    if (data)
+    {
+        GLenum internalFormat = 0, dataFormat = 0;
+        if (channels == 4)
         {
-            GLenum internalFormat = 0, dataFormat = 0;
-            if (channels == 4)
-            {
-                internalFormat = GL_RGBA8;
-                dataFormat = GL_RGBA;
-            }
-            else if (channels == 3)
-            {
-                internalFormat = GL_RGB8;
-                dataFormat = GL_RGB;
-            }
-            else if (channels == 2)
-            {
-                internalFormat = GL_RG8;
-                dataFormat = GL_RG;
-            }
-            else if (channels == 1)
-            {
-                internalFormat = GL_R8;
-                dataFormat = GL_RED;
-            }
-
-            glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-            glTextureStorage2D(m_RendererID, 1, internalFormat, width, height);
-
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            glTextureSubImage2D(m_RendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
-
-            stbi_image_free(data);
+            internalFormat = GL_RGBA8;
+            dataFormat = GL_RGBA;
         }
-        else
+        else if (channels == 3)
         {
-            TE_CORE_ERROR("Failed to load texture: {0}", path);
+            internalFormat = GL_RGB8;
+            dataFormat = GL_RGB;
         }
+        else if (channels == 2)
+        {
+            internalFormat = GL_RG8;
+            dataFormat = GL_RG;
+        }
+        else if (channels == 1)
+        {
+            internalFormat = GL_R8;
+            dataFormat = GL_RED;
+        }
+
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+        glTextureStorage2D(m_RendererID, 1, internalFormat, width, height);
+
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTextureSubImage2D(m_RendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        TE_CORE_ERROR("Failed to load texture: {0}", path);
+    }
 }
 
 Texture::~Texture() { glDeleteTextures(1, &m_RendererID); }

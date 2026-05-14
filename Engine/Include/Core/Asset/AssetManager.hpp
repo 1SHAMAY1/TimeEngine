@@ -1,19 +1,20 @@
 #pragma once
 #include "Core/Asset/Asset.hpp"
+#include "Utility/MathUtils.hpp"
 #include <filesystem>
 #include <memory>
-#include <unordered_map>
 #include <string>
-#include "Utility/MathUtils.hpp"
+#include <unordered_map>
 
 namespace TE
 {
 
-struct AssetTypeMetadata {
+struct AssetTypeMetadata
+{
     std::string Type;
     std::string Extension;
     std::string IconPath;
-    TEVector2 IconSize = { 64.0f, 64.0f };
+    TEVector2 IconSize = {64.0f, 64.0f};
     std::shared_ptr<Asset> Prototype;
 };
 
@@ -39,11 +40,14 @@ public:
 
     // Modular Registration
     static void RegisterAssetType(std::shared_ptr<Asset> prototype);
-    static const std::unordered_map<std::string, AssetTypeMetadata>& GetRegisteredAssetTypes() { return s_AssetTypeRegistry; }
-    
-    static std::shared_ptr<class Texture> GetDefaultIcon(const std::string& type);
-    static std::shared_ptr<class Texture> GetIconForExtension(const std::string& extension);
-    static TEVector2 GetDefaultIconSize(const std::string& type);
+    static const std::unordered_map<std::string, AssetTypeMetadata> &GetRegisteredAssetTypes()
+    {
+        return s_AssetTypeRegistry;
+    }
+
+    static std::shared_ptr<class Texture> GetDefaultIcon(const std::string &type);
+    static std::shared_ptr<class Texture> GetIconForExtension(const std::string &extension);
+    static TEVector2 GetDefaultIconSize(const std::string &type);
 
 private:
     static std::unordered_map<AssetHandle, std::shared_ptr<Asset>> s_LoadedAssets;
