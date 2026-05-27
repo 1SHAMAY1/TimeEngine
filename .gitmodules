@@ -11,3 +11,9 @@
 	path = Vendor/IMGUI/ImGui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "Logger/Customizable_Logger_new"]
+	path = Logger/Customizable_Logger_new
+	url = https://github.com/1SHAMAY1/Customizable_Logger
+[submodule "Vendor/Customizable_Logger"]
+	path = Vendor/Customizable_Logger
+	url = https://github.com/1SHAMAY1/Customizable_Logger

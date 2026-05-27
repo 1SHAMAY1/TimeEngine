@@ -11,7 +11,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["Engine"]         = "Engine/src"
 IncludeDir["Engine_Include"] = "Engine/Include"
-IncludeDir["Logger"]         = "Logger/Customizable_Logger/Include"
+IncludeDir["Logger"]         = "Vendor/Customizable_Logger/Include"
 IncludeDir["GLFW"]           = "Vendor/GLFW/glfw/include"
 IncludeDir["GLAD"]           = "Vendor/GLAD/include"
 IncludeDir["ImGui"]          = "Vendor/IMGUI/ImGui"
@@ -27,8 +27,8 @@ group ""
 -- ========== Logger Project ==========
 
 project "Logger"
-    location "Logger/Customizable_Logger"
-    kind "None"
+    location "Vendor/Customizable_Logger"
+    kind "Utility"
     language "C++"
     files { }
     includedirs { "%{IncludeDir.Logger}" }
@@ -102,7 +102,7 @@ project "Engine"
     }
 
     libdirs {
-        "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+        "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
         "Vendor/GLFW/build/src/%{cfg.buildcfg}"
     }
 
@@ -184,7 +184,7 @@ project "Sandbox"
     }
 
     libdirs {
-        "Logger/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+        "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
         "Vendor/GLFW/build/src/%{cfg.buildcfg}"
     }
 

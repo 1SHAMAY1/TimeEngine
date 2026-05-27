@@ -73,6 +73,13 @@ bool SceneSerializer::Deserialize(const std::filesystem::path &filepath)
 
     // Use shared scene instance for entity creation
     auto &entityManager = m_Scene->GetEntityManager();
+    
+    // Clear existing entities before deserializing
+    std::set<EntityID> alive = entityManager.GetAliveEntities();
+    for (EntityID id : alive)
+    {
+        entityManager.DestroyEntity(Entity(id, &entityManager));
+    }
 
     std::string line;
     std::vector<std::string> lines;
