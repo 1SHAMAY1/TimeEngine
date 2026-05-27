@@ -54,7 +54,10 @@ A core refactor has introduced a fully data-driven, modular scripting environmen
 *   **Live Code Interaction**: Automated variable registration for real-time scripting and visualization.
 
 <p align="center">
-
+<img width="1919" height="1131" alt="image" src="https://github.com/user-attachments/assets/ee8db0e9-4f17-4b33-b2a4-bfd60151338a" />
+<img width="1919" height="1138" alt="image" src="https://github.com/user-attachments/assets/0bbb0594-019a-4173-8ade-cfdd333836f4" />
+<img width="1919" height="1134" alt="image" src="https://github.com/user-attachments/assets/a6b2bbd7-bdfe-4817-ab3c-6d2ac21d020e" />
+<img width="1919" height="1135" alt="image" src="https://github.com/user-attachments/assets/9d5f8098-c56d-4514-9f8f-f80dec346490" />
 
 </p>
 
