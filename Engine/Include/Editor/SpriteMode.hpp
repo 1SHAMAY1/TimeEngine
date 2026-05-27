@@ -1,11 +1,11 @@
 #pragma once
 #include "Editor/EditorMode.hpp"
 #include "Editor/SpriteModeLibrary.hpp"
+#include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Utility/ImageUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "imgui.h"
-#include "Input/Input.hpp"
 #include <algorithm>
 #include <backends/imgui_impl_opengl3.h>
 #include <cmath>
@@ -21,29 +21,34 @@
 namespace TE
 {
 
-inline bool EqualsIgnoreCase(const std::string& a, const std::string& b)
+inline bool EqualsIgnoreCase(const std::string &a, const std::string &b)
 {
-    if (a.length() != b.length()) return false;
+    if (a.length() != b.length())
+        return false;
     for (size_t i = 0; i < a.length(); i++)
     {
-        if (tolower(a[i]) != tolower(b[i])) return false;
+        if (tolower(a[i]) != tolower(b[i]))
+            return false;
     }
     return true;
 }
 
-inline bool StartsWithIgnoreCase(const std::string& str, const std::string& prefix)
+inline bool StartsWithIgnoreCase(const std::string &str, const std::string &prefix)
 {
-    if (str.length() < prefix.length()) return false;
+    if (str.length() < prefix.length())
+        return false;
     for (size_t i = 0; i < prefix.length(); i++)
     {
-        if (tolower(str[i]) != tolower(prefix[i])) return false;
+        if (tolower(str[i]) != tolower(prefix[i]))
+            return false;
     }
     return true;
 }
 
-inline size_t FindIgnoreCase(const std::string& str, const std::string& target)
+inline size_t FindIgnoreCase(const std::string &str, const std::string &target)
 {
-    if (str.length() < target.length()) return std::string::npos;
+    if (str.length() < target.length())
+        return std::string::npos;
     for (size_t i = 0; i <= str.length() - target.length(); i++)
     {
         bool match = true;
@@ -55,19 +60,21 @@ inline size_t FindIgnoreCase(const std::string& str, const std::string& target)
                 break;
             }
         }
-        if (match) return i;
+        if (match)
+            return i;
     }
     return std::string::npos;
 }
 
-inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2>& verts, float radius)
+inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2> &verts, float radius)
 {
-    if (std::abs(radius) <= 0.0001f || verts.size() < 3) return verts;
+    if (std::abs(radius) <= 0.0001f || verts.size() < 3)
+        return verts;
     std::vector<ImVec2> roundedVerts;
     int n = (int)verts.size();
     bool isConcave = (radius < 0.0f);
     float absRadius = std::abs(radius);
-    
+
     for (int i = 0; i < n; i++)
     {
         ImVec2 v = verts[i];
@@ -86,7 +93,7 @@ inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2>& ve
             continue;
         }
 
-        float r = std::min({ absRadius, len1 * 0.5f, len2 * 0.5f });
+        float r = std::min({absRadius, len1 * 0.5f, len2 * 0.5f});
 
         ImVec2 p1 = ImVec2(v.x + (d1.x / len1) * r, v.y + (d1.y / len1) * r);
         ImVec2 p2 = ImVec2(v.x + (d2.x / len2) * r, v.y + (d2.y / len2) * r);
@@ -102,10 +109,8 @@ inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2>& ve
         {
             float t = (float)s / (float)steps;
             float omt = 1.0f - t;
-            ImVec2 pt = ImVec2(
-                omt * omt * p1.x + 2.0f * omt * t * ctrl.x + t * t * p2.x,
-                omt * omt * p1.y + 2.0f * omt * t * ctrl.y + t * t * p2.y
-            );
+            ImVec2 pt = ImVec2(omt * omt * p1.x + 2.0f * omt * t * ctrl.x + t * t * p2.x,
+                               omt * omt * p1.y + 2.0f * omt * t * ctrl.y + t * t * p2.y);
             roundedVerts.push_back(pt);
         }
     }
@@ -132,10 +137,10 @@ enum class VectorShapeType
 struct VectorElement
 {
     VectorShapeType Type;
-    std::vector<ImVec2> Points; // Normalized coordinates (0.0 to 1.0)
+    std::vector<ImVec2> Points;                // Normalized coordinates (0.0 to 1.0)
     std::vector<std::vector<ImVec2>> SubPaths; // Multi-path for Merged elements (each closed independently)
-    float Radius = 0.0f; // Normalized radius / RadiusX
-    float RadiusY = 0.0f; // Normalized RadiusY (for flattening)
+    float Radius = 0.0f;                       // Normalized radius / RadiusX
+    float RadiusY = 0.0f;                      // Normalized RadiusY (for flattening)
     ImVec4 FillColor = ImVec4(1, 1, 1, 1);
     ImVec4 StrokeColor = ImVec4(0, 0, 0, 1);
     float StrokeThickness = 1.0f;
@@ -181,7 +186,8 @@ public:
 
     void SaveUndoState()
     {
-        if (m_IsUndoingRedoing) return;
+        if (m_IsUndoingRedoing)
+            return;
         m_RedoStack.clear();
 
         SpriteModeState state;
@@ -196,13 +202,14 @@ public:
 
     void Undo()
     {
-        if (m_UndoStack.size() <= 1) return;
+        if (m_UndoStack.size() <= 1)
+            return;
 
         m_IsUndoingRedoing = true;
         m_RedoStack.push_back(m_UndoStack.back());
         m_UndoStack.pop_back();
 
-        auto& state = m_UndoStack.back();
+        auto &state = m_UndoStack.back();
         m_VectorElements = state.VectorElements;
         strncpy_s(m_ProcBuffer, state.ProcBuffer.c_str(), sizeof(m_ProcBuffer) - 1);
         m_Keywords = state.Keywords;
@@ -214,7 +221,8 @@ public:
 
     void Redo()
     {
-        if (m_RedoStack.empty()) return;
+        if (m_RedoStack.empty())
+            return;
 
         m_IsUndoingRedoing = true;
         auto state = m_RedoStack.back();
@@ -232,11 +240,14 @@ public:
 
     void AddColorToHistory(ImVec4 color)
     {
-        if (color.w < 0.001f) return;
-        auto it = std::find_if(m_ColorHistory.begin(), m_ColorHistory.end(), [&](ImVec4 c) {
-            return std::abs(c.x - color.x) < 0.001f && std::abs(c.y - color.y) < 0.001f &&
-                   std::abs(c.z - color.z) < 0.001f && std::abs(c.w - color.w) < 0.001f;
-        });
+        if (color.w < 0.001f)
+            return;
+        auto it = std::find_if(m_ColorHistory.begin(), m_ColorHistory.end(),
+                               [&](ImVec4 c)
+                               {
+                                   return std::abs(c.x - color.x) < 0.001f && std::abs(c.y - color.y) < 0.001f &&
+                                          std::abs(c.z - color.z) < 0.001f && std::abs(c.w - color.w) < 0.001f;
+                               });
         if (it != m_ColorHistory.end())
             m_ColorHistory.erase(it);
         m_ColorHistory.insert(m_ColorHistory.begin(), color);
@@ -254,16 +265,16 @@ public:
 
         // Seed with a premium palette of default colors
         m_ColorHistory = {
-            ImVec4(1.0f, 1.0f, 1.0f, 1.0f), // White
-            ImVec4(0.0f, 0.0f, 0.0f, 1.0f), // Black
+            ImVec4(1.0f, 1.0f, 1.0f, 1.0f),    // White
+            ImVec4(0.0f, 0.0f, 0.0f, 1.0f),    // Black
             ImVec4(0.85f, 0.15f, 0.15f, 1.0f), // Red
             ImVec4(0.15f, 0.75f, 0.15f, 1.0f), // Green
             ImVec4(0.15f, 0.15f, 0.85f, 1.0f), // Blue
-            ImVec4(0.9f, 0.85f, 0.15f, 1.0f), // Yellow
+            ImVec4(0.9f, 0.85f, 0.15f, 1.0f),  // Yellow
             ImVec4(0.15f, 0.75f, 0.75f, 1.0f), // Cyan
             ImVec4(0.75f, 0.15f, 0.75f, 1.0f), // Magenta
-            ImVec4(0.5f, 0.5f, 0.5f, 1.0f), // Gray
-            ImVec4(0.75f, 0.75f, 0.75f, 1.0f) // Light Gray
+            ImVec4(0.5f, 0.5f, 0.5f, 1.0f),    // Gray
+            ImVec4(0.75f, 0.75f, 0.75f, 1.0f)  // Light Gray
         };
     }
 
@@ -336,10 +347,12 @@ public:
                 if (!fnd)
                 {
                     std::string lowerWord = word;
-                    for (auto &c : lowerWord) c = tolower(c);
+                    for (auto &c : lowerWord)
+                        c = tolower(c);
                     if (lowerWord == "if" || lowerWord == "else" || lowerWord == "for" || lowerWord == "return")
                         col = ImVec4(1, 0.4f, 0.4f, 1);
-                    else if (lowerWord == "void" || lowerWord == "float" || lowerWord == "dt" || lowerWord == "vec2" || lowerWord == "color")
+                    else if (lowerWord == "void" || lowerWord == "float" || lowerWord == "dt" || lowerWord == "vec2" ||
+                             lowerWord == "color")
                         col = ImVec4(0.4f, 0.6f, 1, 1);
                     else
                     {
@@ -427,9 +440,11 @@ public:
                                                [&](const CustomKeyword &k) { return EqualsIgnoreCase(k.Name, var); });
 
                         KeyType detected = KeyType::Float;
-                        if (StartsWithIgnoreCase(val, "Color(") || StartsWithIgnoreCase(val, "HSV(") || StartsWithIgnoreCase(val, "LerpColor("))
+                        if (StartsWithIgnoreCase(val, "Color(") || StartsWithIgnoreCase(val, "HSV(") ||
+                            StartsWithIgnoreCase(val, "LerpColor("))
                             detected = KeyType::Color;
-                        else if (StartsWithIgnoreCase(val, "GetCenter(") || StartsWithIgnoreCase(val, "Vec2(") || StartsWithIgnoreCase(val, "GetMousePos("))
+                        else if (StartsWithIgnoreCase(val, "GetCenter(") || StartsWithIgnoreCase(val, "Vec2(") ||
+                                 StartsWithIgnoreCase(val, "GetMousePos("))
                             detected = KeyType::Vec2;
 
                         if (it == m_Keywords.end())
@@ -454,23 +469,24 @@ public:
         static std::string activeF = "";
 
         // Mode Switcher Header Toolbar
-        ImGui::BeginChild("##ModeToolbar", ImVec2(0, 36), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::BeginChild("##ModeToolbar", ImVec2(0, 36), false,
+                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
-        
+
         ImGui::AlignTextToFramePadding();
         ImGui::Text("Sprite Mode:");
         ImGui::SameLine();
-        
+
         ImVec4 activeCol = ImVec4(0.2f, 0.45f, 0.8f, 0.8f);
         ImVec4 inactiveCol = ImVec4(0.12f, 0.12f, 0.14f, 0.5f);
-        
+
         ImGui::PushStyleColor(ImGuiCol_Button, m_CreationMode == SpriteCreationMode::Code ? activeCol : inactiveCol);
         if (ImGui::Button("Code Editor", ImVec2(160, 26)))
             m_CreationMode = SpriteCreationMode::Code;
         ImGui::PopStyleColor();
-        
+
         ImGui::SameLine();
-        
+
         ImGui::PushStyleColor(ImGuiCol_Button, m_CreationMode == SpriteCreationMode::Vector ? activeCol : inactiveCol);
         if (ImGui::Button("Vector Editor", ImVec2(120, 26)))
             m_CreationMode = SpriteCreationMode::Vector;
@@ -478,7 +494,8 @@ public:
 
         ImGui::SameLine();
 
-        ImGui::PushStyleColor(ImGuiCol_Button, m_CreationMode == SpriteCreationMode::PixelPaint ? activeCol : inactiveCol);
+        ImGui::PushStyleColor(ImGuiCol_Button,
+                              m_CreationMode == SpriteCreationMode::PixelPaint ? activeCol : inactiveCol);
         if (ImGui::Button("Pixel Paint", ImVec2(120, 26)))
             m_CreationMode = SpriteCreationMode::PixelPaint;
         ImGui::PopStyleColor();
@@ -488,7 +505,7 @@ public:
         {
             m_ShowExportPopup = true;
         }
-        
+
         ImGui::PopStyleVar();
         ImGui::EndChild();
         ImGui::Separator();
@@ -631,7 +648,7 @@ public:
                 if (ImGui::BeginChild("##VectorTools", ImVec2(0, 0), false))
                 {
                     DrawGlassHeader("Vector Tools", ImVec4(0.4f, 0.8f, 1, 1));
-                    
+
                     if (ImGui::RadioButton("Select / Edit", m_ActiveTool == VectorShapeType::Selection))
                         m_ActiveTool = VectorShapeType::Selection;
                     if (ImGui::RadioButton("Pen (Freehand)", m_ActiveTool == VectorShapeType::Pen))
@@ -644,12 +661,12 @@ public:
                         m_ActiveTool = VectorShapeType::Circle;
                     if (ImGui::RadioButton("Semicircle", m_ActiveTool == VectorShapeType::Semicircle))
                         m_ActiveTool = VectorShapeType::Semicircle;
-                    
+
                     ImGui::Separator();
                     ImGui::Text("Stroke Settings:");
-                    ImGui::ColorEdit4("Stroke Color", (float*)&m_ActiveStrokeColor, ImGuiColorEditFlags_NoInputs);
+                    ImGui::ColorEdit4("Stroke Color", (float *)&m_ActiveStrokeColor, ImGuiColorEditFlags_NoInputs);
                     ImGui::DragFloat("Thickness", &m_ActiveStrokeThickness, 0.1f, 1.0f, 20.0f);
-                    
+
                     ImGui::Separator();
                     ImGui::Text("Fill Settings:");
                     static bool useFill = m_ActiveFillColor.w > 0.0f;
@@ -659,22 +676,23 @@ public:
                     }
                     if (useFill)
                     {
-                        ImGui::ColorEdit4("Fill Color", (float*)&m_ActiveFillColor, ImGuiColorEditFlags_NoInputs);
+                        ImGui::ColorEdit4("Fill Color", (float *)&m_ActiveFillColor, ImGuiColorEditFlags_NoInputs);
                     }
 
-
-
                     int selectedCount = 0;
-                    for (const auto& elem : m_VectorElements)
-                        if (elem.Selected) selectedCount++;
+                    for (const auto &elem : m_VectorElements)
+                        if (elem.Selected)
+                            selectedCount++;
 
                     ImGui::Separator();
                     ImGui::TextColored(ImVec4(1, 1, 0, 1), "Shape Properties");
 
-                    if (selectedCount > 0 && m_SelectedElementIdx != -1 && m_SelectedElementIdx < (int)m_VectorElements.size())
+                    if (selectedCount > 0 && m_SelectedElementIdx != -1 &&
+                        m_SelectedElementIdx < (int)m_VectorElements.size())
                     {
-                        auto& elem = m_VectorElements[m_SelectedElementIdx];
-                        if (elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle || elem.Type == VectorShapeType::Semicircle)
+                        auto &elem = m_VectorElements[m_SelectedElementIdx];
+                        if (elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle ||
+                            elem.Type == VectorShapeType::Semicircle)
                         {
                             float combinedRounding = 0.0f;
                             if (elem.StrokeRounding > 0.0f)
@@ -686,7 +704,7 @@ public:
                             {
                                 float sr = (combinedRounding > 0.0f) ? combinedRounding : 0.0f;
                                 float fr = (combinedRounding < 0.0f) ? -combinedRounding : 0.0f;
-                                for (auto& e : m_VectorElements)
+                                for (auto &e : m_VectorElements)
                                 {
                                     if (e.Selected)
                                     {
@@ -696,28 +714,34 @@ public:
                                 }
                                 m_PreviewDirty = true;
                             }
-                            if (ImGui::IsItemDeactivatedAfterEdit()) SaveUndoState();
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                SaveUndoState();
                         }
-                        
+
                         ImVec4 sc = elem.StrokeColor;
-                        if (ImGui::ColorEdit4("Sel Stroke Color", (float*)&sc, ImGuiColorEditFlags_NoInputs))
+                        if (ImGui::ColorEdit4("Sel Stroke Color", (float *)&sc, ImGuiColorEditFlags_NoInputs))
                         {
-                            for (auto& e : m_VectorElements) if (e.Selected) e.StrokeColor = sc;
+                            for (auto &e : m_VectorElements)
+                                if (e.Selected)
+                                    e.StrokeColor = sc;
                             m_PreviewDirty = true;
                             SaveUndoState();
                         }
                         float st = elem.StrokeThickness;
                         if (ImGui::DragFloat("Sel Thickness", &st, 0.1f, 1.0f, 20.0f))
                         {
-                            for (auto& e : m_VectorElements) if (e.Selected) e.StrokeThickness = st;
+                            for (auto &e : m_VectorElements)
+                                if (e.Selected)
+                                    e.StrokeThickness = st;
                             m_PreviewDirty = true;
                         }
-                        if (ImGui::IsItemDeactivatedAfterEdit()) SaveUndoState();
-                            
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            SaveUndoState();
+
                         bool selUseFill = elem.FillColor.w > 0.0f;
                         if (ImGui::Checkbox("Sel Use Fill", &selUseFill))
                         {
-                            for (auto& e : m_VectorElements)
+                            for (auto &e : m_VectorElements)
                             {
                                 if (e.Selected)
                                 {
@@ -730,14 +754,16 @@ public:
                         if (selUseFill)
                         {
                             ImVec4 fc = elem.FillColor;
-                            if (ImGui::ColorEdit4("Sel Fill Color", (float*)&fc, ImGuiColorEditFlags_NoInputs))
+                            if (ImGui::ColorEdit4("Sel Fill Color", (float *)&fc, ImGuiColorEditFlags_NoInputs))
                             {
-                                for (auto& e : m_VectorElements) if (e.Selected) e.FillColor = fc;
+                                for (auto &e : m_VectorElements)
+                                    if (e.Selected)
+                                        e.FillColor = fc;
                                 m_PreviewDirty = true;
                                 SaveUndoState();
                             }
                         }
-                        
+
                         if (selectedCount >= 2)
                         {
                             ImGui::Dummy(ImVec2(0, 10));
@@ -776,7 +802,8 @@ public:
                                     }
 
                                     // Insert tools right after the blank element
-                                    m_VectorElements.insert(m_VectorElements.begin() + blankIdx + 1, tools.begin(), tools.end());
+                                    m_VectorElements.insert(m_VectorElements.begin() + blankIdx + 1, tools.begin(),
+                                                            tools.end());
                                     m_SelectedElementIdx = blankIdx;
                                     m_PreviewDirty = true;
                                 }
@@ -793,7 +820,7 @@ public:
                                 merged.Selected = true;
 
                                 bool fillFound = false;
-                                for (auto it = m_VectorElements.begin(); it != m_VectorElements.end(); )
+                                for (auto it = m_VectorElements.begin(); it != m_VectorElements.end();)
                                 {
                                     if (it->Selected)
                                     {
@@ -805,20 +832,13 @@ public:
                                         std::vector<ImVec2> pts;
                                         if (it->Type == VectorShapeType::Rectangle && it->Points.size() >= 2)
                                         {
-                                            pts = {
-                                                it->Points[0],
-                                                ImVec2(it->Points[1].x, it->Points[0].y),
-                                                it->Points[1],
-                                                ImVec2(it->Points[0].x, it->Points[1].y)
-                                            };
+                                            pts = {it->Points[0], ImVec2(it->Points[1].x, it->Points[0].y),
+                                                   it->Points[1], ImVec2(it->Points[0].x, it->Points[1].y)};
                                         }
                                         else if (it->Type == VectorShapeType::Triangle && it->Points.size() >= 2)
                                         {
-                                            pts = {
-                                                ImVec2((it->Points[0].x + it->Points[1].x) * 0.5f, it->Points[0].y),
-                                                ImVec2(it->Points[0].x, it->Points[1].y),
-                                                it->Points[1]
-                                            };
+                                            pts = {ImVec2((it->Points[0].x + it->Points[1].x) * 0.5f, it->Points[0].y),
+                                                   ImVec2(it->Points[0].x, it->Points[1].y), it->Points[1]};
                                         }
                                         else if (it->Type == VectorShapeType::Semicircle && it->Points.size() >= 1)
                                         {
@@ -826,7 +846,8 @@ public:
                                             for (int s = 0; s <= segments; s++)
                                             {
                                                 float t = 3.14159265f + (float)s * 3.14159265f / (float)segments;
-                                                pts.push_back(ImVec2(it->Points[0].x + it->Radius * cosf(t), it->Points[0].y + it->RadiusY * sinf(t)));
+                                                pts.push_back(ImVec2(it->Points[0].x + it->Radius * cosf(t),
+                                                                     it->Points[0].y + it->RadiusY * sinf(t)));
                                             }
                                         }
                                         else if (it->Type == VectorShapeType::Circle && it->Points.size() >= 1)
@@ -835,13 +856,14 @@ public:
                                             for (int s = 0; s < segments; s++)
                                             {
                                                 float t = (float)s * 2.0f * 3.14159265f / (float)segments;
-                                                pts.push_back(ImVec2(it->Points[0].x + it->Radius * cosf(t), it->Points[0].y + it->RadiusY * sinf(t)));
+                                                pts.push_back(ImVec2(it->Points[0].x + it->Radius * cosf(t),
+                                                                     it->Points[0].y + it->RadiusY * sinf(t)));
                                             }
                                         }
                                         else if (!it->SubPaths.empty())
                                         {
                                             // Already a merged element — import each sub-path
-                                            for (const auto& sp : it->SubPaths)
+                                            for (const auto &sp : it->SubPaths)
                                                 merged.SubPaths.push_back(sp);
                                             it = m_VectorElements.erase(it);
                                             continue;
@@ -868,8 +890,11 @@ public:
                     }
                     else
                     {
-                        if (ImGui::Checkbox("Subtract (Hole Cut)", &m_DefaultSubtract)) {}
-                        if (m_ActiveTool == VectorShapeType::Rectangle || m_ActiveTool == VectorShapeType::Triangle || m_ActiveTool == VectorShapeType::Semicircle)
+                        if (ImGui::Checkbox("Subtract (Hole Cut)", &m_DefaultSubtract))
+                        {
+                        }
+                        if (m_ActiveTool == VectorShapeType::Rectangle || m_ActiveTool == VectorShapeType::Triangle ||
+                            m_ActiveTool == VectorShapeType::Semicircle)
                         {
                             float combinedRounding = 0.0f;
                             if (m_DefaultStrokeRounding > 0.0f)
@@ -911,7 +936,7 @@ public:
                     ImVec2 p = ImGui::GetCursorScreenPos(), sz = ImGui::GetContentRegionAvail();
                     sz.y -= 44;
                     m_LastSimSize = sz; // Capture for export sync
-                    
+
                     // Handle keyboard shortcuts
                     bool ctrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
                     if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Z))
@@ -932,7 +957,11 @@ public:
                         if (m_CopiedElement.Points.size() > 0)
                         {
                             VectorElement pasted = m_CopiedElement;
-                            for (auto& pt : pasted.Points) { pt.x += 0.05f; pt.y += 0.05f; }
+                            for (auto &pt : pasted.Points)
+                            {
+                                pt.x += 0.05f;
+                                pt.y += 0.05f;
+                            }
                             m_VectorElements.push_back(pasted);
                             m_SelectedElementIdx = (int)m_VectorElements.size() - 1;
                             m_PreviewDirty = true;
@@ -944,7 +973,11 @@ public:
                         if (m_SelectedElementIdx != -1)
                         {
                             VectorElement dup = m_VectorElements[m_SelectedElementIdx];
-                            for (auto& pt : dup.Points) { pt.x += 0.05f; pt.y += 0.05f; }
+                            for (auto &pt : dup.Points)
+                            {
+                                pt.x += 0.05f;
+                                pt.y += 0.05f;
+                            }
                             m_VectorElements.push_back(dup);
                             m_SelectedElementIdx = (int)m_VectorElements.size() - 1;
                             m_PreviewDirty = true;
@@ -955,13 +988,13 @@ public:
                     {
                         m_SelectedElementIdx = -1;
                     }
-                    
+
                     // Draw background
                     dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
-                    
+
                     // Set clip rect to canvas area
                     dl->PushClipRect(p, ImVec2(p.x + sz.x, p.y + sz.y), true);
-                    
+
                     // Draw Grid
                     float gridSpacing = 20.0f * m_CanvasZoom;
                     if (gridSpacing > 2.0f)
@@ -987,14 +1020,15 @@ public:
                     {
                         for (int i = (int)m_VectorElements.size() - 1; i >= 0; i--)
                         {
-                            const auto& elem = m_VectorElements[i];
+                            const auto &elem = m_VectorElements[i];
                             if (elem.Type == VectorShapeType::Rectangle && elem.Points.size() >= 2)
                             {
                                 float minX = std::min(elem.Points[0].x, elem.Points[1].x);
                                 float maxX = std::max(elem.Points[0].x, elem.Points[1].x);
                                 float minY = std::min(elem.Points[0].y, elem.Points[1].y);
                                 float maxY = std::max(elem.Points[0].y, elem.Points[1].y);
-                                if (canvasMouse.x >= minX && canvasMouse.x <= maxX && canvasMouse.y >= minY && canvasMouse.y <= maxY)
+                                if (canvasMouse.x >= minX && canvasMouse.x <= maxX && canvasMouse.y >= minY &&
+                                    canvasMouse.y <= maxY)
                                 {
                                     hoveredElementIdx = i;
                                     break;
@@ -1005,10 +1039,9 @@ public:
                                 ImVec2 v0 = ImVec2((elem.Points[0].x + elem.Points[1].x) * 0.5f, elem.Points[0].y);
                                 ImVec2 v1 = ImVec2(elem.Points[0].x, elem.Points[1].y);
                                 ImVec2 v2 = ImVec2(elem.Points[1].x, elem.Points[1].y);
-                                
-                                auto Sign = [](ImVec2 p1, ImVec2 p2, ImVec2 p3) {
-                                    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-                                };
+
+                                auto Sign = [](ImVec2 p1, ImVec2 p2, ImVec2 p3)
+                                { return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y); };
                                 float d1 = Sign(canvasMouse, v0, v1);
                                 float d2 = Sign(canvasMouse, v1, v2);
                                 float d3 = Sign(canvasMouse, v2, v0);
@@ -1024,7 +1057,9 @@ public:
                             {
                                 float dx = canvasMouse.x - elem.Points[0].x;
                                 float dy = canvasMouse.y - elem.Points[0].y;
-                                if ((dx*dx)/(elem.Radius*elem.Radius + 0.0001f) + (dy*dy)/(elem.RadiusY*elem.RadiusY + 0.0001f) <= 1.0f)
+                                if ((dx * dx) / (elem.Radius * elem.Radius + 0.0001f) +
+                                        (dy * dy) / (elem.RadiusY * elem.RadiusY + 0.0001f) <=
+                                    1.0f)
                                 {
                                     hoveredElementIdx = i;
                                     break;
@@ -1036,7 +1071,9 @@ public:
                                 float dy = canvasMouse.y - elem.Points[0].y;
                                 if (dy <= 0.0f)
                                 {
-                                    if ((dx*dx)/(elem.Radius*elem.Radius + 0.0001f) + (dy*dy)/(elem.RadiusY*elem.RadiusY + 0.0001f) <= 1.0f)
+                                    if ((dx * dx) / (elem.Radius * elem.Radius + 0.0001f) +
+                                            (dy * dy) / (elem.RadiusY * elem.RadiusY + 0.0001f) <=
+                                        1.0f)
                                     {
                                         hoveredElementIdx = i;
                                         break;
@@ -1049,7 +1086,7 @@ public:
                                 {
                                     float dx = canvasMouse.x - pt.x;
                                     float dy = canvasMouse.y - pt.y;
-                                    if (dx*dx + dy*dy < 0.0009f)
+                                    if (dx * dx + dy * dy < 0.0009f)
                                     {
                                         hoveredElementIdx = i;
                                         break;
@@ -1057,28 +1094,32 @@ public:
                                 }
                                 if (hoveredElementIdx != i)
                                 {
-                                    for (const auto& subPath : elem.SubPaths)
+                                    for (const auto &subPath : elem.SubPaths)
                                     {
                                         for (auto pt : subPath)
                                         {
                                             float dx = canvasMouse.x - pt.x;
                                             float dy = canvasMouse.y - pt.y;
-                                            if (dx*dx + dy*dy < 0.0009f)
+                                            if (dx * dx + dy * dy < 0.0009f)
                                             {
                                                 hoveredElementIdx = i;
                                                 break;
                                             }
                                         }
-                                        if (hoveredElementIdx == i) break;
+                                        if (hoveredElementIdx == i)
+                                            break;
                                     }
                                 }
-                                if (hoveredElementIdx == i) break;
+                                if (hoveredElementIdx == i)
+                                    break;
                             }
                         }
                     }
-                    
-                    // Render existing shapes and current drawing shape onto the Canvas Framebuffer to support subtraction
-                    if (!m_VectorCanvasFB || m_VectorCanvasFB->GetSpecification().Width != (uint32_t)sz.x || m_VectorCanvasFB->GetSpecification().Height != (uint32_t)sz.y)
+
+                    // Render existing shapes and current drawing shape onto the Canvas Framebuffer to support
+                    // subtraction
+                    if (!m_VectorCanvasFB || m_VectorCanvasFB->GetSpecification().Width != (uint32_t)sz.x ||
+                        m_VectorCanvasFB->GetSpecification().Height != (uint32_t)sz.y)
                     {
                         FramebufferSpecification spec;
                         spec.Width = (uint32_t)sz.x;
@@ -1105,7 +1146,8 @@ public:
                     fboDl->PushClipRect(ImVec2(0, 0), sz, false);
 
                     // Render shapes to the FBO (passing hover/select index for red highlighting)
-                    RenderVectorShapes(fboDl, ImVec2(0, 0), sz, m_CanvasZoom, m_CanvasPan, hoveredElementIdx, m_SelectedElementIdx);
+                    RenderVectorShapes(fboDl, ImVec2(0, 0), sz, m_CanvasZoom, m_CanvasPan, hoveredElementIdx,
+                                       m_SelectedElementIdx);
 
                     // Draw current drawing shape if active
                     if (m_IsDrawing)
@@ -1121,9 +1163,8 @@ public:
 
                         if (m_CurrentDrawingElement.Subtract)
                         {
-                            fboDl->AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
-                                glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ZERO, GL_ZERO);
-                            }, nullptr);
+                            fboDl->AddCallback([](const ImDrawList *parent_list, const ImDrawCmd *cmd)
+                                               { glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ZERO, GL_ZERO); }, nullptr);
                         }
 
                         if (m_CurrentDrawingElement.Type == VectorShapeType::Pen)
@@ -1133,7 +1174,8 @@ public:
                                 std::vector<ImVec2> screenPts;
                                 for (auto pt : m_CurrentDrawingElement.Points)
                                     screenPts.push_back(CanvasToFBO(pt));
-                                fboDl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, 0, m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                fboDl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, 0,
+                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Rectangle)
@@ -1146,22 +1188,19 @@ public:
                                 float maxX = std::max(p1.x, p2.x);
                                 float minY = std::min(p1.y, p2.y);
                                 float maxY = std::max(p1.y, p2.y);
-                                
-                                std::vector<ImVec2> baseVerts = {
-                                    ImVec2(minX, minY),
-                                    ImVec2(maxX, minY),
-                                    ImVec2(maxX, maxY),
-                                    ImVec2(minX, maxY)
-                                };
-                                
+
+                                std::vector<ImVec2> baseVerts = {ImVec2(minX, minY), ImVec2(maxX, minY),
+                                                                 ImVec2(maxX, maxY), ImVec2(minX, maxY)};
+
                                 float fillRounding = m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom;
                                 float strokeRounding = m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom;
-                                
+
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                 {
                                     if (std::abs(fillRounding) > 0.001f)
                                     {
-                                        std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(baseVerts, fillRounding);
+                                        std::vector<ImVec2> fillVerts =
+                                            GetRoundedPolygonPoints(baseVerts, fillRounding);
                                         fboDl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                                     }
                                     else
@@ -1169,15 +1208,19 @@ public:
                                         fboDl->AddRectFilled(p1, p2, fillCol);
                                     }
                                 }
-                                
+
                                 if (std::abs(strokeRounding) > 0.001f)
                                 {
-                                    std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(baseVerts, strokeRounding);
-                                    fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed, m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                    std::vector<ImVec2> strokeVerts =
+                                        GetRoundedPolygonPoints(baseVerts, strokeRounding);
+                                    fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
+                                                       ImDrawFlags_Closed,
+                                                       m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                                 }
                                 else
                                 {
-                                    fboDl->AddRect(p1, p2, strokeCol, 0.0f, 0, m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                    fboDl->AddRect(p1, p2, strokeCol, 0.0f, 0,
+                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                                 }
                             }
                         }
@@ -1190,14 +1233,18 @@ public:
                                 ImVec2 v0 = ImVec2((p1.x + p2.x) * 0.5f, p1.y);
                                 ImVec2 v1 = ImVec2(p1.x, p2.y);
                                 ImVec2 v2 = ImVec2(p2.x, p2.y);
-                                std::vector<ImVec2> baseVerts = { v0, v1, v2 };
+                                std::vector<ImVec2> baseVerts = {v0, v1, v2};
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                 {
-                                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(baseVerts, m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom);
+                                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(
+                                        baseVerts, m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom);
                                     fboDl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                                 }
-                                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(baseVerts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
-                                fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed, m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(
+                                    baseVerts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
+                                fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
+                                                   ImDrawFlags_Closed,
+                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Circle)
@@ -1216,7 +1263,8 @@ public:
                                 }
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                     fboDl->AddConvexPolyFilled(pts.data(), segments, fillCol);
-                                fboDl->AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed, m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                fboDl->AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed,
+                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Semicircle)
@@ -1235,19 +1283,22 @@ public:
                                 }
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                 {
-                                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(pts, m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom);
+                                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(
+                                        pts, m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom);
                                     fboDl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                                 }
-                                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(pts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
-                                fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed, m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(
+                                    pts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
+                                fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
+                                                   ImDrawFlags_Closed,
+                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
 
                         if (m_CurrentDrawingElement.Subtract)
                         {
-                            fboDl->AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
-                                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                            }, nullptr);
+                            fboDl->AddCallback([](const ImDrawList *parent_list, const ImDrawCmd *cmd)
+                                               { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }, nullptr);
                         }
                     }
 
@@ -1272,12 +1323,14 @@ public:
                     glClearColor(last_clear_color[0], last_clear_color[1], last_clear_color[2], last_clear_color[3]);
 
                     // Draw the resulting FBO texture onto the main screen draw list
-                    dl->AddImage((ImTextureID)(intptr_t)m_VectorCanvasFB->GetColorAttachmentRendererID(), p, ImVec2(p.x + sz.x, p.y + sz.y), ImVec2(0, 1), ImVec2(1, 0));
+                    dl->AddImage((ImTextureID)(intptr_t)m_VectorCanvasFB->GetColorAttachmentRendererID(), p,
+                                 ImVec2(p.x + sz.x, p.y + sz.y), ImVec2(0, 1), ImVec2(1, 0));
 
                     // Draw anchors/handles for selection mode
-                    if (m_ActiveTool == VectorShapeType::Selection && m_SelectedElementIdx != -1 && m_SelectedElementIdx < (int)m_VectorElements.size())
+                    if (m_ActiveTool == VectorShapeType::Selection && m_SelectedElementIdx != -1 &&
+                        m_SelectedElementIdx < (int)m_VectorElements.size())
                     {
-                        auto& elem = m_VectorElements[m_SelectedElementIdx];
+                        auto &elem = m_VectorElements[m_SelectedElementIdx];
                         auto CanvasToScreen = [&](ImVec2 cp) -> ImVec2
                         {
                             return ImVec2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
@@ -1285,18 +1338,20 @@ public:
                         };
 
                         std::vector<ImVec2> anchors;
-                        if ((elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle) && elem.Points.size() >= 2)
+                        if ((elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle) &&
+                            elem.Points.size() >= 2)
                         {
-                            anchors.push_back(elem.Points[0]); // Anchor 0: Top-Left
-                            anchors.push_back(elem.Points[1]); // Anchor 1: Bottom-Right
+                            anchors.push_back(elem.Points[0]);                             // Anchor 0: Top-Left
+                            anchors.push_back(elem.Points[1]);                             // Anchor 1: Bottom-Right
                             anchors.push_back(ImVec2(elem.Points[1].x, elem.Points[0].y)); // Anchor 2: Top-Right
                             anchors.push_back(ImVec2(elem.Points[0].x, elem.Points[1].y)); // Anchor 3: Bottom-Left
                         }
-                        else if ((elem.Type == VectorShapeType::Circle || elem.Type == VectorShapeType::Semicircle) && elem.Points.size() >= 1)
+                        else if ((elem.Type == VectorShapeType::Circle || elem.Type == VectorShapeType::Semicircle) &&
+                                 elem.Points.size() >= 1)
                         {
                             ImVec2 c = elem.Points[0];
-                            anchors.push_back(ImVec2(c.x - elem.Radius, c.y)); // Anchor 0: Left
-                            anchors.push_back(ImVec2(c.x + elem.Radius, c.y)); // Anchor 1: Right
+                            anchors.push_back(ImVec2(c.x - elem.Radius, c.y));  // Anchor 0: Left
+                            anchors.push_back(ImVec2(c.x + elem.Radius, c.y));  // Anchor 1: Right
                             anchors.push_back(ImVec2(c.x, c.y - elem.RadiusY)); // Anchor 2: Top
                             anchors.push_back(ImVec2(c.x, c.y + elem.RadiusY)); // Anchor 3: Bottom
                         }
@@ -1304,8 +1359,10 @@ public:
                         for (int a = 0; a < (int)anchors.size(); a++)
                         {
                             ImVec2 sc = CanvasToScreen(anchors[a]);
-                            dl->AddRectFilled(ImVec2(sc.x - 4, sc.y - 4), ImVec2(sc.x + 4, sc.y + 4), IM_COL32(255, 0, 0, 255));
-                            dl->AddRect(ImVec2(sc.x - 4, sc.y - 4), ImVec2(sc.x + 4, sc.y + 4), IM_COL32(255, 255, 255, 255));
+                            dl->AddRectFilled(ImVec2(sc.x - 4, sc.y - 4), ImVec2(sc.x + 4, sc.y + 4),
+                                              IM_COL32(255, 0, 0, 255));
+                            dl->AddRect(ImVec2(sc.x - 4, sc.y - 4), ImVec2(sc.x + 4, sc.y + 4),
+                                        IM_COL32(255, 255, 255, 255));
                         }
                     }
 
@@ -1324,29 +1381,30 @@ public:
                         dl->AddRectFilled(rMin, rMax, IM_COL32(100, 160, 255, 30));
 
                         // Animated dashed border ("marching ants")
-                        float t      = (float)ImGui::GetTime();
+                        float t = (float)ImGui::GetTime();
                         float dashLen = 6.0f, gapLen = 4.0f, stride = dashLen + gapLen;
                         float dashOffset = glm::mod(t * 40.0f, stride);
-                        ImU32 dashCol    = IM_COL32(120, 190, 255, 230);
+                        ImU32 dashCol = IM_COL32(120, 190, 255, 230);
                         ImU32 outlineCol = IM_COL32(20, 20, 60, 180);
 
                         auto DrawDashedLine = [&](ImVec2 a, ImVec2 b)
                         {
                             ImVec2 dir = b - a;
-                            float  len = TE::Length(dir);
-                            if (len < 0.1f) return;
+                            float len = TE::Length(dir);
+                            if (len < 0.1f)
+                                return;
                             ImVec2 n = TE::Normalize(dir); // unit direction
-                            float  pos = -dashOffset;
+                            float pos = -dashOffset;
                             while (pos < len)
                             {
-                                float s  = glm::max(pos, 0.0f);
+                                float s = glm::max(pos, 0.0f);
                                 float e2 = glm::min(pos + dashLen, len);
                                 if (e2 > s)
                                 {
                                     ImVec2 p1d = a + n * s;
                                     ImVec2 p2d = a + n * e2;
                                     dl->AddLine(p1d, p2d, outlineCol, 3.0f);
-                                    dl->AddLine(p1d, p2d, dashCol,    1.5f);
+                                    dl->AddLine(p1d, p2d, dashCol, 1.5f);
                                 }
                                 pos += stride;
                             }
@@ -1362,10 +1420,8 @@ public:
                             dl->AddCircleFilled(corner, 3.0f, IM_COL32(255, 255, 255, 200));
                     }
 
-
                     dl->PopClipRect();
 
-                    
                     // Handle canvas interactions
                     if (hovered)
                     {
@@ -1378,20 +1434,20 @@ public:
                             m_CanvasPan.x = relativeMouse.x / m_CanvasZoom - mouseInCanvasSpace.x;
                             m_CanvasPan.y = relativeMouse.y / m_CanvasZoom - mouseInCanvasSpace.y;
                         }
-                        
+
                         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
                         {
                             m_CanvasPan.x += ImGui::GetIO().MouseDelta.x / m_CanvasZoom;
                             m_CanvasPan.y += ImGui::GetIO().MouseDelta.y / m_CanvasZoom;
                         }
-                        
+
                         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
                         {
                             // Check if clicked an anchor first
                             bool clickedAnchor = false;
                             if (m_ActiveTool == VectorShapeType::Selection && m_SelectedElementIdx != -1)
                             {
-                                auto& elem = m_VectorElements[m_SelectedElementIdx];
+                                auto &elem = m_VectorElements[m_SelectedElementIdx];
                                 auto CanvasToScreen = [&](ImVec2 cp) -> ImVec2
                                 {
                                     return ImVec2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
@@ -1399,14 +1455,18 @@ public:
                                 };
 
                                 std::vector<ImVec2> anchors;
-                                if ((elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle) && elem.Points.size() >= 2)
+                                if ((elem.Type == VectorShapeType::Rectangle ||
+                                     elem.Type == VectorShapeType::Triangle) &&
+                                    elem.Points.size() >= 2)
                                 {
                                     anchors.push_back(elem.Points[0]);
                                     anchors.push_back(elem.Points[1]);
                                     anchors.push_back(ImVec2(elem.Points[1].x, elem.Points[0].y));
                                     anchors.push_back(ImVec2(elem.Points[0].x, elem.Points[1].y));
                                 }
-                                else if ((elem.Type == VectorShapeType::Circle || elem.Type == VectorShapeType::Semicircle) && elem.Points.size() >= 1)
+                                else if ((elem.Type == VectorShapeType::Circle ||
+                                          elem.Type == VectorShapeType::Semicircle) &&
+                                         elem.Points.size() >= 1)
                                 {
                                     ImVec2 c = elem.Points[0];
                                     anchors.push_back(ImVec2(c.x - elem.Radius, c.y));
@@ -1420,7 +1480,7 @@ public:
                                     ImVec2 sc = CanvasToScreen(anchors[a]);
                                     float dx = mousePos.x - sc.x;
                                     float dy = mousePos.y - sc.y;
-                                    if (dx*dx + dy*dy <= 36.0f) // 6 pixels threshold
+                                    if (dx * dx + dy * dy <= 36.0f) // 6 pixels threshold
                                     {
                                         m_IsDraggingAnchor = true;
                                         m_ActiveAnchorIdx = a;
@@ -1435,16 +1495,19 @@ public:
                                 if (m_ActiveTool == VectorShapeType::Selection)
                                 {
                                     m_SelectedElementIdx = hoveredElementIdx;
-                                    bool ctrlPressed = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+                                    bool ctrlPressed =
+                                        Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
                                     if (hoveredElementIdx != -1)
                                     {
                                         if (ctrlPressed)
                                         {
-                                            m_VectorElements[hoveredElementIdx].Selected = !m_VectorElements[hoveredElementIdx].Selected;
+                                            m_VectorElements[hoveredElementIdx].Selected =
+                                                !m_VectorElements[hoveredElementIdx].Selected;
                                         }
                                         else
                                         {
-                                            for (auto& e : m_VectorElements) e.Selected = false;
+                                            for (auto &e : m_VectorElements)
+                                                e.Selected = false;
                                             m_VectorElements[hoveredElementIdx].Selected = true;
                                         }
                                         m_IsMovingShape = true;
@@ -1453,12 +1516,14 @@ public:
                                     else
                                     {
                                         // Clicked empty space — start marquee selection
-                                        bool ctrlPressedM = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+                                        bool ctrlPressedM = Input::IsKeyPressed(Key::LeftControl) ||
+                                                            Input::IsKeyPressed(Key::RightControl);
                                         if (!ctrlPressedM)
-                                            for (auto& e : m_VectorElements) e.Selected = false;
+                                            for (auto &e : m_VectorElements)
+                                                e.Selected = false;
                                         m_IsMarqueeSelecting = true;
                                         m_MarqueeStart = canvasMouse;
-                                        m_MarqueeEnd   = canvasMouse;
+                                        m_MarqueeEnd = canvasMouse;
                                         m_SelectedElementIdx = -1;
                                     }
                                 }
@@ -1485,19 +1550,20 @@ public:
                             if (m_IsMovingShape)
                             {
                                 m_WasDraggingShape = true;
-                                ImVec2 delta = ImVec2(canvasMouse.x - m_DragStartMousePos.x, canvasMouse.y - m_DragStartMousePos.y);
-                                for (auto& elem : m_VectorElements)
+                                ImVec2 delta = ImVec2(canvasMouse.x - m_DragStartMousePos.x,
+                                                      canvasMouse.y - m_DragStartMousePos.y);
+                                for (auto &elem : m_VectorElements)
                                 {
                                     if (elem.Selected)
                                     {
-                                        for (auto& pt : elem.Points)
+                                        for (auto &pt : elem.Points)
                                         {
                                             pt.x += delta.x;
                                             pt.y += delta.y;
                                         }
                                         // Also move SubPaths (merged elements)
-                                        for (auto& sp : elem.SubPaths)
-                                            for (auto& pt : sp)
+                                        for (auto &sp : elem.SubPaths)
+                                            for (auto &pt : sp)
                                             {
                                                 pt.x += delta.x;
                                                 pt.y += delta.y;
@@ -1514,15 +1580,26 @@ public:
                             else if (m_IsDraggingAnchor && m_SelectedElementIdx != -1)
                             {
                                 m_WasDraggingAnchor = true;
-                                auto& elem = m_VectorElements[m_SelectedElementIdx];
+                                auto &elem = m_VectorElements[m_SelectedElementIdx];
                                 if (elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle)
                                 {
-                                    if (m_ActiveAnchorIdx == 0) elem.Points[0] = canvasMouse;
-                                    else if (m_ActiveAnchorIdx == 1) elem.Points[1] = canvasMouse;
-                                    else if (m_ActiveAnchorIdx == 2) { elem.Points[1].x = canvasMouse.x; elem.Points[0].y = canvasMouse.y; }
-                                    else if (m_ActiveAnchorIdx == 3) { elem.Points[0].x = canvasMouse.x; elem.Points[1].y = canvasMouse.y; }
+                                    if (m_ActiveAnchorIdx == 0)
+                                        elem.Points[0] = canvasMouse;
+                                    else if (m_ActiveAnchorIdx == 1)
+                                        elem.Points[1] = canvasMouse;
+                                    else if (m_ActiveAnchorIdx == 2)
+                                    {
+                                        elem.Points[1].x = canvasMouse.x;
+                                        elem.Points[0].y = canvasMouse.y;
+                                    }
+                                    else if (m_ActiveAnchorIdx == 3)
+                                    {
+                                        elem.Points[0].x = canvasMouse.x;
+                                        elem.Points[1].y = canvasMouse.y;
+                                    }
                                 }
-                                else if (elem.Type == VectorShapeType::Circle || elem.Type == VectorShapeType::Semicircle)
+                                else if (elem.Type == VectorShapeType::Circle ||
+                                         elem.Type == VectorShapeType::Semicircle)
                                 {
                                     ImVec2 c = elem.Points[0];
                                     if (m_ActiveAnchorIdx == 0 || m_ActiveAnchorIdx == 1)
@@ -1536,21 +1613,26 @@ public:
                             {
                                 if (m_ActiveTool == VectorShapeType::Pen)
                                 {
-                                    if (m_CurrentDrawingElement.Points.empty() || 
-                                        (canvasMouse.x - m_CurrentDrawingElement.Points.back().x) * (canvasMouse.x - m_CurrentDrawingElement.Points.back().x) +
-                                        (canvasMouse.y - m_CurrentDrawingElement.Points.back().y) * (canvasMouse.y - m_CurrentDrawingElement.Points.back().y) > 0.0001f)
+                                    if (m_CurrentDrawingElement.Points.empty() ||
+                                        (canvasMouse.x - m_CurrentDrawingElement.Points.back().x) *
+                                                    (canvasMouse.x - m_CurrentDrawingElement.Points.back().x) +
+                                                (canvasMouse.y - m_CurrentDrawingElement.Points.back().y) *
+                                                    (canvasMouse.y - m_CurrentDrawingElement.Points.back().y) >
+                                            0.0001f)
                                     {
                                         m_CurrentDrawingElement.Points.push_back(canvasMouse);
                                     }
                                 }
-                                else if (m_ActiveTool == VectorShapeType::Rectangle || m_ActiveTool == VectorShapeType::Triangle)
+                                else if (m_ActiveTool == VectorShapeType::Rectangle ||
+                                         m_ActiveTool == VectorShapeType::Triangle)
                                 {
                                     if (m_CurrentDrawingElement.Points.size() < 2)
                                         m_CurrentDrawingElement.Points.push_back(canvasMouse);
                                     else
                                         m_CurrentDrawingElement.Points[1] = canvasMouse;
                                 }
-                                else if (m_ActiveTool == VectorShapeType::Circle || m_ActiveTool == VectorShapeType::Semicircle)
+                                else if (m_ActiveTool == VectorShapeType::Circle ||
+                                         m_ActiveTool == VectorShapeType::Semicircle)
                                 {
                                     ImVec2 p1 = m_CurrentDrawingElement.Points[0];
                                     m_CurrentDrawingElement.Radius = std::abs(canvasMouse.x - p1.x);
@@ -1577,11 +1659,13 @@ public:
                                 float ry0 = std::min(m_MarqueeStart.y, m_MarqueeEnd.y);
                                 float rx1 = std::max(m_MarqueeStart.x, m_MarqueeEnd.x);
                                 float ry1 = std::max(m_MarqueeStart.y, m_MarqueeEnd.y);
-                                bool ctrlHeld = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+                                bool ctrlHeld =
+                                    Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
                                 // Helper: get AABB of an element in canvas-normalised coords
-                                auto GetElemAABB = [&](const VectorElement& e, float& x0, float& y0, float& x1, float& y1)
+                                auto GetElemAABB =
+                                    [&](const VectorElement &e, float &x0, float &y0, float &x1, float &y1)
                                 {
-                                    x0 = y0 =  1e9f;
+                                    x0 = y0 = 1e9f;
                                     x1 = y1 = -1e9f;
                                     if (e.Type == VectorShapeType::Rectangle || e.Type == VectorShapeType::Triangle)
                                     {
@@ -1605,19 +1689,22 @@ public:
                                     }
                                     else // Pen / merged
                                     {
-                                        auto accPts = [&](const std::vector<ImVec2>& pts)
+                                        auto accPts = [&](const std::vector<ImVec2> &pts)
                                         {
-                                            for (auto& pt : pts)
+                                            for (auto &pt : pts)
                                             {
-                                                x0 = std::min(x0, pt.x); y0 = std::min(y0, pt.y);
-                                                x1 = std::max(x1, pt.x); y1 = std::max(y1, pt.y);
+                                                x0 = std::min(x0, pt.x);
+                                                y0 = std::min(y0, pt.y);
+                                                x1 = std::max(x1, pt.x);
+                                                y1 = std::max(y1, pt.y);
                                             }
                                         };
                                         accPts(e.Points);
-                                        for (auto& sp : e.SubPaths) accPts(sp);
+                                        for (auto &sp : e.SubPaths)
+                                            accPts(sp);
                                     }
                                 };
-                                for (auto& e : m_VectorElements)
+                                for (auto &e : m_VectorElements)
                                 {
                                     float ex0, ey0, ex1, ey1;
                                     GetElemAABB(e, ex0, ey0, ex1, ey1);
@@ -1644,14 +1731,16 @@ public:
                                 {
                                     m_CurrentDrawingElement.Points.push_back(canvasMouse);
                                 }
-                                else if (m_ActiveTool == VectorShapeType::Rectangle || m_ActiveTool == VectorShapeType::Triangle)
+                                else if (m_ActiveTool == VectorShapeType::Rectangle ||
+                                         m_ActiveTool == VectorShapeType::Triangle)
                                 {
                                     if (m_CurrentDrawingElement.Points.size() < 2)
                                         m_CurrentDrawingElement.Points.push_back(canvasMouse);
                                     else
                                         m_CurrentDrawingElement.Points[1] = canvasMouse;
                                 }
-                                else if (m_ActiveTool == VectorShapeType::Circle || m_ActiveTool == VectorShapeType::Semicircle)
+                                else if (m_ActiveTool == VectorShapeType::Circle ||
+                                         m_ActiveTool == VectorShapeType::Semicircle)
                                 {
                                     ImVec2 p1 = m_CurrentDrawingElement.Points[0];
                                     m_CurrentDrawingElement.Radius = std::abs(canvasMouse.x - p1.x);
@@ -1664,11 +1753,11 @@ public:
                             }
                         }
                     }
-                    
+
                     ImGui::Dummy(sz);
                     ImGui::Separator();
-                    ImGui::Text("Coords: X: %.1f, Y: %.1f | Zoom: %.1fx", 
-                                canvasMouse.x * sz.x, canvasMouse.y * sz.y, m_CanvasZoom);
+                    ImGui::Text("Coords: X: %.1f, Y: %.1f | Zoom: %.1fx", canvasMouse.x * sz.x, canvasMouse.y * sz.y,
+                                m_CanvasZoom);
                 }
                 ImGui::EndChild();
 
@@ -1679,48 +1768,58 @@ public:
                     for (int i = 0; i < (int)m_VectorElements.size(); i++)
                     {
                         ImGui::PushID(i);
-                        const char* typeStr = "Unknown";
-                        if (m_VectorElements[i].Type == VectorShapeType::Pen) typeStr = m_VectorElements[i].SubPaths.size() > 1 ? "Group" : "Pen Path";
-                        else if (m_VectorElements[i].Type == VectorShapeType::Rectangle) typeStr = "Rectangle";
-                        else if (m_VectorElements[i].Type == VectorShapeType::Triangle) typeStr = "Triangle";
-                        else if (m_VectorElements[i].Type == VectorShapeType::Circle) typeStr = "Circle";
-                        else if (m_VectorElements[i].Type == VectorShapeType::Semicircle) typeStr = "Semicircle";
-                        
+                        const char *typeStr = "Unknown";
+                        if (m_VectorElements[i].Type == VectorShapeType::Pen)
+                            typeStr = m_VectorElements[i].SubPaths.size() > 1 ? "Group" : "Pen Path";
+                        else if (m_VectorElements[i].Type == VectorShapeType::Rectangle)
+                            typeStr = "Rectangle";
+                        else if (m_VectorElements[i].Type == VectorShapeType::Triangle)
+                            typeStr = "Triangle";
+                        else if (m_VectorElements[i].Type == VectorShapeType::Circle)
+                            typeStr = "Circle";
+                        else if (m_VectorElements[i].Type == VectorShapeType::Semicircle)
+                            typeStr = "Semicircle";
+
                         bool isSub = m_VectorElements[i].Subtract;
                         // Indent subtract items as nested under their parent
-                        if (isSub) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 18.0f);
+                        if (isSub)
+                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 18.0f);
 
                         // Selectable Element list item with red highlight if selected or hovered
                         bool isSel = m_VectorElements[i].Selected || (i == m_SelectedElementIdx);
-                        ImVec4 col = isSel ? ImVec4(1, 0.3f, 0.3f, 1) : (isSub ? ImVec4(0.8f, 0.5f, 1.0f, 1) : ImVec4(1, 1, 1, 1));
+                        ImVec4 col = isSel ? ImVec4(1, 0.3f, 0.3f, 1)
+                                           : (isSub ? ImVec4(0.8f, 0.5f, 1.0f, 1) : ImVec4(1, 1, 1, 1));
                         ImGui::TextColored(col, "%s%d: %s%s",
-                            isSub ? "\xE2\x94\x9A " : "",  // UTF-8 tree corner \u251A
-                            i + 1, typeStr,
-                            isSub ? " [Cut]" : "");
+                                           isSub ? "\xE2\x94\x9A " : "", // UTF-8 tree corner \u251A
+                                           i + 1, typeStr, isSub ? " [Cut]" : "");
                         if (ImGui::IsItemClicked())
                         {
                             m_SelectedElementIdx = i;
-                            bool ctrlPressed = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+                            bool ctrlPressed =
+                                Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
                             if (ctrlPressed)
                             {
                                 m_VectorElements[i].Selected = !m_VectorElements[i].Selected;
                             }
                             else
                             {
-                                for (auto& e : m_VectorElements) e.Selected = false;
+                                for (auto &e : m_VectorElements)
+                                    e.Selected = false;
                                 m_VectorElements[i].Selected = true;
                             }
                         }
-                        
+
                         ImGui::SameLine(ImGui::GetContentRegionAvail().x - 30);
-                        
+
                         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
                         if (ImGui::Button("X", ImVec2(22, 22)))
                         {
                             SaveUndoState();
                             m_VectorElements.erase(m_VectorElements.begin() + i);
-                            if (m_SelectedElementIdx == i) m_SelectedElementIdx = -1;
-                            else if (m_SelectedElementIdx > i) m_SelectedElementIdx--;
+                            if (m_SelectedElementIdx == i)
+                                m_SelectedElementIdx = -1;
+                            else if (m_SelectedElementIdx > i)
+                                m_SelectedElementIdx--;
                             m_PreviewDirty = true;
                             i--;
                         }
@@ -1743,24 +1842,24 @@ public:
                 if (ImGui::BeginChild("##PixelTools", ImVec2(0, 0), false))
                 {
                     DrawGlassHeader("Pixel Tools", ImVec4(0.4f, 0.8f, 1, 1));
-                    
+
                     ImGui::Text("Grid Dimensions:");
                     ImGui::SetNextItemWidth(80);
                     ImGui::InputInt("Width", &m_PixelGridWidth);
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(80);
                     ImGui::InputInt("Height", &m_PixelGridHeight);
-                    
+
                     m_PixelGridWidth = std::clamp(m_PixelGridWidth, 1, 256);
                     m_PixelGridHeight = std::clamp(m_PixelGridHeight, 1, 256);
-                    
+
                     if (ImGui::Button("Resize / Clear Grid", ImVec2(-1, 28)))
                     {
                         SaveUndoState();
-                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0,0,0,0));
+                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0, 0, 0, 0));
                         m_PreviewDirty = true;
                     }
-                    
+
                     ImGui::Separator();
                     ImGui::Text("Active Tool:");
                     if (ImGui::RadioButton("Pencil", m_ActivePixelTool == 0))
@@ -1769,12 +1868,13 @@ public:
                         m_ActivePixelTool = 1;
                     if (ImGui::RadioButton("Paint Bucket", m_ActivePixelTool == 2))
                         m_ActivePixelTool = 2;
-                    
+
                     ImGui::Separator();
                     ImGui::Text("Color Palette:");
-                    
+
                     // Track color picker change to add color to history on edit deactivated
-                    if (ImGui::ColorPicker4("Color", (float*)&m_PixelPaintColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
+                    if (ImGui::ColorPicker4("Color", (float *)&m_PixelPaintColor,
+                                            ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
                     {
                         // Active editing
                     }
@@ -1791,7 +1891,9 @@ public:
                         {
                             ImGui::PushID(h);
                             ImGui::PushStyleColor(ImGuiCol_Button, m_ColorHistory[h]);
-                            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(m_ColorHistory[h].x * 1.1f, m_ColorHistory[h].y * 1.1f, m_ColorHistory[h].z * 1.1f, m_ColorHistory[h].w));
+                            ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                                  ImVec4(m_ColorHistory[h].x * 1.1f, m_ColorHistory[h].y * 1.1f,
+                                                         m_ColorHistory[h].z * 1.1f, m_ColorHistory[h].w));
                             if (ImGui::Button("##HistoryColor", ImVec2(24, 24)))
                             {
                                 m_PixelPaintColor = m_ColorHistory[h];
@@ -1802,12 +1904,12 @@ public:
                                 ImGui::SameLine();
                         }
                     }
-                    
+
                     ImGui::Separator();
                     if (ImGui::Button("Clear Canvas", ImVec2(-1, 30)))
                     {
                         SaveUndoState();
-                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0,0,0,0));
+                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0, 0, 0, 0));
                         m_PreviewDirty = true;
                     }
                 }
@@ -1820,12 +1922,12 @@ public:
                     ImDrawList *dl = ImGui::GetWindowDrawList();
                     ImVec2 p = ImGui::GetCursorScreenPos(), sz = ImGui::GetContentRegionAvail();
                     sz.y -= 44;
-                    
+
                     // Pan/Zoom controls
                     bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows);
                     ImVec2 mousePos = ImGui::GetMousePos();
                     ImVec2 relativeMouse = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
-                    
+
                     if (hovered)
                     {
                         float wheel = ImGui::GetIO().MouseWheel;
@@ -1837,24 +1939,24 @@ public:
                             m_CanvasPan.x = relativeMouse.x / m_CanvasZoom - mouseInCanvasSpace.x;
                             m_CanvasPan.y = relativeMouse.y / m_CanvasZoom - mouseInCanvasSpace.y;
                         }
-                        
+
                         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
                         {
                             m_CanvasPan.x += ImGui::GetIO().MouseDelta.x / m_CanvasZoom;
                             m_CanvasPan.y += ImGui::GetIO().MouseDelta.y / m_CanvasZoom;
                         }
                     }
-                    
+
                     // Draw board container background
                     dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
-                    
+
                     // Set clip rect to canvas area
                     dl->PushClipRect(p, ImVec2(p.x + sz.x, p.y + sz.y), true);
-                    
+
                     // Calculate pixel board position centered or panned
                     float boxW = sz.x;
                     float boxH = sz.y;
-                    
+
                     // Render checkered background
                     float checkW = boxW / m_PixelGridWidth;
                     float checkH = boxH / m_PixelGridHeight;
@@ -1862,31 +1964,37 @@ public:
                     {
                         for (int x = 0; x < m_PixelGridWidth; x++)
                         {
-                            ImVec2 p1 = ImVec2(p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom, p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom);
-                            ImVec2 p2 = ImVec2(p.x + ((x + 1) * checkW + m_CanvasPan.x) * m_CanvasZoom, p.y + ((y + 1) * checkH + m_CanvasPan.y) * m_CanvasZoom);
+                            ImVec2 p1 = ImVec2(p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom,
+                                               p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom);
+                            ImVec2 p2 = ImVec2(p.x + ((x + 1) * checkW + m_CanvasPan.x) * m_CanvasZoom,
+                                               p.y + ((y + 1) * checkH + m_CanvasPan.y) * m_CanvasZoom);
                             ImU32 bgCol = ((x + y) % 2 == 0) ? IM_COL32(45, 45, 50, 255) : IM_COL32(55, 55, 60, 255);
                             dl->AddRectFilled(p1, p2, bgCol);
                         }
                     }
-                    
+
                     // Render the painted pixels
                     RenderPixelGrid(dl, p, sz, m_CanvasZoom, m_CanvasPan);
-                    
+
                     // Draw grid lines when zoomed in
                     if (checkW * m_CanvasZoom > 4.0f)
                     {
                         for (int x = 0; x <= m_PixelGridWidth; x++)
                         {
                             float px = p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom;
-                            dl->AddLine(ImVec2(px, p.y + m_CanvasPan.y * m_CanvasZoom), ImVec2(px, p.y + (sz.y + m_CanvasPan.y) * m_CanvasZoom), IM_COL32(255, 255, 255, 30));
+                            dl->AddLine(ImVec2(px, p.y + m_CanvasPan.y * m_CanvasZoom),
+                                        ImVec2(px, p.y + (sz.y + m_CanvasPan.y) * m_CanvasZoom),
+                                        IM_COL32(255, 255, 255, 30));
                         }
                         for (int y = 0; y <= m_PixelGridHeight; y++)
                         {
                             float py = p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom;
-                            dl->AddLine(ImVec2(p.x + m_CanvasPan.x * m_CanvasZoom, py), ImVec2(p.x + (sz.x + m_CanvasPan.x) * m_CanvasZoom, py), IM_COL32(255, 255, 255, 30));
+                            dl->AddLine(ImVec2(p.x + m_CanvasPan.x * m_CanvasZoom, py),
+                                        ImVec2(p.x + (sz.x + m_CanvasPan.x) * m_CanvasZoom, py),
+                                        IM_COL32(255, 255, 255, 30));
                         }
                     }
-                    
+
                     // Paint interactions
                     int px = (int)((relativeMouse.x / m_CanvasZoom - m_CanvasPan.x) / boxW * m_PixelGridWidth);
                     int py = (int)((relativeMouse.y / m_CanvasZoom - m_CanvasPan.y) / boxH * m_PixelGridHeight);
@@ -1926,23 +2034,24 @@ public:
                         SaveUndoState();
                         m_WasPixelPainting = false;
                     }
-                    
+
                     dl->PopClipRect();
                     ImGui::Dummy(sz);
                 }
                 ImGui::EndChild();
-                
+
                 ImGui::TableNextColumn(); // Preview
                 if (ImGui::BeginChild("##PixelPreview", ImVec2(0, 0), false))
                 {
                     DrawGlassHeader("Preview", ImVec4(0.4f, 0.8f, 1, 1));
-                    
+
                     if (m_PreviewFB)
                     {
                         ImVec2 sz = ImGui::GetContentRegionAvail();
                         sz.y -= 44;
-                        if (sz.y < 50.0f) sz.y = 50.0f;
-                        
+                        if (sz.y < 50.0f)
+                            sz.y = 50.0f;
+
                         ImGui::Image((ImTextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
                                      ImVec2(sz.x, sz.y), ImVec2(0, 1), ImVec2(1, 0));
                     }
@@ -2406,7 +2515,7 @@ private:
             StyledLabel("Content Offset");
             ImGui::NextColumn();
             ImGui::SetNextItemWidth(sz.x - 280);
-            if (ImGui::DragFloat2("##Offset", (float*)&m_ExportOffset, 0.5f, -4096.0f, 4096.0f, "%.1f px"))
+            if (ImGui::DragFloat2("##Offset", (float *)&m_ExportOffset, 0.5f, -4096.0f, 4096.0f, "%.1f px"))
                 m_PreviewDirty = true;
             ImGui::SameLine();
             if (ImGui::SmallButton("Reset##Off"))
@@ -2584,7 +2693,8 @@ private:
             }
             // Apply export offset directly in pixel space (pan expects pixels, same as m_CanvasPan)
             if (m_CreationMode == SpriteCreationMode::Code)
-                ExecuteProceduralCode(dl, ImVec2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize, 1.0f / 30.0f);
+                ExecuteProceduralCode(dl, ImVec2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize,
+                                      1.0f / 30.0f);
             else if (m_CreationMode == SpriteCreationMode::Vector)
                 RenderVectorShapes(dl, origin, cellSize, 1.0f, m_ExportOffset);
             else if (m_CreationMode == SpriteCreationMode::PixelPaint)
@@ -2676,7 +2786,8 @@ private:
         // Draw sprite (apply export offset for centering)
         // Apply export offset directly in pixel space (pan expects pixels, same as m_CanvasPan)
         if (m_CreationMode == SpriteCreationMode::Code)
-            ExecuteProceduralCode(dl, ImVec2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize, 1.0f / 60.0f);
+            ExecuteProceduralCode(dl, ImVec2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize,
+                                  1.0f / 60.0f);
         else if (m_CreationMode == SpriteCreationMode::Vector)
             RenderVectorShapes(dl, origin, cellSize, 1.0f, m_ExportOffset);
         else if (m_CreationMode == SpriteCreationMode::PixelPaint)
@@ -2705,14 +2816,15 @@ private:
         m_PreviewFB->Unbind();
     }
 
-    void RenderVectorShapes(ImDrawList* dl, ImVec2 origin, ImVec2 cellSize, float zoom = 1.0f, ImVec2 pan = ImVec2(0,0), int hoveredIdx = -1, int selectedIdx = -1)
+    void RenderVectorShapes(ImDrawList *dl, ImVec2 origin, ImVec2 cellSize, float zoom = 1.0f,
+                            ImVec2 pan = ImVec2(0, 0), int hoveredIdx = -1, int selectedIdx = -1)
     {
         ImVec2 baseCanvasSize = (m_LastSimSize.x > 0.0f && m_LastSimSize.y > 0.0f) ? m_LastSimSize : cellSize;
         ImVec2 offset = ImVec2((cellSize.x - baseCanvasSize.x) * 0.5f, (cellSize.y - baseCanvasSize.y) * 0.5f);
 
         for (int i = 0; i < (int)m_VectorElements.size(); i++)
         {
-            const auto& elem = m_VectorElements[i];
+            const auto &elem = m_VectorElements[i];
             ImU32 fillCol = ImGui::ColorConvertFloat4ToU32(elem.FillColor);
             ImU32 strokeCol = ImGui::ColorConvertFloat4ToU32(elem.StrokeColor);
             if (i == hoveredIdx || i == selectedIdx)
@@ -2729,17 +2841,20 @@ private:
             // Set subtractive blend mode: zero ONLY alpha channel, keep RGB (transparent hole)
             if (elem.Subtract)
             {
-                dl->AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
-                    glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ZERO, GL_ZERO); // keep RGB, zero alpha
-                }, nullptr);
+                dl->AddCallback(
+                    [](const ImDrawList *parent_list, const ImDrawCmd *cmd)
+                    {
+                        glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ZERO, GL_ZERO); // keep RGB, zero alpha
+                    },
+                    nullptr);
             }
 
-            auto RestoreBlendIfNeeded = [&]() {
+            auto RestoreBlendIfNeeded = [&]()
+            {
                 if (elem.Subtract)
                 {
-                    dl->AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
-                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    }, nullptr);
+                    dl->AddCallback([](const ImDrawList *parent_list, const ImDrawCmd *cmd)
+                                    { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }, nullptr);
                 }
             };
 
@@ -2751,18 +2866,21 @@ private:
                     if (elem.FillColor.w > 0.0f)
                     {
                         // Draw strokes first with double thickness (so half is covered by fill)
-                        for (const auto& subPath : elem.SubPaths)
+                        for (const auto &subPath : elem.SubPaths)
                         {
-                            if (subPath.size() < 2) continue;
+                            if (subPath.size() < 2)
+                                continue;
                             std::vector<ImVec2> screenPts;
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
-                            dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * 2.0f * zoom);
+                            dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
+                                            elem.StrokeThickness * 2.0f * zoom);
                         }
                         // Draw fills on top to hide overlapping internal boundaries
-                        for (const auto& subPath : elem.SubPaths)
+                        for (const auto &subPath : elem.SubPaths)
                         {
-                            if (subPath.size() < 3) continue;
+                            if (subPath.size() < 3)
+                                continue;
                             std::vector<ImVec2> screenPts;
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
@@ -2772,31 +2890,42 @@ private:
                     else
                     {
                         // Unfilled: just draw strokes
-                        for (const auto& subPath : elem.SubPaths)
+                        for (const auto &subPath : elem.SubPaths)
                         {
-                            if (subPath.size() < 2) continue;
+                            if (subPath.size() < 2)
+                                continue;
                             std::vector<ImVec2> screenPts;
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
-                            dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * zoom);
+                            dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
+                                            elem.StrokeThickness * zoom);
                         }
                     }
                 }
                 else
                 {
                     // --- Single-path ---
-                    if (elem.Points.size() < 2) { RestoreBlendIfNeeded(); continue; }
+                    if (elem.Points.size() < 2)
+                    {
+                        RestoreBlendIfNeeded();
+                        continue;
+                    }
                     std::vector<ImVec2> screenPts;
                     for (auto pt : elem.Points)
                         screenPts.push_back(CanvasToScreen(pt));
                     if (elem.FillColor.w > 0.0f)
                         dl->AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
-                    dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * zoom);
+                    dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
+                                    elem.StrokeThickness * zoom);
                 }
             }
             else if (elem.Type == VectorShapeType::Rectangle)
             {
-                if (elem.Points.size() < 2) { RestoreBlendIfNeeded(); continue; }
+                if (elem.Points.size() < 2)
+                {
+                    RestoreBlendIfNeeded();
+                    continue;
+                }
                 ImVec2 p1 = CanvasToScreen(elem.Points[0]);
                 ImVec2 p2 = CanvasToScreen(elem.Points[1]);
                 float fillRounding = elem.FillRounding * baseCanvasSize.x * zoom;
@@ -2807,28 +2936,39 @@ private:
             }
             else if (elem.Type == VectorShapeType::Triangle)
             {
-                if (elem.Points.size() < 2) { RestoreBlendIfNeeded(); continue; }
+                if (elem.Points.size() < 2)
+                {
+                    RestoreBlendIfNeeded();
+                    continue;
+                }
                 ImVec2 p1 = CanvasToScreen(elem.Points[0]);
                 ImVec2 p2 = CanvasToScreen(elem.Points[1]);
                 ImVec2 v0 = ImVec2((p1.x + p2.x) * 0.5f, p1.y);
                 ImVec2 v1 = ImVec2(p1.x, p2.y);
                 ImVec2 v2 = ImVec2(p2.x, p2.y);
-                std::vector<ImVec2> baseVerts = { v0, v1, v2 };
+                std::vector<ImVec2> baseVerts = {v0, v1, v2};
                 if (elem.FillColor.w > 0.0f)
                 {
-                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(baseVerts, elem.FillRounding * baseCanvasSize.x * zoom);
+                    std::vector<ImVec2> fillVerts =
+                        GetRoundedPolygonPoints(baseVerts, elem.FillRounding * baseCanvasSize.x * zoom);
                     dl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                 }
-                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(baseVerts, elem.StrokeRounding * baseCanvasSize.x * zoom);
-                dl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * zoom);
+                std::vector<ImVec2> strokeVerts =
+                    GetRoundedPolygonPoints(baseVerts, elem.StrokeRounding * baseCanvasSize.x * zoom);
+                dl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
+                                elem.StrokeThickness * zoom);
             }
             else if (elem.Type == VectorShapeType::Circle)
             {
-                if (elem.Points.size() < 1) { RestoreBlendIfNeeded(); continue; }
+                if (elem.Points.size() < 1)
+                {
+                    RestoreBlendIfNeeded();
+                    continue;
+                }
                 ImVec2 center = CanvasToScreen(elem.Points[0]);
                 float rx = elem.Radius * baseCanvasSize.x * zoom;
                 float ry = elem.RadiusY * baseCanvasSize.y * zoom;
-                
+
                 const int segments = 64;
                 std::vector<ImVec2> pts(segments);
                 for (int s = 0; s < segments; s++)
@@ -2842,11 +2982,15 @@ private:
             }
             else if (elem.Type == VectorShapeType::Semicircle)
             {
-                if (elem.Points.size() < 1) { RestoreBlendIfNeeded(); continue; }
+                if (elem.Points.size() < 1)
+                {
+                    RestoreBlendIfNeeded();
+                    continue;
+                }
                 ImVec2 center = CanvasToScreen(elem.Points[0]);
                 float rx = elem.Radius * baseCanvasSize.x * zoom;
                 float ry = elem.RadiusY * baseCanvasSize.y * zoom;
-                
+
                 const int segments = 32;
                 std::vector<ImVec2> pts(segments + 1);
                 for (int s = 0; s <= segments; s++)
@@ -2856,11 +3000,14 @@ private:
                 }
                 if (elem.FillColor.w > 0.0f)
                 {
-                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(pts, elem.FillRounding * baseCanvasSize.x * zoom);
+                    std::vector<ImVec2> fillVerts =
+                        GetRoundedPolygonPoints(pts, elem.FillRounding * baseCanvasSize.x * zoom);
                     dl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                 }
-                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(pts, elem.StrokeRounding * baseCanvasSize.x * zoom);
-                dl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * zoom);
+                std::vector<ImVec2> strokeVerts =
+                    GetRoundedPolygonPoints(pts, elem.StrokeRounding * baseCanvasSize.x * zoom);
+                dl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
+                                elem.StrokeThickness * zoom);
             }
 
             RestoreBlendIfNeeded();
@@ -2869,13 +3016,17 @@ private:
 
     void FloodFill(int startX, int startY, ImVec4 targetColor, ImVec4 replacementColor)
     {
-        if (startX < 0 || startX >= m_PixelGridWidth || startY < 0 || startY >= m_PixelGridHeight) return;
-        auto colorEquals = [](ImVec4 a, ImVec4 b) {
-            return std::abs(a.x - b.x) < 0.01f && std::abs(a.y - b.y) < 0.01f &&
-                   std::abs(a.z - b.z) < 0.01f && std::abs(a.w - b.w) < 0.01f;
+        if (startX < 0 || startX >= m_PixelGridWidth || startY < 0 || startY >= m_PixelGridHeight)
+            return;
+        auto colorEquals = [](ImVec4 a, ImVec4 b)
+        {
+            return std::abs(a.x - b.x) < 0.01f && std::abs(a.y - b.y) < 0.01f && std::abs(a.z - b.z) < 0.01f &&
+                   std::abs(a.w - b.w) < 0.01f;
         };
-        if (colorEquals(targetColor, replacementColor)) return;
-        if (!colorEquals(m_PixelGrid[startY * m_PixelGridWidth + startX], targetColor)) return;
+        if (colorEquals(targetColor, replacementColor))
+            return;
+        if (!colorEquals(m_PixelGrid[startY * m_PixelGridWidth + startX], targetColor))
+            return;
 
         std::vector<std::pair<int, int>> queue;
         queue.push_back({startX, startY});
@@ -2903,11 +3054,11 @@ private:
         }
     }
 
-    void RenderPixelGrid(ImDrawList* dl, ImVec2 origin, ImVec2 cellSize, float zoom = 1.0f, ImVec2 pan = ImVec2(0,0))
+    void RenderPixelGrid(ImDrawList *dl, ImVec2 origin, ImVec2 cellSize, float zoom = 1.0f, ImVec2 pan = ImVec2(0, 0))
     {
         if ((int)m_PixelGrid.size() != m_PixelGridWidth * m_PixelGridHeight)
         {
-            m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0,0,0,0));
+            m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0, 0, 0, 0));
         }
 
         float pixelW = cellSize.x / m_PixelGridWidth;
@@ -2921,7 +3072,8 @@ private:
                 if (col.w > 0.0f)
                 {
                     ImVec2 p1 = ImVec2(origin.x + (x * pixelW + pan.x) * zoom, origin.y + (y * pixelH + pan.y) * zoom);
-                    ImVec2 p2 = ImVec2(origin.x + ((x + 1) * pixelW + pan.x) * zoom, origin.y + ((y + 1) * pixelH + pan.y) * zoom);
+                    ImVec2 p2 = ImVec2(origin.x + ((x + 1) * pixelW + pan.x) * zoom,
+                                       origin.y + ((y + 1) * pixelH + pan.y) * zoom);
                     dl->AddRectFilled(p1, p2, ImGui::ColorConvertFloat4ToU32(col));
                 }
             }
@@ -2949,9 +3101,9 @@ private:
     float m_DefaultFillRounding = 0.0f;
     bool m_DefaultSubtract = false;
     // Marquee / rubber-band area selection
-    bool   m_IsMarqueeSelecting = false;
+    bool m_IsMarqueeSelecting = false;
     ImVec2 m_MarqueeStart = ImVec2(0, 0); // canvas-space start
-    ImVec2 m_MarqueeEnd   = ImVec2(0, 0); // canvas-space current
+    ImVec2 m_MarqueeEnd = ImVec2(0, 0);   // canvas-space current
     std::vector<CustomKeyword> m_Keywords;
     std::vector<ISpriteLibrary *> m_Libraries;
     std::vector<ProceduralFunc> m_Registry;
@@ -2971,9 +3123,9 @@ private:
     int m_ActivePixelTool = 0; // 0: pencil, 1: eraser, 2: bucket
     ImVec4 m_PixelPaintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     // Drag-commit flags so moves/resizes save exactly one undo step on mouse-up
-    bool m_WasDraggingShape  = false;
+    bool m_WasDraggingShape = false;
     bool m_WasDraggingAnchor = false;
-    bool m_WasPixelPainting  = false;
+    bool m_WasPixelPainting = false;
     std::vector<ImVec4> m_ColorHistory;
 };
 T_REGISTER_EDITOR_MODE(SpriteMode);
