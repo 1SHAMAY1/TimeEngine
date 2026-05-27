@@ -1634,7 +1634,7 @@ void EditorLayer::UI_DrawViewport()
         }
 
         // Gizmo Switching
-        if (!ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && !ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+        if (!Input::IsKeyPressed(Key::LeftControl) && !Input::IsKeyPressed(Key::RightControl))
         {
             auto checkGizmo = [&](const std::string &name, GizmoType type)
             {
@@ -1940,23 +1940,23 @@ void EditorLayer::UpdateCamera(float dt)
     if (m_ViewportHovered && ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
         float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier);
-        if (ImGui::IsKeyDown(sprint))
+        if (Input::IsKeyPressed(sprintCode))
             speed *= 2.5f;
 
         speed *= dt;
 
-        if (ImGui::IsKeyDown(forward))
+        if (Input::IsKeyPressed(moveForwardCode))
             m_CameraPosition.y += speed;
-        if (ImGui::IsKeyDown(backward))
+        if (Input::IsKeyPressed(moveBackwardCode))
             m_CameraPosition.y -= speed;
-        if (ImGui::IsKeyDown(left))
+        if (Input::IsKeyPressed(moveLeftCode))
             m_CameraPosition.x -= speed;
-        if (ImGui::IsKeyDown(right))
+        if (Input::IsKeyPressed(moveRightCode))
             m_CameraPosition.x += speed;
 
-        if (ImGui::IsKeyDown(ImGuiKey_Q))
+        if (Input::IsKeyPressed(Key::Q))
             m_CameraZoom += m_EditorSettings.ZoomSpeed * dt;
-        if (ImGui::IsKeyDown(ImGuiKey_E))
+        if (Input::IsKeyPressed(Key::E))
             m_CameraZoom -= m_EditorSettings.ZoomSpeed * dt;
 
         if (m_CameraZoom < 0.1f)

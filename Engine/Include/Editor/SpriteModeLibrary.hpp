@@ -248,10 +248,6 @@ public:
 
     virtual void RegisterFunctions(std::vector<ProceduralFunc> &reg) override
     {
-        reg.push_back({"OnGenerate", "void OnGenerate()", "Entry point.", "Overwrites", ImVec4(1, 1, 1, 1), nullptr});
-        reg.push_back({"OnUpdate", "void OnUpdate(float dt, Sprite& s)", "Update loop.", "Overwrites",
-                       ImVec4(1, 1, 1, 1), nullptr});
-
         auto GCol = [](const std::vector<float> &a, int s)
         {
             if (a.size() < (size_t)s + 4)

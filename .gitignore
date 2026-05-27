@@ -31,10 +31,6 @@ recent_projects.txt
 # Mac
 .DS_Store
 
-# Images
-*.png
-*.jpg
-
 
 # Agents
 .agents/

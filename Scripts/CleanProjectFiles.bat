@@ -13,13 +13,13 @@ rd /s /q "%ROOT_DIR%\Bin" >nul 2>&1
 rd /s /q "%ROOT_DIR%\Bin-Intermediate" >nul 2>&1
 
 :: === Logger CMake cleanup ===
-rd /s /q "%ROOT_DIR%\Logger\Customizable_Logger\build" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Logger\Customizable_Logger\bin" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Logger\Customizable_Logger\lib" >nul 2>&1
-del /f /q "%ROOT_DIR%\Logger\Customizable_Logger\CMakeCache.txt" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Logger\Customizable_Logger\CMakeFiles" >nul 2>&1
-del /f /q "%ROOT_DIR%\Logger\Customizable_Logger\Makefile" >nul 2>&1
-del /f /q "%ROOT_DIR%\Logger\Customizable_Logger\cmake_install.cmake" >nul 2>&1
+rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\build" >nul 2>&1
+rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\bin" >nul 2>&1
+rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\lib" >nul 2>&1
+del /f /q "%ROOT_DIR%\Vendor\Customizable_Logger\CMakeCache.txt" >nul 2>&1
+rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\CMakeFiles" >nul 2>&1
+del /f /q "%ROOT_DIR%\Vendor\Customizable_Logger\Makefile" >nul 2>&1
+del /f /q "%ROOT_DIR%\Vendor\Customizable_Logger\cmake_install.cmake" >nul 2>&1
 
 :: === GLFW CMake cleanup ===
 rd /s /q "%ROOT_DIR%\Vendor\GLFW\build" >nul 2>&1
