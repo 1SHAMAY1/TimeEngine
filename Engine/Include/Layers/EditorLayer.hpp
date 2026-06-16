@@ -67,6 +67,7 @@ private:
     void SelectComponent(class TComponent *component);
     void ClearSelection();
     void DeleteSelectedEntities();
+    void PasteClipboard(const std::filesystem::path &targetFolder);
 
     // Save Helpers
     void SaveScene();
@@ -86,6 +87,7 @@ private:
     void UI_DrawSceneHierarchy();
     void UI_DrawProperties();
     void UI_DrawContentBrowser();
+    void UI_DrawAssetEditors();
     void UI_DrawViewport();
     void UI_DrawSettingsPanel();
     void UI_DrawProjectSettingsPanel();
@@ -114,6 +116,22 @@ private:
 
     std::filesystem::path m_ContentBrowserCurrentDirectory;
     char m_ContentBrowserPathBuffer[512] = "";
+    std::filesystem::path m_SelectedBrowserPath;
+    std::filesystem::path m_RenamingBrowserPath;
+    std::filesystem::path m_ClipboardPath;
+    bool m_ClipboardIsCut = false;
+
+    struct EditorTab
+    {
+        std::string Title;
+        std::filesystem::path AssetPath;
+        std::string Type;
+        std::shared_ptr<class Asset> LoadedAsset;
+    };
+    std::vector<EditorTab> m_OpenEditorTabs;
+    int m_ActiveTabRequest = -1;
+
+    std::shared_ptr<class Asset> m_SelectedBrowserAsset;
 
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;

@@ -21,12 +21,15 @@
 #include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
+#include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
+#include "Utils/PlatformUtils.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
+#include "Renderer/TextureSerializer.hpp"
 #include "Utility/MathUtils.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -161,6 +164,7 @@ void EditorLayer::OnAttach()
         m_EditorSettings.Shortcuts["Select"] = Key::Q;
         m_EditorSettings.Shortcuts["Save"] = Key::S;
         m_EditorSettings.Shortcuts["SaveAll"] = Key::S; // Ctrl + Shift + S handled via modifiers
+        m_EditorSettings.Shortcuts["Rename"] = Key::F2;
     }
 
     InitEditorModes();
@@ -682,6 +686,7 @@ void EditorLayer::OnImGuiRender()
     if (!isSpriteMode)
     {
         UI_DrawContentBrowser();
+        UI_DrawAssetEditors();
         UI_DrawSaveScenePopup();
         UI_DrawSettingsPanel();
         UI_DrawProjectSettingsPanel();
@@ -1059,9 +1064,48 @@ void EditorLayer::UI_DrawProperties()
 
     ImGui::Begin("Properties");
 
-    if (!m_ActiveScene || m_SelectedEntities.empty())
+    if (!m_SelectedBrowserPath.empty())
     {
-        ImGui::Text("Select an entity to view details.");
+        ImGui::TextDisabled("Asset Properties");
+        ImGui::TextWrapped("File: %s", m_SelectedBrowserPath.filename().string().c_str());
+        ImGui::Separator();
+
+        if (m_SelectedBrowserPath.extension() == ".tematerial")
+        {
+            auto mat = std::dynamic_pointer_cast<Material>(m_SelectedBrowserAsset);
+            if (mat)
+            {
+                char nameBuffer[256];
+                strncpy_s(nameBuffer, mat->GetName().c_str(), sizeof(nameBuffer));
+                if (ImGui::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
+                {
+                    mat->SetName(nameBuffer);
+                    MaterialSerializer serializer(mat);
+                    serializer.Serialize(m_SelectedBrowserPath);
+                }
+
+                auto color = mat->GetColor().GetValue();
+                float colorArr[4] = { color.r, color.g, color.b, color.a };
+                if (ImGui::ColorEdit4("Albedo Color", colorArr))
+                {
+                    mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
+                    MaterialSerializer serializer(mat);
+                    serializer.Serialize(m_SelectedBrowserPath);
+                }
+            }
+            else
+            {
+                ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Failed to load Material asset.");
+            }
+        }
+        else
+        {
+            ImGui::Text("Details not available for this file extension.");
+        }
+    }
+    else if (!m_ActiveScene || m_SelectedEntities.empty())
+    {
+        ImGui::Text("Select an entity or browser asset to view details.");
     }
     else
     {
@@ -1253,6 +1297,7 @@ void EditorLayer::UI_DrawContentBrowser()
 
     if (ImGui::BeginTabBar("ContentBrowserTabs"))
     {
+        ContentTab previousTab = s_CurrentTab;
         if (ImGui::BeginTabItem("Assets"))
         {
             s_CurrentTab = ContentTab::Assets;
@@ -1269,6 +1314,12 @@ void EditorLayer::UI_DrawContentBrowser()
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
+
+        if (s_CurrentTab != previousTab)
+        {
+            m_SelectedBrowserPath.clear();
+            m_RenamingBrowserPath.clear();
+        }
     }
 
     std::filesystem::path rootPath;
@@ -1287,11 +1338,15 @@ void EditorLayer::UI_DrawContentBrowser()
             if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(10, 10)))
             {
                 m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
+                m_SelectedBrowserPath.clear();
+                m_RenamingBrowserPath.clear();
             }
         }
         else if (ImGui::Button(" <- "))
         {
             m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
+            m_SelectedBrowserPath.clear();
+            m_RenamingBrowserPath.clear();
         }
 
         ImGui::SameLine();
@@ -1348,7 +1403,17 @@ void EditorLayer::UI_DrawContentBrowser()
             if (path.extension() == ".teproj")
                 continue;
 
-            ImGui::PushID(filenameString.c_str());
+            // Hide raw source image files if the corresponding .tetexture asset exists
+            if (path.extension() == ".png" || path.extension() == ".jpg" || path.extension() == ".tga")
+            {
+                std::filesystem::path tetexPath = path;
+                tetexPath.replace_extension(".tetexture");
+                if (std::filesystem::exists(tetexPath))
+                    continue;
+            }
+
+            std::string filenameWithExtension = path.filename().string();
+            ImGui::PushID(filenameWithExtension.c_str());
 
             // Icon Selection
             ImTextureID iconId = 0;
@@ -1361,28 +1426,69 @@ void EditorLayer::UI_DrawContentBrowser()
             }
             else
             {
-                std::shared_ptr<Texture> icon = AssetManager::GetIconForExtension(path.extension().string());
-
-                if (icon)
+                if (path.extension() == ".tetexture")
                 {
-                    iconId = (ImTextureID)(uint64_t)icon->GetRendererID();
+                    AssetHandle handle = AssetManager::LoadAsset(path);
+                    auto tex = AssetManager::GetAsset<Texture>(handle);
+                    if (tex)
+                    {
+                        iconId = (ImTextureID)(uint64_t)tex->GetRendererID();
+                    }
                 }
-                else if (m_FileIcon)
+
+                if (!iconId)
                 {
-                    iconId = (ImTextureID)(uint64_t)m_FileIcon->GetRendererID();
+                    std::shared_ptr<Texture> icon = AssetManager::GetIconForExtension(path.extension().string());
+                    if (icon)
+                    {
+                        iconId = (ImTextureID)(uint64_t)icon->GetRendererID();
+                    }
+                    else if (m_FileIcon)
+                    {
+                        iconId = (ImTextureID)(uint64_t)m_FileIcon->GetRendererID();
+                    }
                 }
             }
 
+            bool isSelected = (m_SelectedBrowserPath == path);
             if (iconId != 0)
             {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                if (isSelected)
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.45f, 0.9f, 0.35f));
+                else
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
                 ImGui::ImageButton(filenameString.c_str(), iconId, ImVec2(thumbnailSize, thumbnailSize), ImVec2(0, 1),
                                    ImVec2(1, 0));
                 ImGui::PopStyleColor();
             }
             else
             {
+                if (isSelected)
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.45f, 0.9f, 0.35f));
                 ImGui::Button(filenameString.c_str(), ImVec2(thumbnailSize, thumbnailSize));
+                if (isSelected)
+                    ImGui::PopStyleColor();
+            }
+
+            if (ImGui::IsItemClicked())
+            {
+                if (m_SelectedBrowserPath != path)
+                {
+                    m_SelectedBrowserPath = path;
+                    m_SelectedEntities.clear();
+                    m_SelectedComponent = nullptr;
+
+                    if (path.extension() == ".tematerial" || path.extension() == ".tetexture")
+                    {
+                        AssetHandle handle = AssetManager::LoadAsset(path);
+                        m_SelectedBrowserAsset = AssetManager::GetAsset<Asset>(handle);
+                    }
+                    else
+                    {
+                        m_SelectedBrowserAsset = nullptr;
+                    }
+                }
             }
 
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -1390,11 +1496,73 @@ void EditorLayer::UI_DrawContentBrowser()
                 if (isDir)
                 {
                     m_ContentBrowserCurrentDirectory /= relativePath;
+                    m_SelectedBrowserPath.clear();
+                    m_SelectedBrowserAsset = nullptr;
                 }
                 else if (path.extension() == ".tescene")
                 {
                     LoadScene(path);
                 }
+                else if (path.extension() == ".tematerial" || path.extension() == ".tetexture")
+                {
+                    std::string title = path.filename().stem().string();
+                    std::string type = (path.extension() == ".tematerial") ? "Material" : "Texture";
+
+                    bool alreadyOpen = false;
+                    for (size_t i = 0; i < m_OpenEditorTabs.size(); ++i)
+                    {
+                        if (m_OpenEditorTabs[i].AssetPath == path)
+                        {
+                            m_ActiveTabRequest = (int)i;
+                            alreadyOpen = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyOpen)
+                    {
+                        AssetHandle handle = AssetManager::LoadAsset(path);
+                        auto assetPtr = AssetManager::GetAsset<Asset>(handle);
+                        m_OpenEditorTabs.push_back({ title, path, type, assetPtr });
+                        m_ActiveTabRequest = (int)(m_OpenEditorTabs.size() - 1);
+                    }
+                }
+            }
+
+            // Right-click context menu on item
+            if (ImGui::BeginPopupContextItem())
+            {
+                m_SelectedBrowserPath = path;
+                if (ImGui::MenuItem("Rename", "F2"))
+                {
+                    m_RenamingBrowserPath = path;
+                }
+                if (ImGui::MenuItem("Copy", "Ctrl+C"))
+                {
+                    m_ClipboardPath = path;
+                    m_ClipboardIsCut = false;
+                }
+                if (ImGui::MenuItem("Cut (Move)", "Ctrl+X"))
+                {
+                    m_ClipboardPath = path;
+                    m_ClipboardIsCut = true;
+                }
+                if (ImGui::MenuItem("Delete", "Delete"))
+                {
+                    if (path.extension() == ".tetexture")
+                    {
+                        std::filesystem::path rawImagePath = path;
+                        rawImagePath.replace_extension(".png");
+                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        rawImagePath.replace_extension(".jpg");
+                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        rawImagePath.replace_extension(".tga");
+                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                    }
+                    std::filesystem::remove_all(path);
+                    m_SelectedBrowserPath.clear();
+                }
+                ImGui::EndPopup();
             }
 
             // Drag Drop Source (Future)
@@ -1405,7 +1573,54 @@ void EditorLayer::UI_DrawContentBrowser()
                 ImGui::EndDragDropSource();
             }
 
-            ImGui::TextWrapped("%s", filenameString.c_str());
+            if (m_RenamingBrowserPath == path)
+            {
+                char nameBuffer[256];
+                strncpy_s(nameBuffer, filenameString.c_str(), sizeof(nameBuffer));
+                ImGui::PushItemWidth(thumbnailSize);
+                if (ImGui::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+                {
+                    std::filesystem::path newPath = path.parent_path() / nameBuffer;
+                    if (!isDir)
+                    {
+                        newPath = path.parent_path() / (std::string(nameBuffer) + path.extension().string());
+                    }
+                    if (!std::filesystem::exists(newPath) && !std::string(nameBuffer).empty())
+                    {
+                        if (path.extension() == ".tetexture")
+                        {
+                            std::filesystem::path rawImagePath = path;
+                            std::filesystem::path newRawImagePath = newPath;
+                            
+                            rawImagePath.replace_extension(".png");
+                            newRawImagePath.replace_extension(".png");
+                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+
+                            rawImagePath.replace_extension(".jpg");
+                            newRawImagePath.replace_extension(".jpg");
+                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+
+                            rawImagePath.replace_extension(".tga");
+                            newRawImagePath.replace_extension(".tga");
+                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                        }
+
+                        std::filesystem::rename(path, newPath);
+                        m_SelectedBrowserPath = newPath;
+                    }
+                    m_RenamingBrowserPath.clear();
+                }
+                ImGui::PopItemWidth();
+                if (!ImGui::IsItemActive() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                {
+                    m_RenamingBrowserPath.clear();
+                }
+            }
+            else
+            {
+                ImGui::TextWrapped("%s", filenameString.c_str());
+            }
+
             ImGui::NextColumn();
             ImGui::PopID();
         }
@@ -1428,6 +1643,44 @@ void EditorLayer::UI_DrawContentBrowser()
         ImGui::TextDisabled("CREATE ASSET");
         ImGui::Separator();
 
+        // 1. Folder Creation Option
+        ImGui::PushID("Folder");
+        ImGui::BeginGroup();
+        ImVec2 folderCursorPos = ImGui::GetCursorPos();
+        bool createFolderSelected = false;
+        if (ImGui::Selectable("##FolderRow", &createFolderSelected,
+                              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                              ImVec2(0, 32)))
+        {
+            // Find unique folder name e.g. "New Folder", "New Folder (1)"
+            std::filesystem::path baseFolderPath = rootPath / "New Folder";
+            std::filesystem::path folderPath = baseFolderPath;
+            int counter = 1;
+            while (std::filesystem::exists(folderPath))
+            {
+                folderPath = rootPath / ("New Folder (" + std::to_string(counter) + ")");
+                counter++;
+            }
+            std::filesystem::create_directories(folderPath);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SetCursorPos(ImVec2(folderCursorPos.x + 4.0f, folderCursorPos.y + 5.0f));
+        if (m_FolderIcon)
+        {
+            ImGui::Image((ImTextureID)(uintptr_t)m_FolderIcon->GetRendererID(), ImVec2(22, 22), ImVec2(0, 0), ImVec2(1, 1));
+        }
+        else
+        {
+            ImGui::Dummy(ImVec2(22, 22));
+        }
+        ImGui::SameLine(0, 12);
+        ImGui::SetCursorPosY(folderCursorPos.y + 7.0f);
+        ImGui::Text("Folder");
+        ImGui::EndGroup();
+        ImGui::PopID();
+
+        ImGui::Separator();
+
         // Dynamically populate from Asset Registry
         const auto &assetTypes = AssetManager::GetRegisteredAssetTypes();
         for (const auto &[type, entry] : assetTypes)
@@ -1448,7 +1701,7 @@ void EditorLayer::UI_DrawContentBrowser()
                                   ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
                                   ImVec2(0, 32)))
             {
-                entry.Prototype->OnContentBrowserCreate(m_ContentBrowserCurrentDirectory);
+                entry.Prototype->OnContentBrowserCreate(rootPath);
                 ImGui::CloseCurrentPopup();
             }
 
@@ -1472,6 +1725,13 @@ void EditorLayer::UI_DrawContentBrowser()
 
             ImGui::EndGroup();
             ImGui::PopID();
+        }
+
+        ImGui::Separator();
+        bool hasClipboard = !m_ClipboardPath.empty() && std::filesystem::exists(m_ClipboardPath);
+        if (ImGui::MenuItem("Paste", "Ctrl+V", nullptr, hasClipboard))
+        {
+            PasteClipboard(rootPath);
         }
 
         ImGui::PopStyleColor(4);
@@ -2009,6 +2269,51 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
 
     auto &shortcuts = m_EditorSettings.Shortcuts;
 
+    // Rename Shortcut
+    KeyCode renameKey = Key::F2;
+    if (shortcuts.count("Rename"))
+        renameKey = shortcuts.at("Rename");
+
+    if (e.GetKeyCode() == renameKey)
+    {
+        if (!m_SelectedBrowserPath.empty())
+        {
+            m_RenamingBrowserPath = m_SelectedBrowserPath;
+            return true;
+        }
+    }
+
+    if (control && e.GetKeyCode() == Key::C)
+    {
+        if (!m_SelectedBrowserPath.empty())
+        {
+            m_ClipboardPath = m_SelectedBrowserPath;
+            m_ClipboardIsCut = false;
+            return true;
+        }
+    }
+
+    if (control && e.GetKeyCode() == Key::X)
+    {
+        if (!m_SelectedBrowserPath.empty())
+        {
+            m_ClipboardPath = m_SelectedBrowserPath;
+            m_ClipboardIsCut = true;
+            return true;
+        }
+    }
+
+    if (control && e.GetKeyCode() == Key::V)
+    {
+        if (!m_ClipboardPath.empty())
+        {
+            std::filesystem::path currentAssetPath = Project::GetProjectDirectory() / "Assets";
+            currentAssetPath /= m_ContentBrowserCurrentDirectory;
+            PasteClipboard(currentAssetPath);
+            return true;
+        }
+    }
+
     // Delete Shortcut
     KeyCode deleteKey = Key::Delete;
     if (shortcuts.count("Delete"))
@@ -2016,8 +2321,27 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
 
     if (e.GetKeyCode() == deleteKey || e.GetKeyCode() == Key::Backspace)
     {
-        DeleteSelectedEntities();
-        return true;
+        if (!m_SelectedBrowserPath.empty())
+        {
+            if (m_SelectedBrowserPath.extension() == ".tetexture")
+            {
+                std::filesystem::path rawImagePath = m_SelectedBrowserPath;
+                rawImagePath.replace_extension(".png");
+                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                rawImagePath.replace_extension(".jpg");
+                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                rawImagePath.replace_extension(".tga");
+                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+            }
+            std::filesystem::remove_all(m_SelectedBrowserPath);
+            m_SelectedBrowserPath.clear();
+            return true;
+        }
+        else
+        {
+            DeleteSelectedEntities();
+            return true;
+        }
     }
 
     // Save and SaveAll Shortcuts
@@ -2033,7 +2357,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
         SaveScene();
         return true;
     }
-    else if (control && shift && e.GetKeyCode() == saveAllKey)
+    else if (control && shift && e.GetKeyCode() == Key::S)
+    {
+        // Ctrl+Shift+S = Save Scene As
+        m_ShowSaveScenePopup = true;
+        m_SaveSceneAs = true;
+        return true;
+    }
+    else if (control && shift && e.GetKeyCode() == saveAllKey && saveAllKey != Key::S)
     {
         SaveProject();
         return true;
@@ -2220,6 +2551,7 @@ bool EditorLayer::IsEntitySelected(Entity entity) const
 
 void EditorLayer::SelectEntity(Entity entity, bool multiSelect, bool toggle)
 {
+    m_SelectedBrowserPath.clear();
     // Clear component selection whenever user selects an entity directly
     // This fixes the gizmo pivot glitch when switching entity->component->entity
     m_SelectedComponent = nullptr;
@@ -2253,6 +2585,76 @@ void EditorLayer::DeleteSelectedEntities()
     for (auto entity : m_SelectedEntities)
     {
         m_EntitiesToDelete.push_back(entity);
+    }
+}
+
+void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
+{
+    if (m_ClipboardPath.empty() || !std::filesystem::exists(m_ClipboardPath))
+        return;
+
+    std::filesystem::path targetPath = targetFolder / m_ClipboardPath.filename();
+
+    // Avoid overwriting by appending numbers if it already exists
+    int counter = 1;
+    std::string baseStem = m_ClipboardPath.stem().string();
+    std::string ext = m_ClipboardPath.extension().string();
+    while (std::filesystem::exists(targetPath))
+    {
+        targetPath = targetFolder / (baseStem + " (Copy " + std::to_string(counter++) + ")" + ext);
+    }
+
+    try
+    {
+        if (m_ClipboardIsCut)
+        {
+            // Move companion files for textures
+            if (m_ClipboardPath.extension() == ".tetexture")
+            {
+                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
+                for (const auto &rawExt : rawExtensions)
+                {
+                    std::filesystem::path rawSrc = m_ClipboardPath;
+                    rawSrc.replace_extension(rawExt);
+                    if (std::filesystem::exists(rawSrc))
+                    {
+                        std::filesystem::path rawDst = targetPath;
+                        rawDst.replace_extension(rawExt);
+                        std::filesystem::rename(rawSrc, rawDst);
+                    }
+                }
+            }
+
+            std::filesystem::rename(m_ClipboardPath, targetPath);
+            m_ClipboardPath.clear(); // Clear clipboard after cut/move
+        }
+        else
+        {
+            // Copy companion files for textures
+            if (m_ClipboardPath.extension() == ".tetexture")
+            {
+                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
+                for (const auto &rawExt : rawExtensions)
+                {
+                    std::filesystem::path rawSrc = m_ClipboardPath;
+                    rawSrc.replace_extension(rawExt);
+                    if (std::filesystem::exists(rawSrc))
+                    {
+                        std::filesystem::path rawDst = targetPath;
+                        rawDst.replace_extension(rawExt);
+                        std::filesystem::copy(rawSrc, rawDst, std::filesystem::copy_options::recursive);
+                    }
+                }
+            }
+
+            std::filesystem::copy(m_ClipboardPath, targetPath, std::filesystem::copy_options::recursive);
+        }
+
+        m_SelectedBrowserPath = targetPath;
+    }
+    catch (const std::exception &e)
+    {
+        TE_CORE_ERROR("Failed to paste asset: {0}", e.what());
     }
 }
 
@@ -3029,6 +3431,135 @@ void EditorLayer::LoadScene(const std::filesystem::path &filepath)
     {
         TE_CORE_ERROR("Exception during LoadScene: {0}", e.what());
     }
+}
+
+void EditorLayer::UI_DrawAssetEditors()
+{
+    if (m_OpenEditorTabs.empty())
+        return;
+
+    ImGui::Begin("Asset Editors");
+
+    if (ImGui::BeginTabBar("AssetEditorsTabBar", ImGuiTabBarFlags_Reorderable))
+    {
+        for (size_t i = 0; i < m_OpenEditorTabs.size();)
+        {
+            auto &tab = m_OpenEditorTabs[i];
+            bool open = true;
+
+            ImGuiTabItemFlags flags = ImGuiTabItemFlags_None;
+            if (m_ActiveTabRequest == (int)i)
+            {
+                flags |= ImGuiTabItemFlags_SetSelected;
+                m_ActiveTabRequest = -1; // Reset request
+            }
+
+            if (ImGui::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open, flags))
+            {
+                if (tab.Type == "Material")
+                {
+                    auto mat = std::dynamic_pointer_cast<Material>(tab.LoadedAsset);
+                    if (mat)
+                    {
+                        ImGui::Text("Material Editor Settings");
+                        ImGui::Separator();
+
+                        char nameBuffer[256];
+                        strncpy_s(nameBuffer, mat->GetName().c_str(), sizeof(nameBuffer));
+                        if (ImGui::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
+                        {
+                            mat->SetName(nameBuffer);
+                            MaterialSerializer serializer(mat);
+                            serializer.Serialize(tab.AssetPath);
+                            tab.Title = nameBuffer; // Sync tab title
+                        }
+
+                        auto color = mat->GetColor().GetValue();
+                        float colorArr[4] = { color.r, color.g, color.b, color.a };
+                        if (ImGui::ColorEdit4("Albedo Color", colorArr))
+                        {
+                            mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
+                            MaterialSerializer serializer(mat);
+                            serializer.Serialize(tab.AssetPath);
+                        }
+                    }
+                }
+                else if (tab.Type == "Texture")
+                {
+                    auto tex = std::dynamic_pointer_cast<Texture>(tab.LoadedAsset);
+                    if (tex)
+                    {
+                        ImGui::Text("Texture Editor Settings");
+                        ImGui::Separator();
+
+                        ImGui::Image((ImTextureID)(uintptr_t)tex->GetRendererID(), 
+                                     TEVector2(128.0f, 128.0f).ToImVec2(), 
+                                     TEVector2(0.0f, 1.0f).ToImVec2(), 
+                                     TEVector2(1.0f, 0.0f).ToImVec2());
+
+                        ImGui::Separator();
+                        ImGui::Text("Import Settings");
+
+                        // Import Texture Source file from folder structure
+                        static char importPathBuffer[512] = "";
+                        ImGui::InputText("Source File Path", importPathBuffer, sizeof(importPathBuffer));
+                        ImGui::SameLine();
+                        if (ImGui::Button("Browse..."))
+                        {
+                            std::string filepath = PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files (*.*)\0*.*\0");
+                            if (!filepath.empty())
+                            {
+                                strcpy_s(importPathBuffer, filepath.c_str());
+
+                                std::filesystem::path importSrc = filepath;
+                                if (std::filesystem::exists(importSrc))
+                                {
+                                    std::filesystem::path destPng = tab.AssetPath;
+                                    destPng.replace_extension(importSrc.extension());
+
+                                    // If destination has a different extension, clean up the old PNG companion
+                                    if (importSrc.extension() != ".png")
+                                    {
+                                        std::filesystem::path oldPng = tab.AssetPath;
+                                        oldPng.replace_extension(".png");
+                                        if (std::filesystem::exists(oldPng))
+                                            std::filesystem::remove(oldPng);
+                                    }
+
+                                    std::filesystem::copy_file(importSrc, destPng, std::filesystem::copy_options::overwrite_existing);
+
+                                    // Force recreation and reload of Texture
+                                    auto newTex = std::make_shared<Texture>(destPng.string());
+                                    newTex->SetName(tab.AssetPath.stem().string());
+                                    TextureSerializer serializer(newTex);
+                                    serializer.Serialize(tab.AssetPath);
+
+                                    tab.LoadedAsset = newTex; // Update loaded asset cache
+                                    TE_CORE_INFO("Imported texture source from {0}", importSrc.string());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (!open)
+            {
+                m_OpenEditorTabs.erase(m_OpenEditorTabs.begin() + i);
+                if (m_ActiveTabRequest >= (int)m_OpenEditorTabs.size())
+                    m_ActiveTabRequest = (int)m_OpenEditorTabs.size() - 1;
+            }
+            else
+            {
+                ++i;
+            }
+        }
+        ImGui::EndTabBar();
+    }
+
+    ImGui::End();
 }
 
 void EditorLayer::ProcessDeletionQueues()

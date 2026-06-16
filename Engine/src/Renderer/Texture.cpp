@@ -1,8 +1,10 @@
 #include "Renderer/Texture.hpp"
+#include "Renderer/TextureSerializer.hpp"
 #include <glad/glad.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "Core/Log.h"
 #include <stb_image.h>
+#include <stb_image_write.h>
 
 #include "Core/Asset/AssetRegistry.hpp"
 #include <filesystem>
@@ -67,4 +69,40 @@ Texture::~Texture() { glDeleteTextures(1, &m_RendererID); }
 void Texture::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }
 
 void Texture::Unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
+
+void Texture::OnContentBrowserCreate(const std::filesystem::path &path)
+{
+    std::filesystem::create_directories(path);
+    std::string baseName = "NewTexture";
+    std::filesystem::path finalPath = path / (baseName + ".tetexture");
+    int counter = 1;
+    while (std::filesystem::exists(finalPath))
+    {
+        finalPath = path / (baseName + "_" + std::to_string(counter++) + ".tetexture");
+    }
+
+    std::string texName = finalPath.stem().string();
+    std::filesystem::path pngPath = path / (texName + ".png");
+
+    // Write a 1x1 white PNG
+    unsigned char whitePixel[4] = { 255, 255, 255, 255 };
+    if (stbi_write_png(pngPath.string().c_str(), 1, 1, 4, whitePixel, 4) == 0)
+    {
+        TE_CORE_ERROR("Failed to write blank PNG for Texture at {0}", pngPath.string());
+    }
+
+    // Write the metadata file
+    auto newTexture = std::make_shared<Texture>(pngPath.string());
+    newTexture->m_Name = texName;
+    TextureSerializer serializer(newTexture);
+    if (serializer.Serialize(finalPath))
+    {
+        TE_CORE_INFO("Created New Texture at {0}", finalPath.string());
+    }
+    else
+    {
+        TE_CORE_ERROR("Failed to serialize and create Texture metadata at {0}", finalPath.string());
+    }
+}
+
 } // namespace TE

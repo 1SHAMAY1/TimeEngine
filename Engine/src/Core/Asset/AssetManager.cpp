@@ -4,9 +4,13 @@
 #include "Core/Log.h"
 #include "Core/Scene/Scene.hpp"
 #include "Renderer/Material.hpp"
+#include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/Sprite.hpp"
+#include "Renderer/SpriteSerializer.hpp"
 #include "Renderer/SpriteSheet.hpp"
+#include "Renderer/SpriteSheetSerializer.hpp"
 #include "Renderer/Texture.hpp"
+#include "Renderer/TextureSerializer.hpp"
 #include <filesystem>
 
 namespace TE
@@ -103,6 +107,46 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
         auto tex = std::make_shared<Texture>(finalPath.string());
         AddAsset(tex->GetHandle(), tex);
         return tex->GetHandle();
+    }
+    else if (finalPath.extension() == ".tematerial")
+    {
+        auto mat = std::make_shared<Material>(nullptr);
+        MaterialSerializer serializer(mat);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(mat->GetHandle(), mat);
+            return mat->GetHandle();
+        }
+    }
+    else if (finalPath.extension() == ".tesprite")
+    {
+        auto sprite = std::make_shared<Sprite>();
+        SpriteSerializer serializer(sprite);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(sprite->GetHandle(), sprite);
+            return sprite->GetHandle();
+        }
+    }
+    else if (finalPath.extension() == ".tespritesheet")
+    {
+        auto sheet = std::make_shared<SpriteSheet>();
+        SpriteSheetSerializer serializer(sheet);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(sheet->GetHandle(), sheet);
+            return sheet->GetHandle();
+        }
+    }
+    else if (finalPath.extension() == ".tetexture")
+    {
+        auto tex = std::make_shared<Texture>(finalPath.string());
+        TextureSerializer serializer(tex);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(tex->GetHandle(), tex);
+            return tex->GetHandle();
+        }
     }
 
     return 0; // AssetRegistry will handle the mapping later

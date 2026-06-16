@@ -9,6 +9,7 @@
 #include "Renderer/TEColor.hpp"
 #include "Window/IWindow.hpp"
 #include <GLFW/glfw3.h>
+#include "Core/Threading/ThreadingMacros.hpp"
 
 namespace TE
 {
@@ -21,6 +22,14 @@ Application::Application() : m_Running(true)
 
     TE::Log::Init(true, "TimeEngineLog.json");
     TE_CORE_INFO("Application Constructor called.");
+
+    // Initialize Thread pools
+    INIT_MAIN_THREAD();
+    INIT_RENDER_THREAD();
+    INIT_CALC_THREAD();
+    INIT_AI_THREAD();
+    INIT_WIDGET_THREAD();
+    INIT_GAMEPLAY_THREAD();
 
     m_Window = std::unique_ptr<IWindow>(IWindow::Create());
 
@@ -65,6 +74,13 @@ Application::Application() : m_Running(true)
                     TE_CLIENT_INFO("Window lost focus");
                     return false;
                 });
+
+            for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+            {
+                if (e.Handled())
+                    break;
+                (*--it)->OnEvent(e);
+            }
         });
 
 #ifdef TE_EDITOR

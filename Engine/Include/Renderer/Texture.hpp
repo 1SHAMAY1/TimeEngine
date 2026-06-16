@@ -33,7 +33,9 @@ public:
     } // Will be handled by AssetManager
     virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
 
-    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override {}
+    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override;
+
+    void SetName(const std::string &name) { m_Name = name; }
 
 private:
     uint32_t m_RendererID;
