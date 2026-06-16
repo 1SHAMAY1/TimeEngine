@@ -5,33 +5,26 @@
 - **Core differentiator**: Deterministic simulation + Time Manipulation (rewind, slow-motion, state-branching)
 - **Status**: Active development. Not all systems are complete. Do not assume a feature exists unless listed below.
 
-## Core Architecture
-- **Language**: C++20
-- **Graphics API**: OpenGL 4.5+ (core profile)
-- **Architecture**: Entity-Component System (ECS)
-- **Build System**: Premake5 / MSBuild
-- **UI**: ImGui with custom docking and editor layers.
+## Stack
+| Concern | Choice |
+|---|---|
+| Language | C++20 |
+| Graphics | OpenGL 4.5+ core profile |
+| Architecture | Entity-Component System (ECS) |
+| Build | Premake5 → MSBuild / Visual Studio 2022 |
+| UI | ImGui (custom docking + editor layers) |
+| Serialization | YAML via SceneSerializer |
 
-## Key APIs & Systems
-- **Renderer**: `Renderer2D` and `Renderer3D` (optimized batching for quads/sprites).
-- **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
-- **Scene System**: `Scene` class manages entities and components via ECS.
-- **Serialization**: `SceneSerializer` (text-based parser) for scenes and projects.
-- **Events**: `Event` system for window, input, and application life-cycles.
-- **Input**: Action-based input mapping (Keyboard/Mouse).
-- **Ambient Light**: `AmbientLightComponent` exists (`Engine/Include/Core/Scene/AmbientLightComponent.hpp`) and supports gradient/multi-color ambient lighting.
-
-## Development Patterns
-- Use `TE_CORE_LOG` for engine-side logging.
-- Use `TE_CLIENT_LOG` for sandbox/game logging.
-- Prefer `Ref<T>` (smart pointers) for resource management.
-- All files should include `#pragma once`.
-- Components live under `Engine/Include/Core/Scene/` and register via macros (e.g. `T_REGISTER_COMPONENT`).
-
-## Setup
-1. Run `Scripts/GenerateProjectFiles.bat`.
-2. Build with MSBuild or Visual Studio.
-3. Launch Sandbox to access the Project Hub.
+## Confirmed Systems (implemented)
+- `Renderer2D` — batched quad/sprite rendering
+- `Renderer3D` — basic 3D batching
+- `Scene` — entity/component manager via ECS
+- `SceneSerializer` — text-based parser save/load for scenes and projects
+- `Event` system — window, input, application lifecycle events
+- Input — action-based keyboard/mouse mapping
+- Inbuilt 2D Sprite Editor & IDE — data-driven procedural scripting, recursive expression evaluation
+- `AmbientLightComponent` — global scene illumination (Sky/Horizon/Ground Color, Intensity, etc.)
+- ImGui editor with docking, Properties panel, Scene Hierarchy
 
 ## NOT yet implemented (do not hallucinate these)
 - Time Manipulation runtime (rewind, snapshots, branching) — design phase only
@@ -40,6 +33,7 @@
 - Networking
 - Cross-platform support (Windows only)
 
+## Conventions
 | Pattern | Rule |
 |---|---|
 | Logging (engine) | `TE_CORE_LOG` |
