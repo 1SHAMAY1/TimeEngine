@@ -43,6 +43,13 @@ We use `.clang-format` to maintain consistent code style. Please run clang-forma
 - **Headers**: Use `#pragma once`.
 - **Indentation**: 4 spaces.
 
+### Component Registration
+When adding new components to the ECS (under `Engine/Include/Core/Scene/`), make sure to use the reflection macros so they register with the serialization and Editor systems:
+- Register the component using `T_REGISTER_COMPONENT(MyComponent, "My Component Name")`.
+- Register each property using `T_REGISTER_PROPERTY(MyComponent, Type, VariableName, "Display Name")`.
+
+This allows the Editor's **Properties** panel to draw the controls automatically without writing manual ImGui code.
+
 ## Core Focus: 2D Excellence & Time Manipulation
 
 Contributions that advance the **Inbuilt 2D Sprite Editor** or the **Time Manipulation** system (deterministic simulation, state snapshots, time-reversal) are highly prioritized. We aim to be the premier C++ solution for deterministic 2D development. See [ROADMAP.md](ROADMAP.md) for details.
