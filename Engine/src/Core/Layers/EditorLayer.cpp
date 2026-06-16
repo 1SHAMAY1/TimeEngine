@@ -23,7 +23,6 @@
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
-#include "Utils/PlatformUtils.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/ShaderLibrary.hpp"
@@ -31,6 +30,7 @@
 #include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include "Utility/MathUtils.hpp"
+#include "Utils/PlatformUtils.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <cstring>
@@ -1085,7 +1085,7 @@ void EditorLayer::UI_DrawProperties()
                 }
 
                 auto color = mat->GetColor().GetValue();
-                float colorArr[4] = { color.r, color.g, color.b, color.a };
+                float colorArr[4] = {color.r, color.g, color.b, color.a};
                 if (ImGui::ColorEdit4("Albedo Color", colorArr))
                 {
                     mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
@@ -1523,7 +1523,7 @@ void EditorLayer::UI_DrawContentBrowser()
                     {
                         AssetHandle handle = AssetManager::LoadAsset(path);
                         auto assetPtr = AssetManager::GetAsset<Asset>(handle);
-                        m_OpenEditorTabs.push_back({ title, path, type, assetPtr });
+                        m_OpenEditorTabs.push_back({title, path, type, assetPtr});
                         m_ActiveTabRequest = (int)(m_OpenEditorTabs.size() - 1);
                     }
                 }
@@ -1553,11 +1553,14 @@ void EditorLayer::UI_DrawContentBrowser()
                     {
                         std::filesystem::path rawImagePath = path;
                         rawImagePath.replace_extension(".png");
-                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath))
+                            std::filesystem::remove(rawImagePath);
                         rawImagePath.replace_extension(".jpg");
-                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath))
+                            std::filesystem::remove(rawImagePath);
                         rawImagePath.replace_extension(".tga");
-                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath))
+                            std::filesystem::remove(rawImagePath);
                     }
                     std::filesystem::remove_all(path);
                     m_SelectedBrowserPath.clear();
@@ -1578,7 +1581,8 @@ void EditorLayer::UI_DrawContentBrowser()
                 char nameBuffer[256];
                 strncpy_s(nameBuffer, filenameString.c_str(), sizeof(nameBuffer));
                 ImGui::PushItemWidth(thumbnailSize);
-                if (ImGui::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+                if (ImGui::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer),
+                                     ImGuiInputTextFlags_EnterReturnsTrue))
                 {
                     std::filesystem::path newPath = path.parent_path() / nameBuffer;
                     if (!isDir)
@@ -1591,18 +1595,21 @@ void EditorLayer::UI_DrawContentBrowser()
                         {
                             std::filesystem::path rawImagePath = path;
                             std::filesystem::path newRawImagePath = newPath;
-                            
+
                             rawImagePath.replace_extension(".png");
                             newRawImagePath.replace_extension(".png");
-                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath))
+                                std::filesystem::rename(rawImagePath, newRawImagePath);
 
                             rawImagePath.replace_extension(".jpg");
                             newRawImagePath.replace_extension(".jpg");
-                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath))
+                                std::filesystem::rename(rawImagePath, newRawImagePath);
 
                             rawImagePath.replace_extension(".tga");
                             newRawImagePath.replace_extension(".tga");
-                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath))
+                                std::filesystem::rename(rawImagePath, newRawImagePath);
                         }
 
                         std::filesystem::rename(path, newPath);
@@ -1649,8 +1656,7 @@ void EditorLayer::UI_DrawContentBrowser()
         ImVec2 folderCursorPos = ImGui::GetCursorPos();
         bool createFolderSelected = false;
         if (ImGui::Selectable("##FolderRow", &createFolderSelected,
-                              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
-                              ImVec2(0, 32)))
+                              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(0, 32)))
         {
             // Find unique folder name e.g. "New Folder", "New Folder (1)"
             std::filesystem::path baseFolderPath = rootPath / "New Folder";
@@ -1667,7 +1673,8 @@ void EditorLayer::UI_DrawContentBrowser()
         ImGui::SetCursorPos(ImVec2(folderCursorPos.x + 4.0f, folderCursorPos.y + 5.0f));
         if (m_FolderIcon)
         {
-            ImGui::Image((ImTextureID)(uintptr_t)m_FolderIcon->GetRendererID(), ImVec2(22, 22), ImVec2(0, 0), ImVec2(1, 1));
+            ImGui::Image((ImTextureID)(uintptr_t)m_FolderIcon->GetRendererID(), ImVec2(22, 22), ImVec2(0, 0),
+                         ImVec2(1, 1));
         }
         else
         {
@@ -2327,11 +2334,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
             {
                 std::filesystem::path rawImagePath = m_SelectedBrowserPath;
                 rawImagePath.replace_extension(".png");
-                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath))
+                    std::filesystem::remove(rawImagePath);
                 rawImagePath.replace_extension(".jpg");
-                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath))
+                    std::filesystem::remove(rawImagePath);
                 rawImagePath.replace_extension(".tga");
-                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath))
+                    std::filesystem::remove(rawImagePath);
             }
             std::filesystem::remove_all(m_SelectedBrowserPath);
             m_SelectedBrowserPath.clear();
@@ -2611,7 +2621,7 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
             // Move companion files for textures
             if (m_ClipboardPath.extension() == ".tetexture")
             {
-                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
+                std::vector<std::string> rawExtensions = {".png", ".jpg", ".tga"};
                 for (const auto &rawExt : rawExtensions)
                 {
                     std::filesystem::path rawSrc = m_ClipboardPath;
@@ -2633,7 +2643,7 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
             // Copy companion files for textures
             if (m_ClipboardPath.extension() == ".tetexture")
             {
-                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
+                std::vector<std::string> rawExtensions = {".png", ".jpg", ".tga"};
                 for (const auto &rawExt : rawExtensions)
                 {
                     std::filesystem::path rawSrc = m_ClipboardPath;
@@ -3454,7 +3464,8 @@ void EditorLayer::UI_DrawAssetEditors()
                 m_ActiveTabRequest = -1; // Reset request
             }
 
-            if (ImGui::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open, flags))
+            if (ImGui::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open,
+                                    flags))
             {
                 if (tab.Type == "Material")
                 {
@@ -3475,7 +3486,7 @@ void EditorLayer::UI_DrawAssetEditors()
                         }
 
                         auto color = mat->GetColor().GetValue();
-                        float colorArr[4] = { color.r, color.g, color.b, color.a };
+                        float colorArr[4] = {color.r, color.g, color.b, color.a};
                         if (ImGui::ColorEdit4("Albedo Color", colorArr))
                         {
                             mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
@@ -3492,10 +3503,8 @@ void EditorLayer::UI_DrawAssetEditors()
                         ImGui::Text("Texture Editor Settings");
                         ImGui::Separator();
 
-                        ImGui::Image((ImTextureID)(uintptr_t)tex->GetRendererID(), 
-                                     TEVector2(128.0f, 128.0f).ToImVec2(), 
-                                     TEVector2(0.0f, 1.0f).ToImVec2(), 
-                                     TEVector2(1.0f, 0.0f).ToImVec2());
+                        ImGui::Image((ImTextureID)(uintptr_t)tex->GetRendererID(), TEVector2(128.0f, 128.0f).ToImVec2(),
+                                     TEVector2(0.0f, 1.0f).ToImVec2(), TEVector2(1.0f, 0.0f).ToImVec2());
 
                         ImGui::Separator();
                         ImGui::Text("Import Settings");
@@ -3506,7 +3515,9 @@ void EditorLayer::UI_DrawAssetEditors()
                         ImGui::SameLine();
                         if (ImGui::Button("Browse..."))
                         {
-                            std::string filepath = PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files (*.*)\0*.*\0");
+                            std::string filepath = PlatformUtils::OpenFile(
+                                "Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files "
+                                "(*.*)\0*.*\0");
                             if (!filepath.empty())
                             {
                                 strcpy_s(importPathBuffer, filepath.c_str());
@@ -3526,7 +3537,8 @@ void EditorLayer::UI_DrawAssetEditors()
                                             std::filesystem::remove(oldPng);
                                     }
 
-                                    std::filesystem::copy_file(importSrc, destPng, std::filesystem::copy_options::overwrite_existing);
+                                    std::filesystem::copy_file(importSrc, destPng,
+                                                               std::filesystem::copy_options::overwrite_existing);
 
                                     // Force recreation and reload of Texture
                                     auto newTex = std::make_shared<Texture>(destPng.string());

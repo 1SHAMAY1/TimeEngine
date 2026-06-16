@@ -1,6 +1,6 @@
 #include "Renderer/Sprite.hpp"
-#include "Renderer/SpriteSerializer.hpp"
 #include "Core/Log.h"
+#include "Renderer/SpriteSerializer.hpp"
 
 namespace TE
 {

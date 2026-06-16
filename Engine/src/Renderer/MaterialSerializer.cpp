@@ -18,7 +18,7 @@ bool MaterialSerializer::Serialize(const std::filesystem::path &filepath)
     }
 
     hout << "Material: " << m_Material->GetName() << "\n";
-    
+
     auto color = m_Material->GetColor().GetValue();
     hout << "Color: " << color.r << " " << color.g << " " << color.b << " " << color.a << "\n";
 

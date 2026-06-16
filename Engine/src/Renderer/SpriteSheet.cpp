@@ -1,8 +1,9 @@
 #include "Renderer/SpriteSheet.hpp"
-#include "Renderer/SpriteSheetSerializer.hpp"
 #include "Core/Log.h"
+#include "Renderer/SpriteSheetSerializer.hpp"
 
-namespace TE {
+namespace TE
+{
 
 void SpriteSheet::OnContentBrowserCreate(const std::filesystem::path &path)
 {

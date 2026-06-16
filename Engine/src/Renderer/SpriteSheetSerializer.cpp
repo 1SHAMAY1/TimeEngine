@@ -6,7 +6,10 @@
 namespace TE
 {
 
-SpriteSheetSerializer::SpriteSheetSerializer(const std::shared_ptr<SpriteSheet> &spriteSheet) : m_SpriteSheet(spriteSheet) {}
+SpriteSheetSerializer::SpriteSheetSerializer(const std::shared_ptr<SpriteSheet> &spriteSheet)
+    : m_SpriteSheet(spriteSheet)
+{
+}
 
 bool SpriteSheetSerializer::Serialize(const std::filesystem::path &filepath)
 {

@@ -85,7 +85,7 @@ void Texture::OnContentBrowserCreate(const std::filesystem::path &path)
     std::filesystem::path pngPath = path / (texName + ".png");
 
     // Write a 1x1 white PNG
-    unsigned char whitePixel[4] = { 255, 255, 255, 255 };
+    unsigned char whitePixel[4] = {255, 255, 255, 255};
     if (stbi_write_png(pngPath.string().c_str(), 1, 1, 4, whitePixel, 4) == 0)
     {
         TE_CORE_ERROR("Failed to write blank PNG for Texture at {0}", pngPath.string());

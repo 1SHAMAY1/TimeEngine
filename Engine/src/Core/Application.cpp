@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include "Core/Threading/ThreadingMacros.hpp"
 #include "Events/ApplicationEvent.h"
 #include "ImGUI/ImGuiLayer.hpp"
 #include "Log.h"
@@ -9,7 +10,6 @@
 #include "Renderer/TEColor.hpp"
 #include "Window/IWindow.hpp"
 #include <GLFW/glfw3.h>
-#include "Core/Threading/ThreadingMacros.hpp"
 
 namespace TE
 {

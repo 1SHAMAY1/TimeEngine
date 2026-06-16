@@ -1,7 +1,7 @@
 #include "Renderer/Material.hpp"
+#include "Core/Log.h"
 #include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/ShaderLibrary.hpp"
-#include "Core/Log.h"
 
 namespace TE
 {
