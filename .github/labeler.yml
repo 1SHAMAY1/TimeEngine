@@ -31,4 +31,5 @@ UI:
 
 Samples:
   - changed-files:
-    - any-glob-to-any-file: 'Sandbox/**/*'
+    - any-glob-to-any-file: 'TimeEditor/**/*'
+

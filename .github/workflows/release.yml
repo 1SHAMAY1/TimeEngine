@@ -51,10 +51,12 @@ jobs:
         shell: pwsh
         run: |
              New-Item -ItemType Directory -Force -Path "TimeEngine-Release"
-             Copy-Item -Path "Bin/Release-windows-x86_64/Sandbox/Sandbox.exe" -Destination "TimeEngine-Release/"
+             Copy-Item -Path "Bin/Release-windows-x86_64/TimeEditor/TimeEditor.exe" -Destination "TimeEngine-Release/"
              Copy-Item -Path "Bin/Release-windows-x86_64/Engine/Engine.dll" -Destination "TimeEngine-Release/"
+             Copy-Item -Path "Bin/Release-windows-x86_64/Velox/Velox.dll" -Destination "TimeEngine-Release/"
              Copy-Item -Path "Resources" -Destination "TimeEngine-Release/Resources" -Recurse
              Compress-Archive -Path "TimeEngine-Release/*" -DestinationPath "TimeEngine-Windows-x64.zip"
+
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

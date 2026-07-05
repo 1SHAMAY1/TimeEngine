@@ -9,22 +9,24 @@
 | Concern | Choice |
 |---|---|
 | Language | C++20 |
-| Graphics | OpenGL 4.5+ core profile |
+| Graphics | OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES |
 | Architecture | Entity-Component System (ECS) |
 | Build | Premake5 → MSBuild / Visual Studio 2022 |
-| UI | ImGui (custom docking + editor layers) |
+| UI | TimeGUI (Strict ImGui Abstraction Wrapper) |
 | Serialization | YAML via SceneSerializer |
 
 ## Confirmed Systems (implemented)
 - `Renderer2D` — batched quad/sprite rendering
 - `Renderer3D` — basic 3D batching
+- Multi-API Backends — support for Vulkan, OpenGL ES, DirectX 11, and OpenGL core profile.
+- `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
 - `Scene` — entity/component manager via ECS
 - `SceneSerializer` — text-based parser save/load for scenes and projects
 - `Event` system — window, input, application lifecycle events
 - Input — action-based keyboard/mouse mapping
 - Inbuilt 2D Sprite Editor & IDE — data-driven procedural scripting, recursive expression evaluation
 - `AmbientLightComponent` — global scene illumination (Sky/Horizon/Ground Color, Intensity, etc.)
-- ImGui editor with docking, Properties panel, Scene Hierarchy
+- ImGui-based editor layers with docking, Properties panel, Scene Hierarchy using `TimeGUI` wrapper
 
 ## NOT yet implemented (do not hallucinate these)
 - Time Manipulation runtime (rewind, snapshots, branching) — design phase only
@@ -50,11 +52,14 @@ All third-party libraries have strict wrappers that isolate raw vendor classes, 
   - Wrapper Headers: [TimeGUI.hpp](file:///E:/TimeEngine/Engine/Include/Utils/TimeGUI.hpp)
   - Wrapper Sources: [TimeGUI.cpp](file:///E:/TimeEngine/Engine/src/Utils/TimeGUI.cpp)
   - Lifecycle Layer: [TimeGUILayer.cpp](file:///E:/TimeEngine/Engine/src/Core/Layers/TimeGUILayer.cpp)
-- **OpenGL/Glad (Graphics/Renderer)**:
+- **OpenGL/Glad/OpenGLES/Vulkan/DirectX11 (Graphics/Renderer)**:
   - Batched renderer: [Renderer2D.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Renderer2D.hpp) / [Renderer2D.cpp](file:///E:/TimeEngine/Engine/src/Renderer/Renderer2D.cpp)
+  - Generic Renderer API: [RendererAPI.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/RendererAPI.hpp)
   - Shaders: [Shader.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Shader.hpp)
   - Textures: [Texture.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Texture.hpp)
   - Colors: [TEColor.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/TEColor.hpp) / [TEColor.cpp](file:///E:/TimeEngine/Engine/src/Renderer/TEColor.cpp)
+- **Velox (Physics Engine)**:
+  - Abstraction: [PhysicsWorld.hpp](file:///E:/TimeEngine/Engine/Include/Core/Physics/PhysicsWorld.hpp) / [PhysicsWorld.cpp](file:///E:/TimeEngine/Engine/src/Core/Physics/PhysicsWorld.cpp)
 - **GLFW (Windowing & OS Input Integration)**:
   - OS abstraction interface: [IWindow.hpp](file:///E:/TimeEngine/Engine/Include/Core/IWindow.hpp)
   - Windows-specific implementation: [WindowsWindow.cpp](file:///E:/TimeEngine/Engine/src/Window/WindowsWindow.cpp)
@@ -70,15 +75,15 @@ All third-party libraries have strict wrappers that isolate raw vendor classes, 
 Engine/
   Include/
     Core/Scene/           # ECS components live here (e.g. AmbientLightComponent.hpp)
-    Renderer/             # Renderer headers
+    Renderer/             # Renderer API and backend headers (DirectX11, Vulkan, OpenGLES, OpenGL)
     Layers/               # EditorLayer.hpp, etc.
   src/
     Core/Scene/           # Scene.cpp, SceneSerializer.cpp, EntityManager.cpp
-    Renderer/             # Renderer2D.cpp, etc.
+    Renderer/             # Renderer2D.cpp, and backend API source files
     Core/Layers/          # EditorLayer.cpp, etc.
 Scripts/
   GenerateProjectFiles.bat  # Run first — generates .sln via Premake5
-Sandbox/                  # Test app, entry point for manual QA
+TimeEditor/                 # Editor app, entry point for manual QA
 ```
 
 ## Setup (exact steps)
@@ -86,7 +91,7 @@ Sandbox/                  # Test app, entry point for manual QA
 git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
 cd TimeEngine
 Scripts/GenerateProjectFiles.bat   # generates TimeEngine.sln
-# Open TimeEngine.sln in VS2022, build Sandbox, press F5
+# Open TimeEngine.sln in VS2022, build TimeEditor, press F5
 ```
 If Premake errors: `git submodule update --init --recursive`
 
