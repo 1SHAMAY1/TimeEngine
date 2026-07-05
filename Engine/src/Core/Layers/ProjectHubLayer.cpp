@@ -1,13 +1,12 @@
-#include "Utils/TimeGUI.hpp"
 #include "Layers/ProjectHubLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Project/Project.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/PlatformUtils.hpp"
+#include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include "Utils/TimeGUI.hpp"
 
 #include "Renderer/Texture.hpp"
 #include <Windows.h>
@@ -90,8 +89,9 @@ void ProjectHubLayer::OnTimeGUIRender()
     TimeGUI::SetNextWindowViewport(viewport.ID);
 
     TimeGUIWindowFlags window_flags = TimeGUIWindowFlags_NoDocking | TimeGUIWindowFlags_NoTitleBar |
-                                    TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize | TimeGUIWindowFlags_NoMove |
-                                    TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUIWindowFlags_NoNavFocus;
+                                      TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize |
+                                      TimeGUIWindowFlags_NoMove | TimeGUIWindowFlags_NoBringToFrontOnFocus |
+                                      TimeGUIWindowFlags_NoNavFocus;
 
     TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 0.0f);
     TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
@@ -248,7 +248,7 @@ void ProjectHubLayer::UI_DrawProjectsList()
             bool hovered = false;
             TEVector2 pos = TimeGUI::GetCursorScreenPos();
             TEVector2 size(cardWidth, cardHeight);
-            
+
             if (TimeGUI::BeginProjectCard(path.string(), size, hovered))
             {
                 m_ProjectToOpen = path;
@@ -263,12 +263,12 @@ void ProjectHubLayer::UI_DrawProjectsList()
             auto drawList = TimeGUI::GetWindowDrawList();
             if (m_ProjectIcon)
                 drawList.AddImage((TimeGUITextureID)(uint64_t)m_ProjectIcon->GetRendererID(),
-                                           TEVector2(pos.x + 15, pos.y + 15),
-                                           TEVector2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
+                                  TEVector2(pos.x + 15, pos.y + 15),
+                                  TEVector2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
             else
                 drawList.AddRectFilled(TEVector2(pos.x + 15, pos.y + 15),
-                                                TEVector2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y),
-                                                TimeGUI::GetColorU32(TEVector4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
+                                       TEVector2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y),
+                                       TimeGUI::GetColorU32(TEVector4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
 
             TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + iconSize.y + 10);
             TimeGUI::Text("%s", filename.c_str());

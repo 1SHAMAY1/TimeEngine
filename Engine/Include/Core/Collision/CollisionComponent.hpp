@@ -1,7 +1,7 @@
 #pragma once
 #include "CollisionTypes.hpp"
-#include "GameFrameWork/TComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
+#include "GameFrameWork/TComponent.hpp"
 
 namespace TE
 {

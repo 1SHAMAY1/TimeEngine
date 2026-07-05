@@ -1,5 +1,4 @@
 #pragma once
-#include "Utils/TimeGUI.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>

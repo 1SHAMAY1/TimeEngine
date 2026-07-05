@@ -1,5 +1,4 @@
 #pragma once
-#include "Utils/TimeGUI.hpp"
 #include "GameFrameWork/TFunctionLibrary.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Utils/TimeGUI.hpp"
@@ -20,7 +19,7 @@ struct ProceduralFunc
     std::string Description;
     std::string Category;
     TEVector4 Color;
-    std::function<void(TimeGUI::TimeGUIDrawList , TEVector2 center, const std::vector<float> &args,
+    std::function<void(TimeGUI::TimeGUIDrawList, TEVector2 center, const std::vector<float> &args,
                        const std::vector<std::string> &strings)>
         DrawHook;
     std::function<std::vector<float>(const std::vector<float> &args, TEVector2 p, TEVector2 sz, float dt)> ValueHook;
@@ -58,13 +57,16 @@ public:
         return (m.x >= min.x && m.x <= max.x && m.y >= min.y && m.y <= max.y);
     }
 
-    static void DrawCircle(TimeGUI::TimeGUIDrawList dl, TEVector2 c, float r, unsigned int col) { dl.AddCircleFilled(c, r, col, 64); }
+    static void DrawCircle(TimeGUI::TimeGUIDrawList dl, TEVector2 c, float r, unsigned int col)
+    {
+        dl.AddCircleFilled(c, r, col, 64);
+    }
     static void DrawBox(TimeGUI::TimeGUIDrawList dl, TEVector2 c, TEVector2 sz, float rot, unsigned int col)
     {
         if (std::abs(rot) < 0.001f)
         {
             dl.AddRectFilled(TEVector2(c.x - sz.x * 0.5f, c.y - sz.y * 0.5f),
-                              TEVector2(c.x + sz.x * 0.5f, c.y + sz.y * 0.5f), col, 8.0f);
+                             TEVector2(c.x + sz.x * 0.5f, c.y + sz.y * 0.5f), col, 8.0f);
             return;
         }
 
@@ -94,7 +96,8 @@ public:
         dl.AddConvexPolyFilled(points.data(), (int)points.size(), col);
     }
 
-    static void DrawBoxOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 c, TEVector2 sz, float rot, unsigned int col, float thickness)
+    static void DrawBoxOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 c, TEVector2 sz, float rot, unsigned int col,
+                               float thickness)
     {
         const int segments = 8;
         const float rounding = 8.0f;
@@ -126,7 +129,8 @@ public:
         dl.AddTriangleFilled(p1, p2, p3, col);
     }
 
-    static void DrawCapsule(TimeGUI::TimeGUIDrawList dl, TEVector2 start, TEVector2 end, float r, float rot, unsigned int col)
+    static void DrawCapsule(TimeGUI::TimeGUIDrawList dl, TEVector2 start, TEVector2 end, float r, float rot,
+                            unsigned int col)
     {
         TEVector2 center = TEVector2((start.x + end.x) * 0.5f, (start.y + end.y) * 0.5f);
         if (std::abs(rot) > 0.001f)
@@ -147,7 +151,8 @@ public:
         dl.AddCircleFilled(end, r, col, 24);
     }
 
-    static void DrawCapsuleOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 p1, TEVector2 p2, float r, float rot, unsigned int col, float thickness)
+    static void DrawCapsuleOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 p1, TEVector2 p2, float r, float rot,
+                                   unsigned int col, float thickness)
     {
         TEVector2 center = TEVector2((p1.x + p2.x) * 0.5f, (p1.y + p2.y) * 0.5f);
         float dx = p2.x - p1.x;
@@ -194,7 +199,8 @@ public:
         dl.AddConvexPolyFilled(points, segments, col);
     }
 
-    static void DrawEllipseOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 c, float rx, float ry, float rot, unsigned int col, float thickness)
+    static void DrawEllipseOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 c, float rx, float ry, float rot,
+                                   unsigned int col, float thickness)
     {
         const int segments = 64;
         TEVector2 points[segments];
@@ -208,7 +214,8 @@ public:
         dl.AddPolyline(points, segments, col, TimeGUIDrawFlags_Closed, thickness);
     }
 
-    static void DrawText(TimeGUI::TimeGUIDrawList dl, TEVector2 pos, float valOrIdx, const std::vector<std::string> &strings, unsigned int col)
+    static void DrawText(TimeGUI::TimeGUIDrawList dl, TEVector2 pos, float valOrIdx,
+                         const std::vector<std::string> &strings, unsigned int col)
     {
         std::string out;
         if (!strings.empty() && valOrIdx >= 0 && (size_t)valOrIdx < strings.size())
@@ -222,8 +229,9 @@ public:
         dl.AddText(pos, col, out.c_str());
     }
 
-    static void DrawTextOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 pos, float valOrIdx, const std::vector<std::string> &strings,
-                                float thickness, unsigned int tCol, unsigned int oCol)
+    static void DrawTextOutline(TimeGUI::TimeGUIDrawList dl, TEVector2 pos, float valOrIdx,
+                                const std::vector<std::string> &strings, float thickness, unsigned int tCol,
+                                unsigned int oCol)
     {
         std::string out;
         if (!strings.empty() && valOrIdx >= 0 && (size_t)valOrIdx < strings.size())
@@ -257,42 +265,46 @@ public:
         };
 
         // Primitives
-        reg.push_back(
-            {"Circle", "Circle(pos, radius, color)", "Draws a filled circle.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 3)
-                     DrawCircle(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], GCol(args, 3));
-             }});
+        reg.push_back({"Circle", "Circle(pos, radius, color)", "Draws a filled circle.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 3)
+                               DrawCircle(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], GCol(args, 3));
+                       }});
 
-        reg.push_back(
-            {"CircleOutline", "CircleOutline(pos, radius, thickness, color)", "Draws a circle border.", "Primitives",
-             TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 4)
-                     dl.AddCircle(TEVector2(p.x + args[0], p.y + args[1]), args[2], GCol(args, 4), 64, args[3]);
-             }});
+        reg.push_back({"CircleOutline", "CircleOutline(pos, radius, thickness, color)", "Draws a circle border.",
+                       "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 4)
+                               dl.AddCircle(TEVector2(p.x + args[0], p.y + args[1]), args[2], GCol(args, 4), 64,
+                                            args[3]);
+                       }});
 
-        reg.push_back(
-            {"Ring", "Ring(pos, outer_radius, inner_radius, color)", "Draws a hollow ring.", "Primitives",
-             TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 4)
-                 {
-                     float outer = args[2];
-                     float inner = args[3];
-                     float thickness = outer - inner;
-                     float midRadius = inner + (thickness * 0.5f);
-                     dl.AddCircle(TEVector2(p.x + args[0], p.y + args[1]), midRadius, GCol(args, 4), 64, thickness);
-                 }
-             }});
+        reg.push_back({"Ring", "Ring(pos, outer_radius, inner_radius, color)", "Draws a hollow ring.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 4)
+                           {
+                               float outer = args[2];
+                               float inner = args[3];
+                               float thickness = outer - inner;
+                               float midRadius = inner + (thickness * 0.5f);
+                               dl.AddCircle(TEVector2(p.x + args[0], p.y + args[1]), midRadius, GCol(args, 4), 64,
+                                            thickness);
+                           }
+                       }});
 
         reg.push_back(
             {"Ellipse", "Ellipse(pos, rx, ry, rotation, color)", "Draws a filled ellipse.", "Primitives",
              TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
+             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                    const std::vector<std::string> &strings)
              {
                  if (args.size() >= 5)
                      DrawEllipse(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], args[3], args[4], GCol(args, 5));
@@ -300,141 +312,152 @@ public:
                      DrawEllipse(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f, GCol(args, 4));
              }});
 
-        reg.push_back(
-            {"EllipseOutline", "EllipseOutline(pos, rx, ry, rotation, thickness, color)", "Draws a hollow ellipse.",
-             "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 6)
-                     DrawEllipseOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], args[3], args[4],
-                                        GCol(args, 6), args[5]);
-                 else if (args.size() >= 5)
-                     DrawEllipseOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f, GCol(args, 5),
-                                        args[4]);
-             }});
+        reg.push_back({"EllipseOutline", "EllipseOutline(pos, rx, ry, rotation, thickness, color)",
+                       "Draws a hollow ellipse.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 6)
+                               DrawEllipseOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], args[3],
+                                                  args[4], GCol(args, 6), args[5]);
+                           else if (args.size() >= 5)
+                               DrawEllipseOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], args[3], 0.0f,
+                                                  GCol(args, 5), args[4]);
+                       }});
 
-        reg.push_back(
-            {"Box", "Box(pos, size, rotation, color)", "Renders a rounded box.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 5)
-                     DrawBox(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]), args[4],
-                             GCol(args, 5));
-                 else if (args.size() >= 4)
-                     DrawBox(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]), 0.0f, GCol(args, 4));
-             }});
+        reg.push_back({"Box", "Box(pos, size, rotation, color)", "Renders a rounded box.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 5)
+                               DrawBox(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]),
+                                       args[4], GCol(args, 5));
+                           else if (args.size() >= 4)
+                               DrawBox(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]), 0.0f,
+                                       GCol(args, 4));
+                       }});
 
-        reg.push_back(
-            {"BoxOutline", "BoxOutline(pos, size, rotation, thickness, color)", "Renders a rounded box border.",
-             "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 6)
-                     DrawBoxOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]), args[4],
-                                    GCol(args, 6), args[5]);
-                 else if (args.size() >= 5)
-                     DrawBoxOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]), args[4],
-                                    GCol(args, 5), 1.0f);
-             }});
+        reg.push_back({"BoxOutline", "BoxOutline(pos, size, rotation, thickness, color)",
+                       "Renders a rounded box border.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 6)
+                               DrawBoxOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]),
+                                              args[4], GCol(args, 6), args[5]);
+                           else if (args.size() >= 5)
+                               DrawBoxOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(args[2], args[3]),
+                                              args[4], GCol(args, 5), 1.0f);
+                       }});
 
-        reg.push_back(
-            {"Triangle", "Triangle(p1, p2, p3, color)", "Renders a triangle.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 6)
-                     DrawTriangle(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                  TEVector2(p.x + args[4], p.y + args[5]), GCol(args, 6));
-             }});
+        reg.push_back({"Triangle", "Triangle(p1, p2, p3, color)", "Renders a triangle.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 6)
+                               DrawTriangle(dl, TEVector2(p.x + args[0], p.y + args[1]),
+                                            TEVector2(p.x + args[2], p.y + args[3]),
+                                            TEVector2(p.x + args[4], p.y + args[5]), GCol(args, 6));
+                       }});
 
-        reg.push_back(
-            {"Line", "Line(p1, p2, thickness, color)", "Draws a straight line.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 9)
-                     dl.AddLine(TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                 GCol(args, 5), args[4]);
-                 else if (args.size() >= 5)
-                     dl.AddLine(TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                 IM_COL32_WHITE, args[4]);
-             }});
+        reg.push_back({"Line", "Line(p1, p2, thickness, color)", "Draws a straight line.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 9)
+                               dl.AddLine(TEVector2(p.x + args[0], p.y + args[1]),
+                                          TEVector2(p.x + args[2], p.y + args[3]), GCol(args, 5), args[4]);
+                           else if (args.size() >= 5)
+                               dl.AddLine(TEVector2(p.x + args[0], p.y + args[1]),
+                                          TEVector2(p.x + args[2], p.y + args[3]), IM_COL32_WHITE, args[4]);
+                       }});
 
         reg.push_back(
             {"Bezier", "Bezier(p1, p2, p3, p4, thickness, color)", "Draws a cubic Bezier curve.", "Primitives",
              TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
+             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                    const std::vector<std::string> &strings)
              {
                  if (args.size() >= 13)
                      dl.AddBezierCubic(TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                        TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
-                                        GCol(args, 9), args[8]);
+                                       TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
+                                       GCol(args, 9), args[8]);
                  else if (args.size() >= 9)
                      dl.AddBezierCubic(TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                        TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
-                                        IM_COL32_WHITE, args[8]);
+                                       TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
+                                       IM_COL32_WHITE, args[8]);
              }});
 
         reg.push_back(
             {"Quad", "Quad(p1, p2, p3, p4, color)", "Renders a filled quadrilateral.", "Primitives",
              TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
+             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                    const std::vector<std::string> &strings)
              {
                  if (args.size() >= 12)
                      dl.AddQuadFilled(TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                       TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
-                                       GCol(args, 8));
+                                      TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
+                                      GCol(args, 8));
                  else if (args.size() >= 8)
                      dl.AddQuadFilled(TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                       TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
-                                       IM_COL32_WHITE);
+                                      TEVector2(p.x + args[4], p.y + args[5]), TEVector2(p.x + args[6], p.y + args[7]),
+                                      IM_COL32_WHITE);
              }});
 
-        reg.push_back(
-            {"Capsule", "Capsule(p1, p2, rad, rotation, color)", "Renders a pill-shaped line.", "Primitives",
-             TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 10)
-                     DrawCapsule(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                 args[4], args[5], GCol(args, 6));
-                 else if (args.size() >= 9)
-                     DrawCapsule(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                 args[4], 0.0f, GCol(args, 5));
-                 else if (args.size() >= 5)
-                     DrawCapsule(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                 args[4], 0.0f, IM_COL32_WHITE);
-             }});
+        reg.push_back({"Capsule", "Capsule(p1, p2, rad, rotation, color)", "Renders a pill-shaped line.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 10)
+                               DrawCapsule(dl, TEVector2(p.x + args[0], p.y + args[1]),
+                                           TEVector2(p.x + args[2], p.y + args[3]), args[4], args[5], GCol(args, 6));
+                           else if (args.size() >= 9)
+                               DrawCapsule(dl, TEVector2(p.x + args[0], p.y + args[1]),
+                                           TEVector2(p.x + args[2], p.y + args[3]), args[4], 0.0f, GCol(args, 5));
+                           else if (args.size() >= 5)
+                               DrawCapsule(dl, TEVector2(p.x + args[0], p.y + args[1]),
+                                           TEVector2(p.x + args[2], p.y + args[3]), args[4], 0.0f, IM_COL32_WHITE);
+                       }});
 
-        reg.push_back(
-            {"CapsuleOutline", "CapsuleOutline(p1, p2, rad, rotation, thickness, color)",
-             "Renders a pill-shaped border.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 11)
-                     DrawCapsuleOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                        args[4], args[5], GCol(args, 7), args[6]);
-                 else if (args.size() >= 10)
-                     DrawCapsuleOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), TEVector2(p.x + args[2], p.y + args[3]),
-                                        args[4], args[5], IM_COL32_WHITE, args[6]);
-             }});
+        reg.push_back({"CapsuleOutline", "CapsuleOutline(p1, p2, rad, rotation, thickness, color)",
+                       "Renders a pill-shaped border.", "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
+                       [GCol](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                              const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 11)
+                               DrawCapsuleOutline(dl, TEVector2(p.x + args[0], p.y + args[1]),
+                                                  TEVector2(p.x + args[2], p.y + args[3]), args[4], args[5],
+                                                  GCol(args, 7), args[6]);
+                           else if (args.size() >= 10)
+                               DrawCapsuleOutline(dl, TEVector2(p.x + args[0], p.y + args[1]),
+                                                  TEVector2(p.x + args[2], p.y + args[3]), args[4], args[5],
+                                                  IM_COL32_WHITE, args[6]);
+                       }});
 
-        reg.push_back(
-            {"Text", "Text(pos, value, color)", "Renders a string or numeric value.", "Primitives",
-             TEVector4(0.6f, 0.9f, 1, 1),
-             [](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
-             {
-                 if (args.size() >= 3)
-                 {
-                     unsigned int col = IM_COL32_WHITE;
-                     if (args.size() >= 7)
-                         col = TimeGUI::ColorConvertFloat4ToU32(TEVector4(args[3], args[4], args[5], args[6]));
-                     DrawText(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], strings, col);
-                 }
-             }});
+        reg.push_back({"Text", "Text(pos, value, color)", "Renders a string or numeric value.", "Primitives",
+                       TEVector4(0.6f, 0.9f, 1, 1),
+                       [](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                          const std::vector<std::string> &strings)
+                       {
+                           if (args.size() >= 3)
+                           {
+                               unsigned int col = IM_COL32_WHITE;
+                               if (args.size() >= 7)
+                                   col =
+                                       TimeGUI::ColorConvertFloat4ToU32(TEVector4(args[3], args[4], args[5], args[6]));
+                               DrawText(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], strings, col);
+                           }
+                       }});
 
         reg.push_back(
             {"TextOutline", "TextOutline(pos, value, thickness, outline_color, text_color)", "Renders outlined text.",
              "Primitives", TEVector4(0.6f, 0.9f, 1, 1),
-             [](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args, const std::vector<std::string> &strings)
+             [](TimeGUI::TimeGUIDrawList dl, TEVector2 p, const std::vector<float> &args,
+                const std::vector<std::string> &strings)
              {
                  if (args.size() >= 4)
                  {
@@ -443,7 +466,8 @@ public:
                          oCol = TimeGUI::ColorConvertFloat4ToU32(TEVector4(args[4], args[5], args[6], args[7]));
                      if (args.size() >= 12)
                          tCol = TimeGUI::ColorConvertFloat4ToU32(TEVector4(args[8], args[9], args[10], args[11]));
-                     DrawTextOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], strings, args[3], tCol, oCol);
+                     DrawTextOutline(dl, TEVector2(p.x + args[0], p.y + args[1]), args[2], strings, args[3], tCol,
+                                     oCol);
                  }
              }});
 
@@ -524,29 +548,31 @@ public:
         reg.push_back({"dt", "float dt", "Delta time.", "Constants", TEVector4(1, 1, 0.4f, 1), nullptr,
                        [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {dt}; }});
-        reg.push_back({"GetCenter", "Vec2 GetCenter()", "Viewport center point.", "Constants", TEVector4(1, 0.4f, 0.8f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+        reg.push_back({"GetCenter", "Vec2 GetCenter()", "Viewport center point.", "Constants",
+                       TEVector4(1, 0.4f, 0.8f, 1), nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {sz.x * 0.5f, sz.y * 0.5f}; }});
         reg.push_back({"Vec2", "Vec2(x, y)", "Create coordinate vector.", "Constants", TEVector4(1, 0.4f, 0.8f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {(a.size() >= 1) ? a[0] : 0, (a.size() >= 2) ? a[1] : 0}; }});
-        reg.push_back({"Color", "Color(r, g, b, a)", "Create color constructor.", "Constants", TEVector4(1, 0.4f, 0.8f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
-                       {
-                           if (a.empty())
-                               return {1, 1, 1, 1};
-                           if (a.size() == 1)
-                               return {a[0], a[0], a[0], 1};
-                           return {a[0], (a.size() > 1) ? a[1] : 1, (a.size() > 2) ? a[2] : 1,
-                                   (a.size() > 3) ? a[3] : 1};
-                       }});
+        reg.push_back(
+            {"Color", "Color(r, g, b, a)", "Create color constructor.", "Constants", TEVector4(1, 0.4f, 0.8f, 1),
+             nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+             {
+                 if (a.empty())
+                     return {1, 1, 1, 1};
+                 if (a.size() == 1)
+                     return {a[0], a[0], a[0], 1};
+                 return {a[0], (a.size() > 1) ? a[1] : 1, (a.size() > 2) ? a[2] : 1, (a.size() > 3) ? a[3] : 1};
+             }});
         reg.push_back({"HSV", "Color HSV(h, s, v, a)", "Create color from HSV values.", "Constants",
                        TEVector4(1, 0.4f, 0.8f, 1), nullptr,
                        [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        {
                            float r, g, b;
                            TimeGUI::ColorConvertHSVtoRGB((a.size() > 0) ? a[0] : 0, (a.size() > 1) ? a[1] : 1,
-                                                       (a.size() > 2) ? a[2] : 1, r, g, b);
+                                                         (a.size() > 2) ? a[2] : 1, r, g, b);
                            return {r, g, b, (a.size() > 3) ? a[3] : 1};
                        }});
         reg.push_back({"LerpColor", "Color LerpColor(c1, c2, t)", "Mix two colors.", "Constants",
@@ -561,31 +587,39 @@ public:
                        }});
 
         reg.push_back({"Colors::White", "Colors::White", "White preset.", "Constants", TEVector4(0.8f, 0.8f, 0.8f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {1, 1, 1, 1}; }});
         reg.push_back({"Colors::Black", "Colors::Black", "Black preset.", "Constants", TEVector4(0.3f, 0.3f, 0.3f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {0, 0, 0, 1}; }});
-        reg.push_back({"Colors::SkyBlue", "Colors::SkyBlue", "Sky Blue preset.", "Constants", TEVector4(0.5f, 0.8f, 1, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+        reg.push_back({"Colors::SkyBlue", "Colors::SkyBlue", "Sky Blue preset.", "Constants",
+                       TEVector4(0.5f, 0.8f, 1, 1), nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {0.5f, 0.8f, 1, 1}; }});
         reg.push_back({"Colors::Red", "Colors::Red", "Red preset.", "Constants", TEVector4(1, 0.2f, 0.2f, 1), nullptr,
                        [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {1, 0, 0, 1}; }});
         reg.push_back({"Colors::Green", "Colors::Green", "Green preset.", "Constants", TEVector4(0.2f, 1, 0.2f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {0, 1, 0, 1}; }});
-        reg.push_back({"Colors::Blue", "Colors::Blue", "Blue preset.", "Constants", TEVector4(0.2f, 0.2f, 1, 1), nullptr,
+        reg.push_back({"Colors::Blue", "Colors::Blue", "Blue preset.", "Constants", TEVector4(0.2f, 0.2f, 1, 1),
+                       nullptr,
                        [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {0, 0, 1, 1}; }});
         reg.push_back({"Colors::Yellow", "Colors::Yellow", "Yellow preset.", "Constants", TEVector4(1, 1, 0.2f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {1, 1, 0, 1}; }});
         reg.push_back({"Colors::Orange", "Colors::Orange", "Orange preset.", "Constants", TEVector4(1, 0.6f, 0.2f, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {1, 0.5f, 0, 1}; }});
         reg.push_back({"Colors::Purple", "Colors::Purple", "Purple preset.", "Constants", TEVector4(0.8f, 0.2f, 1, 1),
-                       nullptr, [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
+                       nullptr,
+                       [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>
                        { return {0.6f, 0, 1, 1}; }});
         reg.push_back({"Colors::Cyan", "Colors::Cyan", "Cyan preset.", "Constants", TEVector4(0.2f, 1, 1, 1), nullptr,
                        [](const std::vector<float> &a, TEVector2 p, TEVector2 sz, float dt) -> std::vector<float>

@@ -1,11 +1,10 @@
 #pragma once
-#include "Utils/TimeGUI.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Editor/EditorMode.hpp"
 #include "Editor/SpriteModeLibrary.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/RenderCommand.hpp"
-#include "Core/Asset/AssetManager.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
@@ -111,7 +110,7 @@ inline std::vector<TEVector2> GetRoundedPolygonPoints(const std::vector<TEVector
             float t = (float)s / (float)steps;
             float omt = 1.0f - t;
             TEVector2 pt = TEVector2(omt * omt * p1.x + 2.0f * omt * t * ctrl.x + t * t * p2.x,
-                               omt * omt * p1.y + 2.0f * omt * t * ctrl.y + t * t * p2.y);
+                                     omt * omt * p1.y + 2.0f * omt * t * ctrl.y + t * t * p2.y);
             roundedVerts.push_back(pt);
         }
     }
@@ -140,8 +139,8 @@ struct VectorElement
     VectorShapeType Type;
     std::vector<TEVector2> Points;                // Normalized coordinates (0.0 to 1.0)
     std::vector<std::vector<TEVector2>> SubPaths; // Multi-path for Merged elements (each closed independently)
-    float Radius = 0.0f;                       // Normalized radius / RadiusX
-    float RadiusY = 0.0f;                      // Normalized RadiusY (for flattening)
+    float Radius = 0.0f;                          // Normalized radius / RadiusX
+    float RadiusY = 0.0f;                         // Normalized RadiusY (for flattening)
     TEVector4 FillColor = TEVector4(1, 1, 1, 1);
     TEVector4 StrokeColor = TEVector4(0, 0, 0, 1);
     float StrokeThickness = 1.0f;
@@ -314,7 +313,8 @@ public:
             TimeGUI::BeginChild(label, TEVector2(0, 42), false, TimeGUIWindowFlags_NoScrollbar);
             TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
             TEVector2 p = TimeGUI::GetCursorScreenPos(), av = TimeGUI::GetContentRegionAvail();
-            ImU32 colBG = TimeGUI::ColorConvertFloat4ToU32(TEVector4(color.x * 0.2f, color.y * 0.2f, color.z * 0.2f, 0.6f));
+            ImU32 colBG =
+                TimeGUI::ColorConvertFloat4ToU32(TEVector4(color.x * 0.2f, color.y * 0.2f, color.z * 0.2f, 0.6f));
             ImU32 colLine = TimeGUI::ColorConvertFloat4ToU32(TEVector4(color.x, color.y, color.z, 0.8f));
             dl->AddRectFilled(p, TEVector2(p.x + av.x, p.y + 36), colBG, 18.0f);
             dl->AddRect(p, TEVector2(p.x + av.x, p.y + 36), colLine, 18.0f, 0, 1.5f);
@@ -328,7 +328,7 @@ public:
         auto DrawColoredCode = [&](const char *buf, float h = -1.0f)
         {
             TimeGUI::BeginChild((std::string(buf).substr(0, 5) + "_c").c_str(), TEVector2(-1, h), true,
-                              TimeGUIWindowFlags_HorizontalScrollbar);
+                                TimeGUIWindowFlags_HorizontalScrollbar);
             std::string code = buf, word;
             bool inC = false;
             auto &reg = m_Registry;
@@ -471,7 +471,7 @@ public:
 
         // Mode Switcher Header Toolbar
         TimeGUI::BeginChild("##ModeToolbar", TEVector2(0, 36), false,
-                          TimeGUIWindowFlags_NoScrollbar | TimeGUIWindowFlags_NoScrollWithMouse);
+                            TimeGUIWindowFlags_NoScrollbar | TimeGUIWindowFlags_NoScrollWithMouse);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 6.0f);
 
         TimeGUI::AlignTextToFramePadding();
@@ -481,14 +481,16 @@ public:
         TEVector4 activeCol = TEVector4(0.2f, 0.45f, 0.8f, 0.8f);
         TEVector4 inactiveCol = TEVector4(0.12f, 0.12f, 0.14f, 0.5f);
 
-        TimeGUI::PushStyleColor(TimeGUICol_Button, m_CreationMode == SpriteCreationMode::Code ? activeCol : inactiveCol);
+        TimeGUI::PushStyleColor(TimeGUICol_Button,
+                                m_CreationMode == SpriteCreationMode::Code ? activeCol : inactiveCol);
         if (TimeGUI::Button("Code Editor", TEVector2(160, 26)))
             m_CreationMode = SpriteCreationMode::Code;
         TimeGUI::PopStyleColor();
 
         TimeGUI::SameLine();
 
-        TimeGUI::PushStyleColor(TimeGUICol_Button, m_CreationMode == SpriteCreationMode::Vector ? activeCol : inactiveCol);
+        TimeGUI::PushStyleColor(TimeGUICol_Button,
+                                m_CreationMode == SpriteCreationMode::Vector ? activeCol : inactiveCol);
         if (TimeGUI::Button("Vector Editor", TEVector2(120, 26)))
             m_CreationMode = SpriteCreationMode::Vector;
         TimeGUI::PopStyleColor();
@@ -496,7 +498,7 @@ public:
         TimeGUI::SameLine();
 
         TimeGUI::PushStyleColor(TimeGUICol_Button,
-                              m_CreationMode == SpriteCreationMode::PixelPaint ? activeCol : inactiveCol);
+                                m_CreationMode == SpriteCreationMode::PixelPaint ? activeCol : inactiveCol);
         if (TimeGUI::Button("Pixel Paint", TEVector2(120, 26)))
             m_CreationMode = SpriteCreationMode::PixelPaint;
         TimeGUI::PopStyleColor();
@@ -525,13 +527,15 @@ public:
                         cats.insert(f.Category);
                     for (auto &c : cats)
                     {
-                        if (TimeGUI::TreeNodeEx(c.c_str(), TimeGUITreeNodeFlags_DefaultOpen | TimeGUITreeNodeFlags_Framed))
+                        if (TimeGUI::TreeNodeEx(c.c_str(),
+                                                TimeGUITreeNodeFlags_DefaultOpen | TimeGUITreeNodeFlags_Framed))
                         {
                             for (auto &f : r)
                             {
                                 if (f.Category != c)
                                     continue;
-                                TimeGUI::BeginChild(f.Name.c_str(), TEVector2(0, 72), true, TimeGUIWindowFlags_NoScrollbar);
+                                TimeGUI::BeginChild(f.Name.c_str(), TEVector2(0, 72), true,
+                                                    TimeGUIWindowFlags_NoScrollbar);
                                 TimeGUI::TextColored(f.Color, "%s", f.Name.c_str());
                                 TimeGUI::SameLine();
                                 TimeGUI::TextColored(TEVector4(0.5f, 0.5f, 0.5f, 1), "[ %s ]", f.Signature.c_str());
@@ -587,7 +591,7 @@ public:
                             TimeGUI::Checkbox("##V", &m_Keywords[i].ValBool);
                         else if (m_Keywords[i].Type == KeyType::Color)
                             TimeGUI::ColorEdit4("##V", m_Keywords[i].ValColor,
-                                               TimeGUIColorEditFlags_NoInputs | TimeGUIColorEditFlags_NoLabel);
+                                                TimeGUIColorEditFlags_NoInputs | TimeGUIColorEditFlags_NoLabel);
                         else if (m_Keywords[i].Type == KeyType::Vec2)
                             TimeGUI::DragFloat2("##V", m_Keywords[i].ValVec2, 0.1f);
                         TimeGUI::PopID();
@@ -604,7 +608,7 @@ public:
                     {
                         TimeGUI::BeginChild("##PB_e", TEVector2(0, h), true, TimeGUIWindowFlags_HorizontalScrollbar);
                         TimeGUI::InputTextMultiline("##PB", m_ProcBuffer, 2048, TEVector2(1500, -1),
-                                                   TimeGUIInputTextFlags_AllowTabInput);
+                                                    TimeGUIInputTextFlags_AllowTabInput);
                         if (TimeGUI::IsMouseClicked(0) &&
                             !TimeGUI::IsItemHovered(TimeGUIHoveredFlags_AllowWhenBlockedByActiveItem))
                             activeF = "";
@@ -614,7 +618,8 @@ public:
                     {
                         TimeGUI::BeginChild("##PB_p", TEVector2(0, h), false);
                         DrawColoredCode(m_ProcBuffer, -1);
-                        if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_ChildWindows) && TimeGUI::IsMouseDoubleClicked(0))
+                        if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_ChildWindows) &&
+                            TimeGUI::IsMouseDoubleClicked(0))
                             activeF = "##PB";
                         TimeGUI::EndChild();
                     }
@@ -838,8 +843,9 @@ public:
                                         }
                                         else if (it->Type == VectorShapeType::Triangle && it->Points.size() >= 2)
                                         {
-                                            pts = {TEVector2((it->Points[0].x + it->Points[1].x) * 0.5f, it->Points[0].y),
-                                                   TEVector2(it->Points[0].x, it->Points[1].y), it->Points[1]};
+                                            pts = {
+                                                TEVector2((it->Points[0].x + it->Points[1].x) * 0.5f, it->Points[0].y),
+                                                TEVector2(it->Points[0].x, it->Points[1].y), it->Points[1]};
                                         }
                                         else if (it->Type == VectorShapeType::Semicircle && it->Points.size() >= 1)
                                         {
@@ -848,7 +854,7 @@ public:
                                             {
                                                 float t = 3.14159265f + (float)s * 3.14159265f / (float)segments;
                                                 pts.push_back(TEVector2(it->Points[0].x + it->Radius * cosf(t),
-                                                                     it->Points[0].y + it->RadiusY * sinf(t)));
+                                                                        it->Points[0].y + it->RadiusY * sinf(t)));
                                             }
                                         }
                                         else if (it->Type == VectorShapeType::Circle && it->Points.size() >= 1)
@@ -858,7 +864,7 @@ public:
                                             {
                                                 float t = (float)s * 2.0f * 3.14159265f / (float)segments;
                                                 pts.push_back(TEVector2(it->Points[0].x + it->Radius * cosf(t),
-                                                                     it->Points[0].y + it->RadiusY * sinf(t)));
+                                                                        it->Points[0].y + it->RadiusY * sinf(t)));
                                             }
                                         }
                                         else if (!it->SubPaths.empty())
@@ -1001,7 +1007,7 @@ public:
                     if (gridSpacing > 2.0f)
                     {
                         TEVector2 gridStart = TEVector2(p.x + fmodf(m_CanvasPan.x * m_CanvasZoom, gridSpacing),
-                                                   p.y + fmodf(m_CanvasPan.y * m_CanvasZoom, gridSpacing));
+                                                        p.y + fmodf(m_CanvasPan.y * m_CanvasZoom, gridSpacing));
                         for (float x = gridStart.x; x < p.x + sz.x; x += gridSpacing)
                             dl->AddLine(TEVector2(x, p.y), TEVector2(x, p.y + sz.y), IM_COL32(255, 255, 255, 20));
                         for (float y = gridStart.y; y < p.y + sz.y; y += gridSpacing)
@@ -1013,7 +1019,7 @@ public:
                     TEVector2 mousePos = TimeGUI::GetMousePos();
                     TEVector2 relativeMouse = TEVector2(mousePos.x - p.x, mousePos.y - p.y);
                     TEVector2 canvasMouse = TEVector2((relativeMouse.x / m_CanvasZoom - m_CanvasPan.x) / sz.x,
-                                                (relativeMouse.y / m_CanvasZoom - m_CanvasPan.y) / sz.y);
+                                                      (relativeMouse.y / m_CanvasZoom - m_CanvasPan.y) / sz.y);
 
                     // Point-in-shape hover detection
                     int hoveredElementIdx = -1;
@@ -1037,7 +1043,8 @@ public:
                             }
                             else if (elem.Type == VectorShapeType::Triangle && elem.Points.size() >= 2)
                             {
-                                TEVector2 v0 = TEVector2((elem.Points[0].x + elem.Points[1].x) * 0.5f, elem.Points[0].y);
+                                TEVector2 v0 =
+                                    TEVector2((elem.Points[0].x + elem.Points[1].x) * 0.5f, elem.Points[0].y);
                                 TEVector2 v1 = TEVector2(elem.Points[0].x, elem.Points[1].y);
                                 TEVector2 v2 = TEVector2(elem.Points[1].x, elem.Points[1].y);
 
@@ -1159,13 +1166,19 @@ public:
                         auto CanvasToFBO = [&](TEVector2 cp) -> TEVector2
                         {
                             return TEVector2((cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                          (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                                             (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         };
 
                         if (m_CurrentDrawingElement.Subtract)
                         {
-                            fboDl.AddCallback([](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
-                                               { TE::RenderCommand::SetBlendFuncSeparate(TE::BlendFactor::Zero, TE::BlendFactor::One, TE::BlendFactor::Zero, TE::BlendFactor::Zero); }, nullptr);
+                            fboDl.AddCallback(
+                                [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
+                                {
+                                    TE::RenderCommand::SetBlendFuncSeparate(TE::BlendFactor::Zero, TE::BlendFactor::One,
+                                                                            TE::BlendFactor::Zero,
+                                                                            TE::BlendFactor::Zero);
+                                },
+                                nullptr);
                         }
 
                         if (m_CurrentDrawingElement.Type == VectorShapeType::Pen)
@@ -1176,7 +1189,7 @@ public:
                                 for (auto pt : m_CurrentDrawingElement.Points)
                                     screenPts.push_back(CanvasToFBO(pt));
                                 fboDl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, 0,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Rectangle)
@@ -1191,7 +1204,7 @@ public:
                                 float maxY = std::max(p1.y, p2.y);
 
                                 std::vector<TEVector2> baseVerts = {TEVector2(minX, minY), TEVector2(maxX, minY),
-                                                                 TEVector2(maxX, maxY), TEVector2(minX, maxY)};
+                                                                    TEVector2(maxX, maxY), TEVector2(minX, maxY)};
 
                                 float fillRounding = m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom;
                                 float strokeRounding = m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom;
@@ -1215,13 +1228,13 @@ public:
                                     std::vector<TEVector2> strokeVerts =
                                         GetRoundedPolygonPoints(baseVerts, strokeRounding);
                                     fboDl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
-                                                       ImDrawFlags_Closed,
-                                                       m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                                      ImDrawFlags_Closed,
+                                                      m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                                 }
                                 else
                                 {
                                     fboDl.AddRect(p1, p2, strokeCol, 0.0f, 0,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                                 }
                             }
                         }
@@ -1244,8 +1257,8 @@ public:
                                 std::vector<TEVector2> strokeVerts = GetRoundedPolygonPoints(
                                     baseVerts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
                                 fboDl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
-                                                   ImDrawFlags_Closed,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                                  ImDrawFlags_Closed,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Circle)
@@ -1265,7 +1278,7 @@ public:
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                     fboDl.AddConvexPolyFilled(pts.data(), segments, fillCol);
                                 fboDl.AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Semicircle)
@@ -1291,15 +1304,20 @@ public:
                                 std::vector<TEVector2> strokeVerts = GetRoundedPolygonPoints(
                                     pts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
                                 fboDl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
-                                                   ImDrawFlags_Closed,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                                  ImDrawFlags_Closed,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
 
                         if (m_CurrentDrawingElement.Subtract)
                         {
-                            fboDl.AddCallback([](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
-                                               { TE::RenderCommand::SetBlendFunc(TE::BlendFactor::SrcAlpha, TE::BlendFactor::OneMinusSrcAlpha); }, nullptr);
+                            fboDl.AddCallback(
+                                [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
+                                {
+                                    TE::RenderCommand::SetBlendFunc(TE::BlendFactor::SrcAlpha,
+                                                                    TE::BlendFactor::OneMinusSrcAlpha);
+                                },
+                                nullptr);
                         }
                     }
 
@@ -1312,8 +1330,10 @@ public:
                     m_VectorCanvasFB->Unbind();
 
                     // Restore OpenGL state
-                    TE::RenderCommand::SetViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3]);
-                    TE::RenderCommand::SetClearColor({last_clear_color[0], last_clear_color[1], last_clear_color[2], last_clear_color[3]});
+                    TE::RenderCommand::SetViewport(last_viewport[0], last_viewport[1], last_viewport[2],
+                                                   last_viewport[3]);
+                    TE::RenderCommand::SetClearColor(
+                        {last_clear_color[0], last_clear_color[1], last_clear_color[2], last_clear_color[3]});
 
                     // Draw the resulting FBO texture onto the main screen draw list
                     dl->AddImage((TimeGUITextureID)(intptr_t)m_VectorCanvasFB->GetColorAttachmentRendererID(), p,
@@ -1327,15 +1347,15 @@ public:
                         auto CanvasToScreen = [&](TEVector2 cp) -> TEVector2
                         {
                             return TEVector2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                          p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                                             p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         };
 
                         std::vector<TEVector2> anchors;
                         if ((elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle) &&
                             elem.Points.size() >= 2)
                         {
-                            anchors.push_back(elem.Points[0]);                             // Anchor 0: Top-Left
-                            anchors.push_back(elem.Points[1]);                             // Anchor 1: Bottom-Right
+                            anchors.push_back(elem.Points[0]);                                // Anchor 0: Top-Left
+                            anchors.push_back(elem.Points[1]);                                // Anchor 1: Bottom-Right
                             anchors.push_back(TEVector2(elem.Points[1].x, elem.Points[0].y)); // Anchor 2: Top-Right
                             anchors.push_back(TEVector2(elem.Points[0].x, elem.Points[1].y)); // Anchor 3: Bottom-Left
                         }
@@ -1363,9 +1383,9 @@ public:
                     if (m_IsMarqueeSelecting)
                     {
                         TEVector2 ms = TEVector2(p.x + (m_MarqueeStart.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                           p.y + (m_MarqueeStart.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                                                 p.y + (m_MarqueeStart.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         TEVector2 me = TEVector2(p.x + (m_MarqueeEnd.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                           p.y + (m_MarqueeEnd.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                                                 p.y + (m_MarqueeEnd.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         // Normalise so rMin is always top-left
                         TEVector2 rMin = TEVector2(glm::min(ms.x, me.x), glm::min(ms.y, me.y));
                         TEVector2 rMax = TEVector2(glm::max(ms.x, me.x), glm::max(ms.y, me.y));
@@ -1422,7 +1442,7 @@ public:
                         if (wheel != 0.0f)
                         {
                             TEVector2 mouseInCanvasSpace = TEVector2(relativeMouse.x / m_CanvasZoom - m_CanvasPan.x,
-                                                               relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
+                                                                     relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
                             m_CanvasZoom = std::clamp(m_CanvasZoom + wheel * 0.1f, 0.1f, 10.0f);
                             m_CanvasPan.x = relativeMouse.x / m_CanvasZoom - mouseInCanvasSpace.x;
                             m_CanvasPan.y = relativeMouse.y / m_CanvasZoom - mouseInCanvasSpace.y;
@@ -1444,7 +1464,7 @@ public:
                                 auto CanvasToScreen = [&](TEVector2 cp) -> TEVector2
                                 {
                                     return TEVector2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                                  p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                                                     p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                                 };
 
                                 std::vector<TEVector2> anchors;
@@ -1544,7 +1564,7 @@ public:
                             {
                                 m_WasDraggingShape = true;
                                 TEVector2 delta = TEVector2(canvasMouse.x - m_DragStartMousePos.x,
-                                                      canvasMouse.y - m_DragStartMousePos.y);
+                                                            canvasMouse.y - m_DragStartMousePos.y);
                                 for (auto &elem : m_VectorElements)
                                 {
                                     if (elem.Selected)
@@ -1750,7 +1770,7 @@ public:
                     TimeGUI::Dummy(sz);
                     TimeGUI::Separator();
                     TimeGUI::Text("Coords: X: %.1f, Y: %.1f | Zoom: %.1fx", canvasMouse.x * sz.x, canvasMouse.y * sz.y,
-                                m_CanvasZoom);
+                                  m_CanvasZoom);
                 }
                 TimeGUI::EndChild();
 
@@ -1781,10 +1801,10 @@ public:
                         // Selectable Element list item with red highlight if selected or hovered
                         bool isSel = m_VectorElements[i].Selected || (i == m_SelectedElementIdx);
                         TEVector4 col = isSel ? TEVector4(1, 0.3f, 0.3f, 1)
-                                           : (isSub ? TEVector4(0.8f, 0.5f, 1.0f, 1) : TEVector4(1, 1, 1, 1));
+                                              : (isSub ? TEVector4(0.8f, 0.5f, 1.0f, 1) : TEVector4(1, 1, 1, 1));
                         TimeGUI::TextColored(col, "%s%d: %s%s",
-                                           isSub ? "\xE2\x94\x9A " : "", // UTF-8 tree corner \u251A
-                                           i + 1, typeStr, isSub ? " [Cut]" : "");
+                                             isSub ? "\xE2\x94\x9A " : "", // UTF-8 tree corner \u251A
+                                             i + 1, typeStr, isSub ? " [Cut]" : "");
                         if (TimeGUI::IsItemClicked())
                         {
                             m_SelectedElementIdx = i;
@@ -1867,7 +1887,7 @@ public:
 
                     // Track color picker change to add color to history on edit deactivated
                     if (TimeGUI::ColorPicker4("Color", (float *)&m_PixelPaintColor,
-                                            TimeGUIColorEditFlags_NoInputs | TimeGUIColorEditFlags_NoLabel))
+                                              TimeGUIColorEditFlags_NoInputs | TimeGUIColorEditFlags_NoLabel))
                     {
                         // Active editing
                     }
@@ -1885,8 +1905,8 @@ public:
                             TimeGUI::PushID(h);
                             TimeGUI::PushStyleColor(TimeGUICol_Button, m_ColorHistory[h]);
                             TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered,
-                                                  TEVector4(m_ColorHistory[h].x * 1.1f, m_ColorHistory[h].y * 1.1f,
-                                                         m_ColorHistory[h].z * 1.1f, m_ColorHistory[h].w));
+                                                    TEVector4(m_ColorHistory[h].x * 1.1f, m_ColorHistory[h].y * 1.1f,
+                                                              m_ColorHistory[h].z * 1.1f, m_ColorHistory[h].w));
                             if (TimeGUI::Button("##HistoryColor", TEVector2(24, 24)))
                             {
                                 m_PixelPaintColor = m_ColorHistory[h];
@@ -1927,7 +1947,7 @@ public:
                         if (wheel != 0.0f)
                         {
                             TEVector2 mouseInCanvasSpace = TEVector2(relativeMouse.x / m_CanvasZoom - m_CanvasPan.x,
-                                                               relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
+                                                                     relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
                             m_CanvasZoom = std::clamp(m_CanvasZoom + wheel * 0.1f, 0.1f, 10.0f);
                             m_CanvasPan.x = relativeMouse.x / m_CanvasZoom - mouseInCanvasSpace.x;
                             m_CanvasPan.y = relativeMouse.y / m_CanvasZoom - mouseInCanvasSpace.y;
@@ -1958,9 +1978,9 @@ public:
                         for (int x = 0; x < m_PixelGridWidth; x++)
                         {
                             TEVector2 p1 = TEVector2(p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom,
-                                               p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom);
+                                                     p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom);
                             TEVector2 p2 = TEVector2(p.x + ((x + 1) * checkW + m_CanvasPan.x) * m_CanvasZoom,
-                                               p.y + ((y + 1) * checkH + m_CanvasPan.y) * m_CanvasZoom);
+                                                     p.y + ((y + 1) * checkH + m_CanvasPan.y) * m_CanvasZoom);
                             ImU32 bgCol = ((x + y) % 2 == 0) ? IM_COL32(45, 45, 50, 255) : IM_COL32(55, 55, 60, 255);
                             dl->AddRectFilled(p1, p2, bgCol);
                         }
@@ -2046,7 +2066,7 @@ public:
                             sz.y = 50.0f;
 
                         TimeGUI::Image((TimeGUITextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
-                                     TEVector2(sz.x, sz.y), TEVector2(0, 1), TEVector2(1, 0));
+                                       TEVector2(sz.x, sz.y), TEVector2(0, 1), TEVector2(1, 0));
                     }
                 }
                 TimeGUI::EndChild();
@@ -2383,8 +2403,8 @@ private:
         TimeGUI::PushStyleColor(TimeGUICol_Border, TEVector4(0.3f, 0.6f, 1.0f, 0.4f));
 
         if (TimeGUI::BeginPopupModal("Export Sprite Properties", &m_ShowExportPopup,
-                                   TimeGUIWindowFlags_NoResize | TimeGUIWindowFlags_NoScrollbar |
-                                       TimeGUIWindowFlags_NoTitleBar))
+                                     TimeGUIWindowFlags_NoResize | TimeGUIWindowFlags_NoScrollbar |
+                                         TimeGUIWindowFlags_NoTitleBar))
         {
             TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
             TEVector2 p = TimeGUI::GetCursorScreenPos();
@@ -2454,7 +2474,8 @@ private:
             {
                 m_ExportSize = m_LastSimSize; // Active sync
                 TimeGUI::SameLine();
-                TimeGUI::TextColored(TEVector4(0.5f, 0.7f, 1.0f, 1.0f), "(%.0f x %.0f)", m_LastSimSize.x, m_LastSimSize.y);
+                TimeGUI::TextColored(TEVector4(0.5f, 0.7f, 1.0f, 1.0f), "(%.0f x %.0f)", m_LastSimSize.x,
+                                     m_LastSimSize.y);
             }
             TimeGUI::NextColumn();
 
@@ -2552,7 +2573,7 @@ private:
                 TEVector2 previewPos = TimeGUI::GetCursorScreenPos();
                 TimeGUI::TimeGUIDrawList pdl = TimeGUI::GetWindowDrawList();
                 pdl.AddRectFilled(previewPos, TEVector2(previewPos.x + previewW, previewPos.y + previewH),
-                                   IM_COL32(40, 40, 45, 255), 6.0f);
+                                  IM_COL32(40, 40, 45, 255), 6.0f);
 
                 if (m_ExportTransparent)
                 {
@@ -2568,15 +2589,15 @@ private:
                             int iy = (int)(y / checkSize);
                             ImU32 col = ((ix + iy) % 2 == 0) ? IM_COL32(35, 35, 40, 255) : IM_COL32(50, 50, 55, 255);
                             pdl.AddRectFilled(TEVector2(previewPos.x + x, previewPos.y + y),
-                                               TEVector2(previewPos.x + x + cw, previewPos.y + y + ch), col);
+                                              TEVector2(previewPos.x + x + cw, previewPos.y + y + ch), col);
                         }
                     }
                 }
 
                 TimeGUI::Image((TimeGUITextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
-                             TEVector2(previewW, previewH), TEVector2(0, 1), TEVector2(1, 0));
+                               TEVector2(previewW, previewH), TEVector2(0, 1), TEVector2(1, 0));
                 pdl.AddRect(previewPos, TEVector2(previewPos.x + previewW, previewPos.y + previewH),
-                             IM_COL32(80, 140, 255, 80), 6.0f);
+                            IM_COL32(80, 140, 255, 80), 6.0f);
             }
             TimeGUI::SetCursorPosY(TimeGUI::GetWindowHeight() - 65);
             if (TimeGUI::Button("Cancel", TEVector2(130, 38)))
@@ -2605,14 +2626,14 @@ private:
         TimeGUI::SetNextWindowSize(viewport.Size);
         TimeGUI::SetNextWindowViewport(viewport.ID);
         TimeGUI::TimeGUIWindowFlags flags = TimeGUIWindowFlags_NoDecoration | TimeGUIWindowFlags_NoInputs |
-                                 TimeGUIWindowFlags_NoBackground | TimeGUIWindowFlags_NoScrollWithMouse |
-                                 TimeGUIWindowFlags_AlwaysAutoResize;
+                                            TimeGUIWindowFlags_NoBackground | TimeGUIWindowFlags_NoScrollWithMouse |
+                                            TimeGUIWindowFlags_AlwaysAutoResize;
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
         TimeGUI::Begin("##LoadingOverlay", nullptr, flags);
         TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
         TEVector2 center = TEVector2(viewport.Pos.x + viewport.Size.x * 0.5f, viewport.Pos.y + viewport.Size.y * 0.5f);
         dl.AddRectFilled(viewport.Pos, TEVector2(viewport.Pos.x + viewport.Size.x, viewport.Pos.y + viewport.Size.y),
-                          IM_COL32(15, 15, 20, 180));
+                         IM_COL32(15, 15, 20, 180));
         float t = (float)TimeGUI::GetTime();
         for (int i = 0; i < 8; i++)
         {
@@ -2620,7 +2641,7 @@ private:
             float off = 30.0f;
             float r = (1.0f + sinf(ang)) * 4.0f + 2.0f;
             dl.AddCircleFilled(TEVector2(center.x + cosf(ang) * off, center.y + sinf(ang) * off), r,
-                                IM_COL32(200, 220, 255, 200));
+                               IM_COL32(200, 220, 255, 200));
         }
         TimeGUI::SetCursorPos(TEVector2(viewport.Size.x * 0.5f - 80.0f, viewport.Size.y * 0.5f + 60.0f));
         TimeGUI::TextColored(TEVector4(0.8f, 0.9f, 1.0f, 1.0f), "GENERATING SPRITE SHEET...");
@@ -2673,7 +2694,7 @@ private:
             if (!m_ExportTransparent)
             {
                 dl.AddRectFilled(origin, TEVector2(origin.x + cellSize.x, origin.y + cellSize.y),
-                                  IM_COL32(30, 30, 35, 255), 12.0f);
+                                 IM_COL32(30, 30, 35, 255), 12.0f);
             }
             // Apply export offset directly in pixel space (pan expects pixels, same as m_CanvasPan)
             if (m_CreationMode == SpriteCreationMode::Code)
@@ -2791,7 +2812,7 @@ private:
             auto CanvasToScreen = [&](TEVector2 cp) -> TEVector2
             {
                 return TEVector2(origin.x + (offset.x + cp.x * baseCanvasSize.x + pan.x) * zoom,
-                              origin.y + (offset.y + cp.y * baseCanvasSize.y + pan.y) * zoom);
+                                 origin.y + (offset.y + cp.y * baseCanvasSize.y + pan.y) * zoom);
             };
 
             // Set subtractive blend mode: zero ONLY alpha channel, keep RGB (transparent hole)
@@ -2800,7 +2821,9 @@ private:
                 dl.AddCallback(
                     [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
                     {
-                        TE::RenderCommand::SetBlendFuncSeparate(TE::BlendFactor::Zero, TE::BlendFactor::One, TE::BlendFactor::Zero, TE::BlendFactor::Zero); // keep RGB, zero alpha
+                        TE::RenderCommand::SetBlendFuncSeparate(TE::BlendFactor::Zero, TE::BlendFactor::One,
+                                                                TE::BlendFactor::Zero,
+                                                                TE::BlendFactor::Zero); // keep RGB, zero alpha
                     },
                     nullptr);
             }
@@ -2809,8 +2832,13 @@ private:
             {
                 if (elem.Subtract)
                 {
-                    dl.AddCallback([](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
-                                    { TE::RenderCommand::SetBlendFunc(TE::BlendFactor::SrcAlpha, TE::BlendFactor::OneMinusSrcAlpha); }, nullptr);
+                    dl.AddCallback(
+                        [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
+                        {
+                            TE::RenderCommand::SetBlendFunc(TE::BlendFactor::SrcAlpha,
+                                                            TE::BlendFactor::OneMinusSrcAlpha);
+                        },
+                        nullptr);
                 }
             };
 
@@ -2830,7 +2858,7 @@ private:
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
                             dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
-                                            elem.StrokeThickness * 2.0f * zoom);
+                                           elem.StrokeThickness * 2.0f * zoom);
                         }
                         // Draw fills on top to hide overlapping internal boundaries
                         for (const auto &subPath : elem.SubPaths)
@@ -2854,7 +2882,7 @@ private:
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
                             dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
-                                            elem.StrokeThickness * zoom);
+                                           elem.StrokeThickness * zoom);
                         }
                     }
                 }
@@ -2872,7 +2900,7 @@ private:
                     if (elem.FillColor.w > 0.0f)
                         dl.AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
                     dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
-                                    elem.StrokeThickness * zoom);
+                                   elem.StrokeThickness * zoom);
                 }
             }
             else if (elem.Type == VectorShapeType::Rectangle)
@@ -2912,7 +2940,7 @@ private:
                 std::vector<TEVector2> strokeVerts =
                     GetRoundedPolygonPoints(baseVerts, elem.StrokeRounding * baseCanvasSize.x * zoom);
                 dl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
-                                elem.StrokeThickness * zoom);
+                               elem.StrokeThickness * zoom);
             }
             else if (elem.Type == VectorShapeType::Circle)
             {
@@ -2963,7 +2991,7 @@ private:
                 std::vector<TEVector2> strokeVerts =
                     GetRoundedPolygonPoints(pts, elem.StrokeRounding * baseCanvasSize.x * zoom);
                 dl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
-                                elem.StrokeThickness * zoom);
+                               elem.StrokeThickness * zoom);
             }
 
             RestoreBlendIfNeeded();
@@ -3010,7 +3038,8 @@ private:
         }
     }
 
-    void RenderPixelGrid(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom = 1.0f, TEVector2 pan = TEVector2(0, 0))
+    void RenderPixelGrid(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom = 1.0f,
+                         TEVector2 pan = TEVector2(0, 0))
     {
         if ((int)m_PixelGrid.size() != m_PixelGridWidth * m_PixelGridHeight)
         {
@@ -3027,9 +3056,10 @@ private:
                 TEVector4 col = m_PixelGrid[y * m_PixelGridWidth + x];
                 if (col.w > 0.0f)
                 {
-                    TEVector2 p1 = TEVector2(origin.x + (x * pixelW + pan.x) * zoom, origin.y + (y * pixelH + pan.y) * zoom);
+                    TEVector2 p1 =
+                        TEVector2(origin.x + (x * pixelW + pan.x) * zoom, origin.y + (y * pixelH + pan.y) * zoom);
                     TEVector2 p2 = TEVector2(origin.x + ((x + 1) * pixelW + pan.x) * zoom,
-                                       origin.y + ((y + 1) * pixelH + pan.y) * zoom);
+                                             origin.y + ((y + 1) * pixelH + pan.y) * zoom);
                     dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                 }
             }

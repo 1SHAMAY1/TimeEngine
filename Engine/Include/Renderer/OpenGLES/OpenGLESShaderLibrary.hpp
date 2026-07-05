@@ -2,13 +2,15 @@
 #include "Renderer/OpenGLES/OpenGLESShader.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 #include <glad/glad.h>
-#include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
-namespace TE {
+namespace TE
+{
 
-class OpenGLESShaderLibrary : public ShaderLibrary {
+class OpenGLESShaderLibrary : public ShaderLibrary
+{
 public:
     // ===== OpenGL ES-Specific Shader Creation =====
     static std::shared_ptr<OpenGLESShader> CreateOpenGLESBasicShader();
@@ -22,15 +24,15 @@ public:
     static std::shared_ptr<OpenGLESShader> CreateOpenGLESLight2DShader();
 
     // ===== OpenGL ES-Specific Uniform Functions =====
-    static void SetUniform1i(OpenGLESShader* shader, const std::string& name, int value);
-    static void SetUniform1f(OpenGLESShader* shader, const std::string& name, float value);
-    static void SetUniform2f(OpenGLESShader* shader, const std::string& name, const glm::vec2& value);
-    static void SetUniform3f(OpenGLESShader* shader, const std::string& name, const glm::vec3& value);
-    static void SetUniform4f(OpenGLESShader* shader, const std::string& name, const glm::vec4& value);
-    static void SetUniformMat3(OpenGLESShader* shader, const std::string& name, const glm::mat3& value);
-    static void SetUniformMat4(OpenGLESShader* shader, const std::string& name, const glm::mat4& value);
-    static void SetUniformMat4Array(OpenGLESShader* shader, const std::string& name,
-                                    const std::vector<glm::mat4>& values);
+    static void SetUniform1i(OpenGLESShader *shader, const std::string &name, int value);
+    static void SetUniform1f(OpenGLESShader *shader, const std::string &name, float value);
+    static void SetUniform2f(OpenGLESShader *shader, const std::string &name, const glm::vec2 &value);
+    static void SetUniform3f(OpenGLESShader *shader, const std::string &name, const glm::vec3 &value);
+    static void SetUniform4f(OpenGLESShader *shader, const std::string &name, const glm::vec4 &value);
+    static void SetUniformMat3(OpenGLESShader *shader, const std::string &name, const glm::mat3 &value);
+    static void SetUniformMat4(OpenGLESShader *shader, const std::string &name, const glm::mat4 &value);
+    static void SetUniformMat4Array(OpenGLESShader *shader, const std::string &name,
+                                    const std::vector<glm::mat4> &values);
 
     // ===== OpenGL ES State Management =====
     static void EnableBlending();
@@ -64,14 +66,14 @@ public:
     static void DeleteFramebuffer(unsigned int framebufferID);
 
     // ===== OpenGL ES Uniform Buffer Functions (ES 3.0+) =====
-    static unsigned int CreateUniformBuffer(const void* data, size_t size);
+    static unsigned int CreateUniformBuffer(const void *data, size_t size);
     static void BindUniformBuffer(unsigned int uboID, unsigned int bindingPoint);
-    static void UpdateUniformBuffer(unsigned int uboID, const void* data, size_t offset, size_t size);
-    static void BindUniformBlock(OpenGLESShader* shader, const std::string& blockName, unsigned int bindingPoint);
+    static void UpdateUniformBuffer(unsigned int uboID, const void *data, size_t offset, size_t size);
+    static void BindUniformBlock(OpenGLESShader *shader, const std::string &blockName, unsigned int bindingPoint);
 
     // ===== OpenGL ES Vertex Array Functions =====
     static void SetVertexAttribPointer(unsigned int index, int size, GLenum type, bool normalized, int stride,
-                                       const void* pointer);
+                                       const void *pointer);
     static void EnableVertexAttribArray(unsigned int index);
     static void DisableVertexAttribArray(unsigned int index);
     static void VertexAttribDivisor(unsigned int index, unsigned int divisor);
@@ -79,25 +81,25 @@ public:
     // ===== OpenGL ES Debug Functions (via KHR_debug extension) =====
     static void EnableDebugOutput();
     static void SetDebugCallback();
-    static void PushDebugGroup(const std::string& message);
+    static void PushDebugGroup(const std::string &message);
     static void PopDebugGroup();
-    static void ObjectLabel(GLenum identifier, unsigned int name, const std::string& label);
+    static void ObjectLabel(GLenum identifier, unsigned int name, const std::string &label);
 
     // ===== OpenGL ES Query Functions =====
     static void BeginQuery(GLenum target, unsigned int id);
     static void EndQuery(GLenum target);
     static int GetQueryObjecti(unsigned int id, GLenum pname);
-    static void GetQueryObjectiv(unsigned int id, GLenum pname, int* params);
-    static void GetQueryObjectuiv(unsigned int id, GLenum pname, unsigned int* params);
+    static void GetQueryObjectiv(unsigned int id, GLenum pname, int *params);
+    static void GetQueryObjectuiv(unsigned int id, GLenum pname, unsigned int *params);
 
     // ===== OpenGL ES Sync / Fence (ES 3.0+) =====
     static GLsync FenceSync(GLenum condition, GLbitfield flags);
     static GLenum ClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout);
-    static void   DeleteSync(GLsync sync);
+    static void DeleteSync(GLsync sync);
 
 private:
-    static void GLAPIENTRY DebugCallback(GLenum source, GLenum type, unsigned int id, GLenum severity,
-                                         GLsizei length, const char* message, const void* userParam);
+    static void GLAPIENTRY DebugCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length,
+                                         const char *message, const void *userParam);
 };
 
 } // namespace TE

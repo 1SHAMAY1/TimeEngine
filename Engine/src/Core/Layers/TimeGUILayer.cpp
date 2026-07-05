@@ -106,8 +106,6 @@ void TimeGUILayer::End()
     }
 }
 
-void TimeGUILayer::OnTimeGUIRender()
-{
-}
+void TimeGUILayer::OnTimeGUIRender() {}
 
 } // namespace TE

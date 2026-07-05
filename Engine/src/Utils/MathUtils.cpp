@@ -1,11 +1,11 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "Utils/MathUtils.hpp"
+#include "imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/euler_angles.hpp>
-#include "imgui.h"
 
 namespace TE
 {
@@ -79,7 +79,7 @@ TEMatrix4 TETransform::GetMatrix() const
     glm::mat4 rotation =
         glm::eulerAngleYXZ(glm::radians(Rotation.Yaw), glm::radians(Rotation.Pitch), glm::radians(Rotation.Roll));
     glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(Scale.Scale.x, Scale.Scale.y, Scale.Scale.z));
-    
+
     glm::mat4 result = translation * rotation * scale;
 
     TEMatrix4 ret;
@@ -87,7 +87,7 @@ TEMatrix4 TETransform::GetMatrix() const
     return ret;
 }
 
-TEMatrix4 TEMatrix4::Scale(const TEMatrix4& mat, const TEVector& scale)
+TEMatrix4 TEMatrix4::Scale(const TEMatrix4 &mat, const TEVector &scale)
 {
     glm::mat4 a = glm::make_mat4(&mat.m[0][0]);
     glm::mat4 result = glm::scale(a, glm::vec3(scale.x, scale.y, scale.z));
@@ -96,7 +96,7 @@ TEMatrix4 TEMatrix4::Scale(const TEMatrix4& mat, const TEVector& scale)
     return ret;
 }
 
-TEMatrix4 TEMatrix4::Translate(const TEMatrix4& mat, const TEVector& translation)
+TEMatrix4 TEMatrix4::Translate(const TEMatrix4 &mat, const TEVector &translation)
 {
     glm::mat4 a = glm::make_mat4(&mat.m[0][0]);
     glm::mat4 result = glm::translate(a, glm::vec3(translation.x, translation.y, translation.z));

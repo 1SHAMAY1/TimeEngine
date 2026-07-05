@@ -1,192 +1,187 @@
-#include "Utils/TimeGUI.hpp"
 #include "Layers/LogoLayer.hpp"
-#include "Utils/TimeGUI.hpp"
-#include "Utils/MathUtils.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "Utils/MathUtils.hpp"
+#include "Utils/TimeGUI.hpp"
 
-namespace TE {
+namespace TE
+{
 
+// Constructor
+LogoLayer::LogoLayer(const std::string &name) : Layer(name), m_ShouldClose(false) {}
 
-    // Constructor
-    LogoLayer::LogoLayer(const std::string& name)
-        : Layer(name), m_ShouldClose(false)
+// Destructor
+LogoLayer::~LogoLayer() {}
+
+// Called when welcome animation is done
+void LogoLayer::OnWelcomeAnimationComplete()
+{
+    // Don't broadcast immediately - defer to next frame
+    m_ShouldBroadcast = true;
+    m_ShouldClose = true;
+}
+
+// Render the logo animation using TimeGUI draw lists
+void LogoLayer::OnTimeGUIRender()
+{
+    TimeGUI::TimeGUIIO io = TimeGUI::GetIO();
+    m_Time += io.DeltaTime;
+
+    // Start animation after a short delay
+    if (!m_AnimationStarted && m_Time >= 1.0f)
     {
-    }
-
-    // Destructor
-    LogoLayer::~LogoLayer() {}
-
-    // Called when welcome animation is done
-    void LogoLayer::OnWelcomeAnimationComplete()
-    {
-        // Don't broadcast immediately - defer to next frame
-        m_ShouldBroadcast = true;
-        m_ShouldClose = true;
-    }
-
-
-    // Render the logo animation using TimeGUI draw lists
-    void LogoLayer::OnTimeGUIRender()
-    {
-        TimeGUI::TimeGUIIO io = TimeGUI::GetIO();
-        m_Time += io.DeltaTime;
-
-        // Start animation after a short delay
-        if (!m_AnimationStarted && m_Time >= 1.0f)
-        {
-            m_AnimationStarted = true;
-            m_AnimationStartTime = m_Time;
-            m_CharIndex = 0;
-            m_DisplayText.clear();
-        }
-
-        // Exit if not animating or finished
-        if (!m_AnimationStarted || m_AnimationFinished)
-        {
-            if (m_ShouldClose)
-                Application::Get().MarkLayerForRemoval(this);
-            return;
-        }
-
-        // Setup screen geometry and center
-        TimeGUI::TimeGUIViewport viewport = TimeGUI::GetMainViewport();
-        TEVector2 screenPos = viewport.Pos;
-        TEVector2 screenSize = viewport.Size;
-        TEVector2 center = screenPos + screenSize * 0.5f;
-        center.y -= screenSize.y * 0.1f;
-
-        TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetBackgroundDrawList();
-
-        // === Background Fill ===
-        drawList.AddRectFilled(screenPos, screenPos + screenSize, IM_COL32(0, 0, 0, 255));
-
-        // === Animate Text Reveal ===
-        size_t targetCount = static_cast<size_t>((m_Time - m_AnimationStartTime) / m_LetterInterval);
-        if (targetCount > m_CharIndex && m_CharIndex < m_FullText.length())
-        {
-            m_CharIndex++;
-            m_DisplayText = m_FullText.substr(0, m_CharIndex);
-        }
-
-        // === Logo Rendering ===
-        DrawTimeEngineLogo(center, 40.0f, drawList, m_Time);
-
-        // === Animated Text Rendering ===
-        auto font = TimeGUI::GetDefaultFont();
-        float fontSize = 24.0f;
-        TEVector2 textSize = font.CalcTextSizeA(fontSize, FLT_MAX, -1.0f, m_DisplayText.c_str());
-        TEVector2 textPos = center + TEVector2(-textSize.x * 0.5f, 55.0f);
-        drawList.AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), m_DisplayText.c_str());
-
-        // === Animation Completion Check ===
-        if (m_CharIndex == m_FullText.length() &&
-            (m_Time - m_AnimationStartTime) >= (m_FullText.length() * m_LetterInterval + m_TextClearDelay))
-        {
-            m_AnimationFinished = true;
-            m_DisplayText.clear();
-            OnWelcomeAnimationComplete();
-        }
-
-        // Broadcast completion on next frame to avoid modifying layer stack during render
-        if (m_ShouldBroadcast)
-        {
-            m_ShouldBroadcast = false;
-            LogoFinishedDelegate.Broadcast();
-        }
-        
-        // Layer removal check - only after broadcasting is done
-        if (m_ShouldClose && !m_ShouldBroadcast && !m_IsBeingRemoved)
-        {
-            TE_CORE_INFO("Removing Logo.");
-            m_IsBeingRemoved = true;
-            Application::Get().MarkLayerForRemoval(this);
-        }
-    }
-
-    // Reset layer state on removal
-    void LogoLayer::OnDetach()
-    {
-        m_Time = 0.0f;
-        m_AnimationStartTime = 0.0f;
+        m_AnimationStarted = true;
+        m_AnimationStartTime = m_Time;
         m_CharIndex = 0;
         m_DisplayText.clear();
-        m_AnimationStarted = false;
-        m_AnimationFinished = false;
-        m_ShouldClose = false;
-        m_ShouldBroadcast = false;
-        m_IsBeingRemoved = false;
     }
 
-    // === Draw the animated TimeEngine Logo ===
-    void LogoLayer::DrawTimeEngineLogo(const TEVector2& center, float radius, TimeGUI::TimeGUIDrawList drawList, float time)
+    // Exit if not animating or finished
+    if (!m_AnimationStarted || m_AnimationFinished)
     {
-        const float pi = 3.1415926f;
-        const unsigned int color       = IM_COL32(255, 255, 255, 255);
-        const unsigned int faintColor  = IM_COL32(255, 255, 255, 60);
-        const unsigned int strongColor = IM_COL32(255, 255, 255, 200);
-
-        // === Static Clock Face Circle ===
-        drawList.AddCircle(center, radius, color, 64, 2.5f);
-
-        // === Hour Tick Marks ===
-        for (int i = 0; i < 12; ++i)
-        {
-            float angle = i * (2.0f * pi / 12);
-            TEVector2 dir = { cosf(angle), sinf(angle) };
-            TEVector2 inner = center + dir * (radius - 4.0f);
-            TEVector2 outer = center + dir * radius;
-            drawList.AddLine(inner, outer, color, 1.8f);
-        }
-
-        // === Rotating Gear Arcs (Separated) ===
-        const int gearTeeth = 12;
-        float gearRotation = -time * 0.5f;
-        float arcSpacing   = 50.0f;
-        float arcThickness = 12.0f;
-        float arcRadiusInner = radius + arcSpacing;
-        float arcRadiusOuter = arcRadiusInner + arcThickness;
-
-        for (int i = 0; i < gearTeeth; ++i)
-        {
-            float startAngle = i * (2.0f * pi / gearTeeth) + gearRotation;
-            float endAngle   = startAngle + (2.0f * pi / gearTeeth) * 0.6f;
-
-            const int arcSegments = 8;
-            for (int j = 0; j < arcSegments; ++j)
-            {
-                float t0 = startAngle + (endAngle - startAngle) * (j / (float)arcSegments);
-                float t1 = startAngle + (endAngle - startAngle) * ((j + 1) / (float)arcSegments);
-
-                TEVector2 p0_outer = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusOuter;
-                TEVector2 p1_outer = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusOuter;
-                TEVector2 p0_inner = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusInner;
-                TEVector2 p1_inner = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusInner;
-
-                drawList.AddQuadFilled(p0_inner, p1_inner, p1_outer, p0_outer, faintColor);
-            }
-        }
-
-        // === Clock Hands (Fast Spinning) ===
-        float fastTime = time * 100.0f;
-        float seconds = fmod(fastTime, 60.0f);
-        float minutes = fmod(fastTime * 5 / 60.0f, 60.0f);
-        float hours   = fmod(fastTime * 10 / 3600.0f, 12.0f);
-
-        float secondAngle = -pi / 2.0f + seconds * (2.0f * pi / 60.0f);
-        float minuteAngle = -pi / 2.0f + minutes * (2.0f * pi / 60.0f);
-        float hourAngle   = -pi / 2.0f + hours * (2.0f * pi / 12.0f);
-
-        TEVector2 secDir = { cosf(secondAngle), sinf(secondAngle) };
-        TEVector2 minDir = { cosf(minuteAngle), sinf(minuteAngle) };
-        TEVector2 hrDir  = { cosf(hourAngle), sinf(hourAngle) };
-
-        drawList.AddLine(center, center + secDir * (radius - 5.0f), IM_COL32(255, 50, 50, 200), 1.5f);     // Second hand
-        drawList.AddLine(center, center + minDir * (radius - 10.0f), strongColor, 2.5f);                  // Minute hand
-        drawList.AddLine(center, center + hrDir * (radius - 20.0f), color, 3.5f);                         // Hour hand
-
-        // === Clock Center Pin ===
-        drawList.AddCircleFilled(center, 3.0f, color);
+        if (m_ShouldClose)
+            Application::Get().MarkLayerForRemoval(this);
+        return;
     }
 
+    // Setup screen geometry and center
+    TimeGUI::TimeGUIViewport viewport = TimeGUI::GetMainViewport();
+    TEVector2 screenPos = viewport.Pos;
+    TEVector2 screenSize = viewport.Size;
+    TEVector2 center = screenPos + screenSize * 0.5f;
+    center.y -= screenSize.y * 0.1f;
+
+    TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetBackgroundDrawList();
+
+    // === Background Fill ===
+    drawList.AddRectFilled(screenPos, screenPos + screenSize, IM_COL32(0, 0, 0, 255));
+
+    // === Animate Text Reveal ===
+    size_t targetCount = static_cast<size_t>((m_Time - m_AnimationStartTime) / m_LetterInterval);
+    if (targetCount > m_CharIndex && m_CharIndex < m_FullText.length())
+    {
+        m_CharIndex++;
+        m_DisplayText = m_FullText.substr(0, m_CharIndex);
+    }
+
+    // === Logo Rendering ===
+    DrawTimeEngineLogo(center, 40.0f, drawList, m_Time);
+
+    // === Animated Text Rendering ===
+    auto font = TimeGUI::GetDefaultFont();
+    float fontSize = 24.0f;
+    TEVector2 textSize = font.CalcTextSizeA(fontSize, FLT_MAX, -1.0f, m_DisplayText.c_str());
+    TEVector2 textPos = center + TEVector2(-textSize.x * 0.5f, 55.0f);
+    drawList.AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), m_DisplayText.c_str());
+
+    // === Animation Completion Check ===
+    if (m_CharIndex == m_FullText.length() &&
+        (m_Time - m_AnimationStartTime) >= (m_FullText.length() * m_LetterInterval + m_TextClearDelay))
+    {
+        m_AnimationFinished = true;
+        m_DisplayText.clear();
+        OnWelcomeAnimationComplete();
+    }
+
+    // Broadcast completion on next frame to avoid modifying layer stack during render
+    if (m_ShouldBroadcast)
+    {
+        m_ShouldBroadcast = false;
+        LogoFinishedDelegate.Broadcast();
+    }
+
+    // Layer removal check - only after broadcasting is done
+    if (m_ShouldClose && !m_ShouldBroadcast && !m_IsBeingRemoved)
+    {
+        TE_CORE_INFO("Removing Logo.");
+        m_IsBeingRemoved = true;
+        Application::Get().MarkLayerForRemoval(this);
+    }
 }
+
+// Reset layer state on removal
+void LogoLayer::OnDetach()
+{
+    m_Time = 0.0f;
+    m_AnimationStartTime = 0.0f;
+    m_CharIndex = 0;
+    m_DisplayText.clear();
+    m_AnimationStarted = false;
+    m_AnimationFinished = false;
+    m_ShouldClose = false;
+    m_ShouldBroadcast = false;
+    m_IsBeingRemoved = false;
+}
+
+// === Draw the animated TimeEngine Logo ===
+void LogoLayer::DrawTimeEngineLogo(const TEVector2 &center, float radius, TimeGUI::TimeGUIDrawList drawList, float time)
+{
+    const float pi = 3.1415926f;
+    const unsigned int color = IM_COL32(255, 255, 255, 255);
+    const unsigned int faintColor = IM_COL32(255, 255, 255, 60);
+    const unsigned int strongColor = IM_COL32(255, 255, 255, 200);
+
+    // === Static Clock Face Circle ===
+    drawList.AddCircle(center, radius, color, 64, 2.5f);
+
+    // === Hour Tick Marks ===
+    for (int i = 0; i < 12; ++i)
+    {
+        float angle = i * (2.0f * pi / 12);
+        TEVector2 dir = {cosf(angle), sinf(angle)};
+        TEVector2 inner = center + dir * (radius - 4.0f);
+        TEVector2 outer = center + dir * radius;
+        drawList.AddLine(inner, outer, color, 1.8f);
+    }
+
+    // === Rotating Gear Arcs (Separated) ===
+    const int gearTeeth = 12;
+    float gearRotation = -time * 0.5f;
+    float arcSpacing = 50.0f;
+    float arcThickness = 12.0f;
+    float arcRadiusInner = radius + arcSpacing;
+    float arcRadiusOuter = arcRadiusInner + arcThickness;
+
+    for (int i = 0; i < gearTeeth; ++i)
+    {
+        float startAngle = i * (2.0f * pi / gearTeeth) + gearRotation;
+        float endAngle = startAngle + (2.0f * pi / gearTeeth) * 0.6f;
+
+        const int arcSegments = 8;
+        for (int j = 0; j < arcSegments; ++j)
+        {
+            float t0 = startAngle + (endAngle - startAngle) * (j / (float)arcSegments);
+            float t1 = startAngle + (endAngle - startAngle) * ((j + 1) / (float)arcSegments);
+
+            TEVector2 p0_outer = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusOuter;
+            TEVector2 p1_outer = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusOuter;
+            TEVector2 p0_inner = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusInner;
+            TEVector2 p1_inner = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusInner;
+
+            drawList.AddQuadFilled(p0_inner, p1_inner, p1_outer, p0_outer, faintColor);
+        }
+    }
+
+    // === Clock Hands (Fast Spinning) ===
+    float fastTime = time * 100.0f;
+    float seconds = fmod(fastTime, 60.0f);
+    float minutes = fmod(fastTime * 5 / 60.0f, 60.0f);
+    float hours = fmod(fastTime * 10 / 3600.0f, 12.0f);
+
+    float secondAngle = -pi / 2.0f + seconds * (2.0f * pi / 60.0f);
+    float minuteAngle = -pi / 2.0f + minutes * (2.0f * pi / 60.0f);
+    float hourAngle = -pi / 2.0f + hours * (2.0f * pi / 12.0f);
+
+    TEVector2 secDir = {cosf(secondAngle), sinf(secondAngle)};
+    TEVector2 minDir = {cosf(minuteAngle), sinf(minuteAngle)};
+    TEVector2 hrDir = {cosf(hourAngle), sinf(hourAngle)};
+
+    drawList.AddLine(center, center + secDir * (radius - 5.0f), IM_COL32(255, 50, 50, 200), 1.5f); // Second hand
+    drawList.AddLine(center, center + minDir * (radius - 10.0f), strongColor, 2.5f);               // Minute hand
+    drawList.AddLine(center, center + hrDir * (radius - 20.0f), color, 3.5f);                      // Hour hand
+
+    // === Clock Center Pin ===
+    drawList.AddCircleFilled(center, 3.0f, color);
+}
+
+} // namespace TE

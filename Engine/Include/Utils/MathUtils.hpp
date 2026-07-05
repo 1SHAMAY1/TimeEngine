@@ -180,16 +180,24 @@ struct TE_API TEVector4
     ImVec4 ToImVec4() const;
     operator ImVec4() const;
 
-    float& operator[](int index) {
-        if (index == 0) return x;
-        if (index == 1) return y;
-        if (index == 2) return z;
+    float &operator[](int index)
+    {
+        if (index == 0)
+            return x;
+        if (index == 1)
+            return y;
+        if (index == 2)
+            return z;
         return w;
     }
-    const float& operator[](int index) const {
-        if (index == 0) return x;
-        if (index == 1) return y;
-        if (index == 2) return z;
+    const float &operator[](int index) const
+    {
+        if (index == 0)
+            return x;
+        if (index == 1)
+            return y;
+        if (index == 2)
+            return z;
         return w;
     }
 
@@ -252,11 +260,11 @@ struct TE_API TEMatrix4
     TEMatrix4 operator*(const TEMatrix4 &other) const;
     TEVector4 operator*(const TEVector4 &vec) const;
 
-    TEVector4& operator[](int index) { return m[index]; }
-    const TEVector4& operator[](int index) const { return m[index]; }
+    TEVector4 &operator[](int index) { return m[index]; }
+    const TEVector4 &operator[](int index) const { return m[index]; }
 
-    static TEMatrix4 Scale(const TEMatrix4& mat, const TEVector& scale);
-    static TEMatrix4 Translate(const TEMatrix4& mat, const TEVector& translation);
+    static TEMatrix4 Scale(const TEMatrix4 &mat, const TEVector &scale);
+    static TEMatrix4 Translate(const TEMatrix4 &mat, const TEVector &translation);
     static TEMatrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 };
 
@@ -350,90 +358,63 @@ public:
 };
 
 // ===== General Utility Functions =====
-template <typename T>
-inline T Clamp(T value, T min, T max)
+template <typename T> inline T Clamp(T value, T min, T max)
 {
-    if (value < min) return min;
-    if (value > max) return max;
+    if (value < min)
+        return min;
+    if (value > max)
+        return max;
     return value;
 }
 
-inline TEVector2 Normalize(const TEVector2 &v)
-{
-    return v.Normalized();
-}
+inline TEVector2 Normalize(const TEVector2 &v) { return v.Normalized(); }
 
-inline TEVector Normalize(const TEVector &v)
-{
-    return v.Normalized();
-}
+inline TEVector Normalize(const TEVector &v) { return v.Normalized(); }
 
-template <typename T>
-inline T Lerp(T a, T b, float t)
-{
-    return a + (b - a) * t;
-}
+template <typename T> inline T Lerp(T a, T b, float t) { return a + (b - a) * t; }
 
-inline float Radians(float degrees)
-{
-    return degrees * 0.0174532925f;
-}
+inline float Radians(float degrees) { return degrees * 0.0174532925f; }
 
-inline float Degrees(float radians)
-{
-    return radians * 57.2957795f;
-}
+inline float Degrees(float radians) { return radians * 57.2957795f; }
 
-template <typename T>
-inline T Min(T a, T b)
-{
-    return (a < b) ? a : b;
-}
+template <typename T> inline T Min(T a, T b) { return (a < b) ? a : b; }
 
-template <typename T>
-inline T Max(T a, T b)
-{
-    return (a > b) ? a : b;
-}
+template <typename T> inline T Max(T a, T b) { return (a > b) ? a : b; }
 
-template <typename T>
-inline T Abs(T val)
-{
-    return (val < 0) ? -val : val;
-}
+template <typename T> inline T Abs(T val) { return (val < 0) ? -val : val; }
 
-inline float Mod(float x, float y)
-{
-    return std::fmod(x, y);
-}
+inline float Mod(float x, float y) { return std::fmod(x, y); }
 
-inline double Mod(double x, double y)
-{
-    return std::fmod(x, y);
-}
+inline double Mod(double x, double y) { return std::fmod(x, y); }
 
-inline int Mod(int x, int y)
-{
-    return x % y;
-}
+inline int Mod(int x, int y) { return x % y; }
 
 // ===== Vector Math Overloads =====
 
-inline float Dot(const TEVector& a, const TEVector& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
-inline TEVector Cross(const TEVector& a, const TEVector& b) { return { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x }; }
+inline float Dot(const TEVector &a, const TEVector &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+inline TEVector Cross(const TEVector &a, const TEVector &b)
+{
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
 
-inline TEVector2 Min(const TEVector2& a, const TEVector2& b) { return { Min(a.x, b.x), Min(a.y, b.y) }; }
-inline TEVector2 Max(const TEVector2& a, const TEVector2& b) { return { Max(a.x, b.x), Max(a.y, b.y) }; }
-inline TEVector Min(const TEVector& a, const TEVector& b) { return { Min(a.x, b.x), Min(a.y, b.y), Min(a.z, b.z) }; }
-inline TEVector Max(const TEVector& a, const TEVector& b) { return { Max(a.x, b.x), Max(a.y, b.y), Max(a.z, b.z) }; }
+inline TEVector2 Min(const TEVector2 &a, const TEVector2 &b) { return {Min(a.x, b.x), Min(a.y, b.y)}; }
+inline TEVector2 Max(const TEVector2 &a, const TEVector2 &b) { return {Max(a.x, b.x), Max(a.y, b.y)}; }
+inline TEVector Min(const TEVector &a, const TEVector &b) { return {Min(a.x, b.x), Min(a.y, b.y), Min(a.z, b.z)}; }
+inline TEVector Max(const TEVector &a, const TEVector &b) { return {Max(a.x, b.x), Max(a.y, b.y), Max(a.z, b.z)}; }
 
-inline TEVector2 Clamp(const TEVector2& v, const TEVector2& min, const TEVector2& max) { return { Clamp(v.x, min.x, max.x), Clamp(v.y, min.y, max.y) }; }
-inline TEVector Clamp(const TEVector& v, const TEVector& min, const TEVector& max) { return { Clamp(v.x, min.x, max.x), Clamp(v.y, min.y, max.y), Clamp(v.z, min.z, max.z) }; }
+inline TEVector2 Clamp(const TEVector2 &v, const TEVector2 &min, const TEVector2 &max)
+{
+    return {Clamp(v.x, min.x, max.x), Clamp(v.y, min.y, max.y)};
+}
+inline TEVector Clamp(const TEVector &v, const TEVector &min, const TEVector &max)
+{
+    return {Clamp(v.x, min.x, max.x), Clamp(v.y, min.y, max.y), Clamp(v.z, min.z, max.z)};
+}
 
-inline TEVector2 Lerp(const TEVector2& a, const TEVector2& b, float t) { return a + (b - a) * t; }
-inline TEVector Lerp(const TEVector& a, const TEVector& b, float t) { return a + (b - a) * t; }
+inline TEVector2 Lerp(const TEVector2 &a, const TEVector2 &b, float t) { return a + (b - a) * t; }
+inline TEVector Lerp(const TEVector &a, const TEVector &b, float t) { return a + (b - a) * t; }
 
-inline TEVector2 Mod(const TEVector2& x, const TEVector2& y) { return { Mod(x.x, y.x), Mod(x.y, y.y) }; }
-inline TEVector Mod(const TEVector& x, const TEVector& y) { return { Mod(x.x, y.x), Mod(x.y, y.y), Mod(x.z, y.z) }; }
+inline TEVector2 Mod(const TEVector2 &x, const TEVector2 &y) { return {Mod(x.x, y.x), Mod(x.y, y.y)}; }
+inline TEVector Mod(const TEVector &x, const TEVector &y) { return {Mod(x.x, y.x), Mod(x.y, y.y), Mod(x.z, y.z)}; }
 
 } // namespace TE

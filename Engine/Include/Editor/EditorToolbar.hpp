@@ -2,7 +2,6 @@
 #include "Editor/EditorMode.hpp"
 #include "Renderer/Texture.hpp"
 #include "Utils/TimeGUI.hpp"
-#include "Utils/TimeGUI.hpp"
 #include <string>
 #include <vector>
 
@@ -13,8 +12,8 @@ class EditorToolbar
 {
 public:
     static void OnTimeGUIRender(const std::shared_ptr<Texture> &saveIcon = nullptr,
-                              const std::shared_ptr<Texture> &playIcon = nullptr,
-                              const std::shared_ptr<Texture> &brandIcon = nullptr)
+                                const std::shared_ptr<Texture> &playIcon = nullptr,
+                                const std::shared_ptr<Texture> &brandIcon = nullptr)
     {
         float toolbarHeight = 48.0f;
 
@@ -22,13 +21,15 @@ public:
         TimeGUI::PushStyleVar(TimeGUI::TimeGUIStyleVar_WindowPadding, TEVector2(8, 8));
 
         if (TimeGUI::BeginChild("##ToolbarRegion", TEVector2(0, toolbarHeight), false,
-                              TimeGUI::TimeGUIWindowFlags_NoScrollbar | TimeGUI::TimeGUIWindowFlags_NoScrollWithMouse))
+                                TimeGUI::TimeGUIWindowFlags_NoScrollbar |
+                                    TimeGUI::TimeGUIWindowFlags_NoScrollWithMouse))
         {
             // 0. Branding Icon (Thumbnail)
             if (brandIcon)
             {
                 TimeGUI::SetCursorPos(TEVector2(10, 8));
-                TimeGUI::TimeGUITextureID brandIconID = (TimeGUI::TimeGUITextureID)(uintptr_t)brandIcon->GetRendererID();
+                TimeGUI::TimeGUITextureID brandIconID =
+                    (TimeGUI::TimeGUITextureID)(uintptr_t)brandIcon->GetRendererID();
                 TimeGUI::Image(brandIconID, TEVector2(32, 32));
                 TimeGUI::SameLine(0, 15);
             }
@@ -105,7 +106,8 @@ public:
 
                 if (playIcon)
                 {
-                    TimeGUI::TimeGUITextureID playIconID = (TimeGUI::TimeGUITextureID)(uintptr_t)playIcon->GetRendererID();
+                    TimeGUI::TimeGUITextureID playIconID =
+                        (TimeGUI::TimeGUITextureID)(uintptr_t)playIcon->GetRendererID();
                     if (TimeGUI::ImageButton("##PlayIconBtn", playIconID, TEVector2(btnSize * 1.5f - 6, btnSize - 6)))
                         isPlaying = true;
                 }

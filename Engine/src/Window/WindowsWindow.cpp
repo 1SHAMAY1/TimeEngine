@@ -9,7 +9,7 @@
 #define NOMINMAX
 #endif
 #include <Windows.h>
-#include <dxgi.h>   
+#include <dxgi.h>
 
 // Undefine polluting Windows.h macros
 #ifdef ERROR
@@ -21,18 +21,18 @@
 #include <GLFW/glfw3native.h>
 
 // Engine headers (windows.h already in scope — no macro surprise)
-#include "Window/WindowsWindow.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Core/EngineSettings.hpp"
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Log.h"
 #include "Input/Input.hpp"
-#include "Renderer/RendererContext.hpp"
-#include "Renderer/RenderCommand.hpp"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include "Renderer/RenderCommand.hpp"
+#include "Renderer/RendererContext.hpp"
+#include "Window/WindowsWindow.hpp"
 #include <filesystem>
-#include "Core/Asset/AssetManager.hpp"
 
 static bool s_GLFWInitialized = false;
 
@@ -67,14 +67,14 @@ void WindowsWindow::Init(const WindowProps &props)
 
     switch (TE::RendererContext::GetAPI())
     {
-        case TE::GraphicsAPI::OpenGL:
-            break;
-        case TE::GraphicsAPI::Vulkan:
-        case TE::GraphicsAPI::DirectX11:
-            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-            break;
-        default:
-            break;
+    case TE::GraphicsAPI::OpenGL:
+        break;
+    case TE::GraphicsAPI::Vulkan:
+    case TE::GraphicsAPI::DirectX11:
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        break;
+    default:
+        break;
     }
 
     m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
@@ -91,8 +91,8 @@ void WindowsWindow::Init(const WindowProps &props)
     else if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
     {
         HWND hwnd = glfwGetWin32Window(m_Window);
-        auto* apiInstance = TE::RenderCommand::GetAPIInstance();
-        auto* dx11API = dynamic_cast<TE::DirectX11RendererAPI*>(apiInstance);
+        auto *apiInstance = TE::RenderCommand::GetAPIInstance();
+        auto *dx11API = dynamic_cast<TE::DirectX11RendererAPI *>(apiInstance);
         if (dx11API)
         {
             dx11API->InitWithWindow(hwnd, props.Width, props.Height);
@@ -146,8 +146,8 @@ void WindowsWindow::Init(const WindowProps &props)
                               });
 
     // === FRAMEBUFFER SIZE CALLBACK ===
-    glfwSetFramebufferSizeCallback(m_Window,
-                                   [](GLFWwindow *window, int width, int height) { TE::RenderCommand::SetViewport(0, 0, width, height); });
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
+                                   { TE::RenderCommand::SetViewport(0, 0, width, height); });
 
     glfwSetWindowCloseCallback(m_Window,
                                [](GLFWwindow *window)
@@ -276,10 +276,10 @@ void WindowsWindow::OnUpdate()
     }
 
     glfwPollEvents();
-    
+
     if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
     {
-        TE::DX11Context& ctx = TE::DX11Context::Get();
+        TE::DX11Context &ctx = TE::DX11Context::Get();
         if (ctx.SwapChain)
         {
             ctx.SwapChain->Present(m_Data.VSync ? 1 : 0, 0);
@@ -300,17 +300,8 @@ void WindowsWindow::SetVSync(bool enabled)
 
 bool WindowsWindow::IsVSync() const { return m_Data.VSync; }
 
-void IWindow::Terminate()
-{
-    glfwTerminate();
-}
+void IWindow::Terminate() { glfwTerminate(); }
 
-void* IWindow::GetCurrentContext()
-{
-    return glfwGetCurrentContext();
-}
+void *IWindow::GetCurrentContext() { return glfwGetCurrentContext(); }
 
-void IWindow::MakeContextCurrent(void* context)
-{
-    glfwMakeContextCurrent(static_cast<GLFWwindow*>(context));
-}
+void IWindow::MakeContextCurrent(void *context) { glfwMakeContextCurrent(static_cast<GLFWwindow *>(context)); }

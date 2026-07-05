@@ -42,8 +42,8 @@ private:
     std::string m_FilePath;
     std::string m_Name;
     AssetHandle m_Handle;
-    void* m_DX11SRV = nullptr;
-    void* m_DX11Texture = nullptr;
+    void *m_DX11SRV = nullptr;
+    void *m_DX11Texture = nullptr;
 };
 
 } // namespace TE

@@ -7,31 +7,32 @@
 #include <Windows.h>
 #include <d3d11.h>
 // glad must come after windows.h on Windows
-#include <glad/glad.h>
-#include "Renderer/Texture.hpp"
-#include "Renderer/TextureSerializer.hpp"
-#include "Core/Log.h"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
+#include "Core/Log.h"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #include "Renderer/RendererContext.hpp"
+#include "Renderer/Texture.hpp"
+#include "Renderer/TextureSerializer.hpp"
 #include <filesystem>
+#include <glad/glad.h>
 
 namespace TE
 {
 
-Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
+Texture::Texture(const std::string &path)
+    : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
 {
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Name = std::filesystem::path(path).filename().string();
-    
+
     ImageData img = AssetManager::ImportImage(path, (RendererContext::GetAPI() == GraphicsAPI::DirectX11) ? 4 : 0);
 
     if (img.Data)
     {
         if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
         {
-            DX11Context& ctx = DX11Context::Get();
+            DX11Context &ctx = DX11Context::Get();
             if (ctx.Device)
             {
                 D3D11_TEXTURE2D_DESC desc = {};
@@ -51,7 +52,7 @@ Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0), m
                 initData.pSysMem = img.Data;
                 initData.SysMemPitch = img.Width * 4;
 
-                ID3D11Texture2D* dxTex = nullptr;
+                ID3D11Texture2D *dxTex = nullptr;
                 HRESULT hr = ctx.Device->CreateTexture2D(&desc, &initData, &dxTex);
                 if (SUCCEEDED(hr))
                 {
@@ -62,7 +63,7 @@ Texture::Texture(const std::string &path) : m_FilePath(path), m_RendererID(0), m
                     srvDesc.Texture2D.MipLevels = 1;
                     srvDesc.Texture2D.MostDetailedMip = 0;
 
-                    ID3D11ShaderResourceView* dxSRV = nullptr;
+                    ID3D11ShaderResourceView *dxSRV = nullptr;
                     hr = ctx.Device->CreateShaderResourceView(dxTex, &srvDesc, &dxSRV);
                     if (SUCCEEDED(hr))
                     {
@@ -125,11 +126,11 @@ Texture::~Texture()
     }
     if (m_DX11SRV)
     {
-        ((ID3D11ShaderResourceView*)m_DX11SRV)->Release();
+        ((ID3D11ShaderResourceView *)m_DX11SRV)->Release();
     }
     if (m_DX11Texture)
     {
-        ((ID3D11Texture2D*)m_DX11Texture)->Release();
+        ((ID3D11Texture2D *)m_DX11Texture)->Release();
     }
 }
 
@@ -137,10 +138,10 @@ void Texture::Bind(uint32_t slot) const
 {
     if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
     {
-        DX11Context& ctx = DX11Context::Get();
+        DX11Context &ctx = DX11Context::Get();
         if (ctx.DeviceContext && m_DX11SRV)
         {
-            ctx.DeviceContext->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&m_DX11SRV);
+            ctx.DeviceContext->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView **)&m_DX11SRV);
         }
     }
     else
@@ -153,10 +154,10 @@ void Texture::Unbind() const
 {
     if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
     {
-        DX11Context& ctx = DX11Context::Get();
+        DX11Context &ctx = DX11Context::Get();
         if (ctx.DeviceContext)
         {
-            ID3D11ShaderResourceView* nullSRV = nullptr;
+            ID3D11ShaderResourceView *nullSRV = nullptr;
             ctx.DeviceContext->PSSetShaderResources(0, 1, &nullSRV);
         }
     }
@@ -181,7 +182,7 @@ void Texture::OnContentBrowserCreate(const std::filesystem::path &path)
     std::filesystem::path pngPath = path / (texName + ".png");
 
     // Write a 1x1 white PNG
-    unsigned char whitePixel[4] = { 255, 255, 255, 255 };
+    unsigned char whitePixel[4] = {255, 255, 255, 255};
     if (!AssetManager::ExportImagePNG(pngPath.string(), 1, 1, 4, whitePixel))
     {
         TE_CORE_ERROR("Failed to write blank PNG for Texture at {0}", pngPath.string());

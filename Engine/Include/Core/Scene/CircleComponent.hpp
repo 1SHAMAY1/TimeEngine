@@ -55,9 +55,9 @@ public:
                   const std::shared_ptr<class TE::Material> &material) const override
     {
         TE::TEVector2 worldPos = {worldModel.m[3][0], worldModel.m[3][1]};
-        float radius = Radius * std::sqrt(worldModel.m[0][0] * worldModel.m[0][0] +
-                                          worldModel.m[0][1] * worldModel.m[0][1] +
-                                          worldModel.m[0][2] * worldModel.m[0][2]);
+        float radius =
+            Radius * std::sqrt(worldModel.m[0][0] * worldModel.m[0][0] + worldModel.m[0][1] * worldModel.m[0][1] +
+                               worldModel.m[0][2] * worldModel.m[0][2]);
 
         if (bIsVisible)
         {

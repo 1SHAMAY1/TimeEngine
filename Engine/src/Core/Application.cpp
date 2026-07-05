@@ -1,12 +1,12 @@
-#include "Utils/TimeGUI.hpp"
 #include "Application.h"
+#include "Core/Threading/ThreadingMacros.hpp"
 #include "Events/ApplicationEvent.h"
 #include "Layers/TimeGUILayer.hpp"
 #include "Log.h"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/TEColor.hpp"
+#include "Utils/TimeGUI.hpp"
 #include "Window/IWindow.hpp"
-#include "Core/Threading/ThreadingMacros.hpp"
 
 namespace TE
 {
@@ -30,7 +30,7 @@ Application::Application() : m_Running(true)
 
     m_Window = std::unique_ptr<IWindow>(IWindow::Create());
 
-    if (!RenderCommand::LoadLoader((void*(*)(const char*))m_Window->GetGLLoaderFunction()))
+    if (!RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction()))
     {
         TE_CORE_ERROR("Failed to initialize GLAD via RenderCommand!");
         return;

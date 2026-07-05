@@ -10,12 +10,12 @@
 
 #ifdef _WIN32
 // Enable high-performance discrete GPU by default (must be in the main executable, not a DLL)
-extern "C" {
+extern "C"
+{
     __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
-
 
 class TimeEditor : public TE::Application
 {
@@ -109,10 +109,14 @@ TE::Application *TE::CreateApplication(int argc, char **argv)
                 {
                     if (line.find("TargetAPI: ") == 0)
                     {
-                        try {
+                        try
+                        {
                             int api = std::stoi(line.substr(11));
                             TE::RendererContext::SetAPI((TE::GraphicsAPI)api);
-                        } catch (...) {}
+                        }
+                        catch (...)
+                        {
+                        }
                         break;
                     }
                 }

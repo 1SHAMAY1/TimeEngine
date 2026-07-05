@@ -1,10 +1,10 @@
 #pragma once
-#include "Renderer/Vulkan/VulkanShader.hpp"
 #include "Renderer/ShaderLibrary.hpp"
-#include <volk.h>
-#include <vector>
-#include <string>
+#include "Renderer/Vulkan/VulkanShader.hpp"
 #include <memory>
+#include <string>
+#include <vector>
+#include <volk.h>
 
 namespace TE
 {

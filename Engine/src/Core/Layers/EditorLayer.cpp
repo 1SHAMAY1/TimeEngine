@@ -1,6 +1,4 @@
-#include "Utils/TimeGUI.hpp"
 #include "Layers/EditorLayer.hpp"
-#include <fstream>
 #include "Core/Application.h"
 #include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Core/KeyCodes.hpp"
@@ -25,7 +23,6 @@
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
-#include "Utils/PlatformUtils.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/ShaderLibrary.hpp"
@@ -33,10 +30,12 @@
 #include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include "Utils/MathUtils.hpp"
+#include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 #include "imgui_internal.h"
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 
 // Macro definition if missing
 #ifndef TE_BIND_EVENT_FN
@@ -274,7 +273,8 @@ void EditorLayer::OnUpdate()
             float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
             float zoom = m_CameraZoom;
             TEMatrix4 projection = TEMatrix4::Ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
-            TEMatrix4 view = TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
+            TEMatrix4 view =
+                TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
             TEMatrix4 viewProj = projection * view;
 
             m_Renderer2D->BeginFrame(viewProj);
@@ -329,7 +329,8 @@ void EditorLayer::OnUpdate()
                 {
                     TEMatrix4 worldMat = GetWorldTransform(light);
                     float rotation = atan2(worldMat.m[0][1], worldMat.m[0][0]);
-                    sceneLights.push_back({TEVector2(worldMat.m[3][0], worldMat.m[3][1]), light->Radius, rotation, light});
+                    sceneLights.push_back(
+                        {TEVector2(worldMat.m[3][0], worldMat.m[3][1]), light->Radius, rotation, light});
                 }
 
                 // Collect shadow-casting geometry generically
@@ -343,8 +344,7 @@ void EditorLayer::OnUpdate()
                         if (!verts.empty())
                         {
                             // Approximate radius scale for culling (from model matrix scale)
-                            float rScale = std::sqrt(model.m[0][0] * model.m[0][0] +
-                                                     model.m[0][1] * model.m[0][1] +
+                            float rScale = std::sqrt(model.m[0][0] * model.m[0][0] + model.m[0][1] * model.m[0][1] +
                                                      model.m[0][2] * model.m[0][2]);
                             occluders.push_back({verts, rScale, TEVector2(model.m[3][0], model.m[3][1])});
                         }
@@ -391,10 +391,11 @@ void EditorLayer::OnUpdate()
         float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
         float zoom = m_CameraZoom;
         TEMatrix4 projection = TEMatrix4::Ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
-        TEMatrix4 view = TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
+        TEMatrix4 view =
+            TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
         TEMatrix4 viewProj = projection * view;
 
-        m_Renderer2D->BeginFrame(reinterpret_cast<const TE::TEMatrix4&>(viewProj));
+        m_Renderer2D->BeginFrame(reinterpret_cast<const TE::TEMatrix4 &>(viewProj));
 
         // Draw Physics Bodies (Visual Debugging)
         if (m_EditorSettings.ShowPhysicsColliders)
@@ -662,7 +663,7 @@ void EditorLayer::OnTimeGUIRender()
                 TimeGUI::DockBuilderRemoveNode(dockspace_id);
                 TimeGUI::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
                 TimeGUI::DockBuilderSetNodeSize(dockspace_id, TimeGUI::GetMainViewport().Size);
-                
+
                 ImGuiID dock_main_id = dockspace_id;
                 ImGuiID dock_id_right =
                     TimeGUI::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
@@ -757,9 +758,7 @@ void EditorLayer::UI_DrawMenubar()
     }
 }
 
-void EditorLayer::UI_DrawToolbar()
-{
-}
+void EditorLayer::UI_DrawToolbar() {}
 
 void EditorLayer::UI_DrawSceneHierarchy()
 {
@@ -804,7 +803,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
                 TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
                 if (TimeGUI::InputText("##RenameEntity", buffer, sizeof(buffer),
-                                     ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+                                       ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
                 {
                     if (auto *tagComp = entityManager.GetComponent<TagComponent>(entity))
                         tagComp->Tag = std::string(buffer);
@@ -914,8 +913,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 // Draw vertical guideline
                 float verticalLineYEnd = TimeGUI::GetCursorScreenPos().y - TimeGUI::GetStyle().ItemSpacing.y;
                 TimeGUI::GetWindowDrawList()->AddLine(TEVector2(verticalLineX, verticalLineYStart),
-                                                    TEVector2(verticalLineX, verticalLineYEnd),
-                                                    TimeGUI::GetColorU32(TimeGUICol_Border), 1.0f);
+                                                      TEVector2(verticalLineX, verticalLineYEnd),
+                                                      TimeGUI::GetColorU32(TimeGUICol_Border), 1.0f);
 
                 TimeGUI::TreePop();
             }
@@ -927,7 +926,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
         TimeGUI::SetNextItemAllowOverlap();
         bool rootOpened =
             TimeGUI::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
-                                                ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
+                                                  ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
         TimeGUI::PopStyleVar(); // Pop FramePadding
 
         if (rootOpened)
@@ -1011,9 +1010,10 @@ void EditorLayer::UI_DrawSceneHierarchy()
             if (m_SelectedToAddComponent)
             {
                 TimeGUI::Text("Add Component to %s",
-                            m_ComponentParentForAdd ? m_ComponentParentForAdd->GetClassName() : "Entity");
+                              m_ComponentParentForAdd ? m_ComponentParentForAdd->GetClassName() : "Entity");
                 TimeGUI::Separator();
-                if (TimeGUI::BeginChild("AddComponentScroll", TEVector2(250, 300), false, TimeGUIWindowFlags_NoScrollbar))
+                if (TimeGUI::BeginChild("AddComponentScroll", TEVector2(250, 300), false,
+                                        TimeGUIWindowFlags_NoScrollbar))
                 {
                     for (auto const &[name, factory] : ComponentRegistry::Get().GetEntries())
                     {
@@ -1093,7 +1093,7 @@ void EditorLayer::UI_DrawProperties()
                 }
 
                 auto color = mat->GetColor().GetValue();
-                float colorArr[4] = { color.r, color.g, color.b, color.a };
+                float colorArr[4] = {color.r, color.g, color.b, color.a};
                 if (TimeGUI::ColorEdit4("Albedo Color", colorArr))
                 {
                     mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
@@ -1164,7 +1164,8 @@ void EditorLayer::UI_DrawProperties()
         {
             TimeGUI::PushID(std::to_string((uintptr_t)m_SelectedComponent));
             TimeGUI::PushStyleColor(TimeGUICol_Header, TEVector4(0.3f, 0.4f, 0.6f, 0.6f)); // Glass header
-            bool opened = TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(), ImGuiTreeNodeFlags_DefaultOpen);
+            bool opened =
+                TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(), ImGuiTreeNodeFlags_DefaultOpen);
             TimeGUI::PopStyleColor();
 
             if (opened)
@@ -1235,8 +1236,8 @@ void EditorLayer::UI_DrawProperties()
         {
             // Default: Show all components in a clean list
             TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
-            bool componentsOpened =
-                TimeGUI::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
+            bool componentsOpened = TimeGUI::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen |
+                                                                                ImGuiTreeNodeFlags_AllowOverlap);
             TimeGUI::PopStyleVar();
 
             if (componentsOpened)
@@ -1248,7 +1249,7 @@ void EditorLayer::UI_DrawProperties()
                     if (strcmp(className, "TransformComponent") == 0 || strcmp(className, "TagComponent") == 0)
                         continue;
 
-                    TimeGUI::PushID(std::to_string((uintptr_t)comp)); 
+                    TimeGUI::PushID(std::to_string((uintptr_t)comp));
                     TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
                     bool headerOpen = TimeGUI::CollapsingHeader(className, ImGuiTreeNodeFlags_DefaultOpen);
                     TimeGUI::PopStyleVar();
@@ -1466,8 +1467,8 @@ void EditorLayer::UI_DrawContentBrowser()
                 else
                     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0, 0, 0, 0));
 
-                TimeGUI::ImageButton(filenameString.c_str(), iconId, TEVector2(thumbnailSize, thumbnailSize), TEVector2(0, 1),
-                                   TEVector2(1, 0));
+                TimeGUI::ImageButton(filenameString.c_str(), iconId, TEVector2(thumbnailSize, thumbnailSize),
+                                     TEVector2(0, 1), TEVector2(1, 0));
                 TimeGUI::PopStyleColor();
             }
             else
@@ -1531,7 +1532,7 @@ void EditorLayer::UI_DrawContentBrowser()
                     {
                         AssetHandle handle = AssetManager::LoadAsset(path);
                         auto assetPtr = AssetManager::GetAsset<Asset>(handle);
-                        m_OpenEditorTabs.push_back({ title, path, type, assetPtr });
+                        m_OpenEditorTabs.push_back({title, path, type, assetPtr});
                         m_ActiveTabRequest = (int)(m_OpenEditorTabs.size() - 1);
                     }
                 }
@@ -1561,11 +1562,14 @@ void EditorLayer::UI_DrawContentBrowser()
                     {
                         std::filesystem::path rawImagePath = path;
                         rawImagePath.replace_extension(".png");
-                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath))
+                            std::filesystem::remove(rawImagePath);
                         rawImagePath.replace_extension(".jpg");
-                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath))
+                            std::filesystem::remove(rawImagePath);
                         rawImagePath.replace_extension(".tga");
-                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath))
+                            std::filesystem::remove(rawImagePath);
                     }
                     std::filesystem::remove_all(path);
                     m_SelectedBrowserPath.clear();
@@ -1586,7 +1590,8 @@ void EditorLayer::UI_DrawContentBrowser()
                 char nameBuffer[256];
                 strncpy_s(nameBuffer, filenameString.c_str(), sizeof(nameBuffer));
                 TimeGUI::PushItemWidth(thumbnailSize);
-                if (TimeGUI::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+                if (TimeGUI::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer),
+                                       ImGuiInputTextFlags_EnterReturnsTrue))
                 {
                     std::filesystem::path newPath = path.parent_path() / nameBuffer;
                     if (!isDir)
@@ -1599,18 +1604,21 @@ void EditorLayer::UI_DrawContentBrowser()
                         {
                             std::filesystem::path rawImagePath = path;
                             std::filesystem::path newRawImagePath = newPath;
-                            
+
                             rawImagePath.replace_extension(".png");
                             newRawImagePath.replace_extension(".png");
-                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath))
+                                std::filesystem::rename(rawImagePath, newRawImagePath);
 
                             rawImagePath.replace_extension(".jpg");
                             newRawImagePath.replace_extension(".jpg");
-                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath))
+                                std::filesystem::rename(rawImagePath, newRawImagePath);
 
                             rawImagePath.replace_extension(".tga");
                             newRawImagePath.replace_extension(".tga");
-                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath))
+                                std::filesystem::rename(rawImagePath, newRawImagePath);
                         }
 
                         std::filesystem::rename(path, newPath);
@@ -1657,8 +1665,8 @@ void EditorLayer::UI_DrawContentBrowser()
         TEVector2 folderCursorPos = TimeGUI::GetCursorPos();
         bool createFolderSelected = false;
         if (TimeGUI::Selectable("##FolderRow", &createFolderSelected,
-                              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
-                              TEVector2(0, 32)))
+                                ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                                TEVector2(0, 32)))
         {
             // Find unique folder name e.g. "New Folder", "New Folder (1)"
             std::filesystem::path baseFolderPath = rootPath / "New Folder";
@@ -1675,7 +1683,8 @@ void EditorLayer::UI_DrawContentBrowser()
         TimeGUI::SetCursorPos(TEVector2(folderCursorPos.x + 4.0f, folderCursorPos.y + 5.0f));
         if (m_FolderIcon)
         {
-            TimeGUI::Image((TimeGUITextureID)(uintptr_t)m_FolderIcon->GetRendererID(), TEVector2(22, 22), TEVector2(0, 0), TEVector2(1, 1));
+            TimeGUI::Image((TimeGUITextureID)(uintptr_t)m_FolderIcon->GetRendererID(), TEVector2(22, 22),
+                           TEVector2(0, 0), TEVector2(1, 1));
         }
         else
         {
@@ -1706,8 +1715,8 @@ void EditorLayer::UI_DrawContentBrowser()
             // Draw an invisible selectable that covers the entire row
             bool selected = false;
             if (TimeGUI::Selectable("##AssetTypeRow", &selected,
-                                  ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
-                                  TEVector2(0, 32)))
+                                    ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                                    TEVector2(0, 32)))
             {
                 entry.Prototype->OnContentBrowserCreate(rootPath);
                 TimeGUI::CloseCurrentPopup();
@@ -1719,7 +1728,8 @@ void EditorLayer::UI_DrawContentBrowser()
             auto icon = AssetManager::GetDefaultIcon(type);
             if (icon)
             {
-                TimeGUI::Image((TimeGUITextureID)(uintptr_t)icon->GetRendererID(), TEVector2(22, 22), TEVector2(0, 0), TEVector2(1, 1));
+                TimeGUI::Image((TimeGUITextureID)(uintptr_t)icon->GetRendererID(), TEVector2(22, 22), TEVector2(0, 0),
+                               TEVector2(1, 1));
             }
             else
             {
@@ -1781,13 +1791,13 @@ void EditorLayer::UI_DrawViewport()
     {
         uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
         TimeGUI::Image((void *)(uintptr_t)textureID, TEVector2{m_LastViewportX, m_LastViewportY}, TEVector2{0, 1},
-                     TEVector2{1, 0});
+                       TEVector2{1, 0});
 
         UI_ViewportContextMenu();
         UI_DrawGizmoText(); // DRAW TEXT HERE (Valid TimeGUI context)
     }
 
-    TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetWindowDrawList();  
+    TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetWindowDrawList();
     if (m_ShowViewport)
     {
         TEVector2 winPos = TimeGUI::GetWindowPos();
@@ -1811,10 +1821,12 @@ void EditorLayer::UI_DrawViewport()
         float offsetY = fmodf(m_CameraPosition.y * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
 
         for (float x = offsetX; x < winSize.x; x += visualGridStep)
-            drawList->AddLine(TEVector2(winPos.x + x, winPos.y), TEVector2(winPos.x + x, winPos.y + winSize.y), gridColor);
+            drawList->AddLine(TEVector2(winPos.x + x, winPos.y), TEVector2(winPos.x + x, winPos.y + winSize.y),
+                              gridColor);
 
         for (float y = offsetY; y < winSize.y; y += visualGridStep)
-            drawList->AddLine(TEVector2(winPos.x, winPos.y + y), TEVector2(winPos.x + winSize.x, winPos.y + y), gridColor);
+            drawList->AddLine(TEVector2(winPos.x, winPos.y + y), TEVector2(winPos.x + winSize.x, winPos.y + y),
+                              gridColor);
     }
 
     // AAA Style Horizontal Toolbar
@@ -1876,7 +1888,8 @@ void EditorLayer::UI_DrawViewport()
             {
                 bool active = m_GizmoType == type;
                 if (active)
-                    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.25f, 0.5f, 1.0f, 1.0f)); // Bright blue for active
+                    TimeGUI::PushStyleColor(TimeGUICol_Button,
+                                            TEVector4(0.25f, 0.5f, 1.0f, 1.0f)); // Bright blue for active
                 else
                     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.25f, 0.25f, 0.25f, 0.8f));
 
@@ -2235,8 +2248,6 @@ void EditorLayer::UpdateCamera(float dt)
     KeyCode moveRightCode = shortcuts.count("MoveRight") ? shortcuts.at("MoveRight") : Key::D;
     KeyCode sprintCode = shortcuts.count("Sprint") ? shortcuts.at("Sprint") : Key::LeftShift;
 
-
-
     if (m_ViewportHovered && TimeGUI::IsMouseDown(ImGuiMouseButton_Right))
     {
         float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier);
@@ -2367,11 +2378,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
             {
                 std::filesystem::path rawImagePath = m_SelectedBrowserPath;
                 rawImagePath.replace_extension(".png");
-                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath))
+                    std::filesystem::remove(rawImagePath);
                 rawImagePath.replace_extension(".jpg");
-                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath))
+                    std::filesystem::remove(rawImagePath);
                 rawImagePath.replace_extension(".tga");
-                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath))
+                    std::filesystem::remove(rawImagePath);
             }
             std::filesystem::remove_all(m_SelectedBrowserPath);
             m_SelectedBrowserPath.clear();
@@ -2651,7 +2665,7 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
             // Move companion files for textures
             if (m_ClipboardPath.extension() == ".tetexture")
             {
-                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
+                std::vector<std::string> rawExtensions = {".png", ".jpg", ".tga"};
                 for (const auto &rawExt : rawExtensions)
                 {
                     std::filesystem::path rawSrc = m_ClipboardPath;
@@ -2673,7 +2687,7 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
             // Copy companion files for textures
             if (m_ClipboardPath.extension() == ".tetexture")
             {
-                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
+                std::vector<std::string> rawExtensions = {".png", ".jpg", ".tga"};
                 for (const auto &rawExt : rawExtensions)
                 {
                     std::filesystem::path rawSrc = m_ClipboardPath;
@@ -2726,7 +2740,7 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
         strncpy(cBuffer, cName.c_str(), sizeof(cBuffer) - 1);
         TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
         if (TimeGUI::InputText("##RenameComp", cBuffer, sizeof(cBuffer),
-                             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+                               ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
         {
             comp->InstanceName = std::string(cBuffer);
             m_RenamingComponent = nullptr;
@@ -3018,7 +3032,7 @@ void EditorLayer::UI_DrawGizmos()
         {
             m_Renderer2D->SubmitQuad(
                 TEMatrix4::Translate(TEMatrix4(1.0f),
-                               TEVector(pos.x + arrowStartOffset + gizmoSize + thickness, pos.y, 0.15f)) *
+                                     TEVector(pos.x + arrowStartOffset + gizmoSize + thickness, pos.y, 0.15f)) *
                     TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(thickness * 2, thickness * 2, 1.0f)),
                 m_GizmoXMaterial);
         }
@@ -3040,7 +3054,7 @@ void EditorLayer::UI_DrawGizmos()
         {
             m_Renderer2D->SubmitQuad(
                 TEMatrix4::Translate(TEMatrix4(1.0f),
-                               TEVector(pos.x, pos.y + arrowStartOffset + gizmoSize + thickness, 0.15f)) *
+                                     TEVector(pos.x, pos.y + arrowStartOffset + gizmoSize + thickness, 0.15f)) *
                     TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(thickness * 2, thickness * 2, 1.0f)),
                 m_GizmoYMaterial);
         }
@@ -3144,14 +3158,14 @@ void EditorLayer::SetDarkThemeColors()
     TEColor textDim = TEColor(0.50f, 0.55f, 0.60f, 1.00f);
     // Used only for interactive controls like sliders and checkmarks
     TEColor accent = TEColor(0.20f, 0.55f, 0.90f, 1.00f);
-    
+
     colors[TimeGUICol_Text] = textColor;
     colors[TimeGUICol_TextDisabled] = textDim;
 
     colors[TimeGUICol_WindowBg] = bgDeep;
     colors[TimeGUICol_ChildBg] = bgPanel;
     colors[TimeGUICol_PopupBg] = TEColor(0.08f, 0.09f, 0.10f, 0.97f);
-    
+
     colors[TimeGUICol_Border] = borderColor;
     colors[TimeGUICol_BorderShadow] = TEVector4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -3374,7 +3388,8 @@ void EditorLayer::UI_DrawAssetEditors()
                 m_ActiveTabRequest = -1; // Reset request
             }
 
-            if (TimeGUI::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open, flags))
+            if (TimeGUI::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open,
+                                      flags))
             {
                 if (tab.Type == "Material")
                 {
@@ -3395,7 +3410,7 @@ void EditorLayer::UI_DrawAssetEditors()
                         }
 
                         auto color = mat->GetColor().GetValue();
-                        float colorArr[4] = { color.r, color.g, color.b, color.a };
+                        float colorArr[4] = {color.r, color.g, color.b, color.a};
                         if (TimeGUI::ColorEdit4("Albedo Color", colorArr))
                         {
                             mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
@@ -3412,10 +3427,8 @@ void EditorLayer::UI_DrawAssetEditors()
                         TimeGUI::Text("Texture Editor Settings");
                         TimeGUI::Separator();
 
-                        TimeGUI::Image((void*)(uintptr_t)tex->GetRendererID(), 
-                                     TEVector2(128.0f, 128.0f), 
-                                     TEVector2(0.0f, 1.0f), 
-                                     TEVector2(1.0f, 0.0f));
+                        TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), TEVector2(128.0f, 128.0f),
+                                       TEVector2(0.0f, 1.0f), TEVector2(1.0f, 0.0f));
 
                         TimeGUI::Separator();
                         TimeGUI::Text("Import Settings");
@@ -3426,7 +3439,9 @@ void EditorLayer::UI_DrawAssetEditors()
                         TimeGUI::SameLine();
                         if (TimeGUI::Button("Browse..."))
                         {
-                            std::string filepath = PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files (*.*)\0*.*\0");
+                            std::string filepath = PlatformUtils::OpenFile(
+                                "Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files "
+                                "(*.*)\0*.*\0");
                             if (!filepath.empty())
                             {
                                 strcpy_s(importPathBuffer, filepath.c_str());
@@ -3446,7 +3461,8 @@ void EditorLayer::UI_DrawAssetEditors()
                                             std::filesystem::remove(oldPng);
                                     }
 
-                                    std::filesystem::copy_file(importSrc, destPng, std::filesystem::copy_options::overwrite_existing);
+                                    std::filesystem::copy_file(importSrc, destPng,
+                                                               std::filesystem::copy_options::overwrite_existing);
 
                                     // Force recreation and reload of Texture
                                     auto newTex = std::make_shared<Texture>(destPng.string());
@@ -3604,7 +3620,7 @@ void EditorLayer::SaveSettings()
         ehout << "BaseCameraSpeed: " << m_EditorSettings.BaseCameraSpeed << "\n";
         ehout << "ZoomSpeed: " << m_EditorSettings.ZoomSpeed << "\n";
         ehout << "DefaultZoom: " << m_EditorSettings.DefaultZoom << "\n";
-        for (const auto& [name, code] : m_EditorSettings.Shortcuts)
+        for (const auto &[name, code] : m_EditorSettings.Shortcuts)
         {
             ehout << "Shortcut_" << name << ": " << (int)code << "\n";
         }

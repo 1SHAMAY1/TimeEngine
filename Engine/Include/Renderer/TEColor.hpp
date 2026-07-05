@@ -20,7 +20,14 @@ public:
     TEColor(const glm::vec4 &color) : r(color.x), g(color.y), b(color.z), a(color.w) {}
     TEColor(const struct TEVector4 &color);
 
-    TEColor &operator=(const glm::vec4 &color) { r = color.x; g = color.y; b = color.z; a = color.w; return *this; }
+    TEColor &operator=(const glm::vec4 &color)
+    {
+        r = color.x;
+        g = color.y;
+        b = color.z;
+        a = color.w;
+        return *this;
+    }
     TEColor &operator=(const struct TEVector4 &color);
 
     // ===== Static Named Colors =====
@@ -40,13 +47,9 @@ public:
     TEColor &GetValue() { return *this; }
 
     // ===== Arithmetic =====
-    TEColor operator*(float scalar) const
-    {
-        return TEColor(r * scalar, g * scalar, b * scalar, a);
-    }
+    TEColor operator*(float scalar) const { return TEColor(r * scalar, g * scalar, b * scalar, a); }
 
     operator glm::vec4() const { return {r, g, b, a}; }
-
 };
 
 } // namespace TE

@@ -112,7 +112,6 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
 
     TE_CORE_INFO("AssetManager: Loading asset from path {0}", finalPath.string());
 
-
     // If it's a texture, we can actually load it for icons etc.
     if (finalPath.extension() == ".png" || finalPath.extension() == ".jpg")
     {
@@ -216,7 +215,7 @@ TEVector2 AssetManager::GetDefaultIconSize(const std::string &type)
     return {64.0f, 64.0f};
 }
 
-ImageData AssetManager::ImportImage(const std::string& filepath, int desiredChannels)
+ImageData AssetManager::ImportImage(const std::string &filepath, int desiredChannels)
 {
     ImageData img;
     img.Data = stbi_load(filepath.c_str(), &img.Width, &img.Height, &img.Channels, desiredChannels);
@@ -227,7 +226,7 @@ ImageData AssetManager::ImportImage(const std::string& filepath, int desiredChan
     return img;
 }
 
-void AssetManager::FreeImage(unsigned char* data)
+void AssetManager::FreeImage(unsigned char *data)
 {
     if (data)
     {
@@ -235,7 +234,7 @@ void AssetManager::FreeImage(unsigned char* data)
     }
 }
 
-bool AssetManager::ExportImagePNG(const std::string& path, int width, int height, int channels, const void* data)
+bool AssetManager::ExportImagePNG(const std::string &path, int width, int height, int channels, const void *data)
 {
     // Create directory if not exists
     std::filesystem::path p = path;

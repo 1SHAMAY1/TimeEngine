@@ -2,13 +2,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-namespace TE {
+namespace TE
+{
 
 // ---------------------------------------------------------------------------
 // Shader Creation
 // ---------------------------------------------------------------------------
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESBasicShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESBasicShader()
+{
     // Minimal GLSL ES 3.0 vertex + fragment shaders
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
@@ -29,7 +31,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESTextureShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESTextureShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
@@ -54,7 +57,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESColorShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESColorShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
@@ -76,7 +80,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESStandardShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESStandardShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
@@ -119,7 +124,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLightingShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLightingShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
@@ -162,7 +168,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESParticleShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESParticleShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
@@ -190,7 +197,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESPostProcessShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESPostProcessShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec2 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
@@ -215,7 +223,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESUIShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESUIShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec2 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
@@ -242,7 +251,8 @@ void main() {
     return std::make_shared<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLight2DShader() {
+std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLight2DShader()
+{
     const std::string vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
@@ -281,88 +291,99 @@ void main() {
 // Uniform Setters
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::SetUniform1i(OpenGLESShader* shader, const std::string& name, int value) {
+void OpenGLESShaderLibrary::SetUniform1i(OpenGLESShader *shader, const std::string &name, int value)
+{
     shader->Bind();
     shader->SetUniform1i(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform1f(OpenGLESShader* shader, const std::string& name, float value) {
+void OpenGLESShaderLibrary::SetUniform1f(OpenGLESShader *shader, const std::string &name, float value)
+{
     shader->Bind();
     shader->SetUniform1f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform2f(OpenGLESShader* shader, const std::string& name, const glm::vec2& value) {
+void OpenGLESShaderLibrary::SetUniform2f(OpenGLESShader *shader, const std::string &name, const glm::vec2 &value)
+{
     shader->Bind();
     shader->SetUniform2f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform3f(OpenGLESShader* shader, const std::string& name, const glm::vec3& value) {
+void OpenGLESShaderLibrary::SetUniform3f(OpenGLESShader *shader, const std::string &name, const glm::vec3 &value)
+{
     shader->Bind();
     shader->SetUniform3f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform4f(OpenGLESShader* shader, const std::string& name, const glm::vec4& value) {
+void OpenGLESShaderLibrary::SetUniform4f(OpenGLESShader *shader, const std::string &name, const glm::vec4 &value)
+{
     shader->Bind();
     shader->SetUniform4f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniformMat3(OpenGLESShader* shader, const std::string& name, const glm::mat3& value) {
+void OpenGLESShaderLibrary::SetUniformMat3(OpenGLESShader *shader, const std::string &name, const glm::mat3 &value)
+{
     shader->Bind();
     glUniformMatrix3fv(shader->GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
-void OpenGLESShaderLibrary::SetUniformMat4(OpenGLESShader* shader, const std::string& name, const glm::mat4& value) {
+void OpenGLESShaderLibrary::SetUniformMat4(OpenGLESShader *shader, const std::string &name, const glm::mat4 &value)
+{
     shader->Bind();
     shader->SetUniformMat4(name, value);
 }
-void OpenGLESShaderLibrary::SetUniformMat4Array(OpenGLESShader* shader, const std::string& name,
-                                                 const std::vector<glm::mat4>& values) {
+void OpenGLESShaderLibrary::SetUniformMat4Array(OpenGLESShader *shader, const std::string &name,
+                                                const std::vector<glm::mat4> &values)
+{
     shader->Bind();
-    glUniformMatrix4fv(shader->GetUniformLocation(name),
-                       static_cast<GLsizei>(values.size()),
-                       GL_FALSE, glm::value_ptr(values[0]));
+    glUniformMatrix4fv(shader->GetUniformLocation(name), static_cast<GLsizei>(values.size()), GL_FALSE,
+                       glm::value_ptr(values[0]));
 }
 
 // ---------------------------------------------------------------------------
 // State Management
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::EnableBlending()                            { glEnable(GL_BLEND); }
-void OpenGLESShaderLibrary::DisableBlending()                           { glDisable(GL_BLEND); }
-void OpenGLESShaderLibrary::SetBlendFunc(GLenum src, GLenum dst)        { glBlendFunc(src, dst); }
-void OpenGLESShaderLibrary::EnableDepthTest()                           { glEnable(GL_DEPTH_TEST); }
-void OpenGLESShaderLibrary::DisableDepthTest()                          { glDisable(GL_DEPTH_TEST); }
-void OpenGLESShaderLibrary::SetDepthFunc(GLenum func)                   { glDepthFunc(func); }
-void OpenGLESShaderLibrary::EnableStencilTest()                         { glEnable(GL_STENCIL_TEST); }
-void OpenGLESShaderLibrary::DisableStencilTest()                        { glDisable(GL_STENCIL_TEST); }
-void OpenGLESShaderLibrary::SetStencilFunc(GLenum func, int ref, unsigned int mask) {
-    glStencilFunc(func, ref, mask);
-}
-void OpenGLESShaderLibrary::SetStencilOp(GLenum sfail, GLenum dpfail, GLenum dppass) {
+void OpenGLESShaderLibrary::EnableBlending() { glEnable(GL_BLEND); }
+void OpenGLESShaderLibrary::DisableBlending() { glDisable(GL_BLEND); }
+void OpenGLESShaderLibrary::SetBlendFunc(GLenum src, GLenum dst) { glBlendFunc(src, dst); }
+void OpenGLESShaderLibrary::EnableDepthTest() { glEnable(GL_DEPTH_TEST); }
+void OpenGLESShaderLibrary::DisableDepthTest() { glDisable(GL_DEPTH_TEST); }
+void OpenGLESShaderLibrary::SetDepthFunc(GLenum func) { glDepthFunc(func); }
+void OpenGLESShaderLibrary::EnableStencilTest() { glEnable(GL_STENCIL_TEST); }
+void OpenGLESShaderLibrary::DisableStencilTest() { glDisable(GL_STENCIL_TEST); }
+void OpenGLESShaderLibrary::SetStencilFunc(GLenum func, int ref, unsigned int mask) { glStencilFunc(func, ref, mask); }
+void OpenGLESShaderLibrary::SetStencilOp(GLenum sfail, GLenum dpfail, GLenum dppass)
+{
     glStencilOp(sfail, dpfail, dppass);
 }
-void OpenGLESShaderLibrary::EnableCullFace()                            { glEnable(GL_CULL_FACE); }
-void OpenGLESShaderLibrary::DisableCullFace()                           { glDisable(GL_CULL_FACE); }
-void OpenGLESShaderLibrary::SetCullFace(GLenum face)                    { glCullFace(face); }
-void OpenGLESShaderLibrary::SetFrontFace(GLenum mode)                   { glFrontFace(mode); }
+void OpenGLESShaderLibrary::EnableCullFace() { glEnable(GL_CULL_FACE); }
+void OpenGLESShaderLibrary::DisableCullFace() { glDisable(GL_CULL_FACE); }
+void OpenGLESShaderLibrary::SetCullFace(GLenum face) { glCullFace(face); }
+void OpenGLESShaderLibrary::SetFrontFace(GLenum mode) { glFrontFace(mode); }
 
 // ---------------------------------------------------------------------------
 // Texture Helpers
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::BindTexture2D(unsigned int textureID, int slot) {
+void OpenGLESShaderLibrary::BindTexture2D(unsigned int textureID, int slot)
+{
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
-void OpenGLESShaderLibrary::BindTextureCube(unsigned int textureID, int slot) {
+void OpenGLESShaderLibrary::BindTextureCube(unsigned int textureID, int slot)
+{
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 }
-void OpenGLESShaderLibrary::SetTextureFiltering(unsigned int textureID, GLenum minFilter, GLenum magFilter) {
+void OpenGLESShaderLibrary::SetTextureFiltering(unsigned int textureID, GLenum minFilter, GLenum magFilter)
+{
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 }
-void OpenGLESShaderLibrary::SetTextureWrapping(unsigned int textureID, GLenum wrapS, GLenum wrapT) {
+void OpenGLESShaderLibrary::SetTextureWrapping(unsigned int textureID, GLenum wrapS, GLenum wrapT)
+{
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
 }
-void OpenGLESShaderLibrary::GenerateMipmaps(unsigned int textureID) {
+void OpenGLESShaderLibrary::GenerateMipmaps(unsigned int textureID)
+{
     glBindTexture(GL_TEXTURE_2D, textureID);
     glGenerateMipmap(GL_TEXTURE_2D);
 }
@@ -371,35 +392,36 @@ void OpenGLESShaderLibrary::GenerateMipmaps(unsigned int textureID) {
 // Framebuffer Helpers
 // ---------------------------------------------------------------------------
 
-unsigned int OpenGLESShaderLibrary::CreateFramebuffer() {
+unsigned int OpenGLESShaderLibrary::CreateFramebuffer()
+{
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
     return fbo;
 }
-void OpenGLESShaderLibrary::BindFramebuffer(unsigned int fbo) {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-}
-void OpenGLESShaderLibrary::AttachTexture2D(unsigned int fbo, unsigned int textureID, GLenum attachment) {
+void OpenGLESShaderLibrary::BindFramebuffer(unsigned int fbo) { glBindFramebuffer(GL_FRAMEBUFFER, fbo); }
+void OpenGLESShaderLibrary::AttachTexture2D(unsigned int fbo, unsigned int textureID, GLenum attachment)
+{
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, textureID, 0);
 }
-void OpenGLESShaderLibrary::AttachRenderbuffer(unsigned int fbo, unsigned int rbo, GLenum attachment) {
+void OpenGLESShaderLibrary::AttachRenderbuffer(unsigned int fbo, unsigned int rbo, GLenum attachment)
+{
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, rbo);
 }
-bool OpenGLESShaderLibrary::CheckFramebufferStatus(unsigned int fbo) {
+bool OpenGLESShaderLibrary::CheckFramebufferStatus(unsigned int fbo)
+{
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
-void OpenGLESShaderLibrary::DeleteFramebuffer(unsigned int fbo) {
-    glDeleteFramebuffers(1, &fbo);
-}
+void OpenGLESShaderLibrary::DeleteFramebuffer(unsigned int fbo) { glDeleteFramebuffers(1, &fbo); }
 
 // ---------------------------------------------------------------------------
 // Uniform Buffer Objects (ES 3.0+)
 // ---------------------------------------------------------------------------
 
-unsigned int OpenGLESShaderLibrary::CreateUniformBuffer(const void* data, size_t size) {
+unsigned int OpenGLESShaderLibrary::CreateUniformBuffer(const void *data, size_t size)
+{
     unsigned int ubo;
     glGenBuffers(1, &ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
@@ -407,16 +429,19 @@ unsigned int OpenGLESShaderLibrary::CreateUniformBuffer(const void* data, size_t
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     return ubo;
 }
-void OpenGLESShaderLibrary::BindUniformBuffer(unsigned int ubo, unsigned int bindingPoint) {
+void OpenGLESShaderLibrary::BindUniformBuffer(unsigned int ubo, unsigned int bindingPoint)
+{
     glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ubo);
 }
-void OpenGLESShaderLibrary::UpdateUniformBuffer(unsigned int ubo, const void* data, size_t offset, size_t size) {
+void OpenGLESShaderLibrary::UpdateUniformBuffer(unsigned int ubo, const void *data, size_t offset, size_t size)
+{
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
     glBufferSubData(GL_UNIFORM_BUFFER, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(size), data);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
-void OpenGLESShaderLibrary::BindUniformBlock(OpenGLESShader* shader, const std::string& blockName,
-                                              unsigned int bindingPoint) {
+void OpenGLESShaderLibrary::BindUniformBlock(OpenGLESShader *shader, const std::string &blockName,
+                                             unsigned int bindingPoint)
+{
     unsigned int blockIndex = glGetUniformBlockIndex(shader->GetRendererID(), blockName.c_str());
     if (blockIndex != GL_INVALID_INDEX)
         glUniformBlockBinding(shader->GetRendererID(), blockIndex, bindingPoint);
@@ -426,13 +451,15 @@ void OpenGLESShaderLibrary::BindUniformBlock(OpenGLESShader* shader, const std::
 // Vertex Attribute Helpers
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::SetVertexAttribPointer(unsigned int index, int size, GLenum type,
-                                                    bool normalized, int stride, const void* pointer) {
+void OpenGLESShaderLibrary::SetVertexAttribPointer(unsigned int index, int size, GLenum type, bool normalized,
+                                                   int stride, const void *pointer)
+{
     glVertexAttribPointer(index, size, type, normalized ? GL_TRUE : GL_FALSE, stride, pointer);
 }
-void OpenGLESShaderLibrary::EnableVertexAttribArray(unsigned int index)  { glEnableVertexAttribArray(index); }
+void OpenGLESShaderLibrary::EnableVertexAttribArray(unsigned int index) { glEnableVertexAttribArray(index); }
 void OpenGLESShaderLibrary::DisableVertexAttribArray(unsigned int index) { glDisableVertexAttribArray(index); }
-void OpenGLESShaderLibrary::VertexAttribDivisor(unsigned int index, unsigned int divisor) {
+void OpenGLESShaderLibrary::VertexAttribDivisor(unsigned int index, unsigned int divisor)
+{
     glVertexAttribDivisor(index, divisor);
 }
 
@@ -440,59 +467,66 @@ void OpenGLESShaderLibrary::VertexAttribDivisor(unsigned int index, unsigned int
 // Debug (KHR_debug extension on ES 3.2 / KHR_debug on ES 3.1-)
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::EnableDebugOutput() {
+void OpenGLESShaderLibrary::EnableDebugOutput()
+{
     // Requires GL_KHR_debug or ES 3.2
     // glEnable(GL_DEBUG_OUTPUT);
     // glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     std::cout << "[OpenGL ES] Debug output enable (requires KHR_debug extension)\n";
 }
-void OpenGLESShaderLibrary::SetDebugCallback() {
+void OpenGLESShaderLibrary::SetDebugCallback()
+{
     // glDebugMessageCallback(DebugCallback, nullptr);
     std::cout << "[OpenGL ES] Debug callback set (requires KHR_debug extension)\n";
 }
-void OpenGLESShaderLibrary::PushDebugGroup(const std::string& message) {
+void OpenGLESShaderLibrary::PushDebugGroup(const std::string &message)
+{
     // glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0,
     //                  static_cast<GLsizei>(message.size()), message.c_str());
     (void)message;
 }
-void OpenGLESShaderLibrary::PopDebugGroup() {
+void OpenGLESShaderLibrary::PopDebugGroup()
+{
     // glPopDebugGroup();
 }
-void OpenGLESShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, const std::string& label) {
+void OpenGLESShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, const std::string &label)
+{
     // glObjectLabel(identifier, name, static_cast<GLsizei>(label.size()), label.c_str());
-    (void)identifier; (void)name; (void)label;
+    (void)identifier;
+    (void)name;
+    (void)label;
 }
-void GLAPIENTRY OpenGLESShaderLibrary::DebugCallback(GLenum source, GLenum type, unsigned int id,
-                                                      GLenum severity, GLsizei /*length*/,
-                                                      const char* message, const void* /*userParam*/) {
-    std::cerr << "[OpenGL ES Debug] source=0x" << std::hex << source
-              << " type=0x"     << type
-              << " id="         << std::dec << id
-              << " severity=0x" << std::hex << severity
-              << "\n  Message: " << message << "\n";
+void GLAPIENTRY OpenGLESShaderLibrary::DebugCallback(GLenum source, GLenum type, unsigned int id, GLenum severity,
+                                                     GLsizei /*length*/, const char *message,
+                                                     const void * /*userParam*/)
+{
+    std::cerr << "[OpenGL ES Debug] source=0x" << std::hex << source << " type=0x" << type << " id=" << std::dec << id
+              << " severity=0x" << std::hex << severity << "\n  Message: " << message << "\n";
 }
 
 // ---------------------------------------------------------------------------
 // Query Objects
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::BeginQuery(GLenum target, unsigned int id) {
-    glBeginQuery(target, id);
-}
-void OpenGLESShaderLibrary::EndQuery(GLenum target)                      { glEndQuery(target); }
-int  OpenGLESShaderLibrary::GetQueryObjecti(unsigned int id, GLenum pname) {
+void OpenGLESShaderLibrary::BeginQuery(GLenum target, unsigned int id) { glBeginQuery(target, id); }
+void OpenGLESShaderLibrary::EndQuery(GLenum target) { glEndQuery(target); }
+int OpenGLESShaderLibrary::GetQueryObjecti(unsigned int id, GLenum pname)
+{
     GLuint result = 0;
     glGetQueryObjectuiv(id, pname, &result);
     return static_cast<int>(result);
 }
-void OpenGLESShaderLibrary::GetQueryObjectiv(unsigned int id, GLenum pname, int* params) {
-    if (params) {
+void OpenGLESShaderLibrary::GetQueryObjectiv(unsigned int id, GLenum pname, int *params)
+{
+    if (params)
+    {
         GLuint result = 0;
         glGetQueryObjectuiv(id, pname, &result);
         *params = static_cast<int>(result);
     }
 }
-void OpenGLESShaderLibrary::GetQueryObjectuiv(unsigned int id, GLenum pname, unsigned int* params) {
+void OpenGLESShaderLibrary::GetQueryObjectuiv(unsigned int id, GLenum pname, unsigned int *params)
+{
     glGetQueryObjectuiv(id, pname, params);
 }
 
@@ -500,14 +534,11 @@ void OpenGLESShaderLibrary::GetQueryObjectuiv(unsigned int id, GLenum pname, uns
 // Sync / Fence (ES 3.0+)
 // ---------------------------------------------------------------------------
 
-GLsync OpenGLESShaderLibrary::FenceSync(GLenum condition, GLbitfield flags) {
-    return glFenceSync(condition, flags);
-}
-GLenum OpenGLESShaderLibrary::ClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout) {
+GLsync OpenGLESShaderLibrary::FenceSync(GLenum condition, GLbitfield flags) { return glFenceSync(condition, flags); }
+GLenum OpenGLESShaderLibrary::ClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout)
+{
     return glClientWaitSync(sync, flags, timeout);
 }
-void OpenGLESShaderLibrary::DeleteSync(GLsync sync) {
-    glDeleteSync(sync);
-}
+void OpenGLESShaderLibrary::DeleteSync(GLsync sync) { glDeleteSync(sync); }
 
 } // namespace TE

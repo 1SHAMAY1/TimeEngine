@@ -11,10 +11,7 @@ namespace TE
 
 template <typename T> struct TEPropertyDrawer
 {
-    static void Draw(void *addr, const std::string &displayName)
-    {
-        TimeGUI::Text(displayName + ": [No Drawer]");
-    }
+    static void Draw(void *addr, const std::string &displayName) { TimeGUI::Text(displayName + ": [No Drawer]"); }
     static std::string Serialize(void *addr) { return ""; }
     static void Deserialize(void *addr, const std::string &data) {}
 };
@@ -51,8 +48,8 @@ template <> struct TEPropertyDrawer<float>
 
 template <> struct TEPropertyDrawer<int>
 {
-    static void Draw(void *addr, const std::string &displayName) 
-    { 
+    static void Draw(void *addr, const std::string &displayName)
+    {
         // Forward to standard drag float or standard draw
     }
     static std::string Serialize(void *addr) { return std::to_string(*(int *)addr); }
@@ -65,10 +62,7 @@ template <> struct TEPropertyDrawer<int>
 
 template <> struct TEPropertyDrawer<bool>
 {
-    static void Draw(void *addr, const std::string &displayName) 
-    { 
-        TimeGUI::Checkbox(displayName, (bool *)addr); 
-    }
+    static void Draw(void *addr, const std::string &displayName) { TimeGUI::Checkbox(displayName, (bool *)addr); }
     static std::string Serialize(void *addr) { return *(bool *)addr ? "true" : "false"; }
     static void Deserialize(void *addr, const std::string &data) { *(bool *)addr = (data == "true" || data == "1"); }
 };

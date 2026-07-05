@@ -31,14 +31,14 @@ Renderer2D::~Renderer2D() {}
 
 void Renderer2D::BeginFrame(const TE::TEMatrix4 &viewProjection)
 {
-    m_Batcher.SetViewProjection(reinterpret_cast<const glm::mat4&>(viewProjection));
+    m_Batcher.SetViewProjection(reinterpret_cast<const glm::mat4 &>(viewProjection));
     m_Batcher.Begin();
 }
 
 void Renderer2D::Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
                         const TE::TEMatrix4 &transform, uint32_t indexCount)
 {
-    m_Batcher.Submit(vao, material, reinterpret_cast<const glm::mat4&>(transform), indexCount);
+    m_Batcher.Submit(vao, material, reinterpret_cast<const glm::mat4 &>(transform), indexCount);
 }
 
 void Renderer2D::EndFrame()
@@ -50,9 +50,9 @@ void Renderer2D::EndFrame()
         if (!ambientMaterial)
             ambientMaterial = std::make_shared<Material>(ShaderLibrary::CreateAmbientGradientShader());
 
-        ambientMaterial->SetUniform("u_SkyColor", reinterpret_cast<const glm::vec4&>(m_AmbientSky.GetValue()));
-        ambientMaterial->SetUniform("u_HorizonColor", reinterpret_cast<const glm::vec4&>(m_AmbientHorizon.GetValue()));
-        ambientMaterial->SetUniform("u_GroundColor", reinterpret_cast<const glm::vec4&>(m_AmbientGround.GetValue()));
+        ambientMaterial->SetUniform("u_SkyColor", reinterpret_cast<const glm::vec4 &>(m_AmbientSky.GetValue()));
+        ambientMaterial->SetUniform("u_HorizonColor", reinterpret_cast<const glm::vec4 &>(m_AmbientHorizon.GetValue()));
+        ambientMaterial->SetUniform("u_GroundColor", reinterpret_cast<const glm::vec4 &>(m_AmbientGround.GetValue()));
         ambientMaterial->SetUniform("u_Intensity", m_AmbientIntensity);
         ambientMaterial->SetUniform("u_HorizonHeight", m_AmbientHorizonHeight);
         ambientMaterial->SetUniform("u_HorizonSpread", m_AmbientHorizonSpread);
@@ -80,10 +80,10 @@ void Renderer2D::SubmitQuad(const TE::TEMatrix4 &transform, const std::shared_pt
     if (blendMode == 0)
     {
         material->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
-        material->SetUniform("u_AmbientSky", reinterpret_cast<const glm::vec4&>(m_AmbientSky.GetValue()));
-        material->SetUniform("u_AmbientGround", reinterpret_cast<const glm::vec4&>(m_AmbientGround.GetValue()));
+        material->SetUniform("u_AmbientSky", reinterpret_cast<const glm::vec4 &>(m_AmbientSky.GetValue()));
+        material->SetUniform("u_AmbientGround", reinterpret_cast<const glm::vec4 &>(m_AmbientGround.GetValue()));
     }
-    m_Batcher.Submit(m_UnitQuadVAO, material, reinterpret_cast<const glm::mat4&>(transform), 6, blendMode);
+    m_Batcher.Submit(m_UnitQuadVAO, material, reinterpret_cast<const glm::mat4 &>(transform), 6, blendMode);
 }
 
 void Renderer2D::SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3,
@@ -155,7 +155,7 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)) *
                               glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
-        SubmitQuad(reinterpret_cast<const TEMatrix4&>(transform), lightMaterial, 1);
+        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lightMaterial, 1);
     }
     else if (light.Type == TELightType::Spot)
     {
@@ -170,7 +170,7 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)) *
                               glm::rotate(glm::mat4(1.0f), rotationRadians, glm::vec3(0.0f, 0.0f, 1.0f)) *
                               glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
-        SubmitQuad(reinterpret_cast<const TEMatrix4&>(transform), lightMaterial, 1);
+        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lightMaterial, 1);
     }
     else if (light.Type == TELightType::Line)
     {
@@ -186,7 +186,7 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
                                                       position.y + light.LineOffset.y * 0.5f, 0.0f)) *
             glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(length + light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
-        SubmitQuad(reinterpret_cast<const TEMatrix4&>(transform), lightMaterial, 1);
+        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lightMaterial, 1);
     }
 }
 
@@ -313,7 +313,7 @@ void Renderer2D::SubmitLine(const TEVector2 &p1, const TEVector2 &p2, float thic
                           glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
                           glm::scale(glm::mat4(1.0f), glm::vec3(length, thickness, 1.0f));
 
-    SubmitQuad(reinterpret_cast<const TEMatrix4&>(transform), lineMaterial);
+    SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lineMaterial);
 }
 
 void Renderer2D::SubmitCircleOutline(const TEVector2 &center, float radius, float thickness, const TEColor &color)
