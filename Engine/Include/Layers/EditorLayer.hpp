@@ -6,8 +6,8 @@
 #include "Core/Scene/Scene.hpp"
 #include "Layers/Layer.hpp"
 #include "Renderer/Framebuffer.hpp"
+#include "Renderer/GraphicsAPI.hpp"
 #include <filesystem>
-#include <glm/glm.hpp>
 #include <memory>
 #include <set>
 #include <string>
@@ -42,6 +42,7 @@ struct ProjectSettings
 
     GameType ConfigType = GameType::TwoD;
     TwoDMode Mode2D = TwoDMode::TopDown;
+    GraphicsAPI TargetAPI = GraphicsAPI::OpenGL;
 };
 
 class TE_API EditorLayer : public Layer
@@ -53,10 +54,13 @@ public:
     virtual void OnAttach() override;
     virtual void OnDetach() override;
     virtual void OnUpdate() override;
-    virtual void OnImGuiRender() override;
+    virtual void OnTimeGUIRender() override;
     virtual void OnEvent(Event &event) override;
 
 private:
+    void LoadSettings();
+    void SaveSettings();
+
     bool OnKeyPressed(KeyPressedEvent &e);
     bool OnMouseButtonPressed(MouseButtonPressedEvent &e);
     bool OnMouseScrolled(MouseScrolledEvent &e);
@@ -95,7 +99,6 @@ private:
     void UI_ViewportContextMenu();
     void DrawComponentNode(Entity entity, class TComponent *comp);
     std::string GetKeyName(KeyCode key);
-    int ToImGuiKey(KeyCode key);
 
     // Navigation
     void UpdateCamera(float dt);
@@ -141,7 +144,7 @@ private:
     ProjectSettings m_ProjectSettings;
 
     // Camera State
-    glm::vec3 m_CameraPosition = {0.0f, 0.0f, 10.0f};
+    TEVector m_CameraPosition = {0.0f, 0.0f, 10.0f};
     float m_CameraZoom = 10.0f; // Ortho size or Z distance
 
     // Scene State
@@ -191,13 +194,13 @@ private:
 
     bool m_ViewportSizeChanged = false; // Tracks if we need resize
     float m_LastViewportX = 0, m_LastViewportY = 0;
-    glm::vec2 m_ViewportPos = {0, 0};
+    TEVector2 m_ViewportPos = {0, 0};
     Entity m_HoveredEntity; // For context menu
 
     // Gizmo Dragging
-    glm::vec2 m_GizmoDragStartMousePos = {0.0f, 0.0f};
-    glm::vec3 m_GizmoDragStartEntityPos = {0.0f, 0.0f, 0.0f};
-    glm::vec3 m_GizmoDragStartEntityScale = {1.0f, 1.0f, 1.0f};
+    TEVector2 m_GizmoDragStartMousePos = {0.0f, 0.0f};
+    TEVector m_GizmoDragStartEntityPos = {0.0f, 0.0f, 0.0f};
+    TEVector m_GizmoDragStartEntityScale = {1.0f, 1.0f, 1.0f};
     float m_GizmoDragStartEntityRotation = 0.0f;
 
     // Save Display

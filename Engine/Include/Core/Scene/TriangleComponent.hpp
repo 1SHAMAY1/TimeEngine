@@ -4,7 +4,7 @@
 #include "ProceduralSpriteComponent.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 
 namespace TE
 {
@@ -31,19 +31,19 @@ public:
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 
-    std::vector<TEVector2> GetWorldVertices(const glm::mat4 &worldModel) const override
+    std::vector<TEVector2> GetWorldVertices(const TE::TEMatrix4 &worldModel) const override
     {
         std::vector<TEVector2> v;
-        glm::vec4 w1 = worldModel * glm::vec4(Point1.x, Point1.y, 0, 1);
-        glm::vec4 w2 = worldModel * glm::vec4(Point2.x, Point2.y, 0, 1);
-        glm::vec4 w3 = worldModel * glm::vec4(Point3.x, Point3.y, 0, 1);
+        TEVector4 w1 = worldModel * TEVector4(Point1.x, Point1.y, 0, 1);
+        TEVector4 w2 = worldModel * TEVector4(Point2.x, Point2.y, 0, 1);
+        TEVector4 w3 = worldModel * TEVector4(Point3.x, Point3.y, 0, 1);
         v.push_back({w1.x, w1.y});
         v.push_back({w2.x, w2.y});
         v.push_back({w3.x, w3.y});
         return v;
     }
 
-    bool ContainsPoint(const glm::mat4 &worldModel, const TEVector2 &point) const override
+    bool ContainsPoint(const TE::TEMatrix4 &worldModel, const TEVector2 &point) const override
     {
         auto *collider = GetOwnerEntity().GetComponent<TriangleColliderComponent>();
         if (collider)
@@ -58,12 +58,12 @@ public:
         return false;
     }
 
-    void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
+    void OnRender(class TE::Renderer2D *renderer, const TE::TEMatrix4 &worldModel,
                   const std::shared_ptr<class TE::Material> &material) const override
     {
         auto TransformPoint = [&](const TEVector2 &p)
         {
-            glm::vec4 tp = worldModel * glm::vec4(p.x, p.y, 0.0f, 1.0f);
+            TEVector4 tp = worldModel * TEVector4(p.x, p.y, 0.0f, 1.0f);
             return TE::TEVector2(tp.x, tp.y);
         };
 

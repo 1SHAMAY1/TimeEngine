@@ -1,3 +1,4 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/ProjectHubLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Project/Project.hpp"
@@ -6,8 +7,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <imgui.h>
-#include <imgui_internal.h>
+#include "Utils/TimeGUI.hpp"
 
 #include "Renderer/Texture.hpp"
 #include <Windows.h>
@@ -17,11 +17,11 @@
 namespace TE
 {
 
-static void DrawUI_Title(const char *text, const ImVec4 &color = ImVec4(1, 1, 1, 1))
+static void DrawUI_Title(const char *text, const TEVector4 &color = TEVector4(1, 1, 1, 1))
 {
-    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]); // Assuming default font for now, ideally use a Large Font
-    ImGui::TextColored(color, text);
-    ImGui::PopFont();
+    TimeGUI::PushFont(TimeGUI::GetDefaultFont()); // Assuming default font for now, ideally use a Large Font
+    TimeGUI::TextColored(color, text);
+    TimeGUI::PopFont();
 }
 
 ProjectHubLayer::ProjectHubLayer() : Layer("ProjectHubLayer")
@@ -81,95 +81,95 @@ void ProjectHubLayer::OnUpdate() {}
 
 void ProjectHubLayer::OnEvent(Event &event) {}
 
-void ProjectHubLayer::OnImGuiRender()
+void ProjectHubLayer::OnTimeGUIRender()
 {
     // Fullscreen dockspace-like window for the Hub
-    ImGuiViewport *viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
-    ImGui::SetNextWindowViewport(viewport->ID);
+    TimeGUIViewport viewport = TimeGUI::GetMainViewport();
+    TimeGUI::SetNextWindowPos(viewport.Pos);
+    TimeGUI::SetNextWindowSize(viewport.Size);
+    TimeGUI::SetNextWindowViewport(viewport.ID);
 
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
-                                    ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                    ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    TimeGUIWindowFlags window_flags = TimeGUIWindowFlags_NoDocking | TimeGUIWindowFlags_NoTitleBar |
+                                    TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize | TimeGUIWindowFlags_NoMove |
+                                    TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUIWindowFlags_NoNavFocus;
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 0.0f);
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(0.0f, 0.0f));
 
-    ImGui::Begin("ProjectHubDockSpace", nullptr, window_flags);
+    TimeGUI::Begin("ProjectHubDockSpace", nullptr, window_flags);
 
-    ImGui::PopStyleVar(3);
+    TimeGUI::PopStyleVar(3);
 
     // --- Layout Splitting ---
     // Left Sidebar (250px) | Main Content (Rest)
 
-    ImGui::Columns(2, "HubLayout", false);
-    ImGui::SetColumnWidth(0, 250.0f);
+    TimeGUI::Columns(2, "HubLayout", false);
+    TimeGUI::SetColumnWidth(0, 250.0f);
 
     // --- Left Sidebar ---
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.1505f, 0.151f, 1.0f));
-    ImGui::BeginChild("Sidebar", ImVec2(0, 0), false);
+    TimeGUI::PushStyleColor(TimeGUICol_ChildBg, TEVector4(0.15f, 0.1505f, 0.151f, 1.0f));
+    TimeGUI::BeginChild("Sidebar", TEVector2(0, 0), false);
 
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Indent(20.0f);
-    ImGui::Indent(20.0f);
+    TimeGUI::Spacing();
+    TimeGUI::Spacing();
+    TimeGUI::Indent(20.0f);
+    TimeGUI::Indent(20.0f);
     if (m_LogoIcon)
     {
-        ImGui::Image((ImTextureID)(uint64_t)m_LogoIcon->GetRendererID(), ImVec2(100, 100));
+        TimeGUI::Image((TimeGUITextureID)(uint64_t)m_LogoIcon->GetRendererID(), TEVector2(100, 100));
     }
     else
     {
-        ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 1.0f), "TIME ENGINE");
+        TimeGUI::TextColored(TEVector4(0.9f, 0.9f, 0.9f, 1.0f), "TIME ENGINE");
     }
-    ImGui::Unindent(20.0f);
-    ImGui::Unindent(20.0f);
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    TimeGUI::Unindent(20.0f);
+    TimeGUI::Unindent(20.0f);
+    TimeGUI::Spacing();
+    TimeGUI::Spacing();
+    TimeGUI::Separator();
+    TimeGUI::Spacing();
 
     float btnHeight = 40.0f;
 
     // Navigation Buttons
-    ImGui::Spacing();
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20, 12));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+    TimeGUI::Spacing();
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(20, 12));
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 8.0f);
 
     auto drawNavButton = [&](const char *label, HubView view)
     {
         bool active = m_CurrentView == view;
         if (active)
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.35f, 0.45f, 0.6f));
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.3f, 0.35f, 0.45f, 0.6f));
         else
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0, 0, 0, 0));
 
-        if (ImGui::Button(label, ImVec2(-1, btnHeight)))
+        if (TimeGUI::Button(label, TEVector2(-1, btnHeight)))
         {
             m_CurrentView = view;
         }
-        ImGui::PopStyleColor();
+        TimeGUI::PopStyleColor();
     };
 
     drawNavButton("Recent Projects", HubView::RecentProjects);
-    ImGui::Spacing();
+    TimeGUI::Spacing();
     drawNavButton("Create New", HubView::CreateNew);
 
-    ImGui::PopStyleVar(2);
+    TimeGUI::PopStyleVar(2);
 
-    ImGui::EndChild();
-    ImGui::PopStyleColor();
+    TimeGUI::EndChild();
+    TimeGUI::PopStyleColor();
 
-    ImGui::NextColumn();
+    TimeGUI::NextColumn();
 
     // --- Main Content Area ---
-    ImGui::BeginChild("MainContent", ImVec2(0, 0), false);
+    TimeGUI::BeginChild("MainContent", TEVector2(0, 0), false);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 20)); // Add spacing between items
-    ImGui::Indent(40.0f);
-    ImGui::Spacing();
-    ImGui::Spacing();
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(10, 20)); // Add spacing between items
+    TimeGUI::Indent(40.0f);
+    TimeGUI::Spacing();
+    TimeGUI::Spacing();
 
     if (m_CurrentView == HubView::RecentProjects)
     {
@@ -180,12 +180,12 @@ void ProjectHubLayer::OnImGuiRender()
         UI_DrawCreateProjectView();
     }
 
-    ImGui::Unindent(40.0f);
-    ImGui::PopStyleVar();
+    TimeGUI::Unindent(40.0f);
+    TimeGUI::PopStyleVar();
 
-    ImGui::EndChild();
+    TimeGUI::EndChild();
 
-    ImGui::End(); // Root
+    TimeGUI::End(); // Root
 
     if (!m_ProjectToOpen.empty())
     {
@@ -196,9 +196,9 @@ void ProjectHubLayer::OnImGuiRender()
 
 void ProjectHubLayer::UI_DrawProjectsList()
 {
-    ImGui::Text("Recent Projects");
-    ImGui::SameLine();
-    if (ImGui::Button("Scan Directory..."))
+    TimeGUI::Text("Recent Projects");
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("Scan Directory..."))
     {
         // Fallback to manual input or platform dialog if available (assuming PlatformUtils works as per existing code)
         // For now, let's just use the current logic, or maybe a simple input text for a path to scan?
@@ -218,12 +218,12 @@ void ProjectHubLayer::UI_DrawProjectsList()
         }
     }
 
-    ImGui::Separator();
-    ImGui::Spacing();
+    TimeGUI::Separator();
+    TimeGUI::Spacing();
 
     if (m_RecentProjects.empty())
     {
-        ImGui::TextDisabled("No recent projects found.");
+        TimeGUI::TextDisabled("No recent projects found.");
     }
     else
     {
@@ -231,12 +231,12 @@ void ProjectHubLayer::UI_DrawProjectsList()
         float cardHeight = 140.0f;
         float padding = 20.0f;
 
-        float panelWidth = ImGui::GetContentRegionAvail().x;
+        float panelWidth = TimeGUI::GetContentRegionAvail().x;
         int columnCount = (int)(panelWidth / (cardWidth + padding));
         if (columnCount < 1)
             columnCount = 1;
 
-        ImGui::Columns(columnCount, 0, false);
+        TimeGUI::Columns(columnCount, 0, false);
 
         for (const auto &path : m_RecentProjects)
         {
@@ -245,83 +245,67 @@ void ProjectHubLayer::UI_DrawProjectsList()
             if (lastdot != std::string::npos)
                 filename = filename.substr(0, lastdot);
 
-            ImGui::PushID(path.string().c_str());
-
-            ImGuiWindow *window = ImGui::GetCurrentWindow();
-            ImVec2 pos = window->DC.CursorPos;
-            ImVec2 size(cardWidth, cardHeight);
-            ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
-
-            ImGui::ItemSize(bb);
-            if (ImGui::ItemAdd(bb, ImGui::GetID(filename.c_str())))
+            bool hovered = false;
+            TEVector2 pos = TimeGUI::GetCursorScreenPos();
+            TEVector2 size(cardWidth, cardHeight);
+            
+            if (TimeGUI::BeginProjectCard(path.string(), size, hovered))
             {
-                bool hovered, held;
-                bool pressed = ImGui::ButtonBehavior(bb, ImGui::GetID(filename.c_str()), &hovered, &held);
-
-                if (pressed)
-                    m_ProjectToOpen = path;
-
-                // Glass Card Background
-                ImU32 bgCol = ImGui::GetColorU32(hovered ? ImGuiCol_HeaderHovered : ImGuiCol_WindowBg);
-                float alpha = hovered ? 0.6f : 0.4f;
-                ImVec4 bgVec = ImGui::ColorConvertU32ToFloat4(bgCol);
-                bgVec.w = alpha;
-
-                window->DrawList->AddRectFilled(pos, bb.Max, ImGui::ColorConvertFloat4ToU32(bgVec), 12.0f);
-                window->DrawList->AddRect(pos, bb.Max, ImGui::GetColorU32(ImGuiCol_Border, 0.5f), 12.0f, 0, 1.5f);
-
-                // Content
-                ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 15, ImGui::GetCursorPosY() + 15));
-                ImGui::BeginGroup();
-
-                // Icon Placeholder/Icon
-                ImVec2 iconSize(48, 48);
-                if (m_ProjectIcon)
-                    window->DrawList->AddImage((ImTextureID)(uint64_t)m_ProjectIcon->GetRendererID(),
-                                               ImVec2(pos.x + 15, pos.y + 15),
-                                               ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
-                else
-                    window->DrawList->AddRectFilled(ImVec2(pos.x + 15, pos.y + 15),
-                                                    ImVec2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y),
-                                                    ImGui::GetColorU32(ImVec4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
-
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + iconSize.y + 10);
-                ImGui::Text("%s", filename.c_str());
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.62f, 0.65f, 1.0f));
-                ImGui::Text("%.30s...", path.parent_path().string().c_str());
-                ImGui::PopStyleColor();
-                ImGui::EndGroup();
+                m_ProjectToOpen = path;
             }
 
-            ImGui::PopID();
-            ImGui::NextColumn();
-            ImGui::Spacing();
+            // Content
+            TimeGUI::SetCursorPos(TEVector2(TimeGUI::GetCursorPosX() + 15, TimeGUI::GetCursorPosY() + 15));
+            TimeGUI::BeginGroup();
+
+            // Icon Placeholder/Icon
+            TEVector2 iconSize(48, 48);
+            auto drawList = TimeGUI::GetWindowDrawList();
+            if (m_ProjectIcon)
+                drawList.AddImage((TimeGUITextureID)(uint64_t)m_ProjectIcon->GetRendererID(),
+                                           TEVector2(pos.x + 15, pos.y + 15),
+                                           TEVector2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y));
+            else
+                drawList.AddRectFilled(TEVector2(pos.x + 15, pos.y + 15),
+                                                TEVector2(pos.x + 15 + iconSize.x, pos.y + 15 + iconSize.y),
+                                                TimeGUI::GetColorU32(TEVector4(0.3f, 0.35f, 0.4f, 0.8f)), 8.0f);
+
+            TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + iconSize.y + 10);
+            TimeGUI::Text("%s", filename.c_str());
+            TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4(0.6f, 0.62f, 0.65f, 1.0f));
+            TimeGUI::Text("%.30s...", path.parent_path().string().c_str());
+            TimeGUI::PopStyleColor();
+            TimeGUI::EndGroup();
+
+            TimeGUI::EndProjectCard();
+            TimeGUI::NextColumn();
+            TimeGUI::Spacing();
         }
-        ImGui::Columns(1);
+        TimeGUI::Columns(1);
     }
 }
 
 void ProjectHubLayer::UI_DrawCreateProjectView()
 {
-    ImGui::Text("Create New Project");
-    ImGui::Separator();
-    ImGui::Spacing();
+    TimeGUI::Text("Create New Project");
+    TimeGUI::Separator();
+    TimeGUI::Spacing();
 
     // -- Project Details Form --
 
     // Name
-    ImGui::Text("Project Name");
-    ImGui::SetNextItemWidth(400.0f);
-    ImGui::InputText("##project_name", m_NewProjectName, sizeof(m_NewProjectName));
+    TimeGUI::Text("Project Name");
+    TimeGUI::SetNextItemWidth(400.0f);
+    TimeGUI::InputText("##project_name", m_NewProjectName, sizeof(m_NewProjectName));
 
-    ImGui::Spacing();
+    TimeGUI::Spacing();
 
     // Location
-    ImGui::Text("Location");
-    ImGui::SetNextItemWidth(400.0f);
-    ImGui::InputText("##project_path", m_NewProjectPath, sizeof(m_NewProjectPath));
-    ImGui::SameLine();
-    if (ImGui::Button("..."))
+    TimeGUI::Text("Location");
+    TimeGUI::SetNextItemWidth(400.0f);
+    TimeGUI::InputText("##project_path", m_NewProjectPath, sizeof(m_NewProjectPath));
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("..."))
     {
         // Use Platform Utils to pick folder
         std::string folder = PlatformUtils::OpenFolder(m_NewProjectPath);
@@ -331,16 +315,16 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
         }
     }
 
-    ImGui::Spacing();
-    ImGui::Spacing();
+    TimeGUI::Spacing();
+    TimeGUI::Spacing();
 
     // Thumbnail
-    ImGui::Text("Thumbnail (Optional)");
-    ImGui::SetNextItemWidth(400.0f);
+    TimeGUI::Text("Thumbnail (Optional)");
+    TimeGUI::SetNextItemWidth(400.0f);
     static char thumbnailPath[1024] = "";
-    ImGui::InputText("##thumbnail_path", thumbnailPath, sizeof(thumbnailPath));
-    ImGui::SameLine();
-    if (ImGui::Button("...##thumb"))
+    TimeGUI::InputText("##thumbnail_path", thumbnailPath, sizeof(thumbnailPath));
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("...##thumb"))
     {
         std::string file = PlatformUtils::OpenFile("Image Files\0*.png;*.jpg;*.jpeg\0");
         if (!file.empty())
@@ -349,17 +333,17 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
         }
     }
 
-    ImGui::Spacing();
-    ImGui::Spacing();
+    TimeGUI::Spacing();
+    TimeGUI::Spacing();
 
     // Preview Result
-    ImGui::TextDisabled("Project will be created at: %s\\%s", m_NewProjectPath, m_NewProjectName);
+    TimeGUI::TextDisabled("Project will be created at: %s\\%s", m_NewProjectPath, m_NewProjectName);
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    TimeGUI::Spacing();
+    TimeGUI::Separator();
+    TimeGUI::Spacing();
 
-    if (ImGui::Button("Create Project", ImVec2(150, 40)))
+    if (TimeGUI::Button("Create Project", TEVector2(150, 40)))
     {
         CreateProject(m_NewProjectName, m_NewProjectPath, thumbnailPath);
     }
@@ -471,8 +455,8 @@ void ProjectHubLayer::SaveRecentProjects()
 
 void ProjectHubLayer::SetDarkThemeColors()
 {
-    auto &colors = ImGui::GetStyle().Colors;
-    auto &style = ImGui::GetStyle();
+    auto &colors = TimeGUI::GetStyle().Colors;
+    auto &style = TimeGUI::GetStyle();
 
     // --- Style Tweaks ---
     style.WindowRounding = 4.0f; // Sharper corners for pro look
@@ -481,45 +465,45 @@ void ProjectHubLayer::SetDarkThemeColors()
     style.ScrollbarRounding = 2.0f;
     style.GrabRounding = 2.0f;
     style.TabRounding = 4.0f;
-    style.FramePadding = ImVec2(10, 8);
-    style.ItemSpacing = ImVec2(10, 10);
-    style.WindowPadding = ImVec2(0, 0);
+    style.FramePadding = TEVector2(10, 8);
+    style.ItemSpacing = TEVector2(10, 10);
+    style.WindowPadding = TEVector2(0, 0);
 
     // --- Colors (AAA Glass Theme) ---
     style.AntiAliasedLines = true;
     style.AntiAliasedFill = true;
 
     // Backgrounds
-    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.95f};
-    colors[ImGuiCol_ChildBg] = ImVec4{0.12f, 0.12f, 0.14f, 0.4f};
-    colors[ImGuiCol_PopupBg] = ImVec4{0.1f, 0.105f, 0.11f, 0.98f};
+    colors[TimeGUICol_WindowBg] = TEVector4{0.1f, 0.105f, 0.11f, 0.95f};
+    colors[TimeGUICol_ChildBg] = TEVector4{0.12f, 0.12f, 0.14f, 0.4f};
+    colors[TimeGUICol_PopupBg] = TEVector4{0.1f, 0.105f, 0.11f, 0.98f};
 
     // Text
-    colors[ImGuiCol_Text] = ImVec4{0.95f, 0.95f, 1.0f, 1.0f};
-    colors[ImGuiCol_TextDisabled] = ImVec4{0.55f, 0.58f, 0.62f, 1.0f};
+    colors[TimeGUICol_Text] = TEVector4{0.95f, 0.95f, 1.0f, 1.0f};
+    colors[TimeGUICol_TextDisabled] = TEVector4{0.55f, 0.58f, 0.62f, 1.0f};
 
     // Interactive
-    colors[ImGuiCol_Header] = ImVec4{0.25f, 0.28f, 0.35f, 0.45f};
-    colors[ImGuiCol_HeaderHovered] = ImVec4{0.3f, 0.35f, 0.45f, 0.7f};
-    colors[ImGuiCol_HeaderActive] = ImVec4{0.2f, 0.22f, 0.28f, 0.8f};
+    colors[TimeGUICol_Header] = TEVector4{0.25f, 0.28f, 0.35f, 0.45f};
+    colors[TimeGUICol_HeaderHovered] = TEVector4{0.3f, 0.35f, 0.45f, 0.7f};
+    colors[TimeGUICol_HeaderActive] = TEVector4{0.2f, 0.22f, 0.28f, 0.8f};
 
-    colors[ImGuiCol_Button] = ImVec4{0.22f, 0.25f, 0.3f, 0.4f};
-    colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.35f, 0.45f, 0.7f};
-    colors[ImGuiCol_ButtonActive] = ImVec4{0.18f, 0.2f, 0.25f, 0.9f};
+    colors[TimeGUICol_Button] = TEVector4{0.22f, 0.25f, 0.3f, 0.4f};
+    colors[TimeGUICol_ButtonHovered] = TEVector4{0.3f, 0.35f, 0.45f, 0.7f};
+    colors[TimeGUICol_ButtonActive] = TEVector4{0.18f, 0.2f, 0.25f, 0.9f};
 
-    colors[ImGuiCol_FrameBg] = ImVec4{0.18f, 0.2f, 0.22f, 0.4f};
-    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.25f, 0.28f, 0.32f, 0.6f};
-    colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.18f, 0.2f, 0.8f};
+    colors[TimeGUICol_FrameBg] = TEVector4{0.18f, 0.2f, 0.22f, 0.4f};
+    colors[TimeGUICol_FrameBgHovered] = TEVector4{0.25f, 0.28f, 0.32f, 0.6f};
+    colors[TimeGUICol_FrameBgActive] = TEVector4{0.15f, 0.18f, 0.2f, 0.8f};
 
     // Border
-    colors[ImGuiCol_Border] = ImVec4{0.4f, 0.42f, 0.45f, 0.3f};
+    colors[TimeGUICol_Border] = TEVector4{0.4f, 0.42f, 0.45f, 0.3f};
     style.WindowBorderSize = 0.0f;
     style.FrameBorderSize = 1.0f;
 
     // Accents
-    colors[ImGuiCol_CheckMark] = ImVec4{0.3f, 0.6f, 1.0f, 1.0f};
-    colors[ImGuiCol_SliderGrab] = ImVec4{0.35f, 0.65f, 1.0f, 0.8f};
-    colors[ImGuiCol_SliderGrabActive] = ImVec4{0.4f, 0.7f, 1.0f, 1.0f};
+    colors[TimeGUICol_CheckMark] = TEVector4{0.3f, 0.6f, 1.0f, 1.0f};
+    colors[TimeGUICol_SliderGrab] = TEVector4{0.35f, 0.65f, 1.0f, 0.8f};
+    colors[TimeGUICol_SliderGrabActive] = TEVector4{0.4f, 0.7f, 1.0f, 1.0f};
 }
 
 } // namespace TE

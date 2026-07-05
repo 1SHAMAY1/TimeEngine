@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/PreRequisites.h"
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 #include <string>
 #include <variant>
 

@@ -1,9 +1,8 @@
 #pragma once
 #include "Core/PreRequisites.h"
-#include "Utility/MathUtils.hpp"
-#include "Utility/UIUtils.hpp"
+#include "Utils/MathUtils.hpp"
+#include "Utils/TimeGUI.hpp"
 #include <algorithm>
-#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -66,16 +65,16 @@ public:
     // Override these in subclasses to enable picking and shadow casting.
 
     /// Returns world-space outline vertices for this component (used by shadow casting).
-    virtual std::vector<TE::TEVector2> GetWorldVertices(const glm::mat4 &worldModel) const { return {}; }
+    virtual std::vector<TE::TEVector2> GetWorldVertices(const TE::TEMatrix4 &worldModel) const { return {}; }
 
     /// Returns true if the world-space point is inside this component (used for picking/selection).
-    virtual bool ContainsPoint(const glm::mat4 &worldModel, const TE::TEVector2 &point) const { return false; }
+    virtual bool ContainsPoint(const TE::TEMatrix4 &worldModel, const TE::TEVector2 &point) const { return false; }
 
     /// Returns true if this component should block light (for shadow casting).
     virtual bool CastsOcclusionShadow() const { return false; }
 
     /// Renders the component specifically for the editor/scene view.
-    virtual void OnRender(class TE::Renderer2D *renderer, const glm::mat4 &worldModel,
+    virtual void OnRender(class TE::Renderer2D *renderer, const TE::TEMatrix4 &worldModel,
                           const std::shared_ptr<class TE::Material> &material) const
     {
     }
@@ -111,8 +110,8 @@ public:
 
 } // namespace TE
 
-#define TPROPERTY_FLOAT(var, name) ImGui::DragFloat(name, &var, 0.1f)
-#define TPROPERTY_VEC2(var, name) TE::UIUtils::DrawVec2Control(name, *(glm::vec2 *)&var)
+#define TPROPERTY_FLOAT(var, name) TE::TimeGUI::DragFloat(name, &var)
+#define TPROPERTY_VEC2(var, name) TE::UIUtils::DrawVec2Control(name, var)
 #define TPROPERTY_VEC3(var, name) TE::UIUtils::DrawVec3Control(name, var)
-#define TPROPERTY_BOOL(var, name) ImGui::Checkbox(name, &var)
-#define TPROPERTY_COLOR(var, name) ImGui::ColorEdit4(name, &var.GetValue().x)
+#define TPROPERTY_BOOL(var, name) TE::TimeGUI::Checkbox(name, &var)
+#define TPROPERTY_COLOR(var, name) TE::TimeGUI::DrawColorControl(name, var)

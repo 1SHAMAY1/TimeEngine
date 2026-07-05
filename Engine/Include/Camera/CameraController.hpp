@@ -1,7 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include <glm/glm.hpp>
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 
 namespace TE {
 
@@ -24,11 +23,11 @@ namespace TE {
         const TERotator& GetRotation() const;
 
         // === View ===
-        glm::mat4 GetViewMatrix() const;
+        TEMatrix4 GetViewMatrix() const;
 
     private:
         float m_FOV;
-        glm::vec3 m_Position;
+        TEVector m_Position;
         TERotator m_Rotation;
     };
 

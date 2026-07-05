@@ -1,5 +1,5 @@
 #include "Renderer/RendererContext.hpp"
-#include <glad/glad.h>
+#include "Renderer/RenderCommand.hpp"
 #include <string>
 
 #ifdef _WIN32
@@ -27,13 +27,11 @@ namespace TE {
     }
 
     std::string RendererContext::GetGPUVendor() {
-        const char* vendor = (const char*)glGetString(GL_VENDOR);
-        return vendor ? vendor : "Unknown";
+        return RenderCommand::GetGPUVendor();
     }
 
     std::string RendererContext::GetGPURenderer() {
-        const char* renderer = (const char*)glGetString(GL_RENDERER);
-        return renderer ? renderer : "Unknown";
+        return RenderCommand::GetGPURenderer();
     }
 
     std::string RendererContext::GetGPUType() {

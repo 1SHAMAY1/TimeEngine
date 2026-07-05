@@ -17,3 +17,15 @@
 [submodule "Vendor/Customizable_Logger"]
 	path = Vendor/Customizable_Logger
 	url = https://github.com/1SHAMAY1/Customizable_Logger
+[submodule "Vendor/Velox"]
+	path = Vendor/Velox
+	url = https://github.com/1SHAMAY1/Velox
+[submodule "Vendor/Vulkan"]
+	path = Vendor/Vulkan
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "Vendor/OpenGL-Registry"]
+	path = Vendor/OpenGL-Registry
+	url = https://github.com/KhronosGroup/OpenGL-Registry.git
+[submodule "Vendor/volk"]
+	path = Vendor/volk
+	url = https://github.com/zeux/volk.git

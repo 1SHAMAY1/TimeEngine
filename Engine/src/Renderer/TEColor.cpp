@@ -1,71 +1,82 @@
-﻿#include "Renderer/TEColor.hpp"
+#include "Renderer/TEColor.hpp"
 #include "Renderer/RendererContext.hpp"
 #include "Renderer/OpenGL/TEOpenGLColor.hpp"
+#include "Utils/MathUtils.hpp"
 #include <sstream>
 #include <iomanip>
+#include <glm/glm.hpp>
 
 namespace TE {
 
     TEColor::TEColor()
-        : m_Value(0.0f, 0.0f, 0.0f, 1.0f) {}
+        : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 
     TEColor::TEColor(float r, float g, float b, float a)
-        : m_Value(r, g, b, a) {}
+        : r(r), g(g), b(b), a(a) {}
 
-    TEColor::TEColor(const glm::vec4& color)
-        : m_Value(color) {}
+    TEColor::TEColor(const TEVector4 &color)
+        : r(color.x), g(color.y), b(color.z), a(color.w) {}
 
-    const glm::vec4& TEColor::Red() {
+    TEColor &TEColor::operator=(const TEVector4 &color)
+    {
+        r = color.x;
+        g = color.y;
+        b = color.z;
+        a = color.w;
+        return *this;
+    }
+
+    const TEColor& TEColor::Red() {
         switch (RendererContext::GetAPI()) {
         case GraphicsAPI::OpenGL: return TEOpenGLColor::Red;
-        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        default: static TEColor fallback = {1, 0, 0, 1}; return fallback;
         }
     }
 
-    const glm::vec4& TEColor::Green()
+    const TEColor& TEColor::Green()
     {
         switch (RendererContext::GetAPI()) {
         case GraphicsAPI::OpenGL: return TEOpenGLColor::Green;
-        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        default: static TEColor fallback = {0, 1, 0, 1}; return fallback;
         }
     }
 
-    const glm::vec4& TEColor::Blue()
+    const TEColor& TEColor::Blue()
     {
         switch (RendererContext::GetAPI()) {
         case GraphicsAPI::OpenGL: return TEOpenGLColor::Blue;
-        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        default: static TEColor fallback = {0, 0, 1, 1}; return fallback;
         }
     }
 
-    const glm::vec4& TEColor::White()
+    const TEColor& TEColor::White()
     {
         switch (RendererContext::GetAPI()) {
         case GraphicsAPI::OpenGL: return TEOpenGLColor::White;
-        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        default: static TEColor fallback = {1, 1, 1, 1}; return fallback;
         }
     }
 
-    const glm::vec4& TEColor::Black()
+    const TEColor& TEColor::Black()
     {
         switch (RendererContext::GetAPI()) {
         case GraphicsAPI::OpenGL: return TEOpenGLColor::Black;
-        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        default: static TEColor fallback = {0, 0, 0, 1}; return fallback;
         }
     }
 
-    const glm::vec4& TEColor::Transparent()
+    const TEColor& TEColor::Transparent()
     {
         switch (RendererContext::GetAPI()) {
         case GraphicsAPI::OpenGL: return TEOpenGLColor::Transparent;
-        default: static glm::vec4 fallback = {1, 0, 0, 1}; return fallback;
+        default: static TEColor fallback = {0, 0, 0, 0}; return fallback;
         }
     }
 
 
-    glm::vec4 TEColor::ToLinear(const glm::vec4& srgb) {
-        glm::vec3 linear = glm::pow(glm::vec3(srgb), glm::vec3(2.2f));
-        return glm::vec4(linear, srgb.a);
+    TEColor TEColor::ToLinear(const TEColor& srgb) {
+        glm::vec3 linear = glm::pow(glm::vec3(srgb.r, srgb.g, srgb.b), glm::vec3(2.2f));
+        return TEColor(linear.x, linear.y, linear.z, srgb.a);
     }
 
     TEColor TEColor::FromHex(const std::string& hex) {

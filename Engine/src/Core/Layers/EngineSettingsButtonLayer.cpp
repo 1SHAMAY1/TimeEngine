@@ -1,6 +1,7 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/EngineSettingsButtonLayer.hpp"
 #include "Core/Log.h"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 
 namespace TE {
 
@@ -26,9 +27,9 @@ namespace TE {
         m_EngineSettingsLayer->OnUpdate();
     }
 
-    void EngineSettingsButtonLayer::OnImGuiRender() {
+    void EngineSettingsButtonLayer::OnTimeGUIRender() {
         RenderEngineSettingsButton();
-        m_EngineSettingsLayer->OnImGuiRender();
+        m_EngineSettingsLayer->OnTimeGUIRender();
     }
 
     void EngineSettingsButtonLayer::OnEvent(Event& event) {
@@ -39,15 +40,15 @@ namespace TE {
         if (!m_ShowButton) return;
 
         // Set button position
-        ImGui::SetNextWindowPos(m_ButtonPosition, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(200, 60), ImGuiCond_FirstUseEver);
+        TimeGUI::SetNextWindowPos(m_ButtonPosition, TimeGUICond_FirstUseEver);
+        TimeGUI::SetNextWindowSize(TEVector2(200, 60), TimeGUICond_FirstUseEver);
         
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | 
-                                      ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar;
+        TimeGUIWindowFlags windowFlags = TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize |
+                                        TimeGUIWindowFlags_NoDocking | TimeGUIWindowFlags_NoTitleBar;
 
-        if (ImGui::Begin("EngineSettingsButton", nullptr, windowFlags)) {
+        if (TimeGUI::Begin("EngineSettingsButton", nullptr, windowFlags)) {
             // Button to show/hide engine settings window
-            if (ImGui::Button("⚙️ Engine Settings", ImVec2(180, 40))) {
+            if (TimeGUI::Button("⚙️ Engine Settings", TEVector2(180, 40))) {
                 if (!m_EngineSettingsLayer->IsVisible()) {
                     CreateFloatingEngineSettingsWindow();
                 } else {
@@ -56,19 +57,19 @@ namespace TE {
             }
             
             // Tooltip
-            if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("Click to open/close the engine settings window\nConfigure frame rate, logging, and other engine settings");
+            if (TimeGUI::IsItemHovered()) {
+                TimeGUI::SetTooltip("Click to open/close the engine settings window\nConfigure frame rate, logging, and other engine settings");
             }
         }
-        ImGui::End();
+        TimeGUI::End();
     }
 
     void EngineSettingsButtonLayer::CreateFloatingEngineSettingsWindow() {
         // Configure the engine settings layer for dockable window
         m_EngineSettingsLayer->SetVisible(true);
         m_EngineSettingsLayer->SetWindowTitle("Engine Settings");
-        m_EngineSettingsLayer->SetWindowPosition(ImVec2(100, 100));
-        m_EngineSettingsLayer->SetWindowSize(ImVec2(600, 500));
+        m_EngineSettingsLayer->SetWindowPosition(TEVector2(100, 100));
+        m_EngineSettingsLayer->SetWindowSize(TEVector2(600, 500));
         
         TE_CORE_INFO("Engine settings window opened");
     }

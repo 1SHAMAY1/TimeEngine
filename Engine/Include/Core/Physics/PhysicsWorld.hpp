@@ -15,6 +15,7 @@ namespace TE {
         bool IsStatic = false;
 
         CollisionShape Shape;
+        uint32_t m_VeloxEntityID = 0;
 
         void ApplyForce(const TEVector2& force) {
             if (IsStatic) return;
@@ -36,6 +37,9 @@ namespace TE {
 
     class PhysicsWorld {
     public:
+        PhysicsWorld();
+        ~PhysicsWorld();
+
         void AddBody(RigidBody* body);
         void RemoveBody(RigidBody* body);
 
@@ -44,6 +48,7 @@ namespace TE {
     private:
         std::vector<RigidBody*> m_Bodies;
         TEVector2 m_Gravity = { 0.0f, -9.81f };
+        void* m_VeloxWorld = nullptr;
 
         void ResolveCollisions();
     };

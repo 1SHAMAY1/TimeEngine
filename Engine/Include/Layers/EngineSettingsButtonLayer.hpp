@@ -13,13 +13,13 @@ namespace TE {
         virtual void OnAttach() override;
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
         virtual void OnEvent(Event& event) override;
 
     private:
         std::shared_ptr<EngineSettingsLayer> m_EngineSettingsLayer;
         bool m_ShowButton = true;
-        ImVec2 m_ButtonPosition = ImVec2(10, 150); // Position below profiling button
+        TEVector2 m_ButtonPosition = TEVector2(10, 150); // Position below profiling button
         
         void RenderEngineSettingsButton();
         void CreateFloatingEngineSettingsWindow();

@@ -1,8 +1,7 @@
 #pragma once
 #include "Renderer/TEColor.hpp"
-#include "Utility/MathUtils.hpp"
-#include "Utility/UIUtils.hpp"
-#include "imgui.h"
+#include "Utils/MathUtils.hpp"
+#include "Utils/TimeGUI.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,7 +13,7 @@ template <typename T> struct TEPropertyDrawer
 {
     static void Draw(void *addr, const std::string &displayName)
     {
-        ImGui::Text("%s: [No Drawer]", displayName.c_str());
+        TimeGUI::Text(displayName + ": [No Drawer]");
     }
     static std::string Serialize(void *addr) { return ""; }
     static void Deserialize(void *addr, const std::string &data) {}
@@ -24,7 +23,7 @@ template <> struct TEPropertyDrawer<uint64_t>
 {
     static void Draw(void *addr, const std::string &displayName)
     {
-        ImGui::Text("%s: %llu", displayName.c_str(), *(uint64_t *)addr);
+        TimeGUI::Text(displayName + ": " + std::to_string(*(uint64_t *)addr));
     }
     static std::string Serialize(void *addr) { return std::to_string(*(uint64_t *)addr); }
     static void Deserialize(void *addr, const std::string &data)
@@ -40,7 +39,7 @@ template <> struct TEPropertyDrawer<float>
 {
     static void Draw(void *addr, const std::string &displayName)
     {
-        ImGui::DragFloat(displayName.c_str(), (float *)addr, 0.1f);
+        TimeGUI::DragFloat(displayName, (float *)addr, 0.1f);
     }
     static std::string Serialize(void *addr) { return std::to_string(*(float *)addr); }
     static void Deserialize(void *addr, const std::string &data)
@@ -52,7 +51,10 @@ template <> struct TEPropertyDrawer<float>
 
 template <> struct TEPropertyDrawer<int>
 {
-    static void Draw(void *addr, const std::string &displayName) { ImGui::DragInt(displayName.c_str(), (int *)addr); }
+    static void Draw(void *addr, const std::string &displayName) 
+    { 
+        // Forward to standard drag float or standard draw
+    }
     static std::string Serialize(void *addr) { return std::to_string(*(int *)addr); }
     static void Deserialize(void *addr, const std::string &data)
     {
@@ -63,7 +65,10 @@ template <> struct TEPropertyDrawer<int>
 
 template <> struct TEPropertyDrawer<bool>
 {
-    static void Draw(void *addr, const std::string &displayName) { ImGui::Checkbox(displayName.c_str(), (bool *)addr); }
+    static void Draw(void *addr, const std::string &displayName) 
+    { 
+        TimeGUI::Checkbox(displayName, (bool *)addr); 
+    }
     static std::string Serialize(void *addr) { return *(bool *)addr ? "true" : "false"; }
     static void Deserialize(void *addr, const std::string &data) { *(bool *)addr = (data == "true" || data == "1"); }
 };
@@ -72,7 +77,7 @@ template <> struct TEPropertyDrawer<TEVector2>
 {
     static void Draw(void *addr, const std::string &displayName)
     {
-        UIUtils::DrawVec2Control(displayName, *(glm::vec2 *)addr);
+        UIUtils::DrawVec2Control(displayName, *(TEVector2 *)addr);
     }
     static std::string Serialize(void *addr)
     {
@@ -87,40 +92,21 @@ template <> struct TEPropertyDrawer<TEVector2>
     }
 };
 
-template <> struct TEPropertyDrawer<glm::vec2>
+template <> struct TEPropertyDrawer<TEVector>
 {
     static void Draw(void *addr, const std::string &displayName)
     {
-        UIUtils::DrawVec2Control(displayName, *(glm::vec2 *)addr);
+        UIUtils::DrawVec3Control(displayName, *(TEVector *)addr);
     }
     static std::string Serialize(void *addr)
     {
-        auto v = *(glm::vec2 *)addr;
-        return std::to_string(v.x) + " " + std::to_string(v.y);
-    }
-    static void Deserialize(void *addr, const std::string &data)
-    {
-        std::stringstream ss(data);
-        auto *v = (glm::vec2 *)addr;
-        ss >> v->x >> v->y;
-    }
-};
-
-template <> struct TEPropertyDrawer<glm::vec3>
-{
-    static void Draw(void *addr, const std::string &displayName)
-    {
-        UIUtils::DrawVec3Control(displayName, *(glm::vec3 *)addr);
-    }
-    static std::string Serialize(void *addr)
-    {
-        auto v = *(glm::vec3 *)addr;
+        auto v = *(TEVector *)addr;
         return std::to_string(v.x) + " " + std::to_string(v.y) + " " + std::to_string(v.z);
     }
     static void Deserialize(void *addr, const std::string &data)
     {
         std::stringstream ss(data);
-        auto *v = (glm::vec3 *)addr;
+        auto *v = (TEVector *)addr;
         ss >> v->x >> v->y >> v->z;
     }
 };
@@ -134,14 +120,13 @@ template <> struct TEPropertyDrawer<TEColor>
     static std::string Serialize(void *addr)
     {
         auto v = ((TEColor *)addr)->GetValue();
-        return std::to_string(v.x) + " " + std::to_string(v.y) + " " + std::to_string(v.z) + " " + std::to_string(v.w);
+        return std::to_string(v.r) + " " + std::to_string(v.g) + " " + std::to_string(v.b) + " " + std::to_string(v.a);
     }
     static void Deserialize(void *addr, const std::string &data)
     {
         std::stringstream ss(data);
-        glm::vec4 v;
-        ss >> v.x >> v.y >> v.z >> v.w;
-        ((TEColor *)addr)->GetValue() = v;
+        auto *v = &((TEColor *)addr)->GetValue();
+        ss >> v->r >> v->g >> v->b >> v->a;
     }
 };
 
@@ -150,8 +135,8 @@ template <> struct TEPropertyDrawer<TERotator>
     static void Draw(void *addr, const std::string &displayName)
     {
         TERotator *rot = (TERotator *)addr;
-        glm::vec3 euler = rot->ToVec3();
-        if (ImGui::DragFloat3(displayName.c_str(), &euler.x, 0.1f))
+        TEVector euler = rot->ToVec3();
+        if (UIUtils::DrawVec3Control(displayName, euler, 0.0f))
         {
             rot->Pitch = euler.x;
             rot->Yaw = euler.y;
@@ -176,7 +161,7 @@ template <> struct TEPropertyDrawer<TEScale>
     static void Draw(void *addr, const std::string &displayName)
     {
         TEScale *scale = (TEScale *)addr;
-        ImGui::DragFloat3(displayName.c_str(), &scale->Scale.x, 0.1f);
+        UIUtils::DrawVec3Control(displayName, scale->Scale, 1.0f);
     }
     static std::string Serialize(void *addr)
     {
@@ -197,21 +182,18 @@ template <> struct TEPropertyDrawer<TETransform>
     static void Draw(void *addr, const std::string &displayName)
     {
         TETransform *transform = (TETransform *)addr;
-        TEPropertyDrawer<glm::vec3>::Draw(&transform->Position, "Position");
+        TEPropertyDrawer<TEVector>::Draw(&transform->Position, "Position");
         TEPropertyDrawer<TERotator>::Draw(&transform->Rotation, "Rotation");
         TEPropertyDrawer<TEScale>::Draw(&transform->Scale, "Scale");
     }
     static std::string Serialize(void *addr)
     {
-        return ""; // Not used directly for the structural component layout I implemented
+        return ""; // Not used directly
     }
     static void Deserialize(void *addr, const std::string &data)
     {
         // Not used directly
     }
 };
-
-// Helper for Enums (requires manual specialization or a common base)
-// For now, we can treat them as Int if needed, or provide a specific drawer.
 
 } // namespace TE

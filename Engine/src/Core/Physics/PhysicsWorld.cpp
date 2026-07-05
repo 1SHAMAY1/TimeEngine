@@ -1,106 +1,106 @@
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Log.h"
+#include <velox/VeloxAPI.h>
 #include <algorithm>
 
 namespace TE {
 
+    PhysicsWorld::PhysicsWorld()
+    {
+        m_VeloxWorld = Velox_CreateWorld();
+    }
+
+    PhysicsWorld::~PhysicsWorld()
+    {
+        if (m_VeloxWorld)
+        {
+            Velox_DestroyWorld((VeloxWorld*)m_VeloxWorld);
+            m_VeloxWorld = nullptr;
+        }
+    }
+
     void PhysicsWorld::AddBody(RigidBody* body) {
         m_Bodies.push_back(body);
+        
+        if (!m_VeloxWorld) return;
+
+        // 1. Create Velox Entity
+        uint32_t id = Velox_CreateEntity((VeloxWorld*)m_VeloxWorld);
+        body->m_VeloxEntityID = id;
+
+        // 2. Add Transform Component
+        Velox_AddTransform((VeloxWorld*)m_VeloxWorld, id, body->Position.x, body->Position.y, 0.0f);
+
+        // 3. Add RigidBody Component
+        Velox_AddRigidBody((VeloxWorld*)m_VeloxWorld, id, body->Mass, body->IsStatic);
+
+        // 4. Add Movement Component (stores velocity)
+        Velox_AddMovement((VeloxWorld*)m_VeloxWorld, id);
+        Velox_SetVelocity((VeloxWorld*)m_VeloxWorld, id, body->Velocity.x, body->Velocity.y);
+
+        // 5. Add Physical Material Component
+        Velox_AddPhysicalMaterial((VeloxWorld*)m_VeloxWorld, id, 0.5f, 0.3f, body->Restitution);
+
+        // 6. Add Collider Component depending on shape
+        if (body->Shape.type == CollisionType::AABB) {
+            float width = body->Shape.aabb.max.x - body->Shape.aabb.min.x;
+            float height = body->Shape.aabb.max.y - body->Shape.aabb.min.y;
+            Velox_AddBoxCollider((VeloxWorld*)m_VeloxWorld, id, width, height);
+        }
+        else if (body->Shape.type == CollisionType::Circle) {
+            Velox_AddCircleCollider((VeloxWorld*)m_VeloxWorld, id, body->Shape.circle.radius);
+        }
+        else {
+            // Default to a fallback box collider if none defined
+            Velox_AddBoxCollider((VeloxWorld*)m_VeloxWorld, id, 50.0f, 50.0f);
+        }
     }
 
     void PhysicsWorld::RemoveBody(RigidBody* body) {
-        // Simple linear removal for now
         auto it = std::find(m_Bodies.begin(), m_Bodies.end(), body);
         if (it != m_Bodies.end()) {
             m_Bodies.erase(it);
         }
+
+        if (m_VeloxWorld && body->m_VeloxEntityID != 0) {
+            Velox_DestroyEntity((VeloxWorld*)m_VeloxWorld, body->m_VeloxEntityID);
+            body->m_VeloxEntityID = 0;
+        }
     }
 
     void PhysicsWorld::Step(float dt) {
-        // 1. Integrate Forces
+        if (!m_VeloxWorld) return;
+
+        // 1. Sync any manual position/velocity updates from client code to Velox
         for (auto* body : m_Bodies) {
-            if (!body->IsStatic) {
-                body->ApplyForce(m_Gravity * body->Mass);
-                body->Integrate(dt);
+            if (body->m_VeloxEntityID != 0) {
+                // Apply accumulated force if any
+                if (body->Force.x != 0.0f || body->Force.y != 0.0f) {
+                    if (!body->IsStatic && body->Mass > 0.0f) {
+                        body->Velocity += (body->Force / body->Mass) * dt;
+                    }
+                    body->Force = {0.0f, 0.0f};
+                }
+                // Sync current velocity to Velox in case client code modified it
+                Velox_SetVelocity((VeloxWorld*)m_VeloxWorld, body->m_VeloxEntityID, body->Velocity.x, body->Velocity.y);
             }
         }
 
-        // 2. Resolve Collisions (Naive O(N^2) for now)
-        ResolveCollisions();
+        // 2. Step Velox Simulation
+        Velox_Step((VeloxWorld*)m_VeloxWorld, dt);
+
+        // 3. Query simulated results back to RigidBody structures
+        for (auto* body : m_Bodies) {
+            if (body->m_VeloxEntityID != 0) {
+                float x = 0.0f, y = 0.0f, rot = 0.0f;
+                Velox_GetPosition((VeloxWorld*)m_VeloxWorld, body->m_VeloxEntityID, &x, &y, &rot);
+                body->Position = { x, y };
+            }
+        }
     }
 
-
-
     void PhysicsWorld::ResolveCollisions() {
-        for (size_t i = 0; i < m_Bodies.size(); ++i) {
-            for (size_t j = i + 1; j < m_Bodies.size(); ++j) {
-                RigidBody* A = m_Bodies[i];
-                RigidBody* B = m_Bodies[j];
-
-                if (A->IsStatic && B->IsStatic) continue;
-
-                if (A->Shape.type == CollisionType::AABB && B->Shape.type == CollisionType::AABB) {
-                    
-                    TEVector2 posA = A->Position;
-                    TEVector2 posB = B->Position;
-                    
-                    TEVector2 minA = posA + A->Shape.aabb.min;
-                    TEVector2 maxA = posA + A->Shape.aabb.max;
-                    TEVector2 minB = posB + B->Shape.aabb.min;
-                    TEVector2 maxB = posB + B->Shape.aabb.max;
-
-                    // Check Overlap
-                    if (minA.x < maxB.x && maxA.x > minB.x &&
-                        minA.y < maxB.y && maxA.y > minB.y)
-                    {
-                        // Collision Detected
-                        
-                        // Calculate Penetration Depth
-                        float d1 = maxB.x - minA.x;
-                        float d2 = maxA.x - minB.x;
-                        float d3 = maxB.y - minA.y;
-                        float d4 = maxA.y - minB.y;
-                        
-                        // Find minimum penetration
-                        float minOverlap = d1;
-                        TEVector2 normal = { 1.0f, 0.0f }; // Normal points from A to B?
-                        
-                        if (d2 < minOverlap) { minOverlap = d2; normal = { -1.0f, 0.0f }; }
-                        if (d3 < minOverlap) { minOverlap = d3; normal = { 0.0f, 1.0f }; }
-                        if (d4 < minOverlap) { minOverlap = d4; normal = { 0.0f, -1.0f }; }
-                        
-                        // Positional Correction (Linear Projection)
-                        const float percent = 0.8f; // Penetration percentage to correct
-                        const float slop = 0.01f;   // Penetration allowance
-                        TEVector2 correction = normal * (std::max(minOverlap - slop, 0.0f) * percent);
-                        
-                        float invMassA = A->InverseMass;
-                        float invMassB = B->InverseMass;
-                        float totalInvMass = invMassA + invMassB;
-                        
-                        if (totalInvMass == 0.0f) continue;
-                        
-                        if (!A->IsStatic) A->Position -= correction * (invMassA / totalInvMass);
-                        if (!B->IsStatic) B->Position += correction * (invMassB / totalInvMass);
-                        
-                        // Impulse Resolution
-                        TEVector2 rv = B->Velocity - A->Velocity;
-                        float velAlongNormal = Dot(rv, normal);
-                        
-                        if (velAlongNormal > 0) continue; // Moving away
-                        
-                        float e = std::min(A->Restitution, B->Restitution);
-                        float jVal = -(1 + e) * velAlongNormal;
-                        jVal /= totalInvMass;
-                        
-                        TEVector2 impulse = normal * jVal;
-                        
-                        if (!A->IsStatic) A->Velocity -= impulse * invMassA;
-                        if (!B->IsStatic) B->Velocity += impulse * invMassB;
-                    }
-                }
-            }
-        }
+        // Resolving is fully handled inside Velox_Step via XPBD solver now
     }
 
 }

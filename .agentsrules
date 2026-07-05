@@ -10,6 +10,7 @@ When assisting with the TimeEngine codebase, follow these rules:
   - Macros: `SCREAMING_SNAKE_CASE` (prefixed with `TE_`)
 - **Logging**: Use `TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR` for engine code.
 - **Resources**: Use existing classes like `Texture2D`, `Shader`, and `VertexArray` instead of raw OpenGL calls where possible.
+- **GUI Rendering**: Never use raw `ImGui` or include `imgui.h`/`imgui_internal.h` outside of the wrapper layer. All engine layers and systems MUST use the clean non-vendor GUI wrapper namespace (`TE::TimeGUI`) and wrapper classes (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`, etc.). Do not expose or return vendor types (like `ImVec4`, `ImDrawList*`, `ImFont*`) in function signatures or variables outside the wrapper implementation (`TimeGUI.cpp` / `TimeGUILayer.cpp`).
 
 ## 2. Architecture Guidelines
 - Follow the **ECS** (Entity-Component System) pattern for scene objects.

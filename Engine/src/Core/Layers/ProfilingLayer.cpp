@@ -1,6 +1,7 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/ProfilingLayer.hpp"
 #include "Core/Log.h"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <numeric>
 #include <sstream>
@@ -45,7 +46,7 @@ namespace TE {
         BeginFrame();
     }
 
-    void ProfilingLayer::OnImGuiRender() {
+    void ProfilingLayer::OnTimeGUIRender() {
         RenderPerformanceWindow();
     }
 
@@ -250,47 +251,47 @@ namespace TE {
     void ProfilingLayer::RenderPerformanceWindow() {
         if (!m_IsVisible) return;
         
-        ImGui::SetNextWindowPos(m_WindowPos, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(m_WindowSize, ImGuiCond_FirstUseEver);
+        TimeGUI::SetNextWindowPos(m_WindowPos, TimeGUICond_FirstUseEver);
+        TimeGUI::SetNextWindowSize(m_WindowSize, TimeGUICond_FirstUseEver);
         
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
-        if (!m_WindowResizable) windowFlags |= ImGuiWindowFlags_NoResize;
+        TimeGUIWindowFlags windowFlags = TimeGUIWindowFlags_NoCollapse;
+        if (!m_WindowResizable) windowFlags |= TimeGUIWindowFlags_NoResize;
         if (m_IsFloating) {
-            windowFlags |= ImGuiWindowFlags_NoDocking;
+            windowFlags |= TimeGUIWindowFlags_NoDocking;
         }
         // When not floating, allow docking by not adding NoDocking flag
 
         bool windowOpen = true;
-        if (ImGui::Begin(m_WindowTitle.c_str(), &windowOpen, windowFlags)) {
-            if (ImGui::BeginTabBar("PerformanceTabs")) {
-                if (ImGui::BeginTabItem("Overview")) {
+        if (TimeGUI::Begin(m_WindowTitle.c_str(), &windowOpen, windowFlags)) {
+            if (TimeGUI::BeginTabBar("PerformanceTabs")) {
+                if (TimeGUI::BeginTabItem("Overview")) {
                     RenderSystemInfo();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Rendering")) {
+                if (TimeGUI::BeginTabItem("Rendering")) {
                     RenderRenderingInfo();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Memory")) {
+                if (TimeGUI::BeginTabItem("Memory")) {
                     RenderMemoryInfo();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Graphs")) {
+                if (TimeGUI::BeginTabItem("Graphs")) {
                     RenderPerformanceGraphs();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                ImGui::EndTabBar();
+                TimeGUI::EndTabBar();
             }
 
             // Settings
-            if (ImGui::CollapsingHeader("Settings")) {
-                ImGui::SliderFloat("Update Interval", &m_UpdateInterval, 0.01f, 1.0f, "%.2f s");
-                ImGui::SliderInt("History Size", (int*)&m_MaxHistorySize, 10, 1000);
-                ImGui::Checkbox("Show Detailed Info", &m_ShowDetailedInfo);
-                ImGui::Checkbox("Show Graphs", &m_ShowGraphs);
+            if (TimeGUI::CollapsingHeader("Settings")) {
+                TimeGUI::SliderFloat("Update Interval", &m_UpdateInterval, 0.01f, 1.0f, "%.2f s");
+                TimeGUI::SliderInt("History Size", (int*)&m_MaxHistorySize, 10, 1000);
+                TimeGUI::Checkbox("Show Detailed Info", &m_ShowDetailedInfo);
+                TimeGUI::Checkbox("Show Graphs", &m_ShowGraphs);
             }
         }
-        ImGui::End();
+        TimeGUI::End();
         
         // Handle window close
         if (!windowOpen) {
@@ -300,124 +301,124 @@ namespace TE {
 
     void ProfilingLayer::RenderSystemInfo() {
         // FPS and Frame Time
-        ImGui::Text("FPS: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_FPSColor, "%.1f", m_CurrentMetrics.fps);
-        ImGui::SameLine();
-        ImGui::Text("(%.1f avg)", GetAverageFPS());
+        TimeGUI::Text("FPS: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_FPSColor, "%.1f", m_CurrentMetrics.fps);
+        TimeGUI::SameLine();
+        TimeGUI::Text("(%.1f avg)", GetAverageFPS());
 
-        ImGui::Text("Frame Time: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_FPSColor, "%.2f ms", m_CurrentMetrics.frameTime * 1000.0f);
-        ImGui::SameLine();
-        ImGui::Text("(%.2f avg)", GetAverageFrameTime() * 1000.0f);
+        TimeGUI::Text("Frame Time: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_FPSColor, "%.2f ms", m_CurrentMetrics.frameTime * 1000.0f);
+        TimeGUI::SameLine();
+        TimeGUI::Text("(%.2f avg)", GetAverageFrameTime() * 1000.0f);
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // CPU Usage
-        ImGui::Text("CPU Usage: ");
-        ImGui::SameLine();
-        ImVec4 cpuColor = GetColorForValue(m_CurrentMetrics.cpuUsage, 70.0f, 90.0f);
-        ImGui::TextColored(cpuColor, "%.1f%%", m_CurrentMetrics.cpuUsage);
-        ImGui::SameLine();
-        ImGui::Text("(%.1f avg)", GetAverageCPUUsage());
+        TimeGUI::Text("CPU Usage: ");
+        TimeGUI::SameLine();
+        TEVector4 cpuColor = GetColorForValue(m_CurrentMetrics.cpuUsage, 70.0f, 90.0f);
+        TimeGUI::TextColored(cpuColor, "%.1f%%", m_CurrentMetrics.cpuUsage);
+        TimeGUI::SameLine();
+        TimeGUI::Text("(%.1f avg)", GetAverageCPUUsage());
 
         // RAM Usage
-        ImGui::Text("RAM Usage: ");
-        ImGui::SameLine();
-        ImVec4 ramColor = GetColorForValue(m_CurrentMetrics.ramUsage, 70.0f, 90.0f);
-        ImGui::TextColored(ramColor, "%.1f%%", m_CurrentMetrics.ramUsage);
-        ImGui::SameLine();
-        ImGui::Text("(%.1f avg)", GetAverageRAMUsage());
+        TimeGUI::Text("RAM Usage: ");
+        TimeGUI::SameLine();
+        TEVector4 ramColor = GetColorForValue(m_CurrentMetrics.ramUsage, 70.0f, 90.0f);
+        TimeGUI::TextColored(ramColor, "%.1f%%", m_CurrentMetrics.ramUsage);
+        TimeGUI::SameLine();
+        TimeGUI::Text("(%.1f avg)", GetAverageRAMUsage());
 
         // GPU Usage
-        ImGui::Text("GPU Usage: ");
-        ImGui::SameLine();
-        ImVec4 gpuColor = GetColorForValue(m_CurrentMetrics.gpuUsage, 70.0f, 90.0f);
-        ImGui::TextColored(gpuColor, "%.1f%%", m_CurrentMetrics.gpuUsage);
-        ImGui::SameLine();
-        ImGui::Text("(%.1f avg)", GetAverageGPUUsage());
+        TimeGUI::Text("GPU Usage: ");
+        TimeGUI::SameLine();
+        TEVector4 gpuColor = GetColorForValue(m_CurrentMetrics.gpuUsage, 70.0f, 90.0f);
+        TimeGUI::TextColored(gpuColor, "%.1f%%", m_CurrentMetrics.gpuUsage);
+        TimeGUI::SameLine();
+        TimeGUI::Text("(%.1f avg)", GetAverageGPUUsage());
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // System Info
         if (m_ShowSystemInfo) {
-            ImGui::Text("CPU: %s (%d cores)", m_CPUName.c_str(), m_CPUCores);
-            ImGui::Text("GPU: %s", m_GPUName.c_str());
-            ImGui::Text("RAM: %s", FormatBytes(m_RAMTotal * 1024 * 1024).c_str());
+            TimeGUI::Text("CPU: %s (%d cores)", m_CPUName.c_str(), m_CPUCores);
+            TimeGUI::Text("GPU: %s", m_GPUName.c_str());
+            TimeGUI::Text("RAM: %s", FormatBytes(m_RAMTotal * 1024 * 1024).c_str());
         }
     }
 
     void ProfilingLayer::RenderRenderingInfo() {
         // Draw Calls
-        ImGui::Text("Draw Calls: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_FPSColor, "%u", m_CurrentMetrics.drawCalls);
+        TimeGUI::Text("Draw Calls: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_FPSColor, "%u", m_CurrentMetrics.drawCalls);
 
         // Triangles
-        ImGui::Text("Triangles: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_FPSColor, "%u", m_CurrentMetrics.triangles);
+        TimeGUI::Text("Triangles: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_FPSColor, "%u", m_CurrentMetrics.triangles);
 
         // Vertices
-        ImGui::Text("Vertices: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_FPSColor, "%u", m_CurrentMetrics.vertices);
+        TimeGUI::Text("Vertices: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_FPSColor, "%u", m_CurrentMetrics.vertices);
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Textures
-        ImGui::Text("Textures: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_CPUColor, "%u", m_CurrentMetrics.textures);
+        TimeGUI::Text("Textures: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_CPUColor, "%u", m_CurrentMetrics.textures);
 
         // Shaders
-        ImGui::Text("Shaders: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_CPUColor, "%u", m_CurrentMetrics.shaders);
+        TimeGUI::Text("Shaders: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_CPUColor, "%u", m_CurrentMetrics.shaders);
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Performance metrics
         if (m_CurrentMetrics.fps < 30.0f) {
-            ImGui::TextColored(m_CriticalColor, "WARNING: Low FPS detected!");
+            TimeGUI::TextColored(m_CriticalColor, "WARNING: Low FPS detected!");
         } else if (m_CurrentMetrics.fps < 60.0f) {
-            ImGui::TextColored(m_WarningColor, "Notice: FPS below 60");
+            TimeGUI::TextColored(m_WarningColor, "Notice: FPS below 60");
         }
     }
 
     void ProfilingLayer::RenderMemoryInfo() {
         // GPU Memory
-        ImGui::Text("GPU Memory: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_GPUColor, "%.1f MB", m_CurrentMetrics.gpuMemory);
+        TimeGUI::Text("GPU Memory: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_GPUColor, "%.1f MB", m_CurrentMetrics.gpuMemory);
 
         // VRAM Usage
-        ImGui::Text("VRAM Usage: ");
-        ImGui::SameLine();
-        ImGui::TextColored(m_GPUColor, "%.1f%%", m_CurrentMetrics.vramUsage);
+        TimeGUI::Text("VRAM Usage: ");
+        TimeGUI::SameLine();
+        TimeGUI::TextColored(m_GPUColor, "%.1f%%", m_CurrentMetrics.vramUsage);
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Memory warnings
         if (m_CurrentMetrics.ramUsage > 90.0f) {
-            ImGui::TextColored(m_CriticalColor, "CRITICAL: High RAM usage!");
+            TimeGUI::TextColored(m_CriticalColor, "CRITICAL: High RAM usage!");
         } else if (m_CurrentMetrics.ramUsage > 80.0f) {
-            ImGui::TextColored(m_WarningColor, "Warning: High RAM usage");
+            TimeGUI::TextColored(m_WarningColor, "Warning: High RAM usage");
         }
 
         if (m_CurrentMetrics.vramUsage > 90.0f) {
-            ImGui::TextColored(m_CriticalColor, "CRITICAL: High VRAM usage!");
+            TimeGUI::TextColored(m_CriticalColor, "CRITICAL: High VRAM usage!");
         } else if (m_CurrentMetrics.vramUsage > 80.0f) {
-            ImGui::TextColored(m_WarningColor, "Warning: High VRAM usage");
+            TimeGUI::TextColored(m_WarningColor, "Warning: High VRAM usage");
         }
     }
 
     void ProfilingLayer::RenderPerformanceGraphs() {
         if (!m_ShowGraphs) return;
 
-        ImGui::Text("Performance Graphs");
-        ImGui::Separator();
+        TimeGUI::Text("Performance Graphs");
+        TimeGUI::Separator();
 
         // FPS Graph
         RenderGraph("FPS", m_FPSHistory, m_FPSColor, 0.0f, 120.0f);
@@ -435,34 +436,34 @@ namespace TE {
         RenderGraph("GPU Usage (%)", m_GPUHistory, m_GPUColor, 0.0f, 100.0f);
     }
 
-    void ProfilingLayer::RenderGraph(const std::string& title, const std::deque<float>& data, const ImVec4& color, float minValue, float maxValue) {
+    void ProfilingLayer::RenderGraph(const std::string& title, const std::deque<float>& data, const TEVector4& color, float minValue, float maxValue) {
         if (data.empty()) return;
 
-        ImGui::Text("%s", title.c_str());
+        TimeGUI::Text("%s", title.c_str());
         
-        ImVec2 graphPos = ImGui::GetCursorScreenPos();
-        ImVec2 graphSize = ImVec2(ImGui::GetContentRegionAvail().x, 60.0f);
+        TEVector2 graphPos = TimeGUI::GetCursorScreenPos();
+        TEVector2 graphSize = TEVector2(TimeGUI::GetContentRegionAvail().x, 60.0f);
         
-        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetWindowDrawList();
         DrawLineGraph(drawList, graphPos, graphSize, data, color, minValue, maxValue, title);
         
-        ImGui::SetCursorScreenPos(ImVec2(graphPos.x, graphPos.y + graphSize.y + 5));
-        ImGui::Separator();
+        TimeGUI::SetCursorScreenPos(TEVector2(graphPos.x, graphPos.y + graphSize.y + 5));
+        TimeGUI::Separator();
     }
 
-    void ProfilingLayer::DrawLineGraph(ImDrawList* drawList, const ImVec2& pos, const ImVec2& size, 
-                                      const std::deque<float>& data, const ImVec4& color, 
+    void ProfilingLayer::DrawLineGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2& pos, const TEVector2& size, 
+                                      const std::deque<float>& data, const TEVector4& color, 
                                       float minValue, float maxValue, const std::string& label) {
         if (data.empty()) return;
 
         // Draw background
-        drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), 
+        drawList.AddRectFilled(pos, TEVector2(pos.x + size.x, pos.y + size.y), 
                                IM_COL32(20, 20, 20, 255));
 
         // Draw grid lines
         for (int i = 0; i <= 4; i++) {
             float y = pos.y + (size.y * i / 4.0f);
-            drawList->AddLine(ImVec2(pos.x, y), ImVec2(pos.x + size.x, y), 
+            drawList.AddLine(TEVector2(pos.x, y), TEVector2(pos.x + size.x, y), 
                              IM_COL32(50, 50, 50, 255));
         }
 
@@ -477,23 +478,23 @@ namespace TE {
                 float x2 = pos.x + (size.x * i / (data.size() - 1));
                 float y2 = pos.y + size.y - (size.y * (data[i] - minValue) / range);
 
-                drawList->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), 
+                drawList.AddLine(TEVector2(x1, y1), TEVector2(x2, y2), 
                                  IM_COL32(color.x * 255, color.y * 255, color.z * 255, color.w * 255), 2.0f);
             }
         }
 
         // Draw border
-        drawList->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), 
+        drawList.AddRect(pos, TEVector2(pos.x + size.x, pos.y + size.y), 
                          IM_COL32(100, 100, 100, 255));
     }
 
-    void ProfilingLayer::DrawBarGraph(ImDrawList* drawList, const ImVec2& pos, const ImVec2& size,
-                                     const std::deque<float>& data, const ImVec4& color,
+    void ProfilingLayer::DrawBarGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2& pos, const TEVector2& size,
+                                     const std::deque<float>& data, const TEVector4& color,
                                      float minValue, float maxValue, const std::string& label) {
         if (data.empty()) return;
 
         // Draw background
-        drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), 
+        drawList.AddRectFilled(pos, TEVector2(pos.x + size.x, pos.y + size.y), 
                                IM_COL32(20, 20, 20, 255));
 
         // Draw bars
@@ -506,12 +507,12 @@ namespace TE {
             float x = pos.x + i * barWidth;
             float y = pos.y + size.y - barHeight;
 
-            drawList->AddRectFilled(ImVec2(x, y), ImVec2(x + barWidth - 1, pos.y + size.y), 
+            drawList.AddRectFilled(TEVector2(x, y), TEVector2(x + barWidth - 1, pos.y + size.y), 
                                    IM_COL32(color.x * 255, color.y * 255, color.z * 255, color.w * 255));
         }
 
         // Draw border
-        drawList->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), 
+        drawList.AddRect(pos, TEVector2(pos.x + size.x, pos.y + size.y), 
                          IM_COL32(100, 100, 100, 255));
     }
 
@@ -546,7 +547,7 @@ namespace TE {
         return ss.str();
     }
 
-    ImVec4 ProfilingLayer::GetColorForValue(float value, float warningThreshold, float criticalThreshold) {
+    TEVector4 ProfilingLayer::GetColorForValue(float value, float warningThreshold, float criticalThreshold) {
         if (value >= criticalThreshold) {
             return m_CriticalColor;
         } else if (value >= warningThreshold) {

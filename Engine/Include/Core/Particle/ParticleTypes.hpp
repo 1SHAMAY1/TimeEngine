@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "Utility/MathUtils.hpp"
+#pragma once
+#include "Utils/MathUtils.hpp"
 
 namespace TE {
 

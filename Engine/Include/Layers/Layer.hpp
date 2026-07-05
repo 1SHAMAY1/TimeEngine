@@ -13,7 +13,7 @@ namespace TE {
         virtual void OnAttach();
         virtual void OnDetach();
         virtual void OnUpdate();
-        virtual void OnImGuiRender();
+        virtual void OnTimeGUIRender();
         virtual void OnEvent(class Event& event);
 
         void DockTo(bool padding = false);

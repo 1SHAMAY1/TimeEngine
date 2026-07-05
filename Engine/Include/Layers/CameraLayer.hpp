@@ -16,7 +16,7 @@ namespace TE {
         virtual void OnAttach() override;
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
         virtual void OnEvent(class Event& event) override;
 
     private:

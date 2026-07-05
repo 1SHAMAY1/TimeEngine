@@ -12,8 +12,6 @@ public:
     GENERATED_BODY(PolygonColliderComponent)
 
     T_PROPERTY(TEVector2, Offset, "Offset", TEVector2(0.0f, 0.0f))
-    T_PROPERTY(bool, isStatic, "Is Static", false)
-    T_PROPERTY(bool, isTrigger, "Is Trigger", false)
 
     std::vector<TEVector2> Vertices;
 
@@ -21,12 +19,12 @@ public:
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 
-    virtual void OnUpdateShape(const glm::mat4 &worldTransform) override
+    virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
         shape.polygon.points.clear();
         for (const auto &v : Vertices)
         {
-            glm::vec4 p = worldTransform * glm::vec4(v.x + Offset.x, v.y + Offset.y, 0.0f, 1.0f);
+            TEVector4 p = worldTransform * TEVector4(v.x + Offset.x, v.y + Offset.y, 0.0f, 1.0f);
             shape.polygon.points.push_back({p.x, p.y});
         }
     }

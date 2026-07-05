@@ -1,6 +1,7 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/ProfilingButtonLayer.hpp"
 #include "Core/Log.h"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 
 namespace TE {
 
@@ -26,9 +27,9 @@ namespace TE {
         m_ProfilingLayer->OnUpdate();
     }
 
-    void ProfilingButtonLayer::OnImGuiRender() {
+    void ProfilingButtonLayer::OnTimeGUIRender() {
         RenderProfilingButton();
-        m_ProfilingLayer->OnImGuiRender();
+        m_ProfilingLayer->OnTimeGUIRender();
     }
 
     void ProfilingButtonLayer::OnEvent(Event& event) {
@@ -39,15 +40,15 @@ namespace TE {
         if (!m_ShowButton) return;
 
         // Set button position
-        ImGui::SetNextWindowPos(m_ButtonPosition, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(200, 60), ImGuiCond_FirstUseEver);
+        TimeGUI::SetNextWindowPos(m_ButtonPosition, TimeGUICond_FirstUseEver);
+        TimeGUI::SetNextWindowSize(TEVector2(200, 60), TimeGUICond_FirstUseEver);
         
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | 
-                                      ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar;
+        TimeGUIWindowFlags windowFlags = TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize | 
+                                  TimeGUIWindowFlags_NoDocking | TimeGUIWindowFlags_NoTitleBar;
 
-        if (ImGui::Begin("ProfilingButton", nullptr, windowFlags)) {
+        if (TimeGUI::Begin("ProfilingButton", nullptr, windowFlags)) {
             // Button to show/hide profiling window
-            if (ImGui::Button("📊 Performance Monitor", ImVec2(180, 40))) {
+            if (TimeGUI::Button("📊 Performance Monitor", TEVector2(180, 40))) {
                 if (!m_ProfilingLayer->IsVisible()) {
                     CreateFloatingProfilingWindow();
                 } else {
@@ -56,11 +57,11 @@ namespace TE {
             }
             
             // Tooltip
-            if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("Click to open/close the performance monitoring window\nCan be docked to other windows");
+            if (TimeGUI::IsItemHovered()) {
+                TimeGUI::SetTooltip("Click to open/close the performance monitoring window\nCan be docked to other windows");
             }
         }
-        ImGui::End();
+        TimeGUI::End();
     }
 
     void ProfilingButtonLayer::CreateFloatingProfilingWindow() {
@@ -68,8 +69,8 @@ namespace TE {
         m_ProfilingLayer->SetFloating(false); // Allow docking
         m_ProfilingLayer->SetVisible(true);
         m_ProfilingLayer->SetWindowTitle("Performance Monitor");
-        m_ProfilingLayer->SetWindowPosition(ImVec2(50, 50));
-        m_ProfilingLayer->SetWindowSize(ImVec2(350, 250));
+        m_ProfilingLayer->SetWindowPosition(TEVector2(50, 50));
+        m_ProfilingLayer->SetWindowSize(TEVector2(350, 250));
         
         // Set some default settings for the profiling window
         m_ProfilingLayer->SetShowDetailedInfo(true);

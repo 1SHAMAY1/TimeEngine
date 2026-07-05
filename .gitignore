@@ -38,3 +38,7 @@ recent_projects.txt
 # Sandbox
 Sandbox/*
 !Sandbox/src/
+
+# Docs
+Docs/
+

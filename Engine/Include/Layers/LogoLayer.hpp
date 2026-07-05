@@ -1,10 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/PreRequisites.h"
 #include "Layer.hpp"
+#include "Utils/TimeGUI.hpp"
 
-struct ImDrawList;
-struct ImVec2;
+struct TEVector2;
 
 namespace TE {
 
@@ -16,14 +16,14 @@ namespace TE {
         LogoLayer(const std::string& name = "Logo Layer");
         virtual ~LogoLayer();
 
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
         virtual void OnDetach() override;
 
         OnLogoFinished LogoFinishedDelegate;
 
     private:
         void OnWelcomeAnimationComplete();
-        void DrawTimeEngineLogo(const ImVec2& center, float radius, ImDrawList* drawList, float time);
+        void DrawTimeEngineLogo(const TEVector2& center, float radius, TimeGUI::TimeGUIDrawList drawList, float time);
 
     private:
         float m_Time = 0.0f;

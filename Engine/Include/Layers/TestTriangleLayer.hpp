@@ -14,7 +14,7 @@ namespace TE {
         virtual void OnAttach() override;
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
 
     private:
         std::unique_ptr<VertexBuffer> m_VertexBuffer;

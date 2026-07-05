@@ -1,0 +1,31 @@
+Scene: CurrentScene.tescene
+Entities:
+  - Entity: 1
+    Tag: Point Light
+    TransformComponent:
+      Position: -6.871793 0.000000 0.000000
+      Rotation: 0.000000 0.000000 0.000000
+      Scale: 1.000000 1.000000 1.000000
+      Parent: 0
+    LightComponent:
+      Type: 0
+      Intensity: 1.000000
+      Color: 1.000000 1.000000 1.000000 1.000000
+      Radius: 5.000000
+      FalloffExponent: 2.000000
+      InnerAngle: 15.000000
+      OuterAngle: 30.000000
+      Direction: 0.000000 -1.000000
+      LineOffset: 0.000000 2.000000
+      Width: 0.500000
+  - Entity: 2
+    Tag: Circle
+    TransformComponent:
+      Position: -5.128205 -0.239317 0.000000
+      Rotation: 0.000000 0.000000 0.000000
+      Scale: 1.000000 1.000000 1.000000
+      Parent: 0
+    CircleComponent:
+      Radius: 0.500000
+      BaseColor: 1.000000 1.000000 1.000000 1.000000
+      bIsVisible: true

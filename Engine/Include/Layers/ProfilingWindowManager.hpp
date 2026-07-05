@@ -15,13 +15,13 @@ namespace TE {
         virtual void OnAttach() override;
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
         virtual void OnEvent(Event& event) override;
 
         // ===== Window Management =====
         void CreateFloatingProfilingWindow(const std::string& title = "Performance Monitor", 
-                                         const ImVec2& position = ImVec2(50, 50),
-                                         const ImVec2& size = ImVec2(300, 200));
+                                         const TEVector2& position = TEVector2(50, 50),
+                                         const TEVector2& size = TEVector2(300, 200));
         void RemoveFloatingWindow(const std::string& title);
         void RemoveAllFloatingWindows();
         
@@ -39,8 +39,8 @@ namespace TE {
         bool m_ShowWindowList = false;
         
         // ===== UI Settings =====
-        ImVec2 m_DefaultWindowSize = ImVec2(300, 200);
-        ImVec2 m_DefaultWindowPos = ImVec2(50, 50);
+        TEVector2 m_DefaultWindowSize = TEVector2(300, 200);
+        TEVector2 m_DefaultWindowPos = TEVector2(50, 50);
         std::string m_DefaultWindowTitle = "Performance Monitor";
         
         // ===== Helper Functions =====

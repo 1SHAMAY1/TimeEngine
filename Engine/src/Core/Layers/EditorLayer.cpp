@@ -1,4 +1,6 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/EditorLayer.hpp"
+#include <fstream>
 #include "Core/Application.h"
 #include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Core/KeyCodes.hpp"
@@ -23,15 +25,15 @@
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
+#include "Utils/PlatformUtils.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
-#include "Utility/MathUtils.hpp"
-#include "Utils/PlatformUtils.hpp"
-#include "imgui.h"
+#include "Utils/MathUtils.hpp"
+#include "Utils/TimeGUI.hpp"
 #include "imgui_internal.h"
 #include <cstring>
 #include <filesystem>
@@ -172,7 +174,7 @@ void EditorLayer::OnAttach()
     // Register Core Component Properties for Serialization
     auto &registry = ComponentRegistry::Get();
     registry.RegisterComponent<TransformComponent>("TransformComponent", "Transform Component");
-    registry.RegisterProperty<TransformComponent, glm::vec3>(
+    registry.RegisterProperty<TransformComponent, TEVector>(
         "TransformComponent", "Position", "Position",
         [](void *instance) { return &static_cast<TransformComponent *>(instance)->Transform.Position; });
     registry.RegisterProperty<TransformComponent, TERotator>(
@@ -185,6 +187,7 @@ void EditorLayer::OnAttach()
         "TransformComponent", "Parent", "Parent",
         [](void *instance) { return &static_cast<TransformComponent *>(instance)->Parent; });
 
+    LoadSettings();
     TE_CORE_INFO("EditorLayer::OnAttach Finished.");
 }
 
@@ -199,7 +202,7 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate()
 {
-    float dt = ImGui::GetIO().DeltaTime;
+    float dt = TimeGUI::GetIO().DeltaTime;
     if (dt > 0.05f)
         dt = 0.05f; // Clamp
 
@@ -270,9 +273,9 @@ void EditorLayer::OnUpdate()
         {
             float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
             float zoom = m_CameraZoom;
-            glm::mat4 projection = glm::ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
-            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
-            glm::mat4 viewProj = projection * view;
+            TEMatrix4 projection = TEMatrix4::Ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
+            TEMatrix4 view = TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
+            TEMatrix4 viewProj = projection * view;
 
             m_Renderer2D->BeginFrame(viewProj);
             auto &entityManager = m_ActiveScene->GetEntityManager();
@@ -302,7 +305,7 @@ void EditorLayer::OnUpdate()
                 if (!transform)
                     continue;
 
-                auto GetWorldTransform = [&](TComponent *comp) -> glm::mat4
+                auto GetWorldTransform = [&](TComponent *comp) -> TEMatrix4
                 {
                     std::vector<TComponent *> chain;
                     TComponent *curr = comp;
@@ -312,7 +315,7 @@ void EditorLayer::OnUpdate()
                         curr = curr->GetParentComponent();
                     }
                     std::reverse(chain.begin(), chain.end());
-                    glm::mat4 model = transform->Transform.GetMatrix();
+                    TEMatrix4 model = transform->Transform.GetMatrix();
                     for (auto *node : chain)
                     {
                         model = model * node->Transform.GetMatrix();
@@ -324,9 +327,9 @@ void EditorLayer::OnUpdate()
                 auto lights = entityManager.GetComponents<LightComponent>(entity);
                 for (auto *light : lights)
                 {
-                    glm::mat4 worldMat = GetWorldTransform(light);
-                    float rotation = atan2(worldMat[0][1], worldMat[0][0]);
-                    sceneLights.push_back({TEVector2(worldMat[3].x, worldMat[3].y), light->Radius, rotation, light});
+                    TEMatrix4 worldMat = GetWorldTransform(light);
+                    float rotation = atan2(worldMat.m[0][1], worldMat.m[0][0]);
+                    sceneLights.push_back({TEVector2(worldMat.m[3][0], worldMat.m[3][1]), light->Radius, rotation, light});
                 }
 
                 // Collect shadow-casting geometry generically
@@ -335,13 +338,15 @@ void EditorLayer::OnUpdate()
                 {
                     if (comp->CastsOcclusionShadow())
                     {
-                        glm::mat4 model = GetWorldTransform(comp);
+                        TEMatrix4 model = GetWorldTransform(comp);
                         std::vector<TEVector2> verts = comp->GetWorldVertices(model);
                         if (!verts.empty())
                         {
                             // Approximate radius scale for culling (from model matrix scale)
-                            float rScale = glm::length(glm::vec3(model[0]));
-                            occluders.push_back({verts, rScale, TEVector2(model[3].x, model[3].y)});
+                            float rScale = std::sqrt(model.m[0][0] * model.m[0][0] +
+                                                     model.m[0][1] * model.m[0][1] +
+                                                     model.m[0][2] * model.m[0][2]);
+                            occluders.push_back({verts, rScale, TEVector2(model.m[3][0], model.m[3][1])});
                         }
                     }
                 }
@@ -385,11 +390,11 @@ void EditorLayer::OnUpdate()
     {
         float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
         float zoom = m_CameraZoom;
-        glm::mat4 projection = glm::ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
-        glm::mat4 viewProj = projection * view;
+        TEMatrix4 projection = TEMatrix4::Ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.0f, 1.0f);
+        TEMatrix4 view = TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(-m_CameraPosition.x, -m_CameraPosition.y, 0.0f));
+        TEMatrix4 viewProj = projection * view;
 
-        m_Renderer2D->BeginFrame(viewProj);
+        m_Renderer2D->BeginFrame(reinterpret_cast<const TE::TEMatrix4&>(viewProj));
 
         // Draw Physics Bodies (Visual Debugging)
         if (m_EditorSettings.ShowPhysicsColliders)
@@ -426,7 +431,7 @@ void EditorLayer::OnUpdate()
                 if (!transform)
                     continue;
 
-                auto GetWorldTransform = [&](TComponent *comp) -> glm::mat4
+                auto GetWorldTransform = [&](TComponent *comp) -> TEMatrix4
                 {
                     std::vector<TComponent *> chain;
                     TComponent *curr = comp;
@@ -437,7 +442,7 @@ void EditorLayer::OnUpdate()
                     }
                     std::reverse(chain.begin(), chain.end());
 
-                    glm::mat4 model = transform->Transform.GetMatrix();
+                    TEMatrix4 model = transform->Transform.GetMatrix();
                     for (auto *node : chain)
                     {
                         model = model * node->Transform.GetMatrix();
@@ -449,7 +454,7 @@ void EditorLayer::OnUpdate()
                 auto allComponents = entityManager.GetAllComponents(entity);
                 for (auto *comp : allComponents)
                 {
-                    glm::mat4 model = GetWorldTransform(comp);
+                    TEMatrix4 model = GetWorldTransform(comp);
                     comp->OnRender(m_Renderer2D.get(), model, m_DebugMaterial);
                 }
             }
@@ -461,11 +466,11 @@ void EditorLayer::OnUpdate()
         // 3. Composite LightMap Pass
         if (m_LightMapFramebuffer && m_LightBlendMaterial)
         {
-            m_Renderer2D->BeginFrame(glm::mat4(1.0f));
+            m_Renderer2D->BeginFrame(TEMatrix4(1.0f));
             uint32_t lightmapTex = m_LightMapFramebuffer->GetColorAttachmentRendererID();
             OpenGLShaderLibrary::BindTexture2D(lightmapTex, 0);
 
-            glm::mat4 compTransform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 1.0f));
+            TEMatrix4 compTransform = TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(2.0f, 2.0f, 1.0f));
             m_Renderer2D->SubmitQuad(compTransform, m_LightBlendMaterial, 2);
 
             m_Renderer2D->EndFrame();
@@ -491,80 +496,81 @@ void EditorLayer::OnEvent(Event &event)
 }
 
 // Helper for Vec3 controls
-static bool DrawVec3Control(const std::string &label, glm::vec3 &values, float resetValue = 0.0f,
+/*
+static bool DrawVec3Control(const std::string &label, TE::TEVector &values, float resetValue = 0.0f,
                             float columnWidth = 100.0f)
 {
     bool changed = false;
 
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO &io = TimeGUI::GetIO();
     auto boldFont = io.Fonts->Fonts[0];
 
-    ImGui::PushID(label.c_str());
+    TimeGUI::PushID(label.c_str());
 
-    ImGui::Columns(2);
-    ImGui::SetColumnWidth(0, columnWidth);
-    ImGui::Text(label.c_str());
-    ImGui::NextColumn();
+    TimeGUI::Columns(2);
+    TimeGUI::SetColumnWidth(0, columnWidth);
+    TimeGUI::Text(label.c_str());
+    TimeGUI::NextColumn();
 
-    ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
+    TimeGUI::PushMultiItemsWidths(3, TimeGUI::CalcItemWidth());
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2{0, 0});
 
     float lineHeight = GImGui->Font->LegacySize + GImGui->Style.FramePadding.y * 2.0f;
-    ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+    TEVector2 buttonSize = {lineHeight + 3.0f, lineHeight};
 
     // X Axis (Red)
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
-    if (ImGui::Button("X", buttonSize))
+    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4{0.8f, 0.1f, 0.15f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4{0.9f, 0.2f, 0.2f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, TEVector4{0.8f, 0.1f, 0.15f, 1.0f});
+    if (TimeGUI::Button("X", buttonSize))
     {
         values.x = resetValue;
         changed = true;
     }
-    ImGui::PopStyleColor(3);
+    TimeGUI::PopStyleColor(3);
 
-    ImGui::SameLine();
-    if (ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f"))
+    TimeGUI::SameLine();
+    if (TimeGUI::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f"))
         changed = true;
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
+    TimeGUI::PopItemWidth();
+    TimeGUI::SameLine();
 
     // Y Axis (Green)
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
-    if (ImGui::Button("Y", buttonSize))
+    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4{0.2f, 0.7f, 0.2f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4{0.3f, 0.8f, 0.3f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, TEVector4{0.2f, 0.7f, 0.2f, 1.0f});
+    if (TimeGUI::Button("Y", buttonSize))
     {
         values.y = resetValue;
         changed = true;
     }
-    ImGui::PopStyleColor(3);
+    TimeGUI::PopStyleColor(3);
 
-    ImGui::SameLine();
-    if (ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f"))
+    TimeGUI::SameLine();
+    if (TimeGUI::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f"))
         changed = true;
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
+    TimeGUI::PopItemWidth();
+    TimeGUI::SameLine();
 
     // Z Axis (Blue)
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
-    if (ImGui::Button("Z", buttonSize))
+    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4{0.1f, 0.25f, 0.8f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4{0.2f, 0.35f, 0.9f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, TEVector4{0.1f, 0.25f, 0.8f, 1.0f});
+    if (TimeGUI::Button("Z", buttonSize))
     {
         values.z = resetValue;
         changed = true;
     }
-    ImGui::PopStyleColor(3);
+    TimeGUI::PopStyleColor(3);
 
-    ImGui::SameLine();
-    if (ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f"))
+    TimeGUI::SameLine();
+    if (TimeGUI::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f"))
         changed = true;
-    ImGui::PopItemWidth();
+    TimeGUI::PopItemWidth();
 
-    ImGui::PopStyleVar();
-    ImGui::Columns(1);
-    ImGui::PopID();
+    TimeGUI::PopStyleVar();
+    TimeGUI::Columns(1);
+    TimeGUI::PopID();
 
     return changed;
 }
@@ -572,109 +578,107 @@ static bool DrawVec3Control(const std::string &label, glm::vec3 &values, float r
 // Helper for Styled "+" Buttons
 static bool DrawPlusButton(const char *id, float offsetX = 40.0f)
 {
-    ImGui::SameLine(ImGui::GetWindowWidth() - offsetX);
+    TimeGUI::SameLine(TimeGUI::GetWindowWidth() - offsetX);
 
     // Vertical centering
-    float lineHeight = ImGui::GetFrameHeight();
+    float lineHeight = TimeGUI::GetFrameHeight();
     float buttonSize = lineHeight - 4.0f; // Slightly smaller than line a bit
 
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.6f, 0.2f, 1.0f}); // Green Bg
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.8f, 0.3f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.1f, 0.5f, 0.15f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{1.0f, 1.0f, 1.0f, 1.0f}); // White Plus
+    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4{0.1f, 0.6f, 0.2f, 1.0f}); // Green Bg
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4{0.2f, 0.8f, 0.3f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, TEVector4{0.1f, 0.5f, 0.15f, 1.0f});
+    TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4{1.0f, 1.0f, 1.0f, 1.0f}); // White Plus
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 3.0f);
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(0, 0));
 
-    bool clicked = ImGui::Button(id, ImVec2(buttonSize, buttonSize));
+    bool clicked = TimeGUI::Button(id, TEVector2(buttonSize, buttonSize));
 
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor(4);
+    TimeGUI::PopStyleVar(2);
+    TimeGUI::PopStyleColor(4);
 
-    if (ImGui::IsItemHovered())
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    if (TimeGUI::IsItemHovered())
+        TimeGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
 
     return clicked;
 }
-
-void EditorLayer::OnImGuiRender()
+*/
+void EditorLayer::OnTimeGUIRender()
 {
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
     bool opt_fullscreen = opt_fullscreen_persistant;
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_NoWindowMenuButton;
 
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags window_flags = TimeGUIWindowFlags_MenuBar | TimeGUIWindowFlags_NoDocking;
     if (opt_fullscreen)
     {
-        ImGuiViewport *mainViewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(mainViewport->Pos);
-        ImGui::SetNextWindowSize(mainViewport->Size);
-        ImGui::SetNextWindowViewport(mainViewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                        ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        TimeGUI::TimeGUIViewport mainViewport = TimeGUI::GetMainViewport();
+        TimeGUI::SetNextWindowPos(mainViewport.Pos);
+        TimeGUI::SetNextWindowSize(mainViewport.Size);
+        TimeGUI::SetNextWindowViewport(mainViewport.ID);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 0.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= TimeGUIWindowFlags_NoTitleBar | TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize |
+                        TimeGUIWindowFlags_NoMove;
+        window_flags |= TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUIWindowFlags_NoNavFocus;
     }
 
     if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= TimeGUIWindowFlags_NoBackground;
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
-    ImGui::PopStyleVar();
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(0.0f, 0.0f));
+    TimeGUI::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+    TimeGUI::PopStyleVar();
 
     if (opt_fullscreen)
-        ImGui::PopStyleVar(2);
+        TimeGUI::PopStyleVar(2);
 
     UI_DrawMenubar();
 
-    EditorToolbar::OnImGuiRender(m_SaveIcon, m_PlayIcon, m_BrandingIcon);
+    EditorToolbar::OnTimeGUIRender(m_SaveIcon, m_PlayIcon, m_BrandingIcon);
 
     EditorMode *activeMode = EditorModeRegistry::GetActiveMode();
     bool isSpriteMode = activeMode && std::string(activeMode->GetName()) == "Sprite Mode";
 
     if (isSpriteMode)
     {
-        TE_CORE_DEBUG("EditorLayer::OnImGuiRender - Active Mode: {0}", activeMode->GetName());
-        activeMode->OnImGuiRender();
+        activeMode->OnTimeGUIRender();
     }
     else
     {
-        TE_CORE_DEBUG("EditorLayer::OnImGuiRender - Active Mode: Level Editor (Default)");
         // DockSpace
-        ImGuiIO &io = ImGui::GetIO();
+        auto &io = TimeGUI::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
-            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+            ImGuiID dockspace_id = TimeGUI::GetID("MyDockSpace");
+            TimeGUI::DockSpace(dockspace_id, TEVector2(0.0f, 0.0f), dockspace_flags);
 
             static bool s_FirstTime = true;
             if (s_FirstTime)
             {
                 s_FirstTime = false;
 
-                ImGui::DockBuilderRemoveNode(dockspace_id);
-                ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
-                ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
-
+                TimeGUI::DockBuilderRemoveNode(dockspace_id);
+                TimeGUI::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+                TimeGUI::DockBuilderSetNodeSize(dockspace_id, TimeGUI::GetMainViewport().Size);
+                
                 ImGuiID dock_main_id = dockspace_id;
                 ImGuiID dock_id_right =
-                    ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
+                    TimeGUI::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
                 ImGuiID dock_id_bottom =
-                    ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
+                    TimeGUI::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
 
                 // Split the right panel into Top (Hierarchy) and Bottom (Properties)
                 ImGuiID dock_id_right_bottom =
-                    ImGui::DockBuilderSplitNode(dock_id_right, ImGuiDir_Down, 0.5f, nullptr, &dock_id_right);
+                    TimeGUI::DockBuilderSplitNode(dock_id_right, ImGuiDir_Down, 0.5f, nullptr, &dock_id_right);
 
-                ImGui::DockBuilderDockWindow("Viewport", dock_main_id);
-                ImGui::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
-                ImGui::DockBuilderDockWindow("Properties", dock_id_right_bottom);
-                ImGui::DockBuilderDockWindow("Content Browser", dock_id_bottom);
+                TimeGUI::DockBuilderDockWindow("Viewport", dock_main_id);
+                TimeGUI::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
+                TimeGUI::DockBuilderDockWindow("Properties", dock_id_right_bottom);
+                TimeGUI::DockBuilderDockWindow("Content Browser", dock_id_bottom);
 
-                ImGui::DockBuilderFinish(dockspace_id);
+                TimeGUI::DockBuilderFinish(dockspace_id);
             }
         }
 
@@ -694,63 +698,67 @@ void EditorLayer::OnImGuiRender()
 
     ProcessDeletionQueues();
 
-    ImGui::End();
+    TimeGUI::End();
 }
 
 void EditorLayer::UI_DrawMenubar()
 {
-    if (ImGui::BeginMenuBar())
+    if (TimeGUI::BeginMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
+        if (TimeGUI::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("New Project...", "Ctrl+N"))
+            if (TimeGUI::MenuItem("New Project...", "Ctrl+N"))
             {
             }
             std::string saveShortcutStr = "Ctrl+" + GetKeyName(m_EditorSettings.Shortcuts["Save"]);
-            if (ImGui::MenuItem("Save Scene", saveShortcutStr.c_str()))
+            if (TimeGUI::MenuItem("Save Scene", saveShortcutStr.c_str()))
             {
                 SaveScene();
             }
-            if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S"))
+            if (TimeGUI::MenuItem("Save Scene As...", "Ctrl+Shift+S"))
             {
                 m_ShowSaveScenePopup = true;
                 m_SaveSceneAs = true;
             }
             std::string saveAllShortcutStr = "Ctrl+Shift+A"; // Adjusted to avoid conflict with Save As if needed
-            if (ImGui::MenuItem("Save Project", saveAllShortcutStr.c_str()))
+            if (TimeGUI::MenuItem("Save Project", saveAllShortcutStr.c_str()))
             {
                 SaveProject();
             }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Exit"))
+            TimeGUI::Separator();
+            if (TimeGUI::MenuItem("Exit"))
                 Application::Get().Close();
-            ImGui::EndMenu();
+            TimeGUI::EndMenu();
         }
-        if (ImGui::BeginMenu("Edit"))
+        if (TimeGUI::BeginMenu("Edit"))
         {
-            if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+            if (TimeGUI::MenuItem("Undo", "Ctrl+Z"))
             {
             }
-            if (ImGui::MenuItem("Redo", "Ctrl+Y"))
+            if (TimeGUI::MenuItem("Redo", "Ctrl+Y"))
             {
             }
-            ImGui::Separator();
+            TimeGUI::Separator();
 
             // Show checkmark if open, disable clicking if open (must close via panel close button)
-            ImGui::MenuItem("Project Settings", NULL, &m_ShowProjectSettings, !m_ShowProjectSettings);
-            ImGui::MenuItem("Editor Settings", NULL, &m_ShowSettings, !m_ShowSettings);
+            TimeGUI::MenuItem("Project Settings", "", &m_ShowProjectSettings, !m_ShowProjectSettings);
+            TimeGUI::MenuItem("Editor Settings", "", &m_ShowSettings, !m_ShowSettings);
 
-            ImGui::EndMenu();
+            TimeGUI::EndMenu();
         }
-        if (ImGui::BeginMenu("Window"))
+        if (TimeGUI::BeginMenu("Window"))
         {
-            ImGui::MenuItem("Scene Hierarchy", NULL, &m_ShowSceneHierarchy);
-            ImGui::MenuItem("Properties", NULL, &m_ShowProperties);
-            ImGui::MenuItem("Content Browser", NULL, &m_ShowContentBrowser);
-            ImGui::EndMenu();
+            TimeGUI::MenuItem("Scene Hierarchy", "", &m_ShowSceneHierarchy);
+            TimeGUI::MenuItem("Properties", "", &m_ShowProperties);
+            TimeGUI::MenuItem("Content Browser", "", &m_ShowContentBrowser);
+            TimeGUI::EndMenu();
         }
-        ImGui::EndMenuBar();
+        TimeGUI::EndMenuBar();
     }
+}
+
+void EditorLayer::UI_DrawToolbar()
+{
 }
 
 void EditorLayer::UI_DrawSceneHierarchy()
@@ -758,10 +766,10 @@ void EditorLayer::UI_DrawSceneHierarchy()
     if (!m_ShowSceneHierarchy)
         return;
 
-    ImGui::Begin("Scene Hierarchy");
+    TimeGUI::Begin("Scene Hierarchy");
     if (m_ActiveScene)
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 12));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(8, 12));
         auto &entityManager = m_ActiveScene->GetEntityManager();
         const auto &aliveEntities = entityManager.GetAliveEntities();
 
@@ -776,9 +784,9 @@ void EditorLayer::UI_DrawSceneHierarchy()
             auto allComps = entityManager.GetAllComponents(entity);
             bool hasChildren = (transformComp && !transformComp->Children.empty()) || !allComps.empty();
 
-            ImGui::SetNextItemAllowOverlap();
+            TimeGUI::SetNextItemAllowOverlap();
             // Increased FramePadding for consistent ~34px height across all nodes
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10));
+            TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10));
             ImGuiTreeNodeFlags flags = (IsEntitySelected(entity) ? ImGuiTreeNodeFlags_Selected : 0) |
                                        (hasChildren ? 0 : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_OpenOnArrow |
                                        ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -788,47 +796,47 @@ void EditorLayer::UI_DrawSceneHierarchy()
             if (m_RenamingEntityID == id)
             {
                 // Renaming placeholder to keep tree structure
-                opened = ImGui::TreeNodeEx((void *)(uintptr_t)(id + 10000), flags, " ");
-                ImGui::SameLine();
+                opened = TimeGUI::TreeNodeEx((void *)(uintptr_t)(id + 10000), flags, " ");
+                TimeGUI::SameLine();
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
                 strncpy(buffer, name.c_str(), sizeof(buffer) - 1);
 
-                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 40.0f);
-                if (ImGui::InputText("##RenameEntity", buffer, sizeof(buffer),
+                TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
+                if (TimeGUI::InputText("##RenameEntity", buffer, sizeof(buffer),
                                      ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
                 {
                     if (auto *tagComp = entityManager.GetComponent<TagComponent>(entity))
                         tagComp->Tag = std::string(buffer);
                     m_RenamingEntityID = 0;
                 }
-                if (!ImGui::IsItemActive() && ImGui::IsMouseClicked(0))
+                if (!TimeGUI::IsItemActive() && TimeGUI::IsMouseClicked(0))
                     m_RenamingEntityID = 0;
             }
             else
             {
-                ImGui::SetNextItemAllowOverlap();
-                opened = ImGui::TreeNodeEx((void *)(uint64_t)id, flags, name.c_str());
+                TimeGUI::SetNextItemAllowOverlap();
+                opened = TimeGUI::TreeNodeEx((void *)(uint64_t)id, flags, name.c_str());
 
-                if (ImGui::IsItemClicked())
+                if (TimeGUI::IsItemClicked())
                 {
-                    bool multiSelect = ImGui::GetIO().KeyShift;
-                    bool toggle = ImGui::GetIO().KeyCtrl;
+                    bool multiSelect = TimeGUI::GetIO().KeyShift;
+                    bool toggle = TimeGUI::GetIO().KeyCtrl;
                     SelectEntity(entity, multiSelect, toggle);
                     m_SelectedComponent = nullptr;
                 }
 
-                if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_F2))
+                if (TimeGUI::IsItemFocused() && TimeGUI::IsKeyPressed(ImGuiKey_F2))
                     m_RenamingEntityID = id;
 
                 // Buttons (Far Right)
-                float buttonSize = ImGui::GetFrameHeight() * 0.75f; // Entity size (Medium)
-                float padding = ImGui::GetStyle().FramePadding.x;
-                float posX = ImGui::GetWindowWidth() - buttonSize - padding - 15.0f;
+                float buttonSize = TimeGUI::GetFrameHeight() * 0.75f; // Entity size (Medium)
+                float padding = TimeGUI::GetStyle().FramePadding.x;
+                float posX = TimeGUI::GetWindowWidth() - buttonSize - padding - 15.0f;
 
                 // Plus Button (+)
-                ImGui::SameLine(posX - buttonSize - 5.0f);
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetFrameHeight() - buttonSize) * 0.5f);
+                TimeGUI::SameLine(posX - buttonSize - 5.0f);
+                TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + (TimeGUI::GetFrameHeight() - buttonSize) * 0.5f);
                 if (UIUtils::DrawPlusButton("+##Add" + std::to_string(id), buttonSize * 1.2f)) // Entity scale (Medium)
                 {
                     m_SelectedToAddComponent = entity;
@@ -837,49 +845,49 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 }
 
                 // Delete Button (X)
-                ImGui::SameLine(posX);
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetFrameHeight() - buttonSize) * 0.5f);
+                TimeGUI::SameLine(posX);
+                TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + (TimeGUI::GetFrameHeight() - buttonSize) * 0.5f);
                 if (UIUtils::DrawDeleteButton("Entity" + std::to_string(id),
                                               buttonSize * 1.2f)) // Entity scale (Medium)
                 {
                     m_EntitiesToDelete.push_back(entity);
                     if (opened)
-                        ImGui::TreePop();
-                    ImGui::PopStyleVar(); // Fix: Pop before early return
+                        TimeGUI::TreePop();
+                    TimeGUI::PopStyleVar(); // Fix: Pop before early return
                     return;
                 }
             }
-            ImGui::PopStyleVar(); // Balance the push from line 703
+            TimeGUI::PopStyleVar(); // Balance the push from line 703
 
             // Context Menu
-            if (ImGui::BeginPopupContextItem())
+            if (TimeGUI::BeginPopupContextItem())
             {
-                if (ImGui::MenuItem("Rename", "F2"))
+                if (TimeGUI::MenuItem("Rename", "F2"))
                     m_RenamingEntityID = id;
-                if (ImGui::MenuItem("Add Child"))
+                if (TimeGUI::MenuItem("Add Child"))
                 {
                     Entity child = m_ActiveScene->CreateEntity("New Child");
                     m_ActiveScene->SetParent(child, entity);
                 }
                 if (transformComp && transformComp->Parent != 0)
                 {
-                    if (ImGui::MenuItem("Unparent"))
+                    if (TimeGUI::MenuItem("Unparent"))
                         m_ActiveScene->SetParent(entity, Entity(0));
                 }
-                if (ImGui::MenuItem("Delete Entity"))
+                if (TimeGUI::MenuItem("Delete Entity"))
                 {
                     m_ActiveScene->DestroyEntity(entity);
                     if (m_SelectedEntities.count(entity))
                         m_SelectedEntities.erase(entity);
                 }
-                ImGui::EndPopup();
+                TimeGUI::EndPopup();
             }
 
             if (opened)
             {
                 // Visual Lines Setup
-                float verticalLineX = ImGui::GetCursorScreenPos().x - ImGui::GetStyle().IndentSpacing * 0.5f;
-                float verticalLineYStart = ImGui::GetCursorScreenPos().y;
+                float verticalLineX = TimeGUI::GetCursorScreenPos().x - TimeGUI::GetStyle().IndentSpacing * 0.5f;
+                float verticalLineYStart = TimeGUI::GetCursorScreenPos().y;
 
                 // Components
                 for (auto *comp : allComps)
@@ -904,45 +912,45 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 }
 
                 // Draw vertical guideline
-                float verticalLineYEnd = ImGui::GetCursorScreenPos().y - ImGui::GetStyle().ItemSpacing.y;
-                ImGui::GetWindowDrawList()->AddLine(ImVec2(verticalLineX, verticalLineYStart),
-                                                    ImVec2(verticalLineX, verticalLineYEnd),
-                                                    ImGui::GetColorU32(ImGuiCol_Border), 1.0f);
+                float verticalLineYEnd = TimeGUI::GetCursorScreenPos().y - TimeGUI::GetStyle().ItemSpacing.y;
+                TimeGUI::GetWindowDrawList()->AddLine(TEVector2(verticalLineX, verticalLineYStart),
+                                                    TEVector2(verticalLineX, verticalLineYEnd),
+                                                    TimeGUI::GetColorU32(TimeGUICol_Border), 1.0f);
 
-                ImGui::TreePop();
+                TimeGUI::TreePop();
             }
         };
 
-        ImGui::PopStyleVar(); // Pop ItemSpacing from line 686
+        TimeGUI::PopStyleVar(); // Pop ItemSpacing from line 686
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10)); // Taller bar (~34px)
-        ImGui::SetNextItemAllowOverlap();
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10)); // Taller bar (~34px)
+        TimeGUI::SetNextItemAllowOverlap();
         bool rootOpened =
-            ImGui::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
+            TimeGUI::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
                                                 ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
-        ImGui::PopStyleVar(); // Pop FramePadding
+        TimeGUI::PopStyleVar(); // Pop FramePadding
 
         if (rootOpened)
         {
-            float rootBtnSize = ImGui::GetFrameHeight() * 0.85f; // Root size (Large)
-            float padding = ImGui::GetStyle().FramePadding.x;
-            float posX = ImGui::GetWindowWidth() - rootBtnSize - padding - 15.0f;
-            ImGui::SameLine(posX);
+            float rootBtnSize = TimeGUI::GetFrameHeight() * 0.85f; // Root size (Large)
+            float padding = TimeGUI::GetStyle().FramePadding.x;
+            float posX = TimeGUI::GetWindowWidth() - rootBtnSize - padding - 15.0f;
+            TimeGUI::SameLine(posX);
             if (UIUtils::DrawPlusButton("+##Root", rootBtnSize * 1.5f)) // Root scale (Large)
             {
-                ImGui::OpenPopup("AddEntityPopup");
+                TimeGUI::OpenPopup("AddEntityPopup");
             }
 
-            if (ImGui::BeginPopup("AddEntityPopup"))
+            if (TimeGUI::BeginPopup("AddEntityPopup"))
             {
                 // Style for the popup
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 7));
+                TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(8, 7));
 
                 // Always-visible: empty entity
-                if (ImGui::MenuItem("  ⬜  Empty Entity"))
+                if (TimeGUI::MenuItem("  ⬜  Empty Entity"))
                     m_ActiveScene->CreateEntity("Empty Entity");
 
-                ImGui::Spacing();
+                TimeGUI::Spacing();
 
                 // Dynamic: driven by EntityPresets registered via T_REGISTER_PRESET
                 const auto &presets = ComponentRegistry::Get().GetEntityPresets();
@@ -952,15 +960,15 @@ void EditorLayer::UI_DrawSceneHierarchy()
                     if (preset.Category != lastCategory && !preset.Category.empty())
                     {
                         if (!lastCategory.empty())
-                            ImGui::Spacing();
-                        ImGui::Separator();
-                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.40f, 0.70f, 1.00f, 1.00f));
-                        ImGui::Text("  > %s", preset.Category.c_str());
-                        ImGui::PopStyleColor();
+                            TimeGUI::Spacing();
+                        TimeGUI::Separator();
+                        TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4(0.40f, 0.70f, 1.00f, 1.00f));
+                        TimeGUI::Text("  > %s", preset.Category.c_str());
+                        TimeGUI::PopStyleColor();
                         lastCategory = preset.Category;
                     }
                     std::string label = "    " + preset.Name;
-                    if (ImGui::MenuItem(label.c_str()))
+                    if (TimeGUI::MenuItem(label.c_str()))
                     {
                         Entity e = m_ActiveScene->CreateEntity(preset.Name);
                         auto &em = m_ActiveScene->GetEntityManager();
@@ -968,13 +976,13 @@ void EditorLayer::UI_DrawSceneHierarchy()
                     }
                 }
 
-                ImGui::PopStyleVar();
-                ImGui::EndPopup();
+                TimeGUI::PopStyleVar();
+                TimeGUI::EndPopup();
             }
 
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
+            TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 5.0f);
+            TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 5));
+            TimeGUI::PushStyleColor(TimeGUICol_Header, TEVector4(0.25f, 0.25f, 0.25f, 1.0f));
 
             for (EntityID id : aliveEntities)
             {
@@ -987,29 +995,29 @@ void EditorLayer::UI_DrawSceneHierarchy()
                 }
             }
 
-            ImGui::PopStyleColor();
-            ImGui::PopStyleVar(2);
-            ImGui::TreePop();
+            TimeGUI::PopStyleColor();
+            TimeGUI::PopStyleVar(2);
+            TimeGUI::TreePop();
         }
 
         if (m_ShouldOpenAddComponentPopup)
         {
-            ImGui::OpenPopup("AddComponentPopup");
+            TimeGUI::OpenPopup("AddComponentPopup");
             m_ShouldOpenAddComponentPopup = false;
         }
 
-        if (ImGui::BeginPopup("AddComponentPopup"))
+        if (TimeGUI::BeginPopup("AddComponentPopup"))
         {
             if (m_SelectedToAddComponent)
             {
-                ImGui::Text("Add Component to %s",
+                TimeGUI::Text("Add Component to %s",
                             m_ComponentParentForAdd ? m_ComponentParentForAdd->GetClassName() : "Entity");
-                ImGui::Separator();
-                if (ImGui::BeginChild("AddComponentScroll", ImVec2(250, 300), false, ImGuiWindowFlags_NoScrollbar))
+                TimeGUI::Separator();
+                if (TimeGUI::BeginChild("AddComponentScroll", TEVector2(250, 300), false, TimeGUIWindowFlags_NoScrollbar))
                 {
                     for (auto const &[name, factory] : ComponentRegistry::Get().GetEntries())
                     {
-                        if (ImGui::MenuItem(name.c_str()))
+                        if (TimeGUI::MenuItem(name.c_str()))
                         {
                             if (m_ActiveScene)
                             {
@@ -1020,38 +1028,38 @@ void EditorLayer::UI_DrawSceneHierarchy()
                                     newComp->SetComponentParent(m_ComponentParentForAdd);
                                 }
                             }
-                            ImGui::CloseCurrentPopup();
+                            TimeGUI::CloseCurrentPopup();
                         }
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
             }
-            ImGui::EndPopup();
+            TimeGUI::EndPopup();
         }
 
         // Click on empty space in hierarchy to deselect
-        if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
+        if (TimeGUI::IsWindowHovered() && TimeGUI::IsMouseClicked(0) && !TimeGUI::IsAnyItemHovered())
             ClearSelection();
 
         // Right-click on empty space to create entity
-        if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight))
+        if (TimeGUI::BeginPopupContextWindow("", ImGuiPopupFlags_MouseButtonRight))
         {
-            if (ImGui::MenuItem("Create Empty Entity"))
+            if (TimeGUI::MenuItem("Create Empty Entity"))
             {
                 m_ActiveScene->CreateEntity("Empty Entity");
             }
 
             if (!m_SelectedEntities.empty())
             {
-                ImGui::Separator();
-                if (ImGui::MenuItem("Delete Selected"))
+                TimeGUI::Separator();
+                if (TimeGUI::MenuItem("Delete Selected"))
                 {
                     DeleteSelectedEntities();
                 }
             }
-            ImGui::EndPopup();
+            TimeGUI::EndPopup();
         }
-        ImGui::End();
+        TimeGUI::End();
     }
 }
 
@@ -1062,13 +1070,13 @@ void EditorLayer::UI_DrawProperties()
 
     static bool s_OpenAddComponent = false;
 
-    ImGui::Begin("Properties");
+    TimeGUI::Begin("Properties");
 
     if (!m_SelectedBrowserPath.empty())
     {
-        ImGui::TextDisabled("Asset Properties");
-        ImGui::TextWrapped("File: %s", m_SelectedBrowserPath.filename().string().c_str());
-        ImGui::Separator();
+        TimeGUI::TextDisabled("Asset Properties");
+        TimeGUI::TextWrapped("File: %s", m_SelectedBrowserPath.filename().string().c_str());
+        TimeGUI::Separator();
 
         if (m_SelectedBrowserPath.extension() == ".tematerial")
         {
@@ -1077,7 +1085,7 @@ void EditorLayer::UI_DrawProperties()
             {
                 char nameBuffer[256];
                 strncpy_s(nameBuffer, mat->GetName().c_str(), sizeof(nameBuffer));
-                if (ImGui::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
+                if (TimeGUI::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
                 {
                     mat->SetName(nameBuffer);
                     MaterialSerializer serializer(mat);
@@ -1085,8 +1093,8 @@ void EditorLayer::UI_DrawProperties()
                 }
 
                 auto color = mat->GetColor().GetValue();
-                float colorArr[4] = {color.r, color.g, color.b, color.a};
-                if (ImGui::ColorEdit4("Albedo Color", colorArr))
+                float colorArr[4] = { color.r, color.g, color.b, color.a };
+                if (TimeGUI::ColorEdit4("Albedo Color", colorArr))
                 {
                     mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
                     MaterialSerializer serializer(mat);
@@ -1095,27 +1103,27 @@ void EditorLayer::UI_DrawProperties()
             }
             else
             {
-                ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Failed to load Material asset.");
+                TimeGUI::TextColored(TEVector4(1.0f, 0.4f, 0.4f, 1.0f), "Failed to load Material asset.");
             }
         }
         else
         {
-            ImGui::Text("Details not available for this file extension.");
+            TimeGUI::Text("Details not available for this file extension.");
         }
     }
     else if (!m_ActiveScene || m_SelectedEntities.empty())
     {
-        ImGui::Text("Select an entity or browser asset to view details.");
+        TimeGUI::Text("Select an entity or browser asset to view details.");
     }
     else
     {
-        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Tip: Ctrl+Click sliders for numerical input.");
-        ImGui::Separator();
+        TimeGUI::TextColored(TEVector4(0.7f, 0.7f, 0.7f, 1.0f), "Tip: Ctrl+Click sliders for numerical input.");
+        TimeGUI::Separator();
         auto &entityManager = m_ActiveScene->GetEntityManager();
         Entity m_SelectedEntity = *m_SelectedEntities.begin();
         EntityID id = m_SelectedEntity.GetID();
 
-        ImGui::TextDisabled("Entity ID: %llu", id);
+        TimeGUI::TextDisabled("Entity ID: %llu", id);
 
         if (auto *tagComp = entityManager.GetComponent<TagComponent>(m_SelectedEntity))
         {
@@ -1123,21 +1131,21 @@ void EditorLayer::UI_DrawProperties()
             memset(buffer, 0, sizeof(buffer));
             strncpy(buffer, tagComp->Tag.c_str(), sizeof(buffer) - 1);
 
-            if (ImGui::InputText("Tag", buffer, sizeof(buffer)))
+            if (TimeGUI::InputText("Tag", buffer, sizeof(buffer)))
             {
                 tagComp->Tag = std::string(buffer);
             }
         }
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         if (auto *transformComp = entityManager.GetComponent<TransformComponent>(m_SelectedEntity))
         {
-            if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+            if (TimeGUI::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 DrawVec3Control("Position", transformComp->Transform.Position);
 
-                glm::vec3 rotation = transformComp->Transform.Rotation.ToVec3();
+                TEVector rotation = transformComp->Transform.Rotation.ToVec3();
                 if (DrawVec3Control("Rotation", rotation))
                 {
                     transformComp->Transform.Rotation.Pitch = rotation.x;
@@ -1149,15 +1157,15 @@ void EditorLayer::UI_DrawProperties()
             }
         }
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Focused Component Properties
         if (m_SelectedComponent)
         {
-            ImGui::PushID(m_SelectedComponent);
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.3f, 0.4f, 0.6f, 0.6f)); // Glass header
-            bool opened = ImGui::CollapsingHeader(m_SelectedComponent->GetClassName(), ImGuiTreeNodeFlags_DefaultOpen);
-            ImGui::PopStyleColor();
+            TimeGUI::PushID(std::to_string((uintptr_t)m_SelectedComponent));
+            TimeGUI::PushStyleColor(TimeGUICol_Header, TEVector4(0.3f, 0.4f, 0.6f, 0.6f)); // Glass header
+            bool opened = TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(), ImGuiTreeNodeFlags_DefaultOpen);
+            TimeGUI::PopStyleColor();
 
             if (opened)
             {
@@ -1165,7 +1173,7 @@ void EditorLayer::UI_DrawProperties()
                 char cBuffer[256];
                 memset(cBuffer, 0, sizeof(cBuffer));
                 strncpy(cBuffer, m_SelectedComponent->InstanceName.c_str(), sizeof(cBuffer) - 1);
-                if (ImGui::InputText("Component Tag", cBuffer, sizeof(cBuffer)))
+                if (TimeGUI::InputText("Component Tag", cBuffer, sizeof(cBuffer)))
                 {
                     m_SelectedComponent->InstanceName = std::string(cBuffer);
                 }
@@ -1173,11 +1181,11 @@ void EditorLayer::UI_DrawProperties()
                 // Component Transform
                 if (strcmp(m_SelectedComponent->GetClassName(), "AmbientLightComponent") != 0)
                 {
-                    if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+                    if (TimeGUI::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
                     {
                         DrawVec3Control("Position", m_SelectedComponent->Transform.Position);
 
-                        glm::vec3 rotation = m_SelectedComponent->Transform.Rotation.ToVec3();
+                        TEVector rotation = m_SelectedComponent->Transform.Rotation.ToVec3();
                         if (DrawVec3Control("Rotation", rotation))
                         {
                             m_SelectedComponent->Transform.Rotation.Pitch = rotation.x;
@@ -1186,12 +1194,12 @@ void EditorLayer::UI_DrawProperties()
                         }
 
                         DrawVec3Control("Scale", m_SelectedComponent->Transform.Scale.Scale, 1.0f);
-                        ImGui::TreePop();
+                        TimeGUI::TreePop();
                     }
                 }
 
-                ImGui::Separator();
-                ImGui::TextDisabled("Component Specific Properties:");
+                TimeGUI::Separator();
+                TimeGUI::TextDisabled("Component Specific Properties:");
 
                 auto meta = ComponentRegistry::Get().GetMetadata(std::type_index(typeid(*m_SelectedComponent)));
                 if (meta)
@@ -1202,34 +1210,34 @@ void EditorLayer::UI_DrawProperties()
                             continue;
 
                         void *addr = (char *)m_SelectedComponent + prop.Offset;
-                        ImGui::PushID(prop.Name.c_str());
+                        TimeGUI::PushID(prop.Name.c_str());
                         if (prop.DrawFunc)
                             prop.DrawFunc(addr, prop.DisplayName);
                         else
-                            ImGui::TextDisabled("%s (No Drawer)", prop.DisplayName.c_str());
-                        ImGui::PopID();
+                            TimeGUI::TextDisabled("%s (No Drawer)", prop.DisplayName.c_str());
+                        TimeGUI::PopID();
                     }
                 }
 
-                ImGui::Separator();
-                if (ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+                TimeGUI::Separator();
+                if (TimeGUI::Button("Remove Component", TEVector2(TimeGUI::GetContentRegionAvail().x, 0)))
                 {
                     m_ComponentsToDelete.push_back({id, m_SelectedComponent});
                     m_SelectedComponent = nullptr;
                 }
 
-                if (ImGui::Button("Back to Entity Info", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+                if (TimeGUI::Button("Back to Entity Info", TEVector2(TimeGUI::GetContentRegionAvail().x, 0)))
                     m_SelectedComponent = nullptr;
             }
-            ImGui::PopID();
+            TimeGUI::PopID();
         }
         else
         {
             // Default: Show all components in a clean list
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 8));
+            TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
             bool componentsOpened =
-                ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
-            ImGui::PopStyleVar();
+                TimeGUI::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
+            TimeGUI::PopStyleVar();
 
             if (componentsOpened)
             {
@@ -1240,10 +1248,10 @@ void EditorLayer::UI_DrawProperties()
                     if (strcmp(className, "TransformComponent") == 0 || strcmp(className, "TagComponent") == 0)
                         continue;
 
-                    ImGui::PushID(comp);
-                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 8));
-                    bool headerOpen = ImGui::CollapsingHeader(className, ImGuiTreeNodeFlags_DefaultOpen);
-                    ImGui::PopStyleVar();
+                    TimeGUI::PushID(std::to_string((uintptr_t)comp)); 
+                    TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
+                    bool headerOpen = TimeGUI::CollapsingHeader(className, ImGuiTreeNodeFlags_DefaultOpen);
+                    TimeGUI::PopStyleVar();
 
                     if (headerOpen)
                     {
@@ -1256,18 +1264,18 @@ void EditorLayer::UI_DrawProperties()
                                     continue;
 
                                 void *addr = (char *)comp + prop.Offset;
-                                ImGui::PushID(prop.Name.c_str());
+                                TimeGUI::PushID(prop.Name.c_str());
                                 prop.DrawFunc(addr, prop.DisplayName);
-                                ImGui::PopID();
+                                TimeGUI::PopID();
                             }
                         }
                     }
-                    ImGui::PopID();
+                    TimeGUI::PopID();
                 }
             }
         }
     }
-    ImGui::End();
+    TimeGUI::End();
 }
 
 void EditorLayer::UI_DrawContentBrowser()
@@ -1275,13 +1283,13 @@ void EditorLayer::UI_DrawContentBrowser()
     if (!m_ShowContentBrowser)
         return;
 
-    ImGui::Begin("Content Browser");
+    TimeGUI::Begin("Content Browser");
 
     static float padding = 16.0f;
     static float thumbnailSize = 64.0f;
     float cellSize = thumbnailSize + padding;
 
-    float panelWidth = ImGui::GetContentRegionAvail().x;
+    float panelWidth = TimeGUI::GetContentRegionAvail().x;
     int columnCount = (int)(panelWidth / cellSize);
     if (columnCount < 1)
         columnCount = 1;
@@ -1295,25 +1303,25 @@ void EditorLayer::UI_DrawContentBrowser()
     };
     static ContentTab s_CurrentTab = ContentTab::Assets;
 
-    if (ImGui::BeginTabBar("ContentBrowserTabs"))
+    if (TimeGUI::BeginTabBar("ContentBrowserTabs"))
     {
         ContentTab previousTab = s_CurrentTab;
-        if (ImGui::BeginTabItem("Assets"))
+        if (TimeGUI::BeginTabItem("Assets"))
         {
             s_CurrentTab = ContentTab::Assets;
-            ImGui::EndTabItem();
+            TimeGUI::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Scripts"))
+        if (TimeGUI::BeginTabItem("Scripts"))
         {
             s_CurrentTab = ContentTab::Scripts;
-            ImGui::EndTabItem();
+            TimeGUI::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Engine"))
+        if (TimeGUI::BeginTabItem("Engine"))
         {
             s_CurrentTab = ContentTab::Engine;
-            ImGui::EndTabItem();
+            TimeGUI::EndTabItem();
         }
-        ImGui::EndTabBar();
+        TimeGUI::EndTabBar();
 
         if (s_CurrentTab != previousTab)
         {
@@ -1331,34 +1339,34 @@ void EditorLayer::UI_DrawContentBrowser()
         rootPath = Project::GetProjectDirectory() / assetDir;
 
         // Navigation: Back Button + Editable Path Toolbar
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(4, 0));
         if (m_LeftArrowIcon)
         {
-            ImTextureID leftArrowID = (ImTextureID)(uintptr_t)m_LeftArrowIcon->GetRendererID();
-            if (ImGui::ImageButton("##Back", leftArrowID, ImVec2(10, 10)))
+            TimeGUITextureID leftArrowID = (TimeGUITextureID)(uintptr_t)m_LeftArrowIcon->GetRendererID();
+            if (TimeGUI::ImageButton("##Back", leftArrowID, TEVector2(10, 10)))
             {
                 m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
                 m_SelectedBrowserPath.clear();
                 m_RenamingBrowserPath.clear();
             }
         }
-        else if (ImGui::Button(" <- "))
+        else if (TimeGUI::Button(" <- "))
         {
             m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
             m_SelectedBrowserPath.clear();
             m_RenamingBrowserPath.clear();
         }
 
-        ImGui::SameLine();
+        TimeGUI::SameLine();
 
         // Sync buffer if not being edited
-        if (!ImGui::IsItemActive() && !ImGui::IsItemFocused())
+        if (!TimeGUI::IsItemActive() && !TimeGUI::IsItemFocused())
         {
             strcpy_s(m_ContentBrowserPathBuffer, m_ContentBrowserCurrentDirectory.string().c_str());
         }
 
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 4.0f);
-        if (ImGui::InputText("##PathInput", m_ContentBrowserPathBuffer, 512, ImGuiInputTextFlags_EnterReturnsTrue))
+        TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 4.0f);
+        if (TimeGUI::InputText("##PathInput", m_ContentBrowserPathBuffer, 512, ImGuiInputTextFlags_EnterReturnsTrue))
         {
             std::filesystem::path assetPath = Project::GetAssetDirectory();
             std::filesystem::path targetPath = assetPath / m_ContentBrowserPathBuffer;
@@ -1374,10 +1382,10 @@ void EditorLayer::UI_DrawContentBrowser()
                 strcpy_s(m_ContentBrowserPathBuffer, m_ContentBrowserCurrentDirectory.string().c_str());
             }
         }
-        ImGui::PopStyleVar();
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
+        TimeGUI::PopStyleVar();
+        TimeGUI::Spacing();
+        TimeGUI::Separator();
+        TimeGUI::Spacing();
 
         rootPath /= m_ContentBrowserCurrentDirectory;
     }
@@ -1392,7 +1400,7 @@ void EditorLayer::UI_DrawContentBrowser()
 
     if (std::filesystem::exists(rootPath))
     {
-        ImGui::Columns(columnCount, 0, false);
+        TimeGUI::Columns(columnCount, 0, false);
         for (auto &directoryEntry : std::filesystem::directory_iterator(rootPath))
         {
             const auto &path = directoryEntry.path();
@@ -1413,16 +1421,16 @@ void EditorLayer::UI_DrawContentBrowser()
             }
 
             std::string filenameWithExtension = path.filename().string();
-            ImGui::PushID(filenameWithExtension.c_str());
+            TimeGUI::PushID(filenameWithExtension.c_str());
 
             // Icon Selection
-            ImTextureID iconId = 0;
+            TimeGUITextureID iconId = 0;
             bool isDir = directoryEntry.is_directory();
 
             if (isDir)
             {
                 if (m_FolderIcon)
-                    iconId = (ImTextureID)(uint64_t)m_FolderIcon->GetRendererID();
+                    iconId = (TimeGUITextureID)(uint64_t)m_FolderIcon->GetRendererID();
             }
             else
             {
@@ -1432,7 +1440,7 @@ void EditorLayer::UI_DrawContentBrowser()
                     auto tex = AssetManager::GetAsset<Texture>(handle);
                     if (tex)
                     {
-                        iconId = (ImTextureID)(uint64_t)tex->GetRendererID();
+                        iconId = (TimeGUITextureID)(uint64_t)tex->GetRendererID();
                     }
                 }
 
@@ -1441,11 +1449,11 @@ void EditorLayer::UI_DrawContentBrowser()
                     std::shared_ptr<Texture> icon = AssetManager::GetIconForExtension(path.extension().string());
                     if (icon)
                     {
-                        iconId = (ImTextureID)(uint64_t)icon->GetRendererID();
+                        iconId = (TimeGUITextureID)(uint64_t)icon->GetRendererID();
                     }
                     else if (m_FileIcon)
                     {
-                        iconId = (ImTextureID)(uint64_t)m_FileIcon->GetRendererID();
+                        iconId = (TimeGUITextureID)(uint64_t)m_FileIcon->GetRendererID();
                     }
                 }
             }
@@ -1454,24 +1462,24 @@ void EditorLayer::UI_DrawContentBrowser()
             if (iconId != 0)
             {
                 if (isSelected)
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.45f, 0.9f, 0.35f));
+                    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.2f, 0.45f, 0.9f, 0.35f));
                 else
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0, 0, 0, 0));
 
-                ImGui::ImageButton(filenameString.c_str(), iconId, ImVec2(thumbnailSize, thumbnailSize), ImVec2(0, 1),
-                                   ImVec2(1, 0));
-                ImGui::PopStyleColor();
+                TimeGUI::ImageButton(filenameString.c_str(), iconId, TEVector2(thumbnailSize, thumbnailSize), TEVector2(0, 1),
+                                   TEVector2(1, 0));
+                TimeGUI::PopStyleColor();
             }
             else
             {
                 if (isSelected)
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.45f, 0.9f, 0.35f));
-                ImGui::Button(filenameString.c_str(), ImVec2(thumbnailSize, thumbnailSize));
+                    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.2f, 0.45f, 0.9f, 0.35f));
+                TimeGUI::Button(filenameString.c_str(), TEVector2(thumbnailSize, thumbnailSize));
                 if (isSelected)
-                    ImGui::PopStyleColor();
+                    TimeGUI::PopStyleColor();
             }
 
-            if (ImGui::IsItemClicked())
+            if (TimeGUI::IsItemClicked())
             {
                 if (m_SelectedBrowserPath != path)
                 {
@@ -1491,7 +1499,7 @@ void EditorLayer::UI_DrawContentBrowser()
                 }
             }
 
-            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            if (TimeGUI::IsItemHovered() && TimeGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left))
             {
                 if (isDir)
                 {
@@ -1523,66 +1531,62 @@ void EditorLayer::UI_DrawContentBrowser()
                     {
                         AssetHandle handle = AssetManager::LoadAsset(path);
                         auto assetPtr = AssetManager::GetAsset<Asset>(handle);
-                        m_OpenEditorTabs.push_back({title, path, type, assetPtr});
+                        m_OpenEditorTabs.push_back({ title, path, type, assetPtr });
                         m_ActiveTabRequest = (int)(m_OpenEditorTabs.size() - 1);
                     }
                 }
             }
 
             // Right-click context menu on item
-            if (ImGui::BeginPopupContextItem())
+            if (TimeGUI::BeginPopupContextItem())
             {
                 m_SelectedBrowserPath = path;
-                if (ImGui::MenuItem("Rename", "F2"))
+                if (TimeGUI::MenuItem("Rename", "F2"))
                 {
                     m_RenamingBrowserPath = path;
                 }
-                if (ImGui::MenuItem("Copy", "Ctrl+C"))
+                if (TimeGUI::MenuItem("Copy", "Ctrl+C"))
                 {
                     m_ClipboardPath = path;
                     m_ClipboardIsCut = false;
                 }
-                if (ImGui::MenuItem("Cut (Move)", "Ctrl+X"))
+                if (TimeGUI::MenuItem("Cut (Move)", "Ctrl+X"))
                 {
                     m_ClipboardPath = path;
                     m_ClipboardIsCut = true;
                 }
-                if (ImGui::MenuItem("Delete", "Delete"))
+                if (TimeGUI::MenuItem("Delete", "Delete"))
                 {
                     if (path.extension() == ".tetexture")
                     {
                         std::filesystem::path rawImagePath = path;
                         rawImagePath.replace_extension(".png");
-                        if (std::filesystem::exists(rawImagePath))
-                            std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
                         rawImagePath.replace_extension(".jpg");
-                        if (std::filesystem::exists(rawImagePath))
-                            std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
                         rawImagePath.replace_extension(".tga");
-                        if (std::filesystem::exists(rawImagePath))
-                            std::filesystem::remove(rawImagePath);
+                        if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
                     }
                     std::filesystem::remove_all(path);
                     m_SelectedBrowserPath.clear();
                 }
-                ImGui::EndPopup();
+                TimeGUI::EndPopup();
             }
 
             // Drag Drop Source (Future)
-            if (ImGui::BeginDragDropSource())
+            if (TimeGUI::BeginDragDropSource())
             {
                 const wchar_t *itemPath = relativePath.c_str();
-                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
-                ImGui::EndDragDropSource();
+                TimeGUI::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+                TimeGUI::EndDragDropSource();
             }
 
             if (m_RenamingBrowserPath == path)
             {
                 char nameBuffer[256];
                 strncpy_s(nameBuffer, filenameString.c_str(), sizeof(nameBuffer));
-                ImGui::PushItemWidth(thumbnailSize);
-                if (ImGui::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer),
-                                     ImGuiInputTextFlags_EnterReturnsTrue))
+                TimeGUI::PushItemWidth(thumbnailSize);
+                if (TimeGUI::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
                 {
                     std::filesystem::path newPath = path.parent_path() / nameBuffer;
                     if (!isDir)
@@ -1595,21 +1599,18 @@ void EditorLayer::UI_DrawContentBrowser()
                         {
                             std::filesystem::path rawImagePath = path;
                             std::filesystem::path newRawImagePath = newPath;
-
+                            
                             rawImagePath.replace_extension(".png");
                             newRawImagePath.replace_extension(".png");
-                            if (std::filesystem::exists(rawImagePath))
-                                std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
 
                             rawImagePath.replace_extension(".jpg");
                             newRawImagePath.replace_extension(".jpg");
-                            if (std::filesystem::exists(rawImagePath))
-                                std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
 
                             rawImagePath.replace_extension(".tga");
                             newRawImagePath.replace_extension(".tga");
-                            if (std::filesystem::exists(rawImagePath))
-                                std::filesystem::rename(rawImagePath, newRawImagePath);
+                            if (std::filesystem::exists(rawImagePath)) std::filesystem::rename(rawImagePath, newRawImagePath);
                         }
 
                         std::filesystem::rename(path, newPath);
@@ -1617,46 +1618,47 @@ void EditorLayer::UI_DrawContentBrowser()
                     }
                     m_RenamingBrowserPath.clear();
                 }
-                ImGui::PopItemWidth();
-                if (!ImGui::IsItemActive() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                TimeGUI::PopItemWidth();
+                if (!TimeGUI::IsItemActive() && TimeGUI::IsMouseClicked(ImGuiMouseButton_Left))
                 {
                     m_RenamingBrowserPath.clear();
                 }
             }
             else
             {
-                ImGui::TextWrapped("%s", filenameString.c_str());
+                TimeGUI::TextWrapped("%s", filenameString.c_str());
             }
 
-            ImGui::NextColumn();
-            ImGui::PopID();
+            TimeGUI::NextColumn();
+            TimeGUI::PopID();
         }
     }
 
-    ImGui::Columns(1);
+    TimeGUI::Columns(1);
 
-    if (ImGui::BeginPopupContextWindow("ContentBrowserContextMenu", ImGuiPopupFlags_MouseButtonRight))
+    if (TimeGUI::BeginPopupContextWindow("ContentBrowserContextMenu", ImGuiPopupFlags_MouseButtonRight))
     {
         // Glass AAA Style settings for this specific popup
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
-        ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 8.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 8));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(12, 12));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_PopupRounding, 8.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(10, 8));
 
-        ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.08f, 0.08f, 0.09f, 0.94f));
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.2f, 0.45f, 0.9f, 0.4f));
-        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.2f, 0.45f, 0.9f, 0.6f));
+        TimeGUI::PushStyleColor(TimeGUICol_PopupBg, TEVector4(0.08f, 0.08f, 0.09f, 0.94f));
+        TimeGUI::PushStyleColor(TimeGUICol_Border, TEVector4(1.0f, 1.0f, 1.0f, 0.1f));
+        TimeGUI::PushStyleColor(TimeGUICol_HeaderHovered, TEVector4(0.2f, 0.45f, 0.9f, 0.4f));
+        TimeGUI::PushStyleColor(TimeGUICol_HeaderActive, TEVector4(0.2f, 0.45f, 0.9f, 0.6f));
 
-        ImGui::TextDisabled("CREATE ASSET");
-        ImGui::Separator();
+        TimeGUI::TextDisabled("CREATE ASSET");
+        TimeGUI::Separator();
 
         // 1. Folder Creation Option
-        ImGui::PushID("Folder");
-        ImGui::BeginGroup();
-        ImVec2 folderCursorPos = ImGui::GetCursorPos();
+        TimeGUI::PushID("Folder");
+        TimeGUI::BeginGroup();
+        TEVector2 folderCursorPos = TimeGUI::GetCursorPos();
         bool createFolderSelected = false;
-        if (ImGui::Selectable("##FolderRow", &createFolderSelected,
-                              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(0, 32)))
+        if (TimeGUI::Selectable("##FolderRow", &createFolderSelected,
+                              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                              TEVector2(0, 32)))
         {
             // Find unique folder name e.g. "New Folder", "New Folder (1)"
             std::filesystem::path baseFolderPath = rootPath / "New Folder";
@@ -1668,25 +1670,24 @@ void EditorLayer::UI_DrawContentBrowser()
                 counter++;
             }
             std::filesystem::create_directories(folderPath);
-            ImGui::CloseCurrentPopup();
+            TimeGUI::CloseCurrentPopup();
         }
-        ImGui::SetCursorPos(ImVec2(folderCursorPos.x + 4.0f, folderCursorPos.y + 5.0f));
+        TimeGUI::SetCursorPos(TEVector2(folderCursorPos.x + 4.0f, folderCursorPos.y + 5.0f));
         if (m_FolderIcon)
         {
-            ImGui::Image((ImTextureID)(uintptr_t)m_FolderIcon->GetRendererID(), ImVec2(22, 22), ImVec2(0, 0),
-                         ImVec2(1, 1));
+            TimeGUI::Image((TimeGUITextureID)(uintptr_t)m_FolderIcon->GetRendererID(), TEVector2(22, 22), TEVector2(0, 0), TEVector2(1, 1));
         }
         else
         {
-            ImGui::Dummy(ImVec2(22, 22));
+            TimeGUI::Dummy(TEVector2(22, 22));
         }
-        ImGui::SameLine(0, 12);
-        ImGui::SetCursorPosY(folderCursorPos.y + 7.0f);
-        ImGui::Text("Folder");
-        ImGui::EndGroup();
-        ImGui::PopID();
+        TimeGUI::SameLine(0, 12);
+        TimeGUI::SetCursorPosY(folderCursorPos.y + 7.0f);
+        TimeGUI::Text("Folder");
+        TimeGUI::EndGroup();
+        TimeGUI::PopID();
 
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Dynamically populate from Asset Registry
         const auto &assetTypes = AssetManager::GetRegisteredAssetTypes();
@@ -1695,58 +1696,58 @@ void EditorLayer::UI_DrawContentBrowser()
             if (!entry.Prototype)
                 continue;
 
-            ImGui::PushID(type.c_str());
+            TimeGUI::PushID(type.c_str());
 
             // Begin a group so we can treat icon + text as one selectable unit
-            ImGui::BeginGroup();
+            TimeGUI::BeginGroup();
 
-            ImVec2 cursorPos = ImGui::GetCursorPos();
+            TEVector2 cursorPos = TimeGUI::GetCursorPos();
 
             // Draw an invisible selectable that covers the entire row
             bool selected = false;
-            if (ImGui::Selectable("##AssetTypeRow", &selected,
+            if (TimeGUI::Selectable("##AssetTypeRow", &selected,
                                   ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
-                                  ImVec2(0, 32)))
+                                  TEVector2(0, 32)))
             {
                 entry.Prototype->OnContentBrowserCreate(rootPath);
-                ImGui::CloseCurrentPopup();
+                TimeGUI::CloseCurrentPopup();
             }
 
             // Move cursor back to the start of the row to draw icon and text on top
-            ImGui::SetCursorPos(ImVec2(cursorPos.x + 4.0f, cursorPos.y + 5.0f));
+            TimeGUI::SetCursorPos(TEVector2(cursorPos.x + 4.0f, cursorPos.y + 5.0f));
 
             auto icon = AssetManager::GetDefaultIcon(type);
             if (icon)
             {
-                ImGui::Image((ImTextureID)(uintptr_t)icon->GetRendererID(), ImVec2(22, 22), ImVec2(0, 0), ImVec2(1, 1));
+                TimeGUI::Image((TimeGUITextureID)(uintptr_t)icon->GetRendererID(), TEVector2(22, 22), TEVector2(0, 0), TEVector2(1, 1));
             }
             else
             {
                 // Reserve space for missing icons to maintain alignment
-                ImGui::Dummy(ImVec2(22, 22));
+                TimeGUI::Dummy(TEVector2(22, 22));
             }
-            ImGui::SameLine(0, 12); // Consistent spacing after icon
+            TimeGUI::SameLine(0, 12); // Consistent spacing after icon
 
-            ImGui::SetCursorPosY(cursorPos.y + 7.0f); // Center text
-            ImGui::Text(type.c_str());
+            TimeGUI::SetCursorPosY(cursorPos.y + 7.0f); // Center text
+            TimeGUI::Text(type.c_str());
 
-            ImGui::EndGroup();
-            ImGui::PopID();
+            TimeGUI::EndGroup();
+            TimeGUI::PopID();
         }
 
-        ImGui::Separator();
+        TimeGUI::Separator();
         bool hasClipboard = !m_ClipboardPath.empty() && std::filesystem::exists(m_ClipboardPath);
-        if (ImGui::MenuItem("Paste", "Ctrl+V", nullptr, hasClipboard))
+        if (TimeGUI::MenuItem("Paste", "Ctrl+V", "", hasClipboard))
         {
             PasteClipboard(rootPath);
         }
 
-        ImGui::PopStyleColor(4);
-        ImGui::PopStyleVar(3);
-        ImGui::EndPopup();
+        TimeGUI::PopStyleColor(4);
+        TimeGUI::PopStyleVar(3);
+        TimeGUI::EndPopup();
     }
 
-    ImGui::End();
+    TimeGUI::End();
 }
 
 void EditorLayer::UI_DrawViewport()
@@ -1754,21 +1755,21 @@ void EditorLayer::UI_DrawViewport()
     if (!m_ShowViewport)
         return;
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(0, 0));
+    TimeGUI::Begin("Viewport", nullptr, TimeGUIWindowFlags_NoMove | TimeGUIWindowFlags_NoCollapse);
 
-    m_ViewportFocused = ImGui::IsWindowFocused();
-    m_ViewportHovered = ImGui::IsWindowHovered();
+    m_ViewportFocused = TimeGUI::IsWindowFocused();
+    m_ViewportHovered = TimeGUI::IsWindowHovered();
     if (m_ViewportHovered)
-        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+        TimeGUI::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
 
     auto &shortcuts = m_EditorSettings.Shortcuts;
 
-    ImVec2 winPos = ImGui::GetWindowPos();
-    ImVec2 contentOffset = ImGui::GetWindowContentRegionMin();
+    TEVector2 winPos = TimeGUI::GetWindowPos();
+    TEVector2 contentOffset = TimeGUI::GetWindowContentRegionMin();
     m_ViewportPos = {winPos.x + contentOffset.x, winPos.y + contentOffset.y};
 
-    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+    TEVector2 viewportPanelSize = TimeGUI::GetContentRegionAvail();
     if (m_LastViewportX != viewportPanelSize.x || m_LastViewportY != viewportPanelSize.y)
     {
         m_LastViewportX = viewportPanelSize.x;
@@ -1779,18 +1780,18 @@ void EditorLayer::UI_DrawViewport()
     if (m_Framebuffer)
     {
         uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void *)(uintptr_t)textureID, ImVec2{m_LastViewportX, m_LastViewportY}, ImVec2{0, 1},
-                     ImVec2{1, 0});
+        TimeGUI::Image((void *)(uintptr_t)textureID, TEVector2{m_LastViewportX, m_LastViewportY}, TEVector2{0, 1},
+                     TEVector2{1, 0});
 
         UI_ViewportContextMenu();
-        UI_DrawGizmoText(); // DRAW TEXT HERE (Valid ImGui context)
+        UI_DrawGizmoText(); // DRAW TEXT HERE (Valid TimeGUI context)
     }
 
-    auto drawList = ImGui::GetWindowDrawList();
+    TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetWindowDrawList();  
     if (m_ShowViewport)
     {
-        ImVec2 winPos = ImGui::GetWindowPos();
-        ImVec2 winSize = ImGui::GetWindowSize();
+        TEVector2 winPos = TimeGUI::GetWindowPos();
+        TEVector2 winSize = TimeGUI::GetWindowSize();
 
         // Base grid step at default zoom
         float BASE_GRID_STEP = 64.0f;
@@ -1810,75 +1811,80 @@ void EditorLayer::UI_DrawViewport()
         float offsetY = fmodf(m_CameraPosition.y * (m_EditorSettings.DefaultZoom / m_CameraZoom), visualGridStep);
 
         for (float x = offsetX; x < winSize.x; x += visualGridStep)
-            drawList->AddLine(ImVec2(winPos.x + x, winPos.y), ImVec2(winPos.x + x, winPos.y + winSize.y), gridColor);
+            drawList->AddLine(TEVector2(winPos.x + x, winPos.y), TEVector2(winPos.x + x, winPos.y + winSize.y), gridColor);
 
         for (float y = offsetY; y < winSize.y; y += visualGridStep)
-            drawList->AddLine(ImVec2(winPos.x, winPos.y + y), ImVec2(winPos.x + winSize.x, winPos.y + y), gridColor);
+            drawList->AddLine(TEVector2(winPos.x, winPos.y + y), TEVector2(winPos.x + winSize.x, winPos.y + y), gridColor);
     }
 
     // AAA Style Horizontal Toolbar
     {
-        ImGui::SetCursorPos(ImVec2(10, 40)); // Positioned lower and floating
+        TimeGUI::SetCursorPos(TEVector2(10, 40)); // Positioned lower and floating
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 14.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 6));
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 14.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(12, 6));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(8, 0));
 
         // Toolbar Background: Fully transparent for a floating effect
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+        TimeGUI::PushStyleColor(TimeGUICol_ChildBg, TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
 
-        if (ImGui::BeginChild("ViewportToolbar", ImVec2(ImGui::GetContentRegionAvail().x - 20, 40), false))
+        if (TimeGUI::BeginChild("ViewportToolbar", TEVector2(TimeGUI::GetContentRegionAvail().x - 20, 40), false))
         {
             // Left Group: Settings & View
-            if (ImGui::Button("Menu"))
-                ImGui::OpenPopup("ViewportSettingsPopup");
+            if (TimeGUI::Button("Menu"))
+                TimeGUI::OpenPopup("ViewportSettingsPopup");
 
-            if (ImGui::BeginPopup("ViewportSettingsPopup"))
+            if (TimeGUI::BeginPopup("ViewportSettingsPopup"))
             {
-                ImGui::Dummy(ImVec2(0, 10)); // Top padding for better alignment
-                ImGui::TextDisabled("Viewport Stats");
-                ImGui::Text("Size: %.0f x %.0f", m_LastViewportX, m_LastViewportY);
-                ImGui::Text("Cam: (%.1f, %.1f)", m_CameraPosition.x, m_CameraPosition.y);
-                ImGui::Text("Zoom: %.1f", m_CameraZoom);
-                ImGui::Separator();
-                ImGui::Checkbox("Allow Navigation", &m_EditorSettings.AllowNavigation);
-                ImGui::Checkbox("Show Physics", &m_EditorSettings.ShowPhysicsColliders);
-                ImGui::EndPopup();
+                TimeGUI::Dummy(TEVector2(0, 10)); // Top padding for better alignment
+                TimeGUI::TextDisabled("Viewport Stats");
+                TimeGUI::Text("Size: %.0f x %.0f", m_LastViewportX, m_LastViewportY);
+                TimeGUI::Text("Cam: (%.1f, %.1f)", m_CameraPosition.x, m_CameraPosition.y);
+                TimeGUI::Text("Zoom: %.1f", m_CameraZoom);
+                TimeGUI::Separator();
+                if (TimeGUI::Checkbox("Allow Navigation", &m_EditorSettings.AllowNavigation))
+                    SaveSettings();
+                if (TimeGUI::Checkbox("Show Physics", &m_EditorSettings.ShowPhysicsColliders))
+                    SaveSettings();
+                TimeGUI::EndPopup();
             }
 
-            ImGui::SameLine();
+            TimeGUI::SameLine();
 
             // Navigation Toggle (Pill style)
-            auto navColor = m_EditorSettings.AllowNavigation ? ImVec4(0.20f, 0.55f, 0.90f, 1.00f)
-                                                             : ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
-            ImGui::PushStyleColor(ImGuiCol_Button, navColor);
-            if (ImGui::Button("Nav"))
+            auto navColor = m_EditorSettings.AllowNavigation ? TEVector4(0.20f, 0.55f, 0.90f, 1.00f)
+                                                             : TEVector4(0.35f, 0.35f, 0.35f, 1.0f);
+            TimeGUI::PushStyleColor(TimeGUICol_Button, navColor);
+            if (TimeGUI::Button("Nav"))
+            {
                 m_EditorSettings.AllowNavigation = !m_EditorSettings.AllowNavigation;
-            ImGui::SetItemTooltip("Toggle Viewport Navigation");
-            ImGui::PopStyleColor();
+                SaveSettings();
+            }
+            TimeGUI::SetItemTooltip("Toggle Viewport Navigation");
+            TimeGUI::PopStyleColor();
 
-            ImGui::SameLine();
-            ImGui::Dummy(ImVec2(5, 0)); // Extra gap
-            ImGui::SameLine();
+            TimeGUI::SameLine();
+            TimeGUI::Dummy(TEVector2(5, 0)); // Extra gap
+            TimeGUI::SameLine();
 
             // Right Group: Gizmo Modes
-            float rightOffset = ImGui::GetContentRegionAvail().x - (4 * 75); // Adjusted spacing
+            float rightOffset = TimeGUI::GetContentRegionAvail().x - (4 * 75); // Adjusted spacing
             if (rightOffset > 0)
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + rightOffset);
+                TimeGUI::SetCursorPosX(TimeGUI::GetCursorPosX() + rightOffset);
 
             auto gizmoButton = [&](const char *label, GizmoType type, const char *tooltip)
             {
                 bool active = m_GizmoType == type;
                 if (active)
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.5f, 1.0f, 1.0f)); // Bright blue for active
+                    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.25f, 0.5f, 1.0f, 1.0f)); // Bright blue for active
                 else
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.25f, 0.8f));
+                    TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.25f, 0.25f, 0.25f, 0.8f));
 
-                if (ImGui::Button(label, ImVec2(65, 0)))
+                if (TimeGUI::Button(label, TEVector2(65, 0)))
                     m_GizmoType = type;
-                ImGui::SetItemTooltip("%s", tooltip);
-                ImGui::PopStyleColor();
-                ImGui::SameLine();
+                TimeGUI::SetItemTooltip("%s", tooltip);
+                TimeGUI::PopStyleColor();
+                TimeGUI::SameLine();
             };
 
             gizmoButton("Select", GizmoType::None, "Selection Tool (Esc)");
@@ -1886,16 +1892,16 @@ void EditorLayer::UI_DrawViewport()
             gizmoButton("Rotate", GizmoType::Rotate, "Rotation Tool (E)");
             gizmoButton("Scale", GizmoType::Scale, "Scaling Tool (R)");
         }
-        ImGui::EndChild();
-        ImGui::PopStyleColor(1);
-        ImGui::PopStyleVar(3);
+        TimeGUI::EndChild();
+        TimeGUI::PopStyleColor(1);
+        TimeGUI::PopStyleVar(3);
     }
 
     if (m_ViewportFocused)
     {
         KeyCode delCode =
             m_EditorSettings.Shortcuts.count("Delete") ? m_EditorSettings.Shortcuts.at("Delete") : Key::Delete;
-        if (ImGui::IsKeyPressed((ImGuiKey)ToImGuiKey(delCode)) || ImGui::IsKeyPressed(ImGuiKey_Backspace))
+        if (TimeGUI::IsKeyPressed((ImGuiKey)Input::ToImGuiKey(delCode)) || TimeGUI::IsKeyPressed(ImGuiKey_Backspace))
         {
             DeleteSelectedEntities();
         }
@@ -1906,7 +1912,7 @@ void EditorLayer::UI_DrawViewport()
             auto checkGizmo = [&](const std::string &name, GizmoType type)
             {
                 KeyCode code = shortcuts.count(name) ? shortcuts.at(name) : (KeyCode)0;
-                if (code != (KeyCode)0 && ImGui::IsKeyPressed((ImGuiKey)ToImGuiKey(code)))
+                if (code != (KeyCode)0 && TimeGUI::IsKeyPressed((ImGuiKey)Input::ToImGuiKey(code)))
                     m_GizmoType = type;
             };
 
@@ -1920,26 +1926,26 @@ void EditorLayer::UI_DrawViewport()
     // Save Message Overlay
     if (m_SaveMessageTimer > 0.0f)
     {
-        ImVec2 size = ImGui::GetWindowSize();
-        ImGui::SetCursorPos(ImVec2(size.x / 2.0f - 100.0f, size.y - 80.0f));
+        TEVector2 size = TimeGUI::GetWindowSize();
+        TimeGUI::SetCursorPos(TEVector2(size.x / 2.0f - 100.0f, size.y - 80.0f));
 
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.6f, 0.2f, 0.8f));
-        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
+        TimeGUI::PushStyleColor(TimeGUICol_ChildBg, TEVector4(0.1f, 0.6f, 0.2f, 0.8f));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_ChildRounding, 8.0f);
 
-        if (ImGui::BeginChild("SaveMessage", ImVec2(200.0f, 40.0f), false, ImGuiWindowFlags_NoScrollbar))
+        if (TimeGUI::BeginChild("SaveMessage", TEVector2(200.0f, 40.0f), false, TimeGUIWindowFlags_NoScrollbar))
         {
-            ImVec2 textSize = ImGui::CalcTextSize("Saving Scene...");
-            ImGui::SetCursorPos(ImVec2((200.0f - textSize.x) * 0.5f, (40.0f - textSize.y) * 0.5f));
-            ImGui::Text("Saving Scene...");
-            ImGui::EndChild();
+            TEVector2 textSize = TimeGUI::CalcTextSize("Saving Scene...");
+            TimeGUI::SetCursorPos(TEVector2((200.0f - textSize.x) * 0.5f, (40.0f - textSize.y) * 0.5f));
+            TimeGUI::Text("Saving Scene...");
+            TimeGUI::EndChild();
         }
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor();
+        TimeGUI::PopStyleVar();
+        TimeGUI::PopStyleColor();
     }
 
     // Removed Navigation Text
-    ImGui::End();
-    ImGui::PopStyleVar();
+    TimeGUI::End();
+    TimeGUI::PopStyleVar();
 }
 
 void EditorLayer::UI_DrawSettingsPanel()
@@ -1947,87 +1953,91 @@ void EditorLayer::UI_DrawSettingsPanel()
     if (!m_ShowSettings)
         return;
 
-    ImGui::Begin("Editor Settings", &m_ShowSettings);
+    TimeGUI::Begin("Editor Settings", &m_ShowSettings);
 
-    if (ImGui::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Checkbox("Allow Navigation", &m_EditorSettings.AllowNavigation);
+        if (TimeGUI::Checkbox("Allow Navigation", &m_EditorSettings.AllowNavigation))
+            SaveSettings();
     }
 
-    if (ImGui::CollapsingHeader("Viewport", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Viewport", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Checkbox("Show Physics Colliders", &m_EditorSettings.ShowPhysicsColliders);
-        ImGui::DragFloat("Speed Multiplier", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f);
-        ImGui::DragFloat("Zoom Speed", &m_EditorSettings.ZoomSpeed, 0.1f, 0.1f, 10.0f);
+        if (TimeGUI::Checkbox("Show Physics Colliders", &m_EditorSettings.ShowPhysicsColliders))
+            SaveSettings();
+        if (TimeGUI::DragFloat("Speed Multiplier", &m_EditorSettings.SpeedMultiplier, 0.1f, 0.1f, 100.0f))
+            SaveSettings();
+        if (TimeGUI::DragFloat("Zoom Speed", &m_EditorSettings.ZoomSpeed, 0.1f, 0.1f, 10.0f))
+            SaveSettings();
     }
 
-    if (ImGui::CollapsingHeader("Theme", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Theme", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        auto &colors = ImGui::GetStyle().Colors;
-        ImGui::ColorEdit4("Window Bg", (float *)&colors[ImGuiCol_WindowBg]);
-        ImGui::ColorEdit4("Header", (float *)&colors[ImGuiCol_Header]);
-        ImGui::ColorEdit4("Header Hovered", (float *)&colors[ImGuiCol_HeaderHovered]);
-        ImGui::ColorEdit4("Header Active", (float *)&colors[ImGuiCol_HeaderActive]);
-        ImGui::ColorEdit4("Button", (float *)&colors[ImGuiCol_Button]);
-        ImGui::ColorEdit4("Button Hovered", (float *)&colors[ImGuiCol_ButtonHovered]);
-        ImGui::ColorEdit4("Button Active", (float *)&colors[ImGuiCol_ButtonActive]);
-        ImGui::ColorEdit4("Tab", (float *)&colors[ImGuiCol_Tab]);
-        ImGui::ColorEdit4("Tab Hovered", (float *)&colors[ImGuiCol_TabHovered]);
-        ImGui::ColorEdit4("Tab Active", (float *)&colors[ImGuiCol_TabActive]);
-        ImGui::ColorEdit4("Title Bg", (float *)&colors[ImGuiCol_TitleBg]);
+        auto &colors = TimeGUI::GetStyle().Colors;
+        TimeGUI::ColorEdit4("Window Bg", (float *)&colors[TimeGUICol_WindowBg]);
+        TimeGUI::ColorEdit4("Header", (float *)&colors[TimeGUICol_Header]);
+        TimeGUI::ColorEdit4("Header Hovered", (float *)&colors[TimeGUICol_HeaderHovered]);
+        TimeGUI::ColorEdit4("Header Active", (float *)&colors[TimeGUICol_HeaderActive]);
+        TimeGUI::ColorEdit4("Button", (float *)&colors[TimeGUICol_Button]);
+        TimeGUI::ColorEdit4("Button Hovered", (float *)&colors[TimeGUICol_ButtonHovered]);
+        TimeGUI::ColorEdit4("Button Active", (float *)&colors[TimeGUICol_ButtonActive]);
+        TimeGUI::ColorEdit4("Tab", (float *)&colors[TimeGUICol_Tab]);
+        TimeGUI::ColorEdit4("Tab Hovered", (float *)&colors[TimeGUICol_TabHovered]);
+        TimeGUI::ColorEdit4("Tab Active", (float *)&colors[TimeGUICol_TabActive]);
+        TimeGUI::ColorEdit4("Title Bg", (float *)&colors[TimeGUICol_TitleBg]);
 
-        ImGui::Separator();
-        if (ImGui::Button("Reset to Dark Theme"))
+        TimeGUI::Separator();
+        if (TimeGUI::Button("Reset to Dark Theme"))
             SetDarkThemeColors();
     }
 
-    if (ImGui::CollapsingHeader("Shortcuts", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Shortcuts", ImGuiTreeNodeFlags_DefaultOpen))
     {
         auto &shortcuts = m_EditorSettings.Shortcuts;
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, 150.0f);
+        TimeGUI::Columns(2);
+        TimeGUI::SetColumnWidth(0, 150.0f);
 
         for (auto &[name, key] : shortcuts)
         {
-            ImGui::PushID(name.c_str());
+            TimeGUI::PushID(name.c_str());
 
-            ImGui::Text(name.c_str());
-            ImGui::NextColumn();
+            TimeGUI::Text(name.c_str());
+            TimeGUI::NextColumn();
 
             std::string buttonLabel = GetKeyName(key) + "##" + name;
-            if (ImGui::Button(buttonLabel.c_str(), ImVec2(100, 0)))
+            if (TimeGUI::Button(buttonLabel.c_str(), TEVector2(100, 0)))
             {
                 // Rebind logic (modal or wait for next key)
-                ImGui::OpenPopup(("Rebind##" + name).c_str());
+                TimeGUI::OpenPopup(("Rebind##" + name).c_str());
             }
 
-            if (ImGui::BeginPopupModal(("Rebind##" + name).c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (TimeGUI::BeginPopupModal(("Rebind##" + name).c_str(), nullptr, TimeGUIWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("Press any key to rebind '%s'...", name.c_str());
-                ImGui::Separator();
+                TimeGUI::Text("Press any key to rebind '%s'...", name.c_str());
+                TimeGUI::Separator();
 
                 for (int k = (int)Key::Space; k <= (int)Key::Menu; k++)
                 {
                     if (Input::IsKeyPressed((KeyCode)k))
                     {
                         key = (KeyCode)k;
-                        ImGui::CloseCurrentPopup();
+                        TimeGUI::CloseCurrentPopup();
                         break;
                     }
                 }
 
-                if (ImGui::Button("Cancel", ImVec2(120, 0)))
-                    ImGui::CloseCurrentPopup();
-                ImGui::EndPopup();
+                if (TimeGUI::Button("Cancel", TEVector2(120, 0)))
+                    TimeGUI::CloseCurrentPopup();
+                TimeGUI::EndPopup();
             }
 
-            ImGui::NextColumn();
-            ImGui::PopID();
+            TimeGUI::NextColumn();
+            TimeGUI::PopID();
         }
-        ImGui::Columns(1);
+        TimeGUI::Columns(1);
     }
 
-    ImGui::End();
+    TimeGUI::End();
 }
 
 void EditorLayer::UI_DrawProjectSettingsPanel()
@@ -2035,46 +2045,74 @@ void EditorLayer::UI_DrawProjectSettingsPanel()
     if (!m_ShowProjectSettings)
         return;
 
-    ImGui::Begin("Project Settings", &m_ShowProjectSettings);
-    ImGui::Text("Project Name: %s", Project::GetActiveConfig().Name.c_str());
+    TimeGUI::Begin("Project Settings", &m_ShowProjectSettings);
+    TimeGUI::Text("Project Name: %s", Project::GetActiveConfig().Name.c_str());
 
-    if (ImGui::CollapsingHeader("Game Configuration", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Game Configuration", ImGuiTreeNodeFlags_DefaultOpen))
     {
         const char *items[] = {"2D", "3D"};
         int currentItem = (int)m_ProjectSettings.ConfigType;
-        if (ImGui::Combo("Type", &currentItem, items, IM_ARRAYSIZE(items)))
+        if (TimeGUI::Combo("Type", &currentItem, items, IM_ARRAYSIZE(items)))
         {
             m_ProjectSettings.ConfigType = (ProjectSettings::GameType)currentItem;
+            SaveSettings();
         }
 
         if (m_ProjectSettings.ConfigType == ProjectSettings::GameType::TwoD)
         {
-            ImGui::Separator();
-            ImGui::Text("2D Settings");
+            TimeGUI::Separator();
+            TimeGUI::Text("2D Settings");
             const char *modes[] = {"Top Down", "Side Scroller"};
             int currentMode = (int)m_ProjectSettings.Mode2D;
-            if (ImGui::Combo("Mode", &currentMode, modes, IM_ARRAYSIZE(modes)))
+            if (TimeGUI::Combo("Mode", &currentMode, modes, IM_ARRAYSIZE(modes)))
             {
                 m_ProjectSettings.Mode2D = (ProjectSettings::TwoDMode)currentMode;
+                SaveSettings();
             }
 
-            ImGui::TextDisabled("Axis:");
-            ImGui::SameLine();
-            ImGui::TextColored(ImVec4(0.8f, 0.1f, 0.15f, 1.0f), "X (Horizontal)");
-            ImGui::SameLine();
+            TimeGUI::TextDisabled("Axis:");
+            TimeGUI::SameLine();
+            TimeGUI::TextColored(TEVector4(0.8f, 0.1f, 0.15f, 1.0f), "X (Horizontal)");
+            TimeGUI::SameLine();
 
             if (m_ProjectSettings.Mode2D == ProjectSettings::TwoDMode::TopDown)
             {
-                ImGui::TextColored(ImVec4(0.2f, 0.7f, 0.2f, 1.0f), "Y (Vertical)");
+                TimeGUI::TextColored(TEVector4(0.2f, 0.7f, 0.2f, 1.0f), "Y (Vertical)");
             }
             else // SideScroller
             {
-                ImGui::TextColored(ImVec4(0.1f, 0.25f, 0.8f, 1.0f), "Z (Vertical)");
+                TimeGUI::TextColored(TEVector4(0.1f, 0.25f, 0.8f, 1.0f), "Z (Vertical)");
             }
         }
     }
 
-    ImGui::End();
+    if (TimeGUI::CollapsingHeader("Renderer Settings", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        const char *apiItems[] = {"OpenGL", "OpenGLES", "Vulkan", "DirectX11"};
+        int currentApi = 0;
+        if (m_ProjectSettings.TargetAPI == GraphicsAPI::OpenGLES)
+            currentApi = 1;
+        else if (m_ProjectSettings.TargetAPI == GraphicsAPI::Vulkan)
+            currentApi = 2;
+        else if (m_ProjectSettings.TargetAPI == GraphicsAPI::DirectX11)
+            currentApi = 3;
+
+        if (TimeGUI::Combo("Graphics API", &currentApi, apiItems, IM_ARRAYSIZE(apiItems)))
+        {
+            if (currentApi == 1)
+                m_ProjectSettings.TargetAPI = GraphicsAPI::OpenGLES;
+            else if (currentApi == 2)
+                m_ProjectSettings.TargetAPI = GraphicsAPI::Vulkan;
+            else if (currentApi == 3)
+                m_ProjectSettings.TargetAPI = GraphicsAPI::DirectX11;
+            else
+                m_ProjectSettings.TargetAPI = GraphicsAPI::OpenGL;
+            SaveSettings();
+        }
+        TimeGUI::TextColored(TEVector4(0.9f, 0.6f, 0.1f, 1.0f), "Note: Restart the application to apply API changes.");
+    }
+
+    TimeGUI::End();
 }
 
 void EditorLayer::HandleViewportInput()
@@ -2086,19 +2124,19 @@ void EditorLayer::HandleViewportInput()
     UpdateGizmoHover();
 
     // 1. Escape Key to Deselect
-    if (m_ViewportFocused && ImGui::IsKeyPressed(ImGuiKey_Escape))
+    if (m_ViewportFocused && TimeGUI::IsKeyPressed(ImGuiKey_Escape))
     {
         ClearSelection();
     }
 
     // 2. Click Handling (Selection)
     // BLOCK selection if we are hovering a gizmo or already dragging one
-    if (m_ViewportHovered && !ImGui::IsMouseDown(ImGuiMouseButton_Right) && m_HoveredGizmoAxis == -1 &&
+    if (m_ViewportHovered && !TimeGUI::IsMouseDown(ImGuiMouseButton_Right) && m_HoveredGizmoAxis == -1 &&
         m_GizmoOperation == -1)
     {
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+        if (TimeGUI::IsMouseClicked(ImGuiMouseButton_Left) || TimeGUI::IsMouseClicked(ImGuiMouseButton_Right))
         {
-            ImVec2 mousePos = ImGui::GetMousePos();
+            TEVector2 mousePos = TimeGUI::GetMousePos();
             glm::vec2 viewportMouse = {mousePos.x - m_ViewportPos.x, mousePos.y - m_ViewportPos.y};
 
             // Adjust for DPI/Scale if needed, but usually world coords are fine if they match aspect
@@ -2106,16 +2144,16 @@ void EditorLayer::HandleViewportInput()
             float zoom = m_CameraZoom;
 
             // Convert to World Coords
-            glm::vec2 worldMouse;
+            TEVector2 worldMouse;
             worldMouse.x = ((viewportMouse.x / m_LastViewportX) * 2.0f - 1.0f) * aspect * zoom + m_CameraPosition.x;
             worldMouse.y = (1.0f - (viewportMouse.y / m_LastViewportY) * 2.0f) * zoom + m_CameraPosition.y;
 
             auto &entityManager = m_ActiveScene->GetEntityManager();
-            auto GetWorldTransform = [&](Entity e, TComponent *comp) -> glm::mat4
+            auto GetWorldTransform = [&](Entity e, TComponent *comp) -> TEMatrix4
             {
                 auto *transform = entityManager.GetComponent<TransformComponent>(e);
                 if (!transform)
-                    return glm::mat4(1.0f);
+                    return TEMatrix4(1.0f);
                 std::vector<TComponent *> chain;
                 TComponent *curr = comp;
                 while (curr)
@@ -2124,7 +2162,7 @@ void EditorLayer::HandleViewportInput()
                     curr = curr->GetParentComponent();
                 }
                 std::reverse(chain.begin(), chain.end());
-                glm::mat4 model = transform->Transform.GetMatrix();
+                TEMatrix4 model = transform->Transform.GetMatrix();
                 for (auto *node : chain)
                 {
                     model = model * node->Transform.GetMatrix();
@@ -2140,7 +2178,7 @@ void EditorLayer::HandleViewportInput()
                 auto allComponents = entityManager.GetAllComponents(entity);
                 for (auto *comp : allComponents)
                 {
-                    glm::mat4 model = GetWorldTransform(entity, comp);
+                    TEMatrix4 model = GetWorldTransform(entity, comp);
                     if (comp->ContainsPoint(model, worldMouse))
                     {
                         hit = true;
@@ -2152,14 +2190,14 @@ void EditorLayer::HandleViewportInput()
                     auto *transform = entityManager.GetComponent<TransformComponent>(entity);
                     if (transform)
                     {
-                        glm::vec2 pos = {transform->Transform.Position.x, transform->Transform.Position.y};
+                        TEVector2 pos = {transform->Transform.Position.x, transform->Transform.Position.y};
                         if (transform->Parent != 0)
                         {
                             auto *p = entityManager.GetComponent<TransformComponent>(Entity(transform->Parent));
                             if (p)
-                                pos += glm::vec2(p->Transform.Position.x, p->Transform.Position.y);
+                                pos += TEVector2(p->Transform.Position.x, p->Transform.Position.y);
                         }
-                        if (glm::distance(worldMouse, pos) <= 0.3f)
+                        if (Distance(worldMouse, pos) <= 0.3f)
                             hit = true;
                     }
                 }
@@ -2170,17 +2208,17 @@ void EditorLayer::HandleViewportInput()
             if (!candidates.empty())
             {
                 Entity hitEntity = candidates.back();
-                bool control = ImGui::GetIO().KeyCtrl;
+                bool control = TimeGUI::GetIO().KeyCtrl;
                 SelectEntity(hitEntity, false, control);
             }
             else
             {
-                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                if (TimeGUI::IsMouseClicked(ImGuiMouseButton_Left))
                     ClearSelection();
             }
 
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-                ImGui::OpenPopup("ViewportContextMenu");
+            if (TimeGUI::IsMouseClicked(ImGuiMouseButton_Right))
+                TimeGUI::OpenPopup("ViewportContextMenu");
         }
     }
 }
@@ -2197,14 +2235,9 @@ void EditorLayer::UpdateCamera(float dt)
     KeyCode moveRightCode = shortcuts.count("MoveRight") ? shortcuts.at("MoveRight") : Key::D;
     KeyCode sprintCode = shortcuts.count("Sprint") ? shortcuts.at("Sprint") : Key::LeftShift;
 
-    // Convert to ImGuiKey for better reliability
-    ImGuiKey forward = (ImGuiKey)ToImGuiKey(moveForwardCode);
-    ImGuiKey backward = (ImGuiKey)ToImGuiKey(moveBackwardCode);
-    ImGuiKey left = (ImGuiKey)ToImGuiKey(moveLeftCode);
-    ImGuiKey right = (ImGuiKey)ToImGuiKey(moveRightCode);
-    ImGuiKey sprint = (ImGuiKey)ToImGuiKey(sprintCode);
 
-    if (m_ViewportHovered && ImGui::IsMouseDown(ImGuiMouseButton_Right))
+
+    if (m_ViewportHovered && TimeGUI::IsMouseDown(ImGuiMouseButton_Right))
     {
         float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier);
         if (Input::IsKeyPressed(sprintCode))
@@ -2334,14 +2367,11 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
             {
                 std::filesystem::path rawImagePath = m_SelectedBrowserPath;
                 rawImagePath.replace_extension(".png");
-                if (std::filesystem::exists(rawImagePath))
-                    std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
                 rawImagePath.replace_extension(".jpg");
-                if (std::filesystem::exists(rawImagePath))
-                    std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
                 rawImagePath.replace_extension(".tga");
-                if (std::filesystem::exists(rawImagePath))
-                    std::filesystem::remove(rawImagePath);
+                if (std::filesystem::exists(rawImagePath)) std::filesystem::remove(rawImagePath);
             }
             std::filesystem::remove_all(m_SelectedBrowserPath);
             m_SelectedBrowserPath.clear();
@@ -2400,43 +2430,43 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
 void EditorLayer::UI_ViewportContextMenu()
 {
     // AAA Style Context Action Widget
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
-    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 8.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 8));
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(12, 12));
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_PopupRounding, 8.0f);
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(10, 8));
 
     // Glass-like panel colors (Subtle translucency with dark premium base)
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.08f, 0.08f, 0.09f, 0.94f));
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));         // Soft highlight border
-    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.2f, 0.45f, 0.9f, 0.4f)); // AAA-style selection blue
-    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.2f, 0.45f, 0.9f, 0.6f));
+    TimeGUI::PushStyleColor(TimeGUICol_PopupBg, TEVector4(0.08f, 0.08f, 0.09f, 0.94f));
+    TimeGUI::PushStyleColor(TimeGUICol_Border, TEVector4(1.0f, 1.0f, 1.0f, 0.1f));         // Soft highlight border
+    TimeGUI::PushStyleColor(TimeGUICol_HeaderHovered, TEVector4(0.2f, 0.45f, 0.9f, 0.4f)); // AAA-style selection blue
+    TimeGUI::PushStyleColor(TimeGUICol_HeaderActive, TEVector4(0.2f, 0.45f, 0.9f, 0.6f));
 
-    if (ImGui::BeginPopupContextWindow("ViewportContextMenu"))
+    if (TimeGUI::BeginPopupContextWindow("ViewportContextMenu"))
     {
         if (m_ActiveScene)
         {
-            ImGui::TextDisabled("SCENE ACTIONS");
-            ImGui::Separator();
+            TimeGUI::TextDisabled("SCENE ACTIONS");
+            TimeGUI::Separator();
 
-            if (ImGui::MenuItem("Create Empty Entity"))
+            if (TimeGUI::MenuItem("Create Empty Entity"))
             {
                 m_ActiveScene->CreateEntity("New Entity");
             }
 
             if (!m_SelectedEntities.empty())
             {
-                ImGui::Separator();
-                ImGui::TextDisabled("ENTITY ACTIONS");
-                if (ImGui::MenuItem("Delete Selected"))
+                TimeGUI::Separator();
+                TimeGUI::TextDisabled("ENTITY ACTIONS");
+                if (TimeGUI::MenuItem("Delete Selected"))
                 {
                     DeleteSelectedEntities();
                 }
             }
         }
-        ImGui::EndPopup();
+        TimeGUI::EndPopup();
     }
 
-    ImGui::PopStyleColor(4);
-    ImGui::PopStyleVar(3);
+    TimeGUI::PopStyleColor(4);
+    TimeGUI::PopStyleVar(3);
 }
 
 std::string EditorLayer::GetKeyName(KeyCode key)
@@ -2621,7 +2651,7 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
             // Move companion files for textures
             if (m_ClipboardPath.extension() == ".tetexture")
             {
-                std::vector<std::string> rawExtensions = {".png", ".jpg", ".tga"};
+                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
                 for (const auto &rawExt : rawExtensions)
                 {
                     std::filesystem::path rawSrc = m_ClipboardPath;
@@ -2643,7 +2673,7 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
             // Copy companion files for textures
             if (m_ClipboardPath.extension() == ".tetexture")
             {
-                std::vector<std::string> rawExtensions = {".png", ".jpg", ".tga"};
+                std::vector<std::string> rawExtensions = { ".png", ".jpg", ".tga" };
                 for (const auto &rawExt : rawExtensions)
                 {
                     std::filesystem::path rawSrc = m_ClipboardPath;
@@ -2670,9 +2700,9 @@ void EditorLayer::PasteClipboard(const std::filesystem::path &targetFolder)
 
 void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
 {
-    ImGui::PushID(comp);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 10)); // Consistent height
-    ImGui::SetNextItemAllowOverlap();
+    TimeGUI::PushID(std::to_string((uintptr_t)comp));
+    TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10)); // Consistent height
+    TimeGUI::SetNextItemAllowOverlap();
 
     bool isSelected = (m_SelectedComponent == comp);
     bool hasChildren = !comp->GetChildrenComponents().empty();
@@ -2689,48 +2719,48 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
 
     if (m_RenamingComponent == comp)
     {
-        cOpened = ImGui::TreeNodeEx((void *)((uintptr_t)comp + 1), cFlags, " ");
-        ImGui::SameLine();
+        cOpened = TimeGUI::TreeNodeEx((void *)((uintptr_t)comp + 1), cFlags, " ");
+        TimeGUI::SameLine();
         char cBuffer[256];
         memset(cBuffer, 0, sizeof(cBuffer));
         strncpy(cBuffer, cName.c_str(), sizeof(cBuffer) - 1);
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 40.0f);
-        if (ImGui::InputText("##RenameComp", cBuffer, sizeof(cBuffer),
+        TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
+        if (TimeGUI::InputText("##RenameComp", cBuffer, sizeof(cBuffer),
                              ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
         {
             comp->InstanceName = std::string(cBuffer);
             m_RenamingComponent = nullptr;
         }
-        if (!ImGui::IsItemActive() && ImGui::IsMouseClicked(0))
+        if (!TimeGUI::IsItemActive() && TimeGUI::IsMouseClicked(0))
             m_RenamingComponent = nullptr;
     }
     else
     {
-        cOpened = ImGui::TreeNodeEx(comp, cFlags, cName.c_str());
+        cOpened = TimeGUI::TreeNodeEx(comp, cFlags, cName.c_str());
 
-        if (ImGui::IsItemClicked())
+        if (TimeGUI::IsItemClicked())
         {
             SelectEntity(entity);  // Select entity first (clears component selection)
             SelectComponent(comp); // Select component second (sets selection for gizmo)
         }
-        if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_F2))
+        if (TimeGUI::IsItemFocused() && TimeGUI::IsKeyPressed(ImGuiKey_F2))
             m_RenamingComponent = comp;
 
         // Buttons (Far Right)
-        float buttonHeight = ImGui::GetFrameHeight() * 0.60f; // Component size (Small)
-        float padding = ImGui::GetStyle().FramePadding.x;
-        float posX = ImGui::GetWindowWidth() - buttonHeight - padding - 15.0f;
+        float buttonHeight = TimeGUI::GetFrameHeight() * 0.60f; // Component size (Small)
+        float padding = TimeGUI::GetStyle().FramePadding.x;
+        float posX = TimeGUI::GetWindowWidth() - buttonHeight - padding - 15.0f;
 
         bool isMandatory = (strcmp(comp->GetClassName(), "TagComponent") == 0 ||
                             strcmp(comp->GetClassName(), "TransformComponent") == 0);
 
         if (!isMandatory)
         {
-            float centeredY = ImGui::GetItemRectMin().y + (ImGui::GetItemRectSize().y - buttonHeight) * 0.5f;
+            float centeredY = TimeGUI::GetItemRectMin().y + (TimeGUI::GetItemRectSize().y - buttonHeight) * 0.5f;
 
             // Plus Button (+) on Component
-            ImGui::SameLine(posX - buttonHeight - 5.0f);
-            ImGui::SetCursorScreenPos({ImGui::GetCursorScreenPos().x, centeredY});
+            TimeGUI::SameLine(posX - buttonHeight - 5.0f);
+            TimeGUI::SetCursorScreenPos({TimeGUI::GetCursorScreenPos().x, centeredY});
             if (UIUtils::DrawPlusButton("+##AddComp" + std::to_string((uintptr_t)comp), buttonHeight, 1.0f))
             {
                 m_SelectedToAddComponent = entity;
@@ -2739,8 +2769,8 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
             }
 
             // Delete Button (X) - defer deletion
-            ImGui::SameLine(posX);
-            ImGui::SetCursorScreenPos({ImGui::GetCursorScreenPos().x, centeredY});
+            TimeGUI::SameLine(posX);
+            TimeGUI::SetCursorScreenPos({TimeGUI::GetCursorScreenPos().x, centeredY});
             if (UIUtils::DrawDeleteButton("X##DelComp" + std::to_string((uintptr_t)comp), buttonHeight, 1.0f))
             {
                 wantsDelete = true;
@@ -2754,13 +2784,13 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
         {
             DrawComponentNode(entity, child);
         }
-        ImGui::TreePop();
+        TimeGUI::TreePop();
     }
 
-    ImGui::PopStyleVar(); // Pop FramePadding
-    ImGui::PopID();
+    TimeGUI::PopStyleVar(); // Pop FramePadding
+    TimeGUI::PopID();
 
-    // Defer deletion until AFTER all ImGui stacks are properly closed
+    // Defer deletion until AFTER all TimeGUI stacks are properly closed
     if (wantsDelete)
     {
         m_ComponentsToDelete.push_back({entity, comp});
@@ -2795,19 +2825,19 @@ void EditorLayer::UpdateGizmoHover()
     if (!targetTransform)
         return;
 
-    glm::mat4 model = targetTransform->GetMatrix();
-    TEVector2 pos = {model[3].x, model[3].y};
+    TEMatrix4 model = targetTransform->GetMatrix();
+    TEVector2 pos = {model.m[3][0], model.m[3][1]};
 
     float gizmoSize = 0.3f * m_CameraZoom;
     float thickness = 0.01f * m_CameraZoom;
     float boxSize = thickness * 3.0f;
     float arrowSize = thickness * 4.0f;
 
-    ImVec2 mousePos = ImGui::GetMousePos();
+    TEVector2 mousePos = TimeGUI::GetMousePos();
     float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
     float mx = (mousePos.x - m_ViewportPos.x) / m_LastViewportX * 2.0f - 1.0f;
     float my = -((mousePos.y - m_ViewportPos.y) / m_LastViewportY * 2.0f - 1.0f);
-    glm::vec2 worldMouse = {mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y};
+    TEVector2 worldMouse = {mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y};
 
     if (m_LastViewportX > 0.0f && m_LastViewportY > 0.0f)
     {
@@ -2824,7 +2854,7 @@ void EditorLayer::UpdateGizmoHover()
         }
         else if (m_GizmoType == GizmoType::Rotate)
         {
-            float dist = glm::distance(worldMouse, glm::vec2(pos.x, pos.y));
+            float dist = (worldMouse - pos).Length();
             if (std::abs(dist - gizmoSize) < thickness * 4.0f)
                 m_HoveredGizmoAxis = 3;
         }
@@ -2861,22 +2891,22 @@ void EditorLayer::UI_DrawGizmos()
     if (!targetTransform)
         return;
 
-    glm::mat4 model = targetTransform->GetMatrix();
+    TEMatrix4 model = targetTransform->GetMatrix();
     TEVector2 pos = {model[3].x, model[3].y};
     float gizmoSize = 0.3f * m_CameraZoom;
     float thickness = 0.01f * m_CameraZoom;
     float boxSize = thickness * 3.0f;
     float arrowSize = thickness * 4.0f;
 
-    ImVec2 mousePos = ImGui::GetMousePos();
+    TEVector2 mousePos = TimeGUI::GetMousePos();
     float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
     float mx = (mousePos.x - m_ViewportPos.x) / m_LastViewportX * 2.0f - 1.0f;
     float my = -((mousePos.y - m_ViewportPos.y) / m_LastViewportY * 2.0f - 1.0f);
-    glm::vec2 worldMouse = {mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y};
+    TEVector2 worldMouse = {mx * aspect * m_CameraZoom + m_CameraPosition.x, my * m_CameraZoom + m_CameraPosition.y};
 
     if (m_LastViewportX > 0.0f && m_LastViewportY > 0.0f)
     {
-        if (m_ViewportFocused && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        if (m_ViewportFocused && TimeGUI::IsMouseDown(ImGuiMouseButton_Left))
         {
             if (m_GizmoOperation == -1)
             {
@@ -2892,7 +2922,7 @@ void EditorLayer::UI_DrawGizmos()
 
             if (m_GizmoOperation != -1)
             {
-                glm::vec2 delta = worldMouse - m_GizmoDragStartMousePos;
+                TEVector2 delta = worldMouse - m_GizmoDragStartMousePos;
 
                 if (m_GizmoOperation == 0) // X
                 {
@@ -2918,7 +2948,7 @@ void EditorLayer::UI_DrawGizmos()
                     else if (m_GizmoType == GizmoType::Scale)
                     {
                         float s = (delta.x + delta.y) / (gizmoSize * 2.0f);
-                        targetTransform->Scale.Scale = m_GizmoDragStartEntityScale + glm::vec3(s, s, 0.0f);
+                        targetTransform->Scale.Scale = m_GizmoDragStartEntityScale + TEVector(s, s, 0.0f);
                     }
                 }
                 else if (m_GizmoOperation == 3) // Rotation
@@ -2967,14 +2997,14 @@ void EditorLayer::UI_DrawGizmos()
     if (m_GizmoType == GizmoType::Translate || m_GizmoType == GizmoType::Scale)
     {
         // Center Handle
-        m_Renderer2D->SubmitQuad(glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, 0.2f)) *
-                                     glm::scale(glm::mat4(1.0f), glm::vec3(boxSize, boxSize, 1.0f)),
+        m_Renderer2D->SubmitQuad(TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(pos.x, pos.y, 0.2f)) *
+                                     TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(boxSize, boxSize, 1.0f)),
                                  m_GizmoMaterial);
 
         // X Axis
         m_Renderer2D->SubmitQuad(
-            glm::translate(glm::mat4(1.0f), glm::vec3(pos.x + arrowStartOffset + gizmoSize * 0.5f, pos.y, 0.15f)) *
-                glm::scale(glm::mat4(1.0f), glm::vec3(gizmoSize, thickness, 1.0f)),
+            TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(pos.x + arrowStartOffset + gizmoSize * 0.5f, pos.y, 0.15f)) *
+                TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(gizmoSize, thickness, 1.0f)),
             m_GizmoXMaterial);
 
         if (m_GizmoType == GizmoType::Translate)
@@ -2987,16 +3017,16 @@ void EditorLayer::UI_DrawGizmos()
         else if (m_GizmoType == GizmoType::Scale)
         {
             m_Renderer2D->SubmitQuad(
-                glm::translate(glm::mat4(1.0f),
-                               glm::vec3(pos.x + arrowStartOffset + gizmoSize + thickness, pos.y, 0.15f)) *
-                    glm::scale(glm::mat4(1.0f), glm::vec3(thickness * 2, thickness * 2, 1.0f)),
+                TEMatrix4::Translate(TEMatrix4(1.0f),
+                               TEVector(pos.x + arrowStartOffset + gizmoSize + thickness, pos.y, 0.15f)) *
+                    TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(thickness * 2, thickness * 2, 1.0f)),
                 m_GizmoXMaterial);
         }
 
         // Y Axis
         m_Renderer2D->SubmitQuad(
-            glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y + arrowStartOffset + gizmoSize * 0.5f, 0.15f)) *
-                glm::scale(glm::mat4(1.0f), glm::vec3(thickness, gizmoSize, 1.0f)),
+            TEMatrix4::Translate(TEMatrix4(1.0f), TEVector(pos.x, pos.y + arrowStartOffset + gizmoSize * 0.5f, 0.15f)) *
+                TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(thickness, gizmoSize, 1.0f)),
             m_GizmoYMaterial);
 
         if (m_GizmoType == GizmoType::Translate)
@@ -3009,9 +3039,9 @@ void EditorLayer::UI_DrawGizmos()
         else if (m_GizmoType == GizmoType::Scale)
         {
             m_Renderer2D->SubmitQuad(
-                glm::translate(glm::mat4(1.0f),
-                               glm::vec3(pos.x, pos.y + arrowStartOffset + gizmoSize + thickness, 0.15f)) *
-                    glm::scale(glm::mat4(1.0f), glm::vec3(thickness * 2, thickness * 2, 1.0f)),
+                TEMatrix4::Translate(TEMatrix4(1.0f),
+                               TEVector(pos.x, pos.y + arrowStartOffset + gizmoSize + thickness, 0.15f)) *
+                    TEMatrix4::Scale(TEMatrix4(1.0f), TEVector(thickness * 2, thickness * 2, 1.0f)),
                 m_GizmoYMaterial);
         }
     }
@@ -3057,10 +3087,10 @@ void EditorLayer::UI_DrawGizmoText()
     if (!transform)
         return;
 
-    glm::mat4 model = transform->Transform.GetMatrix();
+    TEMatrix4 model = transform->Transform.GetMatrix();
     TEVector2 pos = {model[3].x, model[3].y};
 
-    ImVec2 mousePos = ImGui::GetMousePos();
+    TEVector2 mousePos = TimeGUI::GetMousePos();
     float aspect = (m_LastViewportY > 0) ? (float)m_LastViewportX / (float)m_LastViewportY : 1.0f;
     float mx = (mousePos.x - m_ViewportPos.x) / m_LastViewportX * 2.0f - 1.0f;
     float my = -((mousePos.y - m_ViewportPos.y) / m_LastViewportY * 2.0f - 1.0f);
@@ -3068,7 +3098,7 @@ void EditorLayer::UI_DrawGizmoText()
 
     float angleStart = atan2(m_GizmoDragStartMousePos.y - pos.y, m_GizmoDragStartMousePos.x - pos.x);
     float angleCurrent = atan2(worldMouse.y - pos.y, worldMouse.x - pos.x);
-    float deltaAngle = glm::degrees(angleCurrent - angleStart);
+    float deltaAngle = Degrees(angleCurrent - angleStart);
 
     // Correct for wrap-around
     while (deltaAngle > 180.0f)
@@ -3076,137 +3106,15 @@ void EditorLayer::UI_DrawGizmoText()
     while (deltaAngle < -180.0f)
         deltaAngle += 360.0f;
 
-    ImGui::SetCursorScreenPos(ImGui::GetMousePos() + ImVec2(20, 20));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 1.0f, 1.0f));
-    ImGui::Text("%.1f deg", deltaAngle);
-    ImGui::PopStyleColor();
-}
-
-int EditorLayer::ToImGuiKey(KeyCode key)
-{
-    switch (key)
-    {
-    case Key::Tab:
-        return ImGuiKey_Tab;
-    case Key::Left:
-        return ImGuiKey_LeftArrow;
-    case Key::Right:
-        return ImGuiKey_RightArrow;
-    case Key::Up:
-        return ImGuiKey_UpArrow;
-    case Key::Down:
-        return ImGuiKey_DownArrow;
-    case Key::PageUp:
-        return ImGuiKey_PageUp;
-    case Key::PageDown:
-        return ImGuiKey_PageDown;
-    case Key::Home:
-        return ImGuiKey_Home;
-    case Key::End:
-        return ImGuiKey_End;
-    case Key::Insert:
-        return ImGuiKey_Insert;
-    case Key::Delete:
-        return ImGuiKey_Delete;
-    case Key::Backspace:
-        return ImGuiKey_Backspace;
-    case Key::Space:
-        return ImGuiKey_Space;
-    case Key::Enter:
-        return ImGuiKey_Enter;
-    case Key::Escape:
-        return ImGuiKey_Escape;
-    case Key::A:
-        return ImGuiKey_A;
-    case Key::B:
-        return ImGuiKey_B;
-    case Key::C:
-        return ImGuiKey_C;
-    case Key::D:
-        return ImGuiKey_D;
-    case Key::E:
-        return ImGuiKey_E;
-    case Key::F:
-        return ImGuiKey_F;
-    case Key::G:
-        return ImGuiKey_G;
-    case Key::H:
-        return ImGuiKey_H;
-    case Key::I:
-        return ImGuiKey_I;
-    case Key::J:
-        return ImGuiKey_J;
-    case Key::K:
-        return ImGuiKey_K;
-    case Key::L:
-        return ImGuiKey_L;
-    case Key::M:
-        return ImGuiKey_M;
-    case Key::N:
-        return ImGuiKey_N;
-    case Key::O:
-        return ImGuiKey_O;
-    case Key::P:
-        return ImGuiKey_P;
-    case Key::Q:
-        return ImGuiKey_Q;
-    case Key::R:
-        return ImGuiKey_R;
-    case Key::S:
-        return ImGuiKey_S;
-    case Key::T:
-        return ImGuiKey_T;
-    case Key::U:
-        return ImGuiKey_U;
-    case Key::V:
-        return ImGuiKey_V;
-    case Key::W:
-        return ImGuiKey_W;
-    case Key::X:
-        return ImGuiKey_X;
-    case Key::Y:
-        return ImGuiKey_Y;
-    case Key::Z:
-        return ImGuiKey_Z;
-    case Key::D0:
-        return ImGuiKey_0;
-    case Key::D1:
-        return ImGuiKey_1;
-    case Key::D2:
-        return ImGuiKey_2;
-    case Key::D3:
-        return ImGuiKey_3;
-    case Key::D4:
-        return ImGuiKey_4;
-    case Key::D5:
-        return ImGuiKey_5;
-    case Key::D6:
-        return ImGuiKey_6;
-    case Key::D7:
-        return ImGuiKey_7;
-    case Key::D8:
-        return ImGuiKey_8;
-    case Key::D9:
-        return ImGuiKey_9;
-    case Key::LeftShift:
-        return ImGuiKey_LeftShift;
-    case Key::RightShift:
-        return ImGuiKey_RightShift;
-    case Key::LeftControl:
-        return ImGuiKey_LeftCtrl;
-    case Key::RightControl:
-        return ImGuiKey_RightCtrl;
-    case Key::LeftAlt:
-        return ImGuiKey_LeftAlt;
-    case Key::RightAlt:
-        return ImGuiKey_RightAlt;
-    }
-    return ImGuiKey_None;
+    TimeGUI::SetCursorScreenPos(TimeGUI::GetMousePos() + TEVector2(20.0f, 20.0f));
+    TimeGUI::PushStyleColor(TimeGUICol_Text, TEColor(0.5f, 0.5f, 1.0f, 1.0f));
+    TimeGUI::Text("%.1f deg", deltaAngle);
+    TimeGUI::PopStyleColor();
 }
 
 void EditorLayer::SetDarkThemeColors()
 {
-    auto &style = ImGui::GetStyle();
+    auto &style = TimeGUI::GetStyle();
     style.WindowRounding = 10.0f;
     style.ChildRounding = 8.0f;
     style.FrameRounding = 6.0f;
@@ -3217,114 +3125,114 @@ void EditorLayer::SetDarkThemeColors()
     style.WindowBorderSize = 1.0f;
     style.FrameBorderSize = 0.0f;
     style.PopupBorderSize = 1.0f;
-    style.ItemSpacing = ImVec2(8.0f, 5.0f);
-    style.FramePadding = ImVec2(6.0f, 4.0f);
-    style.WindowPadding = ImVec2(10.0f, 8.0f);
+    style.ItemSpacing = TEVector2(8.0f, 5.0f);
+    style.FramePadding = TEVector2(6.0f, 4.0f);
+    style.WindowPadding = TEVector2(10.0f, 8.0f);
 
     auto &colors = style.Colors;
 
     // --- Professional dark glass palette ---
-    ImVec4 bgDeep = ImVec4(0.07f, 0.08f, 0.09f, 0.98f);
-    ImVec4 bgPanel = ImVec4(0.10f, 0.11f, 0.12f, 0.95f);
-    ImVec4 bgWidget = ImVec4(0.13f, 0.14f, 0.16f, 0.80f);
-    ImVec4 borderColor = ImVec4(0.22f, 0.24f, 0.27f, 0.50f);
-    ImVec4 headerGlass = ImVec4(0.16f, 0.18f, 0.21f, 0.70f);
-    ImVec4 headerHover = ImVec4(0.22f, 0.25f, 0.29f, 0.85f);
-    ImVec4 headerActive = ImVec4(0.28f, 0.31f, 0.36f, 1.00f);
-    ImVec4 tabActive = ImVec4(0.21f, 0.24f, 0.28f, 1.00f);
-    ImVec4 textColor = ImVec4(0.90f, 0.92f, 0.95f, 1.00f);
-    ImVec4 textDim = ImVec4(0.50f, 0.55f, 0.60f, 1.00f);
+    TEColor bgDeep = TEColor(0.07f, 0.08f, 0.09f, 0.98f);
+    TEColor bgPanel = TEColor(0.10f, 0.11f, 0.12f, 0.95f);
+    TEColor bgWidget = TEColor(0.13f, 0.14f, 0.16f, 0.80f);
+    TEColor borderColor = TEColor(0.22f, 0.24f, 0.27f, 0.50f);
+    TEColor headerGlass = TEColor(0.16f, 0.18f, 0.21f, 0.70f);
+    TEColor headerHover = TEColor(0.22f, 0.25f, 0.29f, 0.85f);
+    TEColor headerActive = TEColor(0.28f, 0.31f, 0.36f, 1.00f);
+    TEColor tabActive = TEColor(0.21f, 0.24f, 0.28f, 1.00f);
+    TEColor textColor = TEColor(0.90f, 0.92f, 0.95f, 1.00f);
+    TEColor textDim = TEColor(0.50f, 0.55f, 0.60f, 1.00f);
     // Used only for interactive controls like sliders and checkmarks
-    ImVec4 accent = ImVec4(0.20f, 0.55f, 0.90f, 1.00f);
+    TEColor accent = TEColor(0.20f, 0.55f, 0.90f, 1.00f);
+    
+    colors[TimeGUICol_Text] = textColor;
+    colors[TimeGUICol_TextDisabled] = textDim;
 
-    colors[ImGuiCol_Text] = textColor;
-    colors[ImGuiCol_TextDisabled] = textDim;
+    colors[TimeGUICol_WindowBg] = bgDeep;
+    colors[TimeGUICol_ChildBg] = bgPanel;
+    colors[TimeGUICol_PopupBg] = TEColor(0.08f, 0.09f, 0.10f, 0.97f);
+    
+    colors[TimeGUICol_Border] = borderColor;
+    colors[TimeGUICol_BorderShadow] = TEVector4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    colors[ImGuiCol_WindowBg] = bgDeep;
-    colors[ImGuiCol_ChildBg] = bgPanel;
-    colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.09f, 0.10f, 0.97f);
+    colors[TimeGUICol_FrameBg] = bgWidget;
+    colors[TimeGUICol_FrameBgHovered] = TEColor(0.19f, 0.21f, 0.24f, 0.85f);
+    colors[TimeGUICol_FrameBgActive] = TEColor(0.15f, 0.17f, 0.20f, 1.00f);
 
-    colors[ImGuiCol_Border] = borderColor;
-    colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[TimeGUICol_TitleBg] = TEColor(0.05f, 0.06f, 0.07f, 1.0f);
+    colors[TimeGUICol_TitleBgActive] = TEColor(0.08f, 0.09f, 0.10f, 1.0f);
+    colors[TimeGUICol_TitleBgCollapsed] = TEColor(0.05f, 0.05f, 0.05f, 0.5f);
 
-    colors[ImGuiCol_FrameBg] = bgWidget;
-    colors[ImGuiCol_FrameBgHovered] = ImVec4(0.19f, 0.21f, 0.24f, 0.85f);
-    colors[ImGuiCol_FrameBgActive] = ImVec4(0.15f, 0.17f, 0.20f, 1.00f);
+    colors[TimeGUICol_MenuBarBg] = TEColor(0.06f, 0.07f, 0.08f, 1.00f);
 
-    colors[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.06f, 0.07f, 1.0f);
-    colors[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.09f, 0.10f, 1.0f);
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.05f, 0.05f, 0.05f, 0.5f);
+    colors[TimeGUICol_ScrollbarBg] = TEColor(0.04f, 0.04f, 0.05f, 0.60f);
+    colors[TimeGUICol_ScrollbarGrab] = TEColor(0.22f, 0.25f, 0.29f, 1.00f);
+    colors[TimeGUICol_ScrollbarGrabHovered] = TEColor(0.30f, 0.33f, 0.38f, 1.00f);
+    colors[TimeGUICol_ScrollbarGrabActive] = accent;
 
-    colors[ImGuiCol_MenuBarBg] = ImVec4(0.06f, 0.07f, 0.08f, 1.00f);
+    colors[TimeGUICol_CheckMark] = accent;
+    colors[TimeGUICol_SliderGrab] = accent;
+    colors[TimeGUICol_SliderGrabActive] = TEColor(0.30f, 0.65f, 1.00f, 1.00f);
 
-    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.04f, 0.04f, 0.05f, 0.60f);
-    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.22f, 0.25f, 0.29f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.30f, 0.33f, 0.38f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabActive] = accent;
+    colors[TimeGUICol_Button] = bgWidget;
+    colors[TimeGUICol_ButtonHovered] = headerHover;
+    colors[TimeGUICol_ButtonActive] = headerActive;
 
-    colors[ImGuiCol_CheckMark] = accent;
-    colors[ImGuiCol_SliderGrab] = accent;
-    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.30f, 0.65f, 1.00f, 1.00f);
+    colors[TimeGUICol_Header] = headerGlass;
+    colors[TimeGUICol_HeaderHovered] = headerHover;
+    colors[TimeGUICol_HeaderActive] = headerActive;
 
-    colors[ImGuiCol_Button] = bgWidget;
-    colors[ImGuiCol_ButtonHovered] = headerHover;
-    colors[ImGuiCol_ButtonActive] = headerActive;
+    colors[TimeGUICol_Separator] = borderColor;
+    colors[TimeGUICol_SeparatorHovered] = TEColor(0.30f, 0.33f, 0.38f, 0.90f);
+    colors[TimeGUICol_SeparatorActive] = accent;
 
-    colors[ImGuiCol_Header] = headerGlass;
-    colors[ImGuiCol_HeaderHovered] = headerHover;
-    colors[ImGuiCol_HeaderActive] = headerActive;
-
-    colors[ImGuiCol_Separator] = borderColor;
-    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.30f, 0.33f, 0.38f, 0.90f);
-    colors[ImGuiCol_SeparatorActive] = accent;
-
-    colors[ImGuiCol_ResizeGrip] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    colors[ImGuiCol_ResizeGripHovered] = headerHover;
-    colors[ImGuiCol_ResizeGripActive] = accent;
+    colors[TimeGUICol_ResizeGrip] = TEColor(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[TimeGUICol_ResizeGripHovered] = headerHover;
+    colors[TimeGUICol_ResizeGripActive] = accent;
 
     // Tabs - subtle steel, not blue
-    colors[ImGuiCol_Tab] = ImVec4(0.10f, 0.11f, 0.13f, 0.80f);
-    colors[ImGuiCol_TabHovered] = headerHover;
-    colors[ImGuiCol_TabActive] = tabActive;
-    colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.09f, 0.10f, 0.80f);
-    colors[ImGuiCol_TabUnfocusedActive] = tabActive;
+    colors[TimeGUICol_Tab] = TEVector4(0.10f, 0.11f, 0.13f, 0.80f);
+    colors[TimeGUICol_TabHovered] = headerHover;
+    colors[TimeGUICol_TabActive] = tabActive;
+    colors[TimeGUICol_TabUnfocused] = TEColor(0.08f, 0.09f, 0.10f, 0.80f);
+    colors[TimeGUICol_TabUnfocusedActive] = tabActive;
 
-    colors[ImGuiCol_DockingPreview] = ImVec4(accent.x, accent.y, accent.z, 0.5f);
-    colors[ImGuiCol_DockingEmptyBg] = bgDeep;
+    colors[TimeGUICol_DockingPreview] = TEColor(accent.r, accent.g, accent.b, 0.5f);
+    colors[TimeGUICol_DockingEmptyBg] = bgDeep;
 
-    colors[ImGuiCol_PlotLines] = ImVec4(0.50f, 0.55f, 0.60f, 1.00f);
-    colors[ImGuiCol_PlotLinesHovered] = accent;
-    colors[ImGuiCol_PlotHistogram] = ImVec4(0.30f, 0.55f, 0.80f, 1.00f);
-    colors[ImGuiCol_PlotHistogramHovered] = accent;
+    colors[TimeGUICol_PlotLines] = TEColor(0.50f, 0.55f, 0.60f, 1.00f);
+    colors[TimeGUICol_PlotLinesHovered] = accent;
+    colors[TimeGUICol_PlotHistogram] = TEColor(0.30f, 0.55f, 0.80f, 1.00f);
+    colors[TimeGUICol_PlotHistogramHovered] = accent;
 
-    colors[ImGuiCol_TableHeaderBg] = ImVec4(0.11f, 0.13f, 0.15f, 1.00f);
-    colors[ImGuiCol_TableBorderStrong] = borderColor;
-    colors[ImGuiCol_TableBorderLight] = ImVec4(0.14f, 0.16f, 0.18f, 0.60f);
-    colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.03f);
+    colors[TimeGUICol_TableHeaderBg] = TEColor(0.11f, 0.13f, 0.15f, 1.00f);
+    colors[TimeGUICol_TableBorderStrong] = borderColor;
+    colors[TimeGUICol_TableBorderLight] = TEColor(0.14f, 0.16f, 0.18f, 0.60f);
+    colors[TimeGUICol_TableRowBg] = TEColor(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[TimeGUICol_TableRowBgAlt] = TEColor(1.0f, 1.0f, 1.0f, 0.03f);
 
-    colors[ImGuiCol_TextSelectedBg] = ImVec4(accent.x, accent.y, accent.z, 0.35f);
-    colors[ImGuiCol_DragDropTarget] = ImVec4(0.9f, 0.7f, 0.0f, 0.90f);
-    colors[ImGuiCol_NavHighlight] = ImVec4(accent.x, accent.y, accent.z, 0.80f);
-    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.70f);
-    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.10f, 0.10f, 0.10f, 0.55f);
+    colors[TimeGUICol_TextSelectedBg] = TEColor(accent.r, accent.g, accent.b, 0.35f);
+    colors[TimeGUICol_DragDropTarget] = TEColor(0.9f, 0.7f, 0.0f, 0.90f);
+    colors[TimeGUICol_NavHighlight] = TEColor(accent.r, accent.g, accent.b, 0.80f);
+    colors[TimeGUICol_NavWindowingHighlight] = TEColor(1.0f, 1.0f, 1.0f, 0.70f);
+    colors[TimeGUICol_NavWindowingDimBg] = TEColor(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[TimeGUICol_NavWindowingDimBg] = TEColor(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[TimeGUICol_ModalWindowDimBg] = TEColor(0.10f, 0.10f, 0.10f, 0.55f);
 }
 
 void EditorLayer::UI_DrawSaveScenePopup()
 {
     if (m_ShowSaveScenePopup)
     {
-        ImGui::OpenPopup("Save Scene As");
+        TimeGUI::OpenPopup("Save Scene As");
     }
 
-    if (ImGui::BeginPopupModal("Save Scene As", &m_ShowSaveScenePopup, ImGuiWindowFlags_AlwaysAutoResize))
+    if (TimeGUI::BeginPopupModal("Save Scene As", &m_ShowSaveScenePopup, TimeGUI::TimeGUIWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("Enter Scene Name and Sub-path:");
-        ImGui::InputText("Name", m_SaveSceneNameBuffer, 256);
-        ImGui::InputText("Path", m_SaveScenePathBuffer, 256);
-        ImGui::TextDisabled("(Example: Folders/MyLevel - No spaces allowed in name)");
+        TimeGUI::Text("Enter Scene Name and Sub-path:");
+        TimeGUI::InputText("Name", m_SaveSceneNameBuffer, 256);
+        TimeGUI::InputText("Path", m_SaveScenePathBuffer, 256);
+        TimeGUI::TextDisabled("(Example: Folders/MyLevel - No spaces allowed in name)");
 
         bool valid = true;
         std::string name = m_SaveSceneNameBuffer;
@@ -3332,10 +3240,10 @@ void EditorLayer::UI_DrawSaveScenePopup()
             name.find('\\') != std::string::npos)
         {
             valid = false;
-            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Invalid Name: No spaces or slashes allowed.");
+            TimeGUI::TextColored(TEColor(1.0f, 0.0f, 0.0f, 1.0f), "Invalid Name: No spaces or slashes allowed.");
         }
 
-        if (ImGui::Button("Save", ImVec2(120, 0)) && valid)
+        if (TimeGUI::Button("Save", 120.0f, 0.0f) && valid)
         {
             std::filesystem::path assetPath = Project::GetAssetDirectory();
             std::filesystem::path finalDir = assetPath / "Scenes" / m_SaveScenePathBuffer;
@@ -3352,13 +3260,13 @@ void EditorLayer::UI_DrawSaveScenePopup()
 
             m_ShowSaveScenePopup = false;
         }
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+        TimeGUI::SameLine();
+        if (TimeGUI::Button("Cancel", 120.0f, 0))
         {
             m_ShowSaveScenePopup = false;
         }
 
-        ImGui::EndPopup();
+        TimeGUI::EndPopup();
     }
 }
 
@@ -3417,6 +3325,8 @@ void EditorLayer::SaveProject()
         TE_CORE_ERROR("Failed to save Project to {0}", projPath.string());
     }
 
+    SaveSettings();
+
     // Also save scene
     SaveScene();
 }
@@ -3448,9 +3358,9 @@ void EditorLayer::UI_DrawAssetEditors()
     if (m_OpenEditorTabs.empty())
         return;
 
-    ImGui::Begin("Asset Editors");
+    TimeGUI::Begin("Asset Editors");
 
-    if (ImGui::BeginTabBar("AssetEditorsTabBar", ImGuiTabBarFlags_Reorderable))
+    if (TimeGUI::BeginTabBar("AssetEditorsTabBar", ImGuiTabBarFlags_Reorderable))
     {
         for (size_t i = 0; i < m_OpenEditorTabs.size();)
         {
@@ -3464,20 +3374,19 @@ void EditorLayer::UI_DrawAssetEditors()
                 m_ActiveTabRequest = -1; // Reset request
             }
 
-            if (ImGui::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open,
-                                    flags))
+            if (TimeGUI::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open, flags))
             {
                 if (tab.Type == "Material")
                 {
                     auto mat = std::dynamic_pointer_cast<Material>(tab.LoadedAsset);
                     if (mat)
                     {
-                        ImGui::Text("Material Editor Settings");
-                        ImGui::Separator();
+                        TimeGUI::Text("Material Editor Settings");
+                        TimeGUI::Separator();
 
                         char nameBuffer[256];
                         strncpy_s(nameBuffer, mat->GetName().c_str(), sizeof(nameBuffer));
-                        if (ImGui::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
+                        if (TimeGUI::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
                         {
                             mat->SetName(nameBuffer);
                             MaterialSerializer serializer(mat);
@@ -3486,8 +3395,8 @@ void EditorLayer::UI_DrawAssetEditors()
                         }
 
                         auto color = mat->GetColor().GetValue();
-                        float colorArr[4] = {color.r, color.g, color.b, color.a};
-                        if (ImGui::ColorEdit4("Albedo Color", colorArr))
+                        float colorArr[4] = { color.r, color.g, color.b, color.a };
+                        if (TimeGUI::ColorEdit4("Albedo Color", colorArr))
                         {
                             mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
                             MaterialSerializer serializer(mat);
@@ -3500,24 +3409,24 @@ void EditorLayer::UI_DrawAssetEditors()
                     auto tex = std::dynamic_pointer_cast<Texture>(tab.LoadedAsset);
                     if (tex)
                     {
-                        ImGui::Text("Texture Editor Settings");
-                        ImGui::Separator();
+                        TimeGUI::Text("Texture Editor Settings");
+                        TimeGUI::Separator();
 
-                        ImGui::Image((ImTextureID)(uintptr_t)tex->GetRendererID(), TEVector2(128.0f, 128.0f).ToImVec2(),
-                                     TEVector2(0.0f, 1.0f).ToImVec2(), TEVector2(1.0f, 0.0f).ToImVec2());
+                        TimeGUI::Image((void*)(uintptr_t)tex->GetRendererID(), 
+                                     TEVector2(128.0f, 128.0f), 
+                                     TEVector2(0.0f, 1.0f), 
+                                     TEVector2(1.0f, 0.0f));
 
-                        ImGui::Separator();
-                        ImGui::Text("Import Settings");
+                        TimeGUI::Separator();
+                        TimeGUI::Text("Import Settings");
 
                         // Import Texture Source file from folder structure
                         static char importPathBuffer[512] = "";
-                        ImGui::InputText("Source File Path", importPathBuffer, sizeof(importPathBuffer));
-                        ImGui::SameLine();
-                        if (ImGui::Button("Browse..."))
+                        TimeGUI::InputText("Source File Path", importPathBuffer, sizeof(importPathBuffer));
+                        TimeGUI::SameLine();
+                        if (TimeGUI::Button("Browse..."))
                         {
-                            std::string filepath = PlatformUtils::OpenFile(
-                                "Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files "
-                                "(*.*)\0*.*\0");
+                            std::string filepath = PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files (*.*)\0*.*\0");
                             if (!filepath.empty())
                             {
                                 strcpy_s(importPathBuffer, filepath.c_str());
@@ -3537,8 +3446,7 @@ void EditorLayer::UI_DrawAssetEditors()
                                             std::filesystem::remove(oldPng);
                                     }
 
-                                    std::filesystem::copy_file(importSrc, destPng,
-                                                               std::filesystem::copy_options::overwrite_existing);
+                                    std::filesystem::copy_file(importSrc, destPng, std::filesystem::copy_options::overwrite_existing);
 
                                     // Force recreation and reload of Texture
                                     auto newTex = std::make_shared<Texture>(destPng.string());
@@ -3554,7 +3462,7 @@ void EditorLayer::UI_DrawAssetEditors()
                     }
                 }
 
-                ImGui::EndTabItem();
+                TimeGUI::EndTabItem();
             }
 
             if (!open)
@@ -3568,10 +3476,10 @@ void EditorLayer::UI_DrawAssetEditors()
                 ++i;
             }
         }
-        ImGui::EndTabBar();
+        TimeGUI::EndTabBar();
     }
 
-    ImGui::End();
+    TimeGUI::End();
 }
 
 void EditorLayer::ProcessDeletionQueues()
@@ -3596,6 +3504,112 @@ void EditorLayer::ProcessDeletionQueues()
             m_SelectedEntities.erase(entity);
     }
     m_EntitiesToDelete.clear();
+}
+
+void EditorLayer::LoadSettings()
+{
+    if (!Project::GetActive())
+        return;
+
+    std::filesystem::path configDir = Project::GetProjectDirectory() / "config";
+    std::filesystem::path projectSettingsPath = configDir / "ProjectSettings.ini";
+    std::filesystem::path editorSettingsPath = configDir / "EditorSettings.ini";
+
+    // Load Project Settings
+    if (std::filesystem::exists(projectSettingsPath))
+    {
+        std::ifstream hin(projectSettingsPath);
+        if (hin.is_open())
+        {
+            std::string line;
+            while (std::getline(hin, line))
+            {
+                if (line.find("ConfigType: ") == 0)
+                    m_ProjectSettings.ConfigType = (ProjectSettings::GameType)std::stoi(line.substr(12));
+                else if (line.find("Mode2D: ") == 0)
+                    m_ProjectSettings.Mode2D = (ProjectSettings::TwoDMode)std::stoi(line.substr(8));
+                else if (line.find("TargetAPI: ") == 0)
+                    m_ProjectSettings.TargetAPI = (GraphicsAPI)std::stoi(line.substr(11));
+            }
+            hin.close();
+        }
+    }
+
+    // Load Editor Settings
+    if (std::filesystem::exists(editorSettingsPath))
+    {
+        std::ifstream hin(editorSettingsPath);
+        if (hin.is_open())
+        {
+            std::string line;
+            while (std::getline(hin, line))
+            {
+                if (line.find("ShowPhysicsColliders: ") == 0)
+                    m_EditorSettings.ShowPhysicsColliders = (line.substr(22) == "1");
+                else if (line.find("AllowNavigation: ") == 0)
+                    m_EditorSettings.AllowNavigation = (line.substr(17) == "1");
+                else if (line.find("SpeedMultiplier: ") == 0)
+                    m_EditorSettings.SpeedMultiplier = std::stof(line.substr(17));
+                else if (line.find("BaseCameraSpeed: ") == 0)
+                    m_EditorSettings.BaseCameraSpeed = std::stof(line.substr(17));
+                else if (line.find("ZoomSpeed: ") == 0)
+                    m_EditorSettings.ZoomSpeed = std::stof(line.substr(11));
+                else if (line.find("DefaultZoom: ") == 0)
+                    m_EditorSettings.DefaultZoom = std::stof(line.substr(13));
+                else if (line.find("Shortcut_") == 0)
+                {
+                    size_t colon = line.find(": ");
+                    if (colon != std::string::npos)
+                    {
+                        std::string key = line.substr(9, colon - 9);
+                        int value = std::stoi(line.substr(colon + 2));
+                        m_EditorSettings.Shortcuts[key] = (KeyCode)value;
+                    }
+                }
+            }
+            hin.close();
+        }
+    }
+}
+
+void EditorLayer::SaveSettings()
+{
+    if (!Project::GetActive())
+        return;
+
+    std::filesystem::path configDir = Project::GetProjectDirectory() / "config";
+    if (!std::filesystem::exists(configDir))
+        std::filesystem::create_directory(configDir);
+
+    std::filesystem::path projectSettingsPath = configDir / "ProjectSettings.ini";
+    std::filesystem::path editorSettingsPath = configDir / "EditorSettings.ini";
+
+    // Save Project Settings
+    std::ofstream hout(projectSettingsPath);
+    if (hout.is_open())
+    {
+        hout << "ConfigType: " << (int)m_ProjectSettings.ConfigType << "\n";
+        hout << "Mode2D: " << (int)m_ProjectSettings.Mode2D << "\n";
+        hout << "TargetAPI: " << (int)m_ProjectSettings.TargetAPI << "\n";
+        hout.close();
+    }
+
+    // Save Editor Settings
+    std::ofstream ehout(editorSettingsPath);
+    if (ehout.is_open())
+    {
+        ehout << "ShowPhysicsColliders: " << (m_EditorSettings.ShowPhysicsColliders ? "1" : "0") << "\n";
+        ehout << "AllowNavigation: " << (m_EditorSettings.AllowNavigation ? "1" : "0") << "\n";
+        ehout << "SpeedMultiplier: " << m_EditorSettings.SpeedMultiplier << "\n";
+        ehout << "BaseCameraSpeed: " << m_EditorSettings.BaseCameraSpeed << "\n";
+        ehout << "ZoomSpeed: " << m_EditorSettings.ZoomSpeed << "\n";
+        ehout << "DefaultZoom: " << m_EditorSettings.DefaultZoom << "\n";
+        for (const auto& [name, code] : m_EditorSettings.Shortcuts)
+        {
+            ehout << "Shortcut_" << name << ": " << (int)code << "\n";
+        }
+        ehout.close();
+    }
 }
 
 } // namespace TE

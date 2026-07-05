@@ -1,7 +1,8 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/EngineSettingsLayer.hpp"
 #include "Core/Log.h"
 #include "Core/Application.h"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 #include <sstream>
 #include <iomanip>
 
@@ -84,48 +85,48 @@ namespace TE {
         // Update logic if needed
     }
 
-    void EngineSettingsLayer::OnImGuiRender() {
+    void EngineSettingsLayer::OnTimeGUIRender() {
         if (!m_IsVisible) return;
         
         RenderMainWindow();
         
         // Render confirmation dialog if needed
         if (m_ShowConfirmationDialog) {
-            ImGui::OpenPopup("Confirm Reset");
-            if (ImGui::BeginPopupModal("Confirm Reset", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-                ImGui::Text("Are you sure you want to reset all settings to defaults?");
-                ImGui::Text("This action cannot be undone.");
-                ImGui::Separator();
+            TimeGUI::OpenPopup("Confirm Reset");
+            if (TimeGUI::BeginPopupModal("Confirm Reset", nullptr, TimeGUIWindowFlags_AlwaysAutoResize)) {
+                TimeGUI::Text("Are you sure you want to reset all settings to defaults?");
+                TimeGUI::Text("This action cannot be undone.");
+                TimeGUI::Separator();
                 
-                if (ImGui::Button("Yes", ImVec2(120, 0))) {
+                if (TimeGUI::Button("Yes", TEVector2(120, 0))) {
                     ResetToDefaults();
                     m_ShowConfirmationDialog = false;
-                    ImGui::CloseCurrentPopup();
+                    TimeGUI::CloseCurrentPopup();
                 }
-                ImGui::SetItemDefaultFocus();
-                ImGui::SameLine();
-                if (ImGui::Button("No", ImVec2(120, 0))) {
+                TimeGUI::SetItemDefaultFocus();
+                TimeGUI::SameLine();
+                if (TimeGUI::Button("No", TEVector2(120, 0))) {
                     m_ShowConfirmationDialog = false;
-                    ImGui::CloseCurrentPopup();
+                    TimeGUI::CloseCurrentPopup();
                 }
-                ImGui::EndPopup();
+                TimeGUI::EndPopup();
             }
         }
         
         // Render validation errors if needed
         if (m_ShowValidationErrors) {
-            ImGui::OpenPopup("Validation Errors");
-            if (ImGui::BeginPopupModal("Validation Errors", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-                ImGui::TextColored(m_ErrorColor, "The following validation errors were found:");
-                ImGui::Separator();
-                ImGui::TextWrapped("%s", m_ValidationErrorText.c_str());
-                ImGui::Separator();
+            TimeGUI::OpenPopup("Validation Errors");
+            if (TimeGUI::BeginPopupModal("Validation Errors", nullptr, TimeGUIWindowFlags_AlwaysAutoResize)) {
+                TimeGUI::TextColored(m_ErrorColor, "The following validation errors were found:");
+                TimeGUI::Separator();
+                TimeGUI::TextWrapped("%s", m_ValidationErrorText.c_str());
+                TimeGUI::Separator();
                 
-                if (ImGui::Button("OK", ImVec2(120, 0))) {
+                if (TimeGUI::Button("OK", TEVector2(120, 0))) {
                     m_ShowValidationErrors = false;
-                    ImGui::CloseCurrentPopup();
+                    TimeGUI::CloseCurrentPopup();
                 }
-                ImGui::EndPopup();
+                TimeGUI::EndPopup();
             }
         }
     }
@@ -135,58 +136,58 @@ namespace TE {
     }
 
     void EngineSettingsLayer::RenderMainWindow() {
-        ImGui::SetNextWindowPos(m_WindowPos, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(m_WindowSize, ImGuiCond_FirstUseEver);
+        TimeGUI::SetNextWindowPos(m_WindowPos, TimeGUICond_FirstUseEver);
+        TimeGUI::SetNextWindowSize(m_WindowSize, TimeGUICond_FirstUseEver);
         
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+        TimeGUIWindowFlags windowFlags = TimeGUIWindowFlags_NoCollapse;
         
         bool windowOpen = true;
-        if (ImGui::Begin(m_WindowTitle.c_str(), &windowOpen, windowFlags)) {
-            if (ImGui::BeginTabBar("SettingsTabs")) {
-                if (ImGui::BeginTabItem("Frame Rate")) {
+        if (TimeGUI::Begin(m_WindowTitle.c_str(), &windowOpen, windowFlags)) {
+            if (TimeGUI::BeginTabBar("SettingsTabs")) {
+                if (TimeGUI::BeginTabItem("Frame Rate")) {
                     RenderFrameRateTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Logging")) {
+                if (TimeGUI::BeginTabItem("Logging")) {
                     RenderLoggingTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Performance")) {
+                if (TimeGUI::BeginTabItem("Performance")) {
                     RenderPerformanceTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Debug")) {
+                if (TimeGUI::BeginTabItem("Debug")) {
                     RenderDebugTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Window")) {
+                if (TimeGUI::BeginTabItem("Window")) {
                     RenderWindowTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Rendering")) {
+                if (TimeGUI::BeginTabItem("Rendering")) {
                     RenderRenderingTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Input")) {
+                if (TimeGUI::BeginTabItem("Input")) {
                     RenderInputTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Audio")) {
+                if (TimeGUI::BeginTabItem("Audio")) {
                     RenderAudioTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("File I/O")) {
+                if (TimeGUI::BeginTabItem("File I/O")) {
                     RenderFileIOTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                if (ImGui::BeginTabItem("Settings")) {
+                if (TimeGUI::BeginTabItem("Settings")) {
                     RenderSettingsTab();
-                    ImGui::EndTabItem();
+                    TimeGUI::EndTabItem();
                 }
-                ImGui::EndTabBar();
+                TimeGUI::EndTabBar();
             }
         }
-        ImGui::End();
+        TimeGUI::End();
         
         if (!windowOpen) {
             m_IsVisible = false;
@@ -194,50 +195,50 @@ namespace TE {
     }
 
     void EngineSettingsLayer::RenderFrameRateTab() {
-        ImGui::TextColored(m_HeaderColor, "Frame Rate Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Frame Rate Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Target Frame Rate
-        changed |= ImGui::SliderFloat("Target Frame Rate", &m_TempSettings.targetFrameRate, 1.0f, 300.0f, "%.1f FPS");
+        changed |= TimeGUI::SliderFloat("Target Frame Rate", &m_TempSettings.targetFrameRate, 1.0f, 300.0f, "%.1f FPS");
         
         // Unlimited Frame Rate
-        changed |= ImGui::Checkbox("Unlimited Frame Rate", &m_TempSettings.unlimitedFrameRate);
+        changed |= TimeGUI::Checkbox("Unlimited Frame Rate", &m_TempSettings.unlimitedFrameRate);
         
         // VSync
-        changed |= ImGui::Checkbox("VSync", &m_TempSettings.vSyncEnabled);
+        changed |= TimeGUI::Checkbox("VSync", &m_TempSettings.vSyncEnabled);
         
         // Frame Rate Limit
-        changed |= ImGui::SliderFloat("Frame Rate Limit", &m_TempSettings.frameRateLimit, 1.0f, 300.0f, "%.1f FPS");
+        changed |= TimeGUI::SliderFloat("Frame Rate Limit", &m_TempSettings.frameRateLimit, 1.0f, 300.0f, "%.1f FPS");
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Target FPS: %.1f", m_Settings.GetTargetFrameRate());
-        ImGui::Text("  Unlimited: %s", m_Settings.IsUnlimitedFrameRate() ? "Yes" : "No");
-        ImGui::Text("  VSync: %s", m_Settings.IsVSyncEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Limit: %.1f FPS", m_Settings.GetFrameRateLimit());
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Target FPS: %.1f", m_Settings.GetTargetFrameRate());
+        TimeGUI::Text("  Unlimited: %s", m_Settings.IsUnlimitedFrameRate() ? "Yes" : "No");
+        TimeGUI::Text("  VSync: %s", m_Settings.IsVSyncEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Limit: %.1f FPS", m_Settings.GetFrameRateLimit());
     }
 
     void EngineSettingsLayer::RenderLoggingTab() {
-        ImGui::TextColored(m_HeaderColor, "Logging Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Logging Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Log Output
-        changed |= ImGui::Checkbox("Log to File", &m_TempSettings.logToFile);
-        changed |= ImGui::Checkbox("Log to Console", &m_TempSettings.logToConsole);
-        changed |= ImGui::Checkbox("Include Timestamps", &m_TempSettings.logTimestamp);
+        changed |= TimeGUI::Checkbox("Log to File", &m_TempSettings.logToFile);
+        changed |= TimeGUI::Checkbox("Log to Console", &m_TempSettings.logToConsole);
+        changed |= TimeGUI::Checkbox("Include Timestamps", &m_TempSettings.logTimestamp);
         
         // Log Level
         const char* logLevels[] = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"};
         static int currentLogLevel = 1; // Default to INFO
-        if (ImGui::Combo("Log Level", &currentLogLevel, logLevels, IM_ARRAYSIZE(logLevels))) {
+        if (TimeGUI::Combo("Log Level", &currentLogLevel, logLevels, (int)(sizeof(logLevels) / sizeof(logLevels[0])))) {
             m_TempSettings.logLevel = logLevels[currentLogLevel];
             changed = true;
         }
@@ -245,7 +246,7 @@ namespace TE {
         // Log File
         char logFileBuffer[256];
         strcpy_s(logFileBuffer, m_TempSettings.logFile.c_str());
-        if (ImGui::InputText("Log File", logFileBuffer, sizeof(logFileBuffer))) {
+        if (TimeGUI::InputText("Log File", logFileBuffer, sizeof(logFileBuffer))) {
             m_TempSettings.logFile = logFileBuffer;
             changed = true;
         }
@@ -254,209 +255,209 @@ namespace TE {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  File Logging: %s", m_Settings.IsLogToFileEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Console Logging: %s", m_Settings.IsLogToConsoleEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Log Level: %s", m_Settings.GetLogLevel().c_str());
-        ImGui::Text("  Timestamps: %s", m_Settings.IsLogTimestampEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Log File: %s", m_Settings.GetLogFile().c_str());
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  File Logging: %s", m_Settings.IsLogToFileEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Console Logging: %s", m_Settings.IsLogToConsoleEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Log Level: %s", m_Settings.GetLogLevel().c_str());
+        TimeGUI::Text("  Timestamps: %s", m_Settings.IsLogTimestampEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Log File: %s", m_Settings.GetLogFile().c_str());
     }
 
     void EngineSettingsLayer::RenderPerformanceTab() {
-        ImGui::TextColored(m_HeaderColor, "Performance Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Performance Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Performance Limits
-        changed |= ImGui::SliderInt("Max Draw Calls", (int*)&m_TempSettings.maxDrawCalls, 100, 100000, "%d");
-        changed |= ImGui::SliderInt("Max Triangles", (int*)&m_TempSettings.maxTriangles, 1000, 10000000, "%d");
-        changed |= ImGui::SliderInt("Max Vertices", (int*)&m_TempSettings.maxVertices, 1000, 20000000, "%d");
-        changed |= ImGui::SliderInt("Max Textures", (int*)&m_TempSettings.maxTextures, 10, 10000, "%d");
-        changed |= ImGui::SliderInt("Max Shaders", (int*)&m_TempSettings.maxShaders, 1, 1000, "%d");
+        changed |= TimeGUI::SliderInt("Max Draw Calls", (int*)&m_TempSettings.maxDrawCalls, 100, 100000, "%d");
+        changed |= TimeGUI::SliderInt("Max Triangles", (int*)&m_TempSettings.maxTriangles, 1000, 10000000, "%d");
+        changed |= TimeGUI::SliderInt("Max Vertices", (int*)&m_TempSettings.maxVertices, 1000, 20000000, "%d");
+        changed |= TimeGUI::SliderInt("Max Textures", (int*)&m_TempSettings.maxTextures, 10, 10000, "%d");
+        changed |= TimeGUI::SliderInt("Max Shaders", (int*)&m_TempSettings.maxShaders, 1, 1000, "%d");
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Max Draw Calls: %u", m_Settings.GetMaxDrawCalls());
-        ImGui::Text("  Max Triangles: %u", m_Settings.GetMaxTriangles());
-        ImGui::Text("  Max Vertices: %u", m_Settings.GetMaxVertices());
-        ImGui::Text("  Max Textures: %u", m_Settings.GetMaxTextures());
-        ImGui::Text("  Max Shaders: %u", m_Settings.GetMaxShaders());
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Max Draw Calls: %u", m_Settings.GetMaxDrawCalls());
+        TimeGUI::Text("  Max Triangles: %u", m_Settings.GetMaxTriangles());
+        TimeGUI::Text("  Max Vertices: %u", m_Settings.GetMaxVertices());
+        TimeGUI::Text("  Max Textures: %u", m_Settings.GetMaxTextures());
+        TimeGUI::Text("  Max Shaders: %u", m_Settings.GetMaxShaders());
     }
 
     void EngineSettingsLayer::RenderDebugTab() {
-        ImGui::TextColored(m_HeaderColor, "Debug Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Debug Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Debug Options
-        changed |= ImGui::Checkbox("Debug Mode", &m_TempSettings.debugMode);
-        changed |= ImGui::Checkbox("Show FPS", &m_TempSettings.showFPS);
-        changed |= ImGui::Checkbox("Show Performance Metrics", &m_TempSettings.showPerformanceMetrics);
-        changed |= ImGui::Checkbox("Show Debug Info", &m_TempSettings.showDebugInfo);
-        changed |= ImGui::Checkbox("Show Wireframe", &m_TempSettings.showWireframe);
-        changed |= ImGui::Checkbox("Show Bounding Boxes", &m_TempSettings.showBoundingBoxes);
+        changed |= TimeGUI::Checkbox("Debug Mode", &m_TempSettings.debugMode);
+        changed |= TimeGUI::Checkbox("Show FPS", &m_TempSettings.showFPS);
+        changed |= TimeGUI::Checkbox("Show Performance Metrics", &m_TempSettings.showPerformanceMetrics);
+        changed |= TimeGUI::Checkbox("Show Debug Info", &m_TempSettings.showDebugInfo);
+        changed |= TimeGUI::Checkbox("Show Wireframe", &m_TempSettings.showWireframe);
+        changed |= TimeGUI::Checkbox("Show Bounding Boxes", &m_TempSettings.showBoundingBoxes);
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Debug Mode: %s", m_Settings.IsDebugModeEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Show FPS: %s", m_Settings.IsShowFPSEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Show Performance Metrics: %s", m_Settings.IsShowPerformanceMetricsEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Show Debug Info: %s", m_Settings.IsShowDebugInfoEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Show Wireframe: %s", m_Settings.IsShowWireframeEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Show Bounding Boxes: %s", m_Settings.IsShowBoundingBoxesEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Debug Mode: %s", m_Settings.IsDebugModeEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Show FPS: %s", m_Settings.IsShowFPSEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Show Performance Metrics: %s", m_Settings.IsShowPerformanceMetricsEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Show Debug Info: %s", m_Settings.IsShowDebugInfoEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Show Wireframe: %s", m_Settings.IsShowWireframeEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Show Bounding Boxes: %s", m_Settings.IsShowBoundingBoxesEnabled() ? "Enabled" : "Disabled");
     }
 
     void EngineSettingsLayer::RenderWindowTab() {
-        ImGui::TextColored(m_HeaderColor, "Window Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Window Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Window Properties
         char titleBuffer[256];
         strcpy_s(titleBuffer, m_TempSettings.windowTitle.c_str());
-        if (ImGui::InputText("Window Title", titleBuffer, sizeof(titleBuffer))) {
+        if (TimeGUI::InputText("Window Title", titleBuffer, sizeof(titleBuffer))) {
             m_TempSettings.windowTitle = titleBuffer;
             changed = true;
         }
         
-        changed |= ImGui::SliderInt("Window Width", (int*)&m_TempSettings.windowWidth, 800, 2560, "%d");
-        changed |= ImGui::SliderInt("Window Height", (int*)&m_TempSettings.windowHeight, 600, 1440, "%d");
-        changed |= ImGui::Checkbox("Resizable", &m_TempSettings.windowResizable);
-        changed |= ImGui::Checkbox("Fullscreen", &m_TempSettings.windowFullscreen);
-        changed |= ImGui::Checkbox("Maximized", &m_TempSettings.windowMaximized);
+        changed |= TimeGUI::SliderInt("Window Width", (int*)&m_TempSettings.windowWidth, 800, 2560, "%d");
+        changed |= TimeGUI::SliderInt("Window Height", (int*)&m_TempSettings.windowHeight, 600, 1440, "%d");
+        changed |= TimeGUI::Checkbox("Resizable", &m_TempSettings.windowResizable);
+        changed |= TimeGUI::Checkbox("Fullscreen", &m_TempSettings.windowFullscreen);
+        changed |= TimeGUI::Checkbox("Maximized", &m_TempSettings.windowMaximized);
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Title: %s", m_Settings.GetWindowTitle().c_str());
-        ImGui::Text("  Size: %ux%u", m_Settings.GetWindowWidth(), m_Settings.GetWindowHeight());
-        ImGui::Text("  Resizable: %s", m_Settings.IsWindowResizable() ? "Yes" : "No");
-        ImGui::Text("  Fullscreen: %s", m_Settings.IsWindowFullscreen() ? "Yes" : "No");
-        ImGui::Text("  Maximized: %s", m_Settings.IsWindowMaximized() ? "Yes" : "No");
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Title: %s", m_Settings.GetWindowTitle().c_str());
+        TimeGUI::Text("  Size: %ux%u", m_Settings.GetWindowWidth(), m_Settings.GetWindowHeight());
+        TimeGUI::Text("  Resizable: %s", m_Settings.IsWindowResizable() ? "Yes" : "No");
+        TimeGUI::Text("  Fullscreen: %s", m_Settings.IsWindowFullscreen() ? "Yes" : "No");
+        TimeGUI::Text("  Maximized: %s", m_Settings.IsWindowMaximized() ? "Yes" : "No");
     }
 
     void EngineSettingsLayer::RenderRenderingTab() {
-        ImGui::TextColored(m_HeaderColor, "Rendering Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Rendering Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Clear Color
-        changed |= ImGui::ColorEdit4("Clear Color", m_TempSettings.clearColor);
+        changed |= TimeGUI::ColorEdit4("Clear Color", m_TempSettings.clearColor);
         
         // Rendering Options
-        changed |= ImGui::Checkbox("Depth Test", &m_TempSettings.depthTest);
-        changed |= ImGui::Checkbox("Blending", &m_TempSettings.blending);
-        changed |= ImGui::Checkbox("Culling", &m_TempSettings.culling);
-        changed |= ImGui::Checkbox("Multisampling", &m_TempSettings.multisampling);
+        changed |= TimeGUI::Checkbox("Depth Test", &m_TempSettings.depthTest);
+        changed |= TimeGUI::Checkbox("Blending", &m_TempSettings.blending);
+        changed |= TimeGUI::Checkbox("Culling", &m_TempSettings.culling);
+        changed |= TimeGUI::Checkbox("Multisampling", &m_TempSettings.multisampling);
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
         const float* clearColor = m_Settings.GetClearColor();
-        ImGui::Text("  Clear Color: (%.2f, %.2f, %.2f, %.2f)", 
+        TimeGUI::Text("  Clear Color: (%.2f, %.2f, %.2f, %.2f)", 
                    clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-        ImGui::Text("  Depth Test: %s", m_Settings.IsDepthTestEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Blending: %s", m_Settings.IsBlendingEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Culling: %s", m_Settings.IsCullingEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Multisampling: %s", m_Settings.IsMultisamplingEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Depth Test: %s", m_Settings.IsDepthTestEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Blending: %s", m_Settings.IsBlendingEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Culling: %s", m_Settings.IsCullingEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Multisampling: %s", m_Settings.IsMultisamplingEnabled() ? "Enabled" : "Disabled");
     }
 
     void EngineSettingsLayer::RenderInputTab() {
-        ImGui::TextColored(m_HeaderColor, "Input Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Input Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Input Options
-        changed |= ImGui::SliderFloat("Mouse Sensitivity", &m_TempSettings.mouseSensitivity, 0.1f, 5.0f, "%.2f");
-        changed |= ImGui::Checkbox("Keyboard Repeat", &m_TempSettings.keyboardRepeat);
-        changed |= ImGui::Checkbox("Mouse Acceleration", &m_TempSettings.mouseAcceleration);
+        changed |= TimeGUI::SliderFloat("Mouse Sensitivity", &m_TempSettings.mouseSensitivity, 0.1f, 5.0f, "%.2f");
+        changed |= TimeGUI::Checkbox("Keyboard Repeat", &m_TempSettings.keyboardRepeat);
+        changed |= TimeGUI::Checkbox("Mouse Acceleration", &m_TempSettings.mouseAcceleration);
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Mouse Sensitivity: %.2f", m_Settings.GetMouseSensitivity());
-        ImGui::Text("  Keyboard Repeat: %s", m_Settings.IsKeyboardRepeatEnabled() ? "Enabled" : "Disabled");
-        ImGui::Text("  Mouse Acceleration: %s", m_Settings.IsMouseAccelerationEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Mouse Sensitivity: %.2f", m_Settings.GetMouseSensitivity());
+        TimeGUI::Text("  Keyboard Repeat: %s", m_Settings.IsKeyboardRepeatEnabled() ? "Enabled" : "Disabled");
+        TimeGUI::Text("  Mouse Acceleration: %s", m_Settings.IsMouseAccelerationEnabled() ? "Enabled" : "Disabled");
     }
 
     void EngineSettingsLayer::RenderAudioTab() {
-        ImGui::TextColored(m_HeaderColor, "Audio Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Audio Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // Audio Options
-        changed |= ImGui::Checkbox("Audio Enabled", &m_TempSettings.audioEnabled);
-        changed |= ImGui::SliderFloat("Audio Volume", &m_TempSettings.audioVolume, 0.0f, 1.0f, "%.2f");
-        changed |= ImGui::SliderInt("Sample Rate", (int*)&m_TempSettings.audioSampleRate, 8000, 96000, "%d Hz");
-        changed |= ImGui::SliderInt("Channels", (int*)&m_TempSettings.audioChannels, 1, 8, "%d");
+        changed |= TimeGUI::Checkbox("Audio Enabled", &m_TempSettings.audioEnabled);
+        changed |= TimeGUI::SliderFloat("Audio Volume", &m_TempSettings.audioVolume, 0.0f, 1.0f, "%.2f");
+        changed |= TimeGUI::SliderInt("Sample Rate", (int*)&m_TempSettings.audioSampleRate, 8000, 96000, "%d Hz");
+        changed |= TimeGUI::SliderInt("Channels", (int*)&m_TempSettings.audioChannels, 1, 8, "%d");
         
         if (changed) {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Audio Enabled: %s", m_Settings.IsAudioEnabled() ? "Yes" : "No");
-        ImGui::Text("  Volume: %.2f", m_Settings.GetAudioVolume());
-        ImGui::Text("  Sample Rate: %u Hz", m_Settings.GetAudioSampleRate());
-        ImGui::Text("  Channels: %u", m_Settings.GetAudioChannels());
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Audio Enabled: %s", m_Settings.IsAudioEnabled() ? "Yes" : "No");
+        TimeGUI::Text("  Volume: %.2f", m_Settings.GetAudioVolume());
+        TimeGUI::Text("  Sample Rate: %u Hz", m_Settings.GetAudioSampleRate());
+        TimeGUI::Text("  Channels: %u", m_Settings.GetAudioChannels());
     }
 
     void EngineSettingsLayer::RenderFileIOTab() {
-        ImGui::TextColored(m_HeaderColor, "File I/O Settings");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "File I/O Settings");
+        TimeGUI::Separator();
         
         bool changed = false;
         
         // File Paths
         char assetPathBuffer[256];
         strcpy_s(assetPathBuffer, m_TempSettings.assetPath.c_str());
-        if (ImGui::InputText("Asset Path", assetPathBuffer, sizeof(assetPathBuffer))) {
+        if (TimeGUI::InputText("Asset Path", assetPathBuffer, sizeof(assetPathBuffer))) {
             m_TempSettings.assetPath = assetPathBuffer;
             changed = true;
         }
         
         char configPathBuffer[256];
         strcpy_s(configPathBuffer, m_TempSettings.configPath.c_str());
-        if (ImGui::InputText("Config Path", configPathBuffer, sizeof(configPathBuffer))) {
+        if (TimeGUI::InputText("Config Path", configPathBuffer, sizeof(configPathBuffer))) {
             m_TempSettings.configPath = configPathBuffer;
             changed = true;
         }
         
         char logPathBuffer[256];
         strcpy_s(logPathBuffer, m_TempSettings.logPath.c_str());
-        if (ImGui::InputText("Log Path", logPathBuffer, sizeof(logPathBuffer))) {
+        if (TimeGUI::InputText("Log Path", logPathBuffer, sizeof(logPathBuffer))) {
             m_TempSettings.logPath = logPathBuffer;
             changed = true;
         }
         
         char savePathBuffer[256];
         strcpy_s(savePathBuffer, m_TempSettings.savePath.c_str());
-        if (ImGui::InputText("Save Path", savePathBuffer, sizeof(savePathBuffer))) {
+        if (TimeGUI::InputText("Save Path", savePathBuffer, sizeof(savePathBuffer))) {
             m_TempSettings.savePath = savePathBuffer;
             changed = true;
         }
@@ -465,66 +466,66 @@ namespace TE {
             m_SettingsChanged = true;
         }
         
-        ImGui::Separator();
-        ImGui::Text("Current Settings:");
-        ImGui::Text("  Asset Path: %s", m_Settings.GetAssetPath().c_str());
-        ImGui::Text("  Config Path: %s", m_Settings.GetConfigPath().c_str());
-        ImGui::Text("  Log Path: %s", m_Settings.GetLogPath().c_str());
-        ImGui::Text("  Save Path: %s", m_Settings.GetSavePath().c_str());
+        TimeGUI::Separator();
+        TimeGUI::Text("Current Settings:");
+        TimeGUI::Text("  Asset Path: %s", m_Settings.GetAssetPath().c_str());
+        TimeGUI::Text("  Config Path: %s", m_Settings.GetConfigPath().c_str());
+        TimeGUI::Text("  Log Path: %s", m_Settings.GetLogPath().c_str());
+        TimeGUI::Text("  Save Path: %s", m_Settings.GetSavePath().c_str());
     }
 
     void EngineSettingsLayer::RenderSettingsTab() {
-        ImGui::TextColored(m_HeaderColor, "Settings Management");
-        ImGui::Separator();
+        TimeGUI::TextColored(m_HeaderColor, "Settings Management");
+        TimeGUI::Separator();
         
         // Action Buttons
-        if (ImGui::Button("Apply Settings", ImVec2(120, 30))) {
+        if (TimeGUI::Button("Apply Settings", TEVector2(120, 30))) {
             ApplyCurrentSettings();
         }
         
-        ImGui::SameLine();
-        if (ImGui::Button("Reset to Defaults", ImVec2(120, 30))) {
+        TimeGUI::SameLine();
+        if (TimeGUI::Button("Reset to Defaults", TEVector2(120, 30))) {
             m_ShowConfirmationDialog = true;
         }
         
-        ImGui::SameLine();
-        if (ImGui::Button("Validate Settings", ImVec2(120, 30))) {
+        TimeGUI::SameLine();
+        if (TimeGUI::Button("Validate Settings", TEVector2(120, 30))) {
             ValidateCurrentSettings();
         }
         
-        ImGui::Separator();
+        TimeGUI::Separator();
         
         // File Operations
         char settingsFileBuffer[256];
         strcpy_s(settingsFileBuffer, m_SelectedSettingsFile.c_str());
-        if (ImGui::InputText("Settings File", settingsFileBuffer, sizeof(settingsFileBuffer))) {
+        if (TimeGUI::InputText("Settings File", settingsFileBuffer, sizeof(settingsFileBuffer))) {
             m_SelectedSettingsFile = settingsFileBuffer;
         }
         
-        if (ImGui::Button("Load Settings", ImVec2(120, 30))) {
+        if (TimeGUI::Button("Load Settings", TEVector2(120, 30))) {
             LoadSettingsFromFile();
         }
         
-        ImGui::SameLine();
-        if (ImGui::Button("Save Settings", ImVec2(120, 30))) {
+        TimeGUI::SameLine();
+        if (TimeGUI::Button("Save Settings", TEVector2(120, 30))) {
             SaveSettingsToFile();
         }
         
-        ImGui::Separator();
+        TimeGUI::Separator();
         
         // Status Information
         if (m_SettingsChanged) {
-            ImGui::TextColored(m_WarningColor, "Settings have been modified but not applied.");
+            TimeGUI::TextColored(m_WarningColor, "Settings have been modified but not applied.");
         } else {
-            ImGui::TextColored(m_SuccessColor, "Settings are up to date.");
+            TimeGUI::TextColored(m_SuccessColor, "Settings are up to date.");
         }
         
-        ImGui::Text("Validation Status:");
+        TimeGUI::Text("Validation Status:");
         if (m_Settings.ValidateSettings()) {
-            ImGui::TextColored(m_SuccessColor, "  ✓ All settings are valid");
+            TimeGUI::TextColored(m_SuccessColor, "  ✓ All settings are valid");
         } else {
-            ImGui::TextColored(m_ErrorColor, "  ✗ Settings have validation errors");
-            ImGui::TextWrapped("  %s", m_Settings.GetValidationErrors().c_str());
+            TimeGUI::TextColored(m_ErrorColor, "  ✗ Settings have validation errors");
+            TimeGUI::TextWrapped("  %s", m_Settings.GetValidationErrors().c_str());
         }
     }
 

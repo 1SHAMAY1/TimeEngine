@@ -1,0 +1,4 @@
+Texture2D: NewTexture
+ImagePath: blank.png
+FilterMode: Linear
+WrapMode: Repeat

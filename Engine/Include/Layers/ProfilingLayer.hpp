@@ -1,6 +1,6 @@
 #pragma once
 #include "Layers/Layer.hpp"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 #include <chrono>
 #include <deque>
 #include <string>
@@ -31,7 +31,7 @@ namespace TE {
         virtual void OnAttach() override;
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
         virtual void OnEvent(Event& event) override;
 
         // ===== Performance Tracking =====
@@ -63,8 +63,8 @@ namespace TE {
         void SetFloating(bool floating) { m_IsFloating = floating; }
         void SetVisible(bool visible) { m_IsVisible = visible; }
         void SetWindowTitle(const std::string& title) { m_WindowTitle = title; }
-        void SetWindowPosition(const ImVec2& pos) { m_WindowPos = pos; }
-        void SetWindowSize(const ImVec2& size) { m_WindowSize = size; }
+        void SetWindowPosition(const TEVector2& pos) { m_WindowPos = pos; }
+        void SetWindowSize(const TEVector2& size) { m_WindowSize = size; }
         bool IsVisible() const { return m_IsVisible; }
         void ToggleVisibility() { m_IsVisible = !m_IsVisible; }
 
@@ -95,8 +95,8 @@ namespace TE {
         bool m_ShowPerformanceGraphs = true;
 
         // ===== Window Settings =====
-        ImVec2 m_WindowSize = ImVec2(300, 200);
-        ImVec2 m_WindowPos = ImVec2(10, 10);
+        TEVector2 m_WindowSize = TEVector2(300, 200);
+        TEVector2 m_WindowPos = TEVector2(10, 10);
         bool m_WindowCollapsed = false;
         bool m_WindowResizable = true;
         bool m_IsFloating = false;
@@ -104,12 +104,12 @@ namespace TE {
         std::string m_WindowTitle = "Performance Monitor";
 
         // ===== Colors =====
-        ImVec4 m_FPSColor = ImVec4(0.2f, 1.0f, 0.2f, 1.0f);
-        ImVec4 m_CPUColor = ImVec4(1.0f, 0.8f, 0.2f, 1.0f);
-        ImVec4 m_RAMColor = ImVec4(0.2f, 0.8f, 1.0f, 1.0f);
-        ImVec4 m_GPUColor = ImVec4(1.0f, 0.4f, 0.8f, 1.0f);
-        ImVec4 m_WarningColor = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
-        ImVec4 m_CriticalColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+        TEVector4 m_FPSColor = TEVector4(0.2f, 1.0f, 0.2f, 1.0f);
+        TEVector4 m_CPUColor = TEVector4(1.0f, 0.8f, 0.2f, 1.0f);
+        TEVector4 m_RAMColor = TEVector4(0.2f, 0.8f, 1.0f, 1.0f);
+        TEVector4 m_GPUColor = TEVector4(1.0f, 0.4f, 0.8f, 1.0f);
+        TEVector4 m_WarningColor = TEVector4(1.0f, 0.5f, 0.0f, 1.0f);
+        TEVector4 m_CriticalColor = TEVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
         // ===== System Info =====
         std::string m_CPUName;
@@ -124,7 +124,7 @@ namespace TE {
         void RenderRenderingInfo();
         void RenderMemoryInfo();
         void RenderPerformanceGraphs();
-        void RenderGraph(const std::string& title, const std::deque<float>& data, const ImVec4& color, float minValue = 0.0f, float maxValue = 100.0f);
+        void RenderGraph(const std::string& title, const std::deque<float>& data, const TEVector4& color, float minValue = 0.0f, float maxValue = 100.0f);
         void UpdateMetrics();
         void CalculateAverages();
         float GetSystemCPUUsage();
@@ -133,18 +133,18 @@ namespace TE {
         void GetSystemInfo();
 
         // ===== Graph Rendering =====
-        void DrawLineGraph(ImDrawList* drawList, const ImVec2& pos, const ImVec2& size, 
-                          const std::deque<float>& data, const ImVec4& color, 
+        void DrawLineGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2& pos, const TEVector2& size, 
+                          const std::deque<float>& data, const TEVector4& color, 
                           float minValue, float maxValue, const std::string& label);
-        void DrawBarGraph(ImDrawList* drawList, const ImVec2& pos, const ImVec2& size,
-                         const std::deque<float>& data, const ImVec4& color,
+        void DrawBarGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2& pos, const TEVector2& size,
+                         const std::deque<float>& data, const TEVector4& color,
                          float minValue, float maxValue, const std::string& label);
 
         // ===== Utility Functions =====
         std::string FormatBytes(uint64_t bytes);
         std::string FormatTime(float seconds);
         std::string FormatPercentage(float percentage);
-        ImVec4 GetColorForValue(float value, float warningThreshold, float criticalThreshold);
+        TEVector4 GetColorForValue(float value, float warningThreshold, float criticalThreshold);
     };
 
 } 

@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/Asset/Asset.hpp"
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -8,6 +8,14 @@
 
 namespace TE
 {
+
+struct TE_API ImageData
+{
+    unsigned char* Data = nullptr;
+    int Width = 0;
+    int Height = 0;
+    int Channels = 0;
+};
 
 struct AssetTypeMetadata
 {
@@ -48,6 +56,11 @@ public:
     static std::shared_ptr<class Texture> GetDefaultIcon(const std::string &type);
     static std::shared_ptr<class Texture> GetIconForExtension(const std::string &extension);
     static TEVector2 GetDefaultIconSize(const std::string &type);
+
+    // Image utilities (stb_image encapsulation)
+    static ImageData ImportImage(const std::string& filepath, int desiredChannels = 0);
+    static void FreeImage(unsigned char* data);
+    static bool ExportImagePNG(const std::string& path, int width, int height, int channels, const void* data);
 
 private:
     static std::unordered_map<AssetHandle, std::shared_ptr<Asset>> s_LoadedAssets;

@@ -1,6 +1,7 @@
 #pragma once
+#include "Utils/TimeGUI.hpp"
 #include "Core/Scene/EntityManager.hpp"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <functional>
@@ -173,7 +174,7 @@ public:
                                            }
                                            // Use ### for unique ID while keeping display label
                                            std::string imguiLabel = label + "###" + propName;
-                                           if (ImGui::BeginCombo(imguiLabel.c_str(), current))
+                                           if (TimeGUI::BeginCombo(imguiLabel.c_str(), current))
                                            {
                                                for (const auto &pair : enumMeta->Values)
                                                {
@@ -182,19 +183,19 @@ public:
                                                    // duplicated)
                                                    std::string selectableId =
                                                        pair.first + "###" + std::to_string(pair.second);
-                                                   if (ImGui::Selectable(selectableId.c_str(), isSelected))
+                                                   if (TimeGUI::Selectable(selectableId.c_str(), isSelected))
                                                    {
                                                        *val = pair.second;
                                                    }
                                                    if (isSelected)
-                                                       ImGui::SetItemDefaultFocus();
+                                                       TimeGUI::SetItemDefaultFocus();
                                                }
-                                               ImGui::EndCombo();
+                                               TimeGUI::EndCombo();
                                            }
                                        }
                                        else
                                        {
-                                           ImGui::Text("%s: Enum %s not found", label.c_str(), enumName.c_str());
+                                           TimeGUI::Text("%s: Enum %s not found", label.c_str(), enumName.c_str());
                                        }
                                    },
                                    0, nullptr, enumName,

@@ -19,7 +19,7 @@ void CollisionSystem::Process()
         for (auto *col : colliders)
         {
             // Calculate world transform for this component
-            glm::mat4 worldTransform = glm::mat4(1.0f);
+            TEMatrix4 worldTransform = TEMatrix4(1.0f);
             TComponent *current = col;
             while (current)
             {

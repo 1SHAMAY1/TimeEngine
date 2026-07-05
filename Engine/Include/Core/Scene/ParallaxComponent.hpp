@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 
 namespace TE
 {

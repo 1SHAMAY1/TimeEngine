@@ -1,6 +1,7 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/Layer.hpp"
 
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 
 namespace TE {
 
@@ -25,7 +26,7 @@ namespace TE {
     {
     }
 
-    void Layer::OnImGuiRender()
+    void Layer::OnTimeGUIRender()
     {
     }
 
@@ -35,30 +36,30 @@ namespace TE {
 
     void Layer::DockTo(bool padding)
     {
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        TimeGUIViewport viewport = TimeGUI::GetMainViewport();
 
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
-        ImGui::SetNextWindowViewport(viewport->ID);
+        TimeGUI::SetNextWindowPos(viewport.Pos);
+        TimeGUI::SetNextWindowSize(viewport.Size);
+        TimeGUI::SetNextWindowViewport(viewport.ID);
 
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                                 ImGuiWindowFlags_NoResize   | ImGuiWindowFlags_NoMove |
-                                 ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                                 ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        TimeGUIWindowFlags flags = TimeGUIWindowFlags_NoTitleBar | TimeGUIWindowFlags_NoCollapse |
+                                 TimeGUIWindowFlags_NoResize   | TimeGUIWindowFlags_NoMove |
+                                 TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUIWindowFlags_NoNavFocus |
+                                 TimeGUIWindowFlags_MenuBar | TimeGUIWindowFlags_NoDocking;
 
         if (!padding)
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(0, 0));
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 0.0f);
 
-        ImGui::Begin(m_DebugName.c_str(), nullptr, flags); // ⚠️ must have matching ImGui::End
+        TimeGUI::Begin(m_DebugName.c_str(), nullptr, flags); // ⚠️ must have matching TimeGUI::End
 
-        ImGuiID dockspaceID = ImGui::GetID((m_DebugName + "_Dockspace").c_str());
-        ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+        unsigned int dockspaceID = TimeGUI::GetID((m_DebugName + "_Dockspace").c_str());
+        TimeGUI::DockSpace(dockspaceID, TEVector2(0.0f, 0.0f), 0);
 
-        ImGui::End(); // ✅ REQUIRED: matches Begin()
+        TimeGUI::End(); // ✅ REQUIRED: matches Begin()
 
-        ImGui::PopStyleVar(padding ? 1 : 2); 
+        TimeGUI::PopStyleVar(padding ? 1 : 2); 
     }
 
 }

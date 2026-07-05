@@ -1,9 +1,10 @@
-﻿#pragma once
+#pragma once
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #include <string>
 
 namespace TE {
-    class RendererContext {
+    class TE_API RendererContext {
     public:
         static void SetAPI(GraphicsAPI api);
         static GraphicsAPI GetAPI();

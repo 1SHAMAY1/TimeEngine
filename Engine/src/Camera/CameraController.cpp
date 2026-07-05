@@ -1,5 +1,4 @@
 ﻿#include "Camera/CameraController.hpp"
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace TE {
 
@@ -9,7 +8,7 @@ namespace TE {
     }
 
     void CameraController::SetFOV(float fov) {
-        m_FOV = glm::clamp(fov, 1.0f, 179.0f);
+        m_FOV = Clamp(fov, 1.0f, 179.0f);
     }
 
     float CameraController::GetFOV() const {
@@ -36,9 +35,9 @@ namespace TE {
         return m_Rotation;
     }
 
-    glm::mat4 CameraController::GetViewMatrix() const {
-        glm::mat4 rotation = m_Rotation.ToQuat().ToMatrix();
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), -m_Position);
+    TEMatrix4 CameraController::GetViewMatrix() const {
+        TEMatrix4 rotation = m_Rotation.ToQuat().ToMatrix();
+        TEMatrix4 translation = TEMatrix4::Translate(TEMatrix4(1.0f), -m_Position);
         return rotation * translation;
     }
 

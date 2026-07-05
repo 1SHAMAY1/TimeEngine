@@ -6,11 +6,6 @@ namespace TE {
 
     static const uint32_t s_MaxFramebufferSize = 8192;
 
-    std::shared_ptr<Framebuffer> Framebuffer::Create(const FramebufferSpecification& spec)
-    {
-        return std::make_shared<OpenGLFramebuffer>(spec);
-    }
-
     OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
         : m_Specification(spec)
     {

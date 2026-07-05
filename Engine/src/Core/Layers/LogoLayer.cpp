@@ -1,7 +1,7 @@
-﻿#include "Layers/LogoLayer.hpp"
-#include "imgui_internal.h"
-#include "imgui.h"
-#include "Utility/MathUtils.hpp"
+#include "Utils/TimeGUI.hpp"
+#include "Layers/LogoLayer.hpp"
+#include "Utils/TimeGUI.hpp"
+#include "Utils/MathUtils.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
 
@@ -26,10 +26,10 @@ namespace TE {
     }
 
 
-    // Render the logo animation using ImGui draw lists
-    void LogoLayer::OnImGuiRender()
+    // Render the logo animation using TimeGUI draw lists
+    void LogoLayer::OnTimeGUIRender()
     {
-        ImGuiIO& io = ImGui::GetIO();
+        TimeGUI::TimeGUIIO io = TimeGUI::GetIO();
         m_Time += io.DeltaTime;
 
         // Start animation after a short delay
@@ -50,16 +50,16 @@ namespace TE {
         }
 
         // Setup screen geometry and center
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImVec2 screenPos = viewport->Pos;
-        ImVec2 screenSize = viewport->Size;
-        ImVec2 center = screenPos + screenSize * 0.5f;
+        TimeGUI::TimeGUIViewport viewport = TimeGUI::GetMainViewport();
+        TEVector2 screenPos = viewport.Pos;
+        TEVector2 screenSize = viewport.Size;
+        TEVector2 center = screenPos + screenSize * 0.5f;
         center.y -= screenSize.y * 0.1f;
 
-        ImDrawList* drawList = ImGui::GetBackgroundDrawList(viewport);
+        TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetBackgroundDrawList();
 
         // === Background Fill ===
-        drawList->AddRectFilled(screenPos, screenPos + screenSize, IM_COL32(0, 0, 0, 255));
+        drawList.AddRectFilled(screenPos, screenPos + screenSize, IM_COL32(0, 0, 0, 255));
 
         // === Animate Text Reveal ===
         size_t targetCount = static_cast<size_t>((m_Time - m_AnimationStartTime) / m_LetterInterval);
@@ -73,11 +73,11 @@ namespace TE {
         DrawTimeEngineLogo(center, 40.0f, drawList, m_Time);
 
         // === Animated Text Rendering ===
-        ImFont* font = ImGui::GetFont();
+        auto font = TimeGUI::GetDefaultFont();
         float fontSize = 24.0f;
-        ImVec2 textSize = font->CalcTextSizeA(fontSize, FLT_MAX, -1.0f, m_DisplayText.c_str());
-        ImVec2 textPos = center + ImVec2(-textSize.x * 0.5f, 55.0f);
-        drawList->AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), m_DisplayText.c_str());
+        TEVector2 textSize = font.CalcTextSizeA(fontSize, FLT_MAX, -1.0f, m_DisplayText.c_str());
+        TEVector2 textPos = center + TEVector2(-textSize.x * 0.5f, 55.0f);
+        drawList.AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), m_DisplayText.c_str());
 
         // === Animation Completion Check ===
         if (m_CharIndex == m_FullText.length() &&
@@ -119,24 +119,24 @@ namespace TE {
     }
 
     // === Draw the animated TimeEngine Logo ===
-    void LogoLayer::DrawTimeEngineLogo(const ImVec2& center, float radius, ImDrawList* drawList, float time)
+    void LogoLayer::DrawTimeEngineLogo(const TEVector2& center, float radius, TimeGUI::TimeGUIDrawList drawList, float time)
     {
         const float pi = 3.1415926f;
-        const ImU32 color       = IM_COL32(255, 255, 255, 255);
-        const ImU32 faintColor  = IM_COL32(255, 255, 255, 60);
-        const ImU32 strongColor = IM_COL32(255, 255, 255, 200);
+        const unsigned int color       = IM_COL32(255, 255, 255, 255);
+        const unsigned int faintColor  = IM_COL32(255, 255, 255, 60);
+        const unsigned int strongColor = IM_COL32(255, 255, 255, 200);
 
         // === Static Clock Face Circle ===
-        drawList->AddCircle(center, radius, color, 64, 2.5f);
+        drawList.AddCircle(center, radius, color, 64, 2.5f);
 
         // === Hour Tick Marks ===
         for (int i = 0; i < 12; ++i)
         {
             float angle = i * (2.0f * pi / 12);
-            ImVec2 dir = { cosf(angle), sinf(angle) };
-            ImVec2 inner = center + dir * (radius - 4.0f);
-            ImVec2 outer = center + dir * radius;
-            drawList->AddLine(inner, outer, color, 1.8f);
+            TEVector2 dir = { cosf(angle), sinf(angle) };
+            TEVector2 inner = center + dir * (radius - 4.0f);
+            TEVector2 outer = center + dir * radius;
+            drawList.AddLine(inner, outer, color, 1.8f);
         }
 
         // === Rotating Gear Arcs (Separated) ===
@@ -158,12 +158,12 @@ namespace TE {
                 float t0 = startAngle + (endAngle - startAngle) * (j / (float)arcSegments);
                 float t1 = startAngle + (endAngle - startAngle) * ((j + 1) / (float)arcSegments);
 
-                ImVec2 p0_outer = center + ImVec2(cosf(t0), sinf(t0)) * arcRadiusOuter;
-                ImVec2 p1_outer = center + ImVec2(cosf(t1), sinf(t1)) * arcRadiusOuter;
-                ImVec2 p0_inner = center + ImVec2(cosf(t0), sinf(t0)) * arcRadiusInner;
-                ImVec2 p1_inner = center + ImVec2(cosf(t1), sinf(t1)) * arcRadiusInner;
+                TEVector2 p0_outer = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusOuter;
+                TEVector2 p1_outer = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusOuter;
+                TEVector2 p0_inner = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusInner;
+                TEVector2 p1_inner = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusInner;
 
-                drawList->AddQuadFilled(p0_inner, p1_inner, p1_outer, p0_outer, faintColor);
+                drawList.AddQuadFilled(p0_inner, p1_inner, p1_outer, p0_outer, faintColor);
             }
         }
 
@@ -177,16 +177,16 @@ namespace TE {
         float minuteAngle = -pi / 2.0f + minutes * (2.0f * pi / 60.0f);
         float hourAngle   = -pi / 2.0f + hours * (2.0f * pi / 12.0f);
 
-        ImVec2 secDir = { cosf(secondAngle), sinf(secondAngle) };
-        ImVec2 minDir = { cosf(minuteAngle), sinf(minuteAngle) };
-        ImVec2 hrDir  = { cosf(hourAngle), sinf(hourAngle) };
+        TEVector2 secDir = { cosf(secondAngle), sinf(secondAngle) };
+        TEVector2 minDir = { cosf(minuteAngle), sinf(minuteAngle) };
+        TEVector2 hrDir  = { cosf(hourAngle), sinf(hourAngle) };
 
-        drawList->AddLine(center, center + secDir * (radius - 5.0f), IM_COL32(255, 50, 50, 200), 1.5f);     // Second hand
-        drawList->AddLine(center, center + minDir * (radius - 10.0f), strongColor, 2.5f);                  // Minute hand
-        drawList->AddLine(center, center + hrDir * (radius - 20.0f), color, 3.5f);                         // Hour hand
+        drawList.AddLine(center, center + secDir * (radius - 5.0f), IM_COL32(255, 50, 50, 200), 1.5f);     // Second hand
+        drawList.AddLine(center, center + minDir * (radius - 10.0f), strongColor, 2.5f);                  // Minute hand
+        drawList.AddLine(center, center + hrDir * (radius - 20.0f), color, 3.5f);                         // Hour hand
 
         // === Clock Center Pin ===
-        drawList->AddCircleFilled(center, 3.0f, color);
+        drawList.AddCircleFilled(center, 3.0f, color);
     }
 
 }

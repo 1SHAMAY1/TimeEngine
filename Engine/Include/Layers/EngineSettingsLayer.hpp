@@ -3,7 +3,7 @@
 #include "Core/PreRequisites.h"
 #include "Layers/Layer.hpp"
 #include "Core/EngineSettings.hpp"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 
 namespace TE {
 
@@ -19,7 +19,7 @@ namespace TE {
         virtual void OnAttach() override;
         virtual void OnDetach() override;
         virtual void OnUpdate() override;
-        virtual void OnImGuiRender() override;
+        virtual void OnTimeGUIRender() override;
         virtual void OnEvent(Event& event) override;
 
         // ===== UI Control Methods =====
@@ -27,8 +27,8 @@ namespace TE {
         bool IsVisible() const { return m_IsVisible; }
         void ToggleVisibility() { m_IsVisible = !m_IsVisible; }
         
-        void SetWindowPosition(const ImVec2& pos) { m_WindowPos = pos; }
-        void SetWindowSize(const ImVec2& size) { m_WindowSize = size; }
+        void SetWindowPosition(const TEVector2& pos) { m_WindowPos = pos; }
+        void SetWindowSize(const TEVector2& size) { m_WindowSize = size; }
         void SetWindowTitle(const std::string& title) { m_WindowTitle = title; }
 
     private:
@@ -54,8 +54,8 @@ namespace TE {
         
         // ===== UI State =====
         bool m_IsVisible = true;
-        ImVec2 m_WindowPos = ImVec2(50, 50);
-        ImVec2 m_WindowSize = ImVec2(600, 500);
+        TEVector2 m_WindowPos = TEVector2(50, 50);
+        TEVector2 m_WindowSize = TEVector2(600, 500);
         std::string m_WindowTitle = "Engine Settings";
         
         // ===== Settings Cache =====
@@ -134,10 +134,10 @@ namespace TE {
         bool m_SettingsChanged = false;
         
         // ===== UI Colors =====
-        ImVec4 m_HeaderColor = ImVec4(0.2f, 0.6f, 1.0f, 1.0f);
-        ImVec4 m_WarningColor = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
-        ImVec4 m_ErrorColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-        ImVec4 m_SuccessColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+        TEVector4 m_HeaderColor = TEVector4(0.2f, 0.6f, 1.0f, 1.0f);
+        TEVector4 m_WarningColor = TEVector4(1.0f, 0.5f, 0.0f, 1.0f);
+        TEVector4 m_ErrorColor = TEVector4(1.0f, 0.0f, 0.0f, 1.0f);
+        TEVector4 m_SuccessColor = TEVector4(0.0f, 1.0f, 0.0f, 1.0f);
     };
 
 } // namespace TE 

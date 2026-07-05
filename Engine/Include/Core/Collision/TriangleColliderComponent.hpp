@@ -15,19 +15,16 @@ public:
     T_PROPERTY(TEVector2, Vertices1, "V2", TEVector2(0.5f, -0.5f))
     T_PROPERTY(TEVector2, Vertices2, "V3", TEVector2(0.0f, 0.5f))
 
-    T_PROPERTY(bool, isStatic, "Is Static", false)
-    T_PROPERTY(bool, isTrigger, "Is Trigger", false)
-
     TriangleColliderComponent() { shape.type = CollisionType::Triangle; }
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 
-    virtual void OnUpdateShape(const glm::mat4 &worldTransform) override
+    virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
         TEVector2 pts[3] = {Vertices0, Vertices1, Vertices2};
         for (int i = 0; i < 3; i++)
         {
-            glm::vec4 p = worldTransform * glm::vec4(pts[i].x + Offset.x, pts[i].y + Offset.y, 0.0f, 1.0f);
+            TEVector4 p = worldTransform * TEVector4(pts[i].x + Offset.x, pts[i].y + Offset.y, 0.0f, 1.0f);
             shape.triangle.points[i] = {p.x, p.y};
         }
     }

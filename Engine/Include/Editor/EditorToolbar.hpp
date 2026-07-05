@@ -1,9 +1,8 @@
 #pragma once
 #include "Editor/EditorMode.hpp"
 #include "Renderer/Texture.hpp"
-#include "Utility/UIUtils.hpp"
-#include "imgui.h"
-#include "imgui_internal.h"
+#include "Utils/TimeGUI.hpp"
+#include "Utils/TimeGUI.hpp"
 #include <string>
 #include <vector>
 
@@ -13,42 +12,42 @@ namespace TE
 class EditorToolbar
 {
 public:
-    static void OnImGuiRender(const std::shared_ptr<Texture> &saveIcon = nullptr,
+    static void OnTimeGUIRender(const std::shared_ptr<Texture> &saveIcon = nullptr,
                               const std::shared_ptr<Texture> &playIcon = nullptr,
                               const std::shared_ptr<Texture> &brandIcon = nullptr)
     {
         float toolbarHeight = 48.0f;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 7));
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+        TimeGUI::PushStyleVar(TimeGUI::TimeGUIStyleVar_FramePadding, TEVector2(5, 7));
+        TimeGUI::PushStyleVar(TimeGUI::TimeGUIStyleVar_WindowPadding, TEVector2(8, 8));
 
-        if (ImGui::BeginChild("##ToolbarRegion", ImVec2(0, toolbarHeight), false,
-                              ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+        if (TimeGUI::BeginChild("##ToolbarRegion", TEVector2(0, toolbarHeight), false,
+                              TimeGUI::TimeGUIWindowFlags_NoScrollbar | TimeGUI::TimeGUIWindowFlags_NoScrollWithMouse))
         {
             // 0. Branding Icon (Thumbnail)
             if (brandIcon)
             {
-                ImGui::SetCursorPos(ImVec2(10, 8));
-                ImTextureID brandIconID = (ImTextureID)(uintptr_t)brandIcon->GetRendererID();
-                ImGui::Image(brandIconID, ImVec2(32, 32));
-                ImGui::SameLine(0, 15);
+                TimeGUI::SetCursorPos(TEVector2(10, 8));
+                TimeGUI::TimeGUITextureID brandIconID = (TimeGUI::TimeGUITextureID)(uintptr_t)brandIcon->GetRendererID();
+                TimeGUI::Image(brandIconID, TEVector2(32, 32));
+                TimeGUI::SameLine(0, 15);
             }
 
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
+            TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + 4.0f);
 
             // 1. Editor Mode Selector (UE5 style)
             EditorMode *activeMode = EditorModeRegistry::GetActiveMode();
             std::string modeLabel = activeMode ? activeMode->GetName() : "Selection Mode";
 
-            ImGui::SetNextItemWidth(200.0f);
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f); // Center vertically a bit
+            TimeGUI::SetNextItemWidth(200.0f);
+            TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + 4.0f); // Center vertically a bit
 
-            if (ImGui::BeginCombo("##ModeSelector", modeLabel.c_str()))
+            if (TimeGUI::BeginCombo("##ModeSelector", modeLabel.c_str()))
             {
                 for (const auto &mode : EditorModeRegistry::GetModes())
                 {
                     bool isSelected = (activeMode == mode.get());
-                    if (ImGui::Selectable(mode->GetName(), isSelected))
+                    if (TimeGUI::Selectable(mode->GetName(), isSelected))
                     {
                         TE_CORE_INFO("EditorToolbar: Switching to mode '{0}'", mode->GetName());
                         EditorModeRegistry::SetActiveMode(mode->GetName());
@@ -56,74 +55,74 @@ public:
                 }
                 if (EditorModeRegistry::GetModes().empty())
                 {
-                    if (ImGui::Selectable("Selection Mode", true))
+                    if (TimeGUI::Selectable("Selection Mode", true))
                     {
                     }
                 }
-                ImGui::EndCombo();
+                TimeGUI::EndCombo();
             }
 
-            ImGui::SameLine(0, 20);
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f); // Reset
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-            ImGui::SameLine(0, 20);
+            TimeGUI::SameLine(0, 20);
+            TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() - 4.0f); // Reset
+            TimeGUI::SeparatorEx(TimeGUI::TimeGUISeparatorFlags_Vertical);
+            TimeGUI::SameLine(0, 20);
 
             // 2. Core Actions (Save, Play)
-            float btnSize = ImGui::GetFrameHeight();
+            float btnSize = TimeGUI::GetFrameHeight();
 
             // Save Button
             if (saveIcon)
             {
-                ImTextureID saveIconID = (ImTextureID)(uintptr_t)saveIcon->GetRendererID();
-                if (ImGui::ImageButton("##SaveIconBtn", saveIconID, ImVec2(btnSize, btnSize)))
+                TimeGUI::TimeGUITextureID saveIconID = (TimeGUI::TimeGUITextureID)(uintptr_t)saveIcon->GetRendererID();
+                if (TimeGUI::ImageButton("##SaveIconBtn", saveIconID, TEVector2(btnSize, btnSize)))
                 {
                     // Placeholder for Save
                 }
             }
-            else if (ImGui::Button("S", ImVec2(btnSize, btnSize)))
+            else if (TimeGUI::Button("S", TEVector2(btnSize, btnSize)))
             {
                 // Placeholder for Save
             }
-            if (ImGui::IsItemHovered())
-                ImGui::SetTooltip("Save Scene");
+            if (TimeGUI::IsItemHovered())
+                TimeGUI::SetTooltip("Save Scene");
 
-            ImGui::SameLine();
+            TimeGUI::SameLine();
 
             // Play/Stop Button
             static bool isPlaying = false;
             if (isPlaying)
             {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-                if (ImGui::Button("Stop", ImVec2(btnSize * 1.5f, btnSize)))
+                TimeGUI::PushStyleColor(TimeGUI::TimeGUICol_Button, TEColor(0.8f, 0.2f, 0.2f, 1.0f));
+                if (TimeGUI::Button("Stop", TEVector2(btnSize * 1.5f, btnSize)))
                     isPlaying = false;
-                ImGui::PopStyleColor();
+                TimeGUI::PopStyleColor();
             }
             else
             {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.7f, 0.2f, 0.4f));
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 0.6f));
+                TimeGUI::PushStyleColor(TimeGUI::TimeGUICol_Button, TEColor(0.0f, 0.0f, 0.0f, 0.0f));
+                TimeGUI::PushStyleColor(TimeGUI::TimeGUICol_ButtonHovered, TEColor(0.2f, 0.7f, 0.2f, 0.4f));
+                TimeGUI::PushStyleColor(TimeGUI::TimeGUICol_ButtonActive, TEColor(0.2f, 0.7f, 0.2f, 0.6f));
 
                 if (playIcon)
                 {
-                    ImTextureID playIconID = (ImTextureID)(uintptr_t)playIcon->GetRendererID();
-                    if (ImGui::ImageButton("##PlayIconBtn", playIconID, ImVec2(btnSize * 1.5f - 6, btnSize - 6)))
+                    TimeGUI::TimeGUITextureID playIconID = (TimeGUI::TimeGUITextureID)(uintptr_t)playIcon->GetRendererID();
+                    if (TimeGUI::ImageButton("##PlayIconBtn", playIconID, TEVector2(btnSize * 1.5f - 6, btnSize - 6)))
                         isPlaying = true;
                 }
                 else
                 {
-                    if (ImGui::Button("Play", ImVec2(btnSize * 1.5f, btnSize)))
+                    if (TimeGUI::Button("Play", TEVector2(btnSize * 1.5f, btnSize)))
                         isPlaying = true;
                 }
-                ImGui::PopStyleColor(3);
+                TimeGUI::PopStyleColor(3);
             }
 
-            ImGui::SameLine(0, 20);
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-            ImGui::SameLine(0, 20);
+            TimeGUI::SameLine(0, 20);
+            TimeGUI::SeparatorEx(TimeGUI::TimeGUISeparatorFlags_Vertical);
+            TimeGUI::SameLine(0, 20);
         }
-        ImGui::EndChild();
-        ImGui::PopStyleVar(2);
+        TimeGUI::EndChild();
+        TimeGUI::PopStyleVar(2);
     }
 };
 

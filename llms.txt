@@ -49,6 +49,28 @@
 | Naming | PascalCase classes, camelCase variables, SCREAMING_SNAKE_CASE macros |
 | Formatting | `.clang-format` enforced, 4-space indent |
 
+## Vendor Wrapper Mapping
+All third-party libraries have strict wrappers that isolate raw vendor classes, headers, and APIs. Direct calls to vendor headers in engine code are prohibited.
+
+- **ImGui (UI/Editor Layouts)**:
+  - Wrapper Headers: [TimeGUI.hpp](file:///E:/TimeEngine/Engine/Include/Utils/TimeGUI.hpp)
+  - Wrapper Sources: [TimeGUI.cpp](file:///E:/TimeEngine/Engine/src/Utils/TimeGUI.cpp)
+  - Lifecycle Layer: [TimeGUILayer.cpp](file:///E:/TimeEngine/Engine/src/Core/Layers/TimeGUILayer.cpp)
+- **OpenGL/Glad (Graphics/Renderer)**:
+  - Batched renderer: [Renderer2D.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Renderer2D.hpp) / [Renderer2D.cpp](file:///E:/TimeEngine/Engine/src/Renderer/Renderer2D.cpp)
+  - Shaders: [Shader.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Shader.hpp)
+  - Textures: [Texture.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Texture.hpp)
+  - Colors: [TEColor.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/TEColor.hpp) / [TEColor.cpp](file:///E:/TimeEngine/Engine/src/Renderer/TEColor.cpp)
+- **GLFW (Windowing & OS Input Integration)**:
+  - OS abstraction interface: [IWindow.hpp](file:///E:/TimeEngine/Engine/Include/Core/IWindow.hpp)
+  - Windows-specific implementation: [WindowsWindow.cpp](file:///E:/TimeEngine/Engine/src/Window/WindowsWindow.cpp)
+- **Customizable Logger (Logging Backend)**:
+  - System logging interface: [Log.h](file:///E:/TimeEngine/Engine/src/Core/Log.h)
+- **GLM (Mathematics / Vectors / Matrices)**:
+  - Math & Vectors wrapper: [MathUtils.hpp](file:///E:/TimeEngine/Engine/Include/Utils/MathUtils.hpp)
+- **stb_image / Asset Importers (Image & Model Loaders)**:
+  - Asset Manager / Importers: [AssetManager.hpp](file:///E:/TimeEngine/Engine/Include/Core/Asset/AssetManager.hpp) / [AssetManager.cpp](file:///E:/TimeEngine/Engine/src/Core/Asset/AssetManager.cpp)
+
 ## File Layout (partial — extend as codebase grows)
 ```
 Engine/
@@ -80,3 +102,4 @@ If Premake errors: `git submodule update --init --recursive`
 - **Time Manipulation is a roadmap goal**, not a callable API.
 - When suggesting new components, follow the `Engine/Include/Core/Scene/` pattern and match naming conventions above.
 - When editing renderer code, check `Renderer2D.cpp` for the batch flush — that is where per-frame component reads happen.
+- **GUI and Editor Rendering Rule**: Never use raw `ImGui` or include `imgui.h`/`imgui_internal.h` outside of the wrapper layer. All engine layers and systems MUST use the clean non-vendor GUI wrapper namespace (`TE::TimeGUI`) and wrapper classes (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`, etc.). Do not expose or return vendor types (like `ImVec4`, `ImDrawList*`, `ImFont*`) in function signatures or variables outside the wrapper implementation (`TimeGUI.cpp` / `TimeGUILayer.cpp`).

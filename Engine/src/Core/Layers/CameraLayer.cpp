@@ -1,3 +1,4 @@
+#include "Utils/TimeGUI.hpp"
 #include "Layers/CameraLayer.hpp"
 #include "Renderer/VertexBuffer.hpp"
 #include "Renderer/IndexBuffer.hpp"
@@ -5,7 +6,7 @@
 #include "Core/Log.h"
 #include "Core/KeyCodes.hpp"
 #include "Input/Input.hpp"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 #include <chrono>
 #include "Core/Events/MouseEvent.h"
 #include <cmath> // Required for fabs
@@ -130,32 +131,32 @@ namespace TE {
         TE_CORE_INFO("CameraLayer: OnUpdate completed.");
     }
 
-    void CameraLayer::OnImGuiRender() {
-        ImGui::Begin("Camera Controls");
+    void CameraLayer::OnTimeGUIRender() {
+        TimeGUI::Begin("Camera Controls");
 
         // Title and instructions
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "🎮 Camera Controls");
-        ImGui::Separator();
+        TimeGUI::TextColored(TEVector4(1.0f, 1.0f, 0.0f, 1.0f), "🎮 Camera Controls");
+        TimeGUI::Separator();
 
         // Movement controls
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Movement Controls:");
-        ImGui::TextColored(m_WPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), 
+        TimeGUI::TextColored(TEVector4(0.0f, 1.0f, 0.0f, 1.0f), "Movement Controls:");
+        TimeGUI::TextColored(m_WPressed ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f), 
             "W - Move Up %s", m_WPressed ? " [ACTIVE]" : "");
-        ImGui::TextColored(m_SPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), 
+        TimeGUI::TextColored(m_SPressed ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f), 
             "S - Move Down %s", m_SPressed ? " [ACTIVE]" : "");
-        ImGui::TextColored(m_APressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), 
+        TimeGUI::TextColored(m_APressed ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f), 
             "A - Move Left %s", m_APressed ? " [ACTIVE]" : "");
-        ImGui::TextColored(m_DPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), 
+        TimeGUI::TextColored(m_DPressed ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f), 
             "D - Move Right %s", m_DPressed ? " [ACTIVE]" : "");
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Rotation controls
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Rotation Controls:");
-        ImGui::TextColored(m_QPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), 
+        TimeGUI::TextColored(TEVector4(0.0f, 1.0f, 1.0f, 1.0f), "Rotation Controls:");
+        TimeGUI::TextColored(m_QPressed ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f), 
             "Q - Rotate Left %s", m_QPressed ? " [ACTIVE]" : "");
-        ImGui::TextColored(m_EPressed ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f), 
+        TimeGUI::TextColored(m_EPressed ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f), 
             "E - Rotate Right %s", m_EPressed ? " [ACTIVE]" : "");
-        ImGui::Separator();
+        TimeGUI::Separator();
 
         // Zoom controls
         bool zoomInActive = Input::IsKeyPressed(Key::Z) || Input::IsKeyPressed(Key::KPAdd);
@@ -164,25 +165,25 @@ namespace TE {
         if (scrollDelta.y < 0) zoomInActive = true;
         if (scrollDelta.y > 0) zoomOutActive = true;
 
-        ImGui::TextColored(ImVec4(0.0f, 0.8f, 1.0f, 1.0f), "Zoom Controls:");
-        ImGui::TextColored(zoomInActive ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f,1.0f,1.0f,1.0f), 
+        TimeGUI::TextColored(TEVector4(0.0f, 0.8f, 1.0f, 1.0f), "Zoom Controls:");
+        TimeGUI::TextColored(zoomInActive ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f,1.0f,1.0f,1.0f), 
             "Z / + / Scroll Up - Zoom In %s", zoomInActive ? "[ACTIVE]" : "");
-        ImGui::TextColored(zoomOutActive ? ImVec4(1.0f, 1.0f, 0.0f, 1.0f) : ImVec4(1.0f,1.0f,1.0f,1.0f), 
+        TimeGUI::TextColored(zoomOutActive ? TEVector4(1.0f, 1.0f, 0.0f, 1.0f) : TEVector4(1.0f,1.0f,1.0f,1.0f), 
             "X / - / Scroll Down - Zoom Out %s", zoomOutActive ? "[ACTIVE]" : "");
-        ImGui::Text("Current Zoom: %.2f", m_Zoom);
-        ImGui::SliderFloat("Zoom Speed", &m_ZoomSpeed, 0.05f, 2.0f, "%.2f");
-        ImGui::Separator();
+        TimeGUI::Text("Current Zoom: %.2f", m_Zoom);
+        TimeGUI::SliderFloat("Zoom Speed", &m_ZoomSpeed, 0.05f, 2.0f, "%.2f");
+        TimeGUI::Separator();
 
         // Current status
-        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Current Status:");
-        ImGui::Text("Position: (%.2f, %.2f, %.2f)", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
-        ImGui::Text("Rotation: %.2f degrees", m_CameraRotation);
-        ImGui::Text("Movement Speed: %.2f units/s", m_MovementSpeed);
-        ImGui::Text("Rotation Speed: %.2f deg/s", m_RotationSpeed);
-        ImGui::Separator();
+        TimeGUI::TextColored(TEVector4(1.0f, 0.5f, 0.0f, 1.0f), "Current Status:");
+        TimeGUI::Text("Position: (%.2f, %.2f, %.2f)", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
+        TimeGUI::Text("Rotation: %.2f degrees", m_CameraRotation);
+        TimeGUI::Text("Movement Speed: %.2f units/s", m_MovementSpeed);
+        TimeGUI::Text("Rotation Speed: %.2f deg/s", m_RotationSpeed);
+        TimeGUI::Separator();
 
         // Reset button
-        if (ImGui::Button("🔄 Reset Camera", ImVec2(120, 30))) {
+        if (TimeGUI::Button("🔄 Reset Camera", TEVector2(120, 30))) {
             m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
             m_CameraRotation = 0.0f;
             m_Zoom = 1.0f;
@@ -194,13 +195,13 @@ namespace TE {
         }
 
         // Speed controls
-        ImGui::Separator();
-        ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Speed Settings:");
-        ImGui::SliderFloat("Movement Speed", &m_MovementSpeed, 0.5f, 10.0f, "%.2f");
-        ImGui::SliderFloat("Rotation Speed", &m_RotationSpeed, 10.0f, 200.0f, "%.1f");
+        TimeGUI::Separator();
+        TimeGUI::TextColored(TEVector4(1.0f, 0.8f, 0.0f, 1.0f), "Speed Settings:");
+        TimeGUI::SliderFloat("Movement Speed", &m_MovementSpeed, 0.5f, 10.0f, "%.2f");
+        TimeGUI::SliderFloat("Rotation Speed", &m_RotationSpeed, 10.0f, 200.0f, "%.1f");
 
-        ImGui::Separator();
-        ImGui::End();
+        TimeGUI::Separator();
+        TimeGUI::End();
     }
 
     void CameraLayer::HandleInput(float deltaTime) {

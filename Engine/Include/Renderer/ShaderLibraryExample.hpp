@@ -193,7 +193,7 @@ namespace TE {
         
         // Update profiling
         profilingLayer->OnUpdate();
-        profilingLayer->OnImGuiRender();
+        profilingLayer->OnTimeGUIRender();
         
         // Get performance metrics
         const auto& metrics = profilingLayer->GetCurrentMetrics();

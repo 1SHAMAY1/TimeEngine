@@ -33,6 +33,9 @@ public:
 
     virtual void* GetGLLoaderFunction() const = 0;
 
+    static void Terminate();
+    static void* GetCurrentContext();
+    static void MakeContextCurrent(void* context);
 
     static IWindow* Create(const WindowProps& props = WindowProps());
 };
