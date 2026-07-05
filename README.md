@@ -109,8 +109,17 @@ The engine utilizes a modular ECS architecture. Below is the current development
 
 1.  **Clone**: `git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git`
 2.  **Generate**: Run `Scripts/GenerateProjectFiles.bat` to create the Visual Studio solution.
-3.  **Build**: Open `TimeEngine.sln` and build the **Sandbox** project in `Debug` or `Release`.
-4.  **Launch**: Run `Sandbox.exe` to access the Project Hub.
+3.  **Build**: Open `TimeEngine.sln` and build the **TimeEditor** project in `Debug` or `Release`.
+4.  **Launch**: Run `TimeEditor.exe` to access the Project Hub.
+
+---
+
+## 🤖 LLM-Assisted Development
+
+TimeEngine is optimized for development with AI coding assistants (e.g., Gemini, Claude, Cursor). We provide structured context files to help LLMs understand our architecture, folder structure, and vendor wrapper constraints immediately:
+
+*   [llms.md](file:///E:/TimeEngine/llms.md) / [llms.txt](file:///E:/TimeEngine/llms.txt): Detailed mapping of project architectures, directory structures, vendor library wrapping rules (e.g., `TimeGUI` wrapper for ImGui, `MathUtils` for GLM), and coding conventions.
+*   [.agentsrules](file:///E:/TimeEngine/.agentsrules): System-level instructions loaded by agentic frameworks to enforce coding standards automatically.
 
 ---
 
@@ -121,3 +130,4 @@ The engine utilizes a modular ECS architecture. Below is the current development
 
 > [!IMPORTANT]
 > This engine is under **Active Development**. Modules marked as "In Development" or "Experimental" may undergo breaking changes.
+
