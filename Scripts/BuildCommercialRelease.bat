@@ -65,12 +65,12 @@ if exist "%DIST_DIR%" rd /s /q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 
 :: Copy Exe and DLLs
-:: 'Sandbox' project output contains the Engine.dll and Sandbox.exe from the build output
-:: Path scheme: Bin\Dist-windows-x86_64\Sandbox
-set "BUILD_OUTPUT=%ROOT_DIR%\Bin\Dist-windows-x86_64\Sandbox"
+:: 'TimeEditor' project output contains the Engine.dll and TimeEditor.exe from the build output
+:: Path scheme: Bin\Dist-windows-x86_64\TimeEditor
+set "BUILD_OUTPUT=%ROOT_DIR%\Bin\Dist-windows-x86_64\TimeEditor"
 
-if not exist "%BUILD_OUTPUT%\Sandbox.exe" (
-    echo [!] Error: Build output not found at %BUILD_OUTPUT%\Sandbox.exe
+if not exist "%BUILD_OUTPUT%\TimeEditor.exe" (
+    echo [!] Error: Build output not found at %BUILD_OUTPUT%\TimeEditor.exe
     pause
     exit /b 1
 )
@@ -89,11 +89,11 @@ if exist "%ROOT_DIR%\Resources" (
 
 :: Create a Run script for convenience
 echo @echo off > "%DIST_DIR%\RunEngine.bat"
-echo start "" "Sandbox.exe" >> "%DIST_DIR%\RunEngine.bat"
+echo start "" "TimeEditor.exe" >> "%DIST_DIR%\RunEngine.bat"
 
 echo.
 echo [✅ Packaging Complete!]
-echo [Executable located at: %DIST_DIR%\Sandbox.exe]
+echo [Executable located at: %DIST_DIR%\TimeEditor.exe]
 echo [You can now zip the '%DIST_DIR%' folder and distribute it.]
 echo.
 pause

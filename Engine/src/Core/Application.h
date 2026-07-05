@@ -1,11 +1,12 @@
 #pragma once
+#include "Utils/TimeGUI.hpp"
 
 #include "Layers/LayerStack.hpp"
 #include "PreRequisites.h"
 #include "Window/IWindow.hpp"
 #ifdef TE_EDITOR
-#include "ImGUI/ImGuiLayer.hpp"
 #endif
+#include "Layers/TimeGUILayer.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/VertexBuffer.hpp"
@@ -44,7 +45,7 @@ private:
 
     LayerStack m_LayerStack;
 #ifdef TE_EDITOR
-    ImGuiLayer *m_ImGuiLayer = nullptr;
+    TimeGUILayer *m_TimeGUILayer = nullptr;
 #endif
 
     // Deferred layer addition
@@ -60,6 +61,6 @@ private:
     std::unique_ptr<Shader> m_Shader;
 };
 
-// To be defined by the client (e.g., Sandbox app)
+// To be defined by the client (e.g., TimeEditor app)
 Application *CreateApplication(int argc, char **argv);
 } // namespace TE

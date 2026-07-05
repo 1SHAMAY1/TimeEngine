@@ -12,18 +12,16 @@ public:
 
     T_PROPERTY(TEVector2, Offset, "Offset", TEVector2(0.0f, 0.0f))
     T_PROPERTY(TEVector2, Size, "Size", TEVector2(1.0f, 1.0f))
-    T_PROPERTY(bool, isStatic, "Is Static", false)
-    T_PROPERTY(bool, isTrigger, "Is Trigger", false)
 
     BoxColliderComponent() { shape.type = CollisionType::AABB; }
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 
-    virtual void OnUpdateShape(const glm::mat4 &worldTransform) override
+    virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
         TEVector2 pos = {worldTransform[3].x + Offset.x, worldTransform[3].y + Offset.y};
-        TEVector2 halfSize = {Size.x * 0.5f * glm::length(glm::vec3(worldTransform[0])),
-                              Size.y * 0.5f * glm::length(glm::vec3(worldTransform[1]))};
+        TEVector2 halfSize = {Size.x * 0.5f * TEVector::Length(TEVector(worldTransform[0])),
+                              Size.y * 0.5f * TEVector::Length(TEVector(worldTransform[1]))};
         shape.aabb.min = {pos.x - halfSize.x, pos.y - halfSize.y};
         shape.aabb.max = {pos.x + halfSize.x, pos.y + halfSize.y};
     }

@@ -1,8 +1,7 @@
 #pragma once
 #include "Renderer/RenderBatcher.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Utility/MathUtils.hpp"
-#include <glm/glm.hpp>
+#include "Utils/MathUtils.hpp"
 #include <memory>
 #include <string>
 
@@ -17,15 +16,15 @@ public:
     Renderer2D();
     virtual ~Renderer2D() override;
 
-    void BeginFrame(const glm::mat4 &viewProjection) override;
+    void BeginFrame(const TE::TEMatrix4 &viewProjection) override;
     void Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
-                const glm::mat4 &transform, uint32_t indexCount) override;
+                const TE::TEMatrix4 &transform, uint32_t indexCount) override;
     void EndFrame() override;
     void Flush() override;
 
     // 2D-specific API (example: submit a quad)
     void SubmitQuad(const TEVector2 &position, const TEVector2 &size, const std::shared_ptr<Material> &material);
-    void SubmitQuad(const glm::mat4 &transform, const std::shared_ptr<Material> &material, int blendMode = 0);
+    void SubmitQuad(const TE::TEMatrix4 &transform, const std::shared_ptr<Material> &material, int blendMode = 0);
     void SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3,
                         const std::shared_ptr<Material> &material);
     void SubmitCircle(const TEVector2 &center, float radius, const std::shared_ptr<Material> &material);

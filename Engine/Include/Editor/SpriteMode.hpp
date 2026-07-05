@@ -1,17 +1,17 @@
 #pragma once
+#include "Core/Asset/AssetManager.hpp"
 #include "Editor/EditorMode.hpp"
 #include "Editor/SpriteModeLibrary.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/Framebuffer.hpp"
-#include "Utility/ImageUtils.hpp"
+#include "Renderer/RenderCommand.hpp"
 #include "Utils/PlatformUtils.hpp"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <backends/imgui_impl_opengl3.h>
 #include <cmath>
 #include <cstring>
 #include <functional>
-#include <glad/glad.h>
 #include <regex>
 #include <set>
 #include <sstream>
@@ -66,23 +66,23 @@ inline size_t FindIgnoreCase(const std::string &str, const std::string &target)
     return std::string::npos;
 }
 
-inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2> &verts, float radius)
+inline std::vector<TEVector2> GetRoundedPolygonPoints(const std::vector<TEVector2> &verts, float radius)
 {
     if (std::abs(radius) <= 0.0001f || verts.size() < 3)
         return verts;
-    std::vector<ImVec2> roundedVerts;
+    std::vector<TEVector2> roundedVerts;
     int n = (int)verts.size();
     bool isConcave = (radius < 0.0f);
     float absRadius = std::abs(radius);
 
     for (int i = 0; i < n; i++)
     {
-        ImVec2 v = verts[i];
-        ImVec2 v_prev = verts[(i - 1 + n) % n];
-        ImVec2 v_next = verts[(i + 1) % n];
+        TEVector2 v = verts[i];
+        TEVector2 v_prev = verts[(i - 1 + n) % n];
+        TEVector2 v_next = verts[(i + 1) % n];
 
-        ImVec2 d1 = ImVec2(v_prev.x - v.x, v_prev.y - v.y);
-        ImVec2 d2 = ImVec2(v_next.x - v.x, v_next.y - v.y);
+        TEVector2 d1 = TEVector2(v_prev.x - v.x, v_prev.y - v.y);
+        TEVector2 d2 = TEVector2(v_next.x - v.x, v_next.y - v.y);
 
         float len1 = sqrtf(d1.x * d1.x + d1.y * d1.y);
         float len2 = sqrtf(d2.x * d2.x + d2.y * d2.y);
@@ -95,13 +95,13 @@ inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2> &ve
 
         float r = std::min({absRadius, len1 * 0.5f, len2 * 0.5f});
 
-        ImVec2 p1 = ImVec2(v.x + (d1.x / len1) * r, v.y + (d1.y / len1) * r);
-        ImVec2 p2 = ImVec2(v.x + (d2.x / len2) * r, v.y + (d2.y / len2) * r);
+        TEVector2 p1 = TEVector2(v.x + (d1.x / len1) * r, v.y + (d1.y / len1) * r);
+        TEVector2 p2 = TEVector2(v.x + (d2.x / len2) * r, v.y + (d2.y / len2) * r);
 
-        ImVec2 ctrl = v;
+        TEVector2 ctrl = v;
         if (isConcave)
         {
-            ctrl = ImVec2(p1.x + p2.x - v.x, p1.y + p2.y - v.y);
+            ctrl = TEVector2(p1.x + p2.x - v.x, p1.y + p2.y - v.y);
         }
 
         const int steps = 4;
@@ -109,8 +109,8 @@ inline std::vector<ImVec2> GetRoundedPolygonPoints(const std::vector<ImVec2> &ve
         {
             float t = (float)s / (float)steps;
             float omt = 1.0f - t;
-            ImVec2 pt = ImVec2(omt * omt * p1.x + 2.0f * omt * t * ctrl.x + t * t * p2.x,
-                               omt * omt * p1.y + 2.0f * omt * t * ctrl.y + t * t * p2.y);
+            TEVector2 pt = TEVector2(omt * omt * p1.x + 2.0f * omt * t * ctrl.x + t * t * p2.x,
+                                     omt * omt * p1.y + 2.0f * omt * t * ctrl.y + t * t * p2.y);
             roundedVerts.push_back(pt);
         }
     }
@@ -137,12 +137,12 @@ enum class VectorShapeType
 struct VectorElement
 {
     VectorShapeType Type;
-    std::vector<ImVec2> Points;                // Normalized coordinates (0.0 to 1.0)
-    std::vector<std::vector<ImVec2>> SubPaths; // Multi-path for Merged elements (each closed independently)
-    float Radius = 0.0f;                       // Normalized radius / RadiusX
-    float RadiusY = 0.0f;                      // Normalized RadiusY (for flattening)
-    ImVec4 FillColor = ImVec4(1, 1, 1, 1);
-    ImVec4 StrokeColor = ImVec4(0, 0, 0, 1);
+    std::vector<TEVector2> Points;                // Normalized coordinates (0.0 to 1.0)
+    std::vector<std::vector<TEVector2>> SubPaths; // Multi-path for Merged elements (each closed independently)
+    float Radius = 0.0f;                          // Normalized radius / RadiusX
+    float RadiusY = 0.0f;                         // Normalized RadiusY (for flattening)
+    TEVector4 FillColor = TEVector4(1, 1, 1, 1);
+    TEVector4 StrokeColor = TEVector4(0, 0, 0, 1);
     float StrokeThickness = 1.0f;
     float StrokeRounding = 0.0f;
     float FillRounding = 0.0f;
@@ -238,12 +238,12 @@ public:
         m_IsUndoingRedoing = false;
     }
 
-    void AddColorToHistory(ImVec4 color)
+    void AddColorToHistory(TEVector4 color)
     {
         if (color.w < 0.001f)
             return;
         auto it = std::find_if(m_ColorHistory.begin(), m_ColorHistory.end(),
-                               [&](ImVec4 c)
+                               [&](TEVector4 c)
                                {
                                    return std::abs(c.x - color.x) < 0.001f && std::abs(c.y - color.y) < 0.001f &&
                                           std::abs(c.z - color.z) < 0.001f && std::abs(c.w - color.w) < 0.001f;
@@ -265,16 +265,16 @@ public:
 
         // Seed with a premium palette of default colors
         m_ColorHistory = {
-            ImVec4(1.0f, 1.0f, 1.0f, 1.0f),    // White
-            ImVec4(0.0f, 0.0f, 0.0f, 1.0f),    // Black
-            ImVec4(0.85f, 0.15f, 0.15f, 1.0f), // Red
-            ImVec4(0.15f, 0.75f, 0.15f, 1.0f), // Green
-            ImVec4(0.15f, 0.15f, 0.85f, 1.0f), // Blue
-            ImVec4(0.9f, 0.85f, 0.15f, 1.0f),  // Yellow
-            ImVec4(0.15f, 0.75f, 0.75f, 1.0f), // Cyan
-            ImVec4(0.75f, 0.15f, 0.75f, 1.0f), // Magenta
-            ImVec4(0.5f, 0.5f, 0.5f, 1.0f),    // Gray
-            ImVec4(0.75f, 0.75f, 0.75f, 1.0f)  // Light Gray
+            TEVector4(1.0f, 1.0f, 1.0f, 1.0f),    // White
+            TEVector4(0.0f, 0.0f, 0.0f, 1.0f),    // Black
+            TEVector4(0.85f, 0.15f, 0.15f, 1.0f), // Red
+            TEVector4(0.15f, 0.75f, 0.15f, 1.0f), // Green
+            TEVector4(0.15f, 0.15f, 0.85f, 1.0f), // Blue
+            TEVector4(0.9f, 0.85f, 0.15f, 1.0f),  // Yellow
+            TEVector4(0.15f, 0.75f, 0.75f, 1.0f), // Cyan
+            TEVector4(0.75f, 0.15f, 0.75f, 1.0f), // Magenta
+            TEVector4(0.5f, 0.5f, 0.5f, 1.0f),    // Gray
+            TEVector4(0.75f, 0.75f, 0.75f, 1.0f)  // Light Gray
         };
     }
 
@@ -293,11 +293,11 @@ public:
         }
     }
 
-    virtual void OnImGuiRender() override
+    virtual void OnTimeGUIRender() override
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12, 12));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(10, 10));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 12.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(12, 12));
 
         auto Gv = [&](const char *n) -> float &
         {
@@ -308,26 +308,27 @@ public:
             return def;
         };
 
-        auto DrawGlassHeader = [&](const char *label, ImVec4 color)
+        auto DrawGlassHeader = [&](const char *label, TEVector4 color)
         {
-            ImGui::BeginChild(label, ImVec2(0, 42), false, ImGuiWindowFlags_NoScrollbar);
-            ImDrawList *dl = ImGui::GetWindowDrawList();
-            ImVec2 p = ImGui::GetCursorScreenPos(), av = ImGui::GetContentRegionAvail();
-            ImU32 colBG = ImGui::ColorConvertFloat4ToU32(ImVec4(color.x * 0.2f, color.y * 0.2f, color.z * 0.2f, 0.6f));
-            ImU32 colLine = ImGui::ColorConvertFloat4ToU32(ImVec4(color.x, color.y, color.z, 0.8f));
-            dl->AddRectFilled(p, ImVec2(p.x + av.x, p.y + 36), colBG, 18.0f);
-            dl->AddRect(p, ImVec2(p.x + av.x, p.y + 36), colLine, 18.0f, 0, 1.5f);
-            ImGui::SetCursorPos(ImVec2(18, 10));
-            ImGui::PushStyleColor(ImGuiCol_Text, color);
-            ImGui::Text(label);
-            ImGui::PopStyleColor();
-            ImGui::EndChild();
+            TimeGUI::BeginChild(label, TEVector2(0, 42), false, TimeGUIWindowFlags_NoScrollbar);
+            TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+            TEVector2 p = TimeGUI::GetCursorScreenPos(), av = TimeGUI::GetContentRegionAvail();
+            ImU32 colBG =
+                TimeGUI::ColorConvertFloat4ToU32(TEVector4(color.x * 0.2f, color.y * 0.2f, color.z * 0.2f, 0.6f));
+            ImU32 colLine = TimeGUI::ColorConvertFloat4ToU32(TEVector4(color.x, color.y, color.z, 0.8f));
+            dl->AddRectFilled(p, TEVector2(p.x + av.x, p.y + 36), colBG, 18.0f);
+            dl->AddRect(p, TEVector2(p.x + av.x, p.y + 36), colLine, 18.0f, 0, 1.5f);
+            TimeGUI::SetCursorPos(TEVector2(18, 10));
+            TimeGUI::PushStyleColor(TimeGUICol_Text, color);
+            TimeGUI::Text(label);
+            TimeGUI::PopStyleColor();
+            TimeGUI::EndChild();
         };
 
         auto DrawColoredCode = [&](const char *buf, float h = -1.0f)
         {
-            ImGui::BeginChild((std::string(buf).substr(0, 5) + "_c").c_str(), ImVec2(-1, h), true,
-                              ImGuiWindowFlags_HorizontalScrollbar);
+            TimeGUI::BeginChild((std::string(buf).substr(0, 5) + "_c").c_str(), TEVector2(-1, h), true,
+                                TimeGUIWindowFlags_HorizontalScrollbar);
             std::string code = buf, word;
             bool inC = false;
             auto &reg = m_Registry;
@@ -335,7 +336,7 @@ public:
             {
                 if (word.empty())
                     return;
-                ImVec4 col = ImVec4(1, 1, 1, 1);
+                TEVector4 col = TEVector4(1, 1, 1, 1);
                 bool fnd = false;
                 for (auto &f : reg)
                     if (EqualsIgnoreCase(word, f.Name))
@@ -350,22 +351,22 @@ public:
                     for (auto &c : lowerWord)
                         c = tolower(c);
                     if (lowerWord == "if" || lowerWord == "else" || lowerWord == "for" || lowerWord == "return")
-                        col = ImVec4(1, 0.4f, 0.4f, 1);
+                        col = TEVector4(1, 0.4f, 0.4f, 1);
                     else if (lowerWord == "void" || lowerWord == "float" || lowerWord == "dt" || lowerWord == "vec2" ||
                              lowerWord == "color")
-                        col = ImVec4(0.4f, 0.6f, 1, 1);
+                        col = TEVector4(0.4f, 0.6f, 1, 1);
                     else
                     {
                         for (auto &k : m_Keywords)
                             if (EqualsIgnoreCase(word, k.Name))
                             {
-                                col = ImVec4(1, 1, 0.4f, 1);
+                                col = TEVector4(1, 1, 0.4f, 1);
                                 break;
                             }
                     }
                 }
-                ImGui::TextColored(col, word.c_str());
-                ImGui::SameLine(0, 0);
+                TimeGUI::TextColored(col, word.c_str());
+                TimeGUI::SameLine(0, 0);
                 word.clear();
             };
             for (size_t i = 0; i < code.length(); ++i)
@@ -375,7 +376,7 @@ public:
                     word += code[i];
                     if (code[i] == '\n')
                     {
-                        ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.4f, 1), word.c_str());
+                        TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 0.4f, 1), word.c_str());
                         word.clear();
                         inC = false;
                     }
@@ -396,22 +397,22 @@ public:
                     Flush();
                     if (code[i] == ' ' || code[i] == '\t')
                     {
-                        ImGui::TextUnformatted(code[i] == ' ' ? " " : "    ");
-                        ImGui::SameLine(0, 0);
+                        TimeGUI::TextUnformatted(code[i] == ' ' ? " " : "    ");
+                        TimeGUI::SameLine(0, 0);
                     }
                     else if (code[i] == '\n')
-                        ImGui::NewLine();
+                        TimeGUI::NewLine();
                     else
                     {
                         std::string s;
                         s += code[i];
-                        ImGui::TextUnformatted(s.c_str());
-                        ImGui::SameLine(0, 0);
+                        TimeGUI::TextUnformatted(s.c_str());
+                        TimeGUI::SameLine(0, 0);
                     }
                 }
             }
             Flush();
-            ImGui::EndChild();
+            TimeGUI::EndChild();
         };
 
         auto Scan = [&](const char *buf)
@@ -469,214 +470,219 @@ public:
         static std::string activeF = "";
 
         // Mode Switcher Header Toolbar
-        ImGui::BeginChild("##ModeToolbar", ImVec2(0, 36), false,
-                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+        TimeGUI::BeginChild("##ModeToolbar", TEVector2(0, 36), false,
+                            TimeGUIWindowFlags_NoScrollbar | TimeGUIWindowFlags_NoScrollWithMouse);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 6.0f);
 
-        ImGui::AlignTextToFramePadding();
-        ImGui::Text("Sprite Mode:");
-        ImGui::SameLine();
+        TimeGUI::AlignTextToFramePadding();
+        TimeGUI::Text("Sprite Mode:");
+        TimeGUI::SameLine();
 
-        ImVec4 activeCol = ImVec4(0.2f, 0.45f, 0.8f, 0.8f);
-        ImVec4 inactiveCol = ImVec4(0.12f, 0.12f, 0.14f, 0.5f);
+        TEVector4 activeCol = TEVector4(0.2f, 0.45f, 0.8f, 0.8f);
+        TEVector4 inactiveCol = TEVector4(0.12f, 0.12f, 0.14f, 0.5f);
 
-        ImGui::PushStyleColor(ImGuiCol_Button, m_CreationMode == SpriteCreationMode::Code ? activeCol : inactiveCol);
-        if (ImGui::Button("Code Editor", ImVec2(160, 26)))
+        TimeGUI::PushStyleColor(TimeGUICol_Button,
+                                m_CreationMode == SpriteCreationMode::Code ? activeCol : inactiveCol);
+        if (TimeGUI::Button("Code Editor", TEVector2(160, 26)))
             m_CreationMode = SpriteCreationMode::Code;
-        ImGui::PopStyleColor();
+        TimeGUI::PopStyleColor();
 
-        ImGui::SameLine();
+        TimeGUI::SameLine();
 
-        ImGui::PushStyleColor(ImGuiCol_Button, m_CreationMode == SpriteCreationMode::Vector ? activeCol : inactiveCol);
-        if (ImGui::Button("Vector Editor", ImVec2(120, 26)))
+        TimeGUI::PushStyleColor(TimeGUICol_Button,
+                                m_CreationMode == SpriteCreationMode::Vector ? activeCol : inactiveCol);
+        if (TimeGUI::Button("Vector Editor", TEVector2(120, 26)))
             m_CreationMode = SpriteCreationMode::Vector;
-        ImGui::PopStyleColor();
+        TimeGUI::PopStyleColor();
 
-        ImGui::SameLine();
+        TimeGUI::SameLine();
 
-        ImGui::PushStyleColor(ImGuiCol_Button,
-                              m_CreationMode == SpriteCreationMode::PixelPaint ? activeCol : inactiveCol);
-        if (ImGui::Button("Pixel Paint", ImVec2(120, 26)))
+        TimeGUI::PushStyleColor(TimeGUICol_Button,
+                                m_CreationMode == SpriteCreationMode::PixelPaint ? activeCol : inactiveCol);
+        if (TimeGUI::Button("Pixel Paint", TEVector2(120, 26)))
             m_CreationMode = SpriteCreationMode::PixelPaint;
-        ImGui::PopStyleColor();
+        TimeGUI::PopStyleColor();
 
-        ImGui::SameLine(ImGui::GetWindowWidth() - 110);
-        if (ImGui::Button("Export PNG", ImVec2(100, 26)))
+        TimeGUI::SameLine(TimeGUI::GetWindowWidth() - 110);
+        if (TimeGUI::Button("Export PNG", TEVector2(100, 26)))
         {
             m_ShowExportPopup = true;
         }
 
-        ImGui::PopStyleVar();
-        ImGui::EndChild();
-        ImGui::Separator();
+        TimeGUI::PopStyleVar();
+        TimeGUI::EndChild();
+        TimeGUI::Separator();
 
         if (m_CreationMode == SpriteCreationMode::Code)
         {
-            if (ImGui::BeginTable("##MainCode", 4, ImGuiTableFlags_Resizable))
+            if (TimeGUI::BeginTable("##MainCode", 4, TimeGUITableFlags_Resizable))
             {
-                ImGui::TableNextColumn();
-                if (ImGui::BeginChild("##Lib", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn();
+                if (TimeGUI::BeginChild("##Lib", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Function Library", ImVec4(0.4f, 0.8f, 1, 1));
+                    DrawGlassHeader("Function Library", TEVector4(0.4f, 0.8f, 1, 1));
                     auto &r = m_Registry;
                     std::set<std::string> cats;
                     for (auto &f : r)
                         cats.insert(f.Category);
                     for (auto &c : cats)
                     {
-                        if (ImGui::TreeNodeEx(c.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
+                        if (TimeGUI::TreeNodeEx(c.c_str(),
+                                                TimeGUITreeNodeFlags_DefaultOpen | TimeGUITreeNodeFlags_Framed))
                         {
                             for (auto &f : r)
                             {
                                 if (f.Category != c)
                                     continue;
-                                ImGui::BeginChild(f.Name.c_str(), ImVec2(0, 72), true, ImGuiWindowFlags_NoScrollbar);
-                                ImGui::TextColored(f.Color, "%s", f.Name.c_str());
-                                ImGui::SameLine();
-                                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "[ %s ]", f.Signature.c_str());
-                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-                                ImGui::TextWrapped(f.Description.c_str());
-                                ImGui::PopStyleColor();
-                                ImGui::EndChild();
-                                ImGui::Spacing();
+                                TimeGUI::BeginChild(f.Name.c_str(), TEVector2(0, 72), true,
+                                                    TimeGUIWindowFlags_NoScrollbar);
+                                TimeGUI::TextColored(f.Color, "%s", f.Name.c_str());
+                                TimeGUI::SameLine();
+                                TimeGUI::TextColored(TEVector4(0.5f, 0.5f, 0.5f, 1), "[ %s ]", f.Signature.c_str());
+                                TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4(0.7f, 0.7f, 0.7f, 1));
+                                TimeGUI::TextWrapped(f.Description.c_str());
+                                TimeGUI::PopStyleColor();
+                                TimeGUI::EndChild();
+                                TimeGUI::Spacing();
                             }
-                            ImGui::TreePop();
+                            TimeGUI::TreePop();
                         }
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn();
-                if (ImGui::BeginChild("##Key", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn();
+                if (TimeGUI::BeginChild("##Key", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Keywords", ImVec4(1, 1, 0.4f, 1));
-                    if (ImGui::Button("+ Add Variable", ImVec2(-1, 28)))
+                    DrawGlassHeader("Keywords", TEVector4(1, 1, 0.4f, 1));
+                    if (TimeGUI::Button("+ Add Variable", TEVector2(-1, 28)))
                     {
                         m_Keywords.push_back({"NewVar", KeyType::Float});
                     }
-                    ImGui::Separator();
+                    TimeGUI::Separator();
                     for (int i = 0; i < (int)m_Keywords.size(); i++)
                     {
-                        ImGui::PushID(i);
-                        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 0.6f));
-                        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.2f, 0.2f, 0.8f));
-                        if (ImGui::Button("X", ImVec2(22, 22)))
+                        TimeGUI::PushID(i);
+                        TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.8f, 0.2f, 0.2f, 0.6f));
+                        TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(1.0f, 0.2f, 0.2f, 0.8f));
+                        if (TimeGUI::Button("X", TEVector2(22, 22)))
                         {
                             m_Keywords.erase(m_Keywords.begin() + i);
-                            ImGui::PopStyleColor(2);
-                            ImGui::PopID();
+                            TimeGUI::PopStyleColor(2);
+                            TimeGUI::PopID();
                             i--;
                             continue;
                         }
-                        ImGui::PopStyleColor(2);
-                        ImGui::SameLine();
+                        TimeGUI::PopStyleColor(2);
+                        TimeGUI::SameLine();
                         const char *typeIcons[] = {"F", "B", "C", "V"};
-                        if (ImGui::Button(typeIcons[(int)m_Keywords[i].Type], ImVec2(22, 22)))
+                        if (TimeGUI::Button(typeIcons[(int)m_Keywords[i].Type], TEVector2(22, 22)))
                         {
                             m_Keywords[i].Type = (KeyType)(((int)m_Keywords[i].Type + 1) % 4);
                         }
-                        ImGui::SameLine();
-                        ImGui::SetNextItemWidth(120);
-                        ImGui::InputText("##N", m_Keywords[i].Name, 64);
-                        ImGui::SameLine();
-                        ImGui::SetNextItemWidth(-1);
+                        TimeGUI::SameLine();
+                        TimeGUI::SetNextItemWidth(120);
+                        TimeGUI::InputText("##N", m_Keywords[i].Name, 64);
+                        TimeGUI::SameLine();
+                        TimeGUI::SetNextItemWidth(-1);
                         if (m_Keywords[i].Type == KeyType::Float)
-                            ImGui::DragFloat("##V", &m_Keywords[i].ValFloat, 0.1f);
+                            TimeGUI::DragFloat("##V", &m_Keywords[i].ValFloat, 0.1f);
                         else if (m_Keywords[i].Type == KeyType::Bool)
-                            ImGui::Checkbox("##V", &m_Keywords[i].ValBool);
+                            TimeGUI::Checkbox("##V", &m_Keywords[i].ValBool);
                         else if (m_Keywords[i].Type == KeyType::Color)
-                            ImGui::ColorEdit4("##V", m_Keywords[i].ValColor,
-                                              ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+                            TimeGUI::ColorEdit4("##V", m_Keywords[i].ValColor,
+                                                TimeGUIColorEditFlags_NoInputs | TimeGUIColorEditFlags_NoLabel);
                         else if (m_Keywords[i].Type == KeyType::Vec2)
-                            ImGui::DragFloat2("##V", m_Keywords[i].ValVec2, 0.1f);
-                        ImGui::PopID();
+                            TimeGUI::DragFloat2("##V", m_Keywords[i].ValVec2, 0.1f);
+                        TimeGUI::PopID();
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn();
-                if (ImGui::BeginChild("Procedural", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn();
+                if (TimeGUI::BeginChild("Procedural", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Procedural Code", ImVec4(1, 1, 1, 1));
-                    float h = ImGui::GetContentRegionAvail().y - 12;
+                    DrawGlassHeader("Procedural Code", TEVector4(1, 1, 1, 1));
+                    float h = TimeGUI::GetContentRegionAvail().y - 12;
                     if (activeF == "##PB")
                     {
-                        ImGui::BeginChild("##PB_e", ImVec2(0, h), true, ImGuiWindowFlags_HorizontalScrollbar);
-                        ImGui::InputTextMultiline("##PB", m_ProcBuffer, 2048, ImVec2(1500, -1),
-                                                  ImGuiInputTextFlags_AllowTabInput);
-                        if (ImGui::IsMouseClicked(0) &&
-                            !ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
+                        TimeGUI::BeginChild("##PB_e", TEVector2(0, h), true, TimeGUIWindowFlags_HorizontalScrollbar);
+                        TimeGUI::InputTextMultiline("##PB", m_ProcBuffer, 2048, TEVector2(1500, -1),
+                                                    TimeGUIInputTextFlags_AllowTabInput);
+                        if (TimeGUI::IsMouseClicked(0) &&
+                            !TimeGUI::IsItemHovered(TimeGUIHoveredFlags_AllowWhenBlockedByActiveItem))
                             activeF = "";
-                        ImGui::EndChild();
+                        TimeGUI::EndChild();
                     }
                     else
                     {
-                        ImGui::BeginChild("##PB_p", ImVec2(0, h), false);
+                        TimeGUI::BeginChild("##PB_p", TEVector2(0, h), false);
                         DrawColoredCode(m_ProcBuffer, -1);
-                        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows) && ImGui::IsMouseDoubleClicked(0))
+                        if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_ChildWindows) &&
+                            TimeGUI::IsMouseDoubleClicked(0))
                             activeF = "##PB";
-                        ImGui::EndChild();
+                        TimeGUI::EndChild();
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn(); // Simulation Window
-                if (ImGui::BeginChild("##Sim", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn(); // Simulation Window
+                if (TimeGUI::BeginChild("##Sim", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Simulation", ImVec4(0.4f, 0.7f, 1, 1));
-                    ImDrawList *dl = ImGui::GetWindowDrawList();
-                    ImVec2 p = ImGui::GetCursorScreenPos(), sz = ImGui::GetContentRegionAvail();
+                    DrawGlassHeader("Simulation", TEVector4(0.4f, 0.7f, 1, 1));
+                    TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+                    TEVector2 p = TimeGUI::GetCursorScreenPos(), sz = TimeGUI::GetContentRegionAvail();
                     sz.y -= 4;
                     m_LastSimSize = sz; // Capture for export sync
-                    dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
-                    float dt = ImGui::GetIO().DeltaTime;
+                    dl->AddRectFilled(p, TEVector2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
+                    float dt = TimeGUI::GetIO().DeltaTime;
                     ExecuteProceduralCode(dl, p, sz, dt);
-                    ImGui::Dummy(sz);
+                    TimeGUI::Dummy(sz);
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
                 UI_DrawExportPopup();
                 UI_DrawLoadingOverlay();
-                ImGui::EndTable();
+                TimeGUI::EndTable();
             }
         }
         else if (m_CreationMode == SpriteCreationMode::Vector)
         {
-            if (ImGui::BeginTable("##MainVector", 3, ImGuiTableFlags_Resizable))
+            if (TimeGUI::BeginTable("##MainVector", 3, TimeGUITableFlags_Resizable))
             {
-                ImGui::TableNextColumn();
-                if (ImGui::BeginChild("##VectorTools", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn();
+                if (TimeGUI::BeginChild("##VectorTools", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Vector Tools", ImVec4(0.4f, 0.8f, 1, 1));
+                    DrawGlassHeader("Vector Tools", TEVector4(0.4f, 0.8f, 1, 1));
 
-                    if (ImGui::RadioButton("Select / Edit", m_ActiveTool == VectorShapeType::Selection))
+                    if (TimeGUI::RadioButton("Select / Edit", m_ActiveTool == VectorShapeType::Selection))
                         m_ActiveTool = VectorShapeType::Selection;
-                    if (ImGui::RadioButton("Pen (Freehand)", m_ActiveTool == VectorShapeType::Pen))
+                    if (TimeGUI::RadioButton("Pen (Freehand)", m_ActiveTool == VectorShapeType::Pen))
                         m_ActiveTool = VectorShapeType::Pen;
-                    if (ImGui::RadioButton("Rectangle", m_ActiveTool == VectorShapeType::Rectangle))
+                    if (TimeGUI::RadioButton("Rectangle", m_ActiveTool == VectorShapeType::Rectangle))
                         m_ActiveTool = VectorShapeType::Rectangle;
-                    if (ImGui::RadioButton("Triangle", m_ActiveTool == VectorShapeType::Triangle))
+                    if (TimeGUI::RadioButton("Triangle", m_ActiveTool == VectorShapeType::Triangle))
                         m_ActiveTool = VectorShapeType::Triangle;
-                    if (ImGui::RadioButton("Circle", m_ActiveTool == VectorShapeType::Circle))
+                    if (TimeGUI::RadioButton("Circle", m_ActiveTool == VectorShapeType::Circle))
                         m_ActiveTool = VectorShapeType::Circle;
-                    if (ImGui::RadioButton("Semicircle", m_ActiveTool == VectorShapeType::Semicircle))
+                    if (TimeGUI::RadioButton("Semicircle", m_ActiveTool == VectorShapeType::Semicircle))
                         m_ActiveTool = VectorShapeType::Semicircle;
 
-                    ImGui::Separator();
-                    ImGui::Text("Stroke Settings:");
-                    ImGui::ColorEdit4("Stroke Color", (float *)&m_ActiveStrokeColor, ImGuiColorEditFlags_NoInputs);
-                    ImGui::DragFloat("Thickness", &m_ActiveStrokeThickness, 0.1f, 1.0f, 20.0f);
+                    TimeGUI::Separator();
+                    TimeGUI::Text("Stroke Settings:");
+                    TimeGUI::ColorEdit4("Stroke Color", (float *)&m_ActiveStrokeColor, TimeGUIColorEditFlags_NoInputs);
+                    TimeGUI::DragFloat("Thickness", &m_ActiveStrokeThickness, 0.1f, 1.0f, 20.0f);
 
-                    ImGui::Separator();
-                    ImGui::Text("Fill Settings:");
+                    TimeGUI::Separator();
+                    TimeGUI::Text("Fill Settings:");
                     static bool useFill = m_ActiveFillColor.w > 0.0f;
-                    if (ImGui::Checkbox("Use Fill", &useFill))
+                    if (TimeGUI::Checkbox("Use Fill", &useFill))
                     {
                         m_ActiveFillColor.w = useFill ? 1.0f : 0.0f;
                     }
                     if (useFill)
                     {
-                        ImGui::ColorEdit4("Fill Color", (float *)&m_ActiveFillColor, ImGuiColorEditFlags_NoInputs);
+                        TimeGUI::ColorEdit4("Fill Color", (float *)&m_ActiveFillColor, TimeGUIColorEditFlags_NoInputs);
                     }
 
                     int selectedCount = 0;
@@ -684,8 +690,8 @@ public:
                         if (elem.Selected)
                             selectedCount++;
 
-                    ImGui::Separator();
-                    ImGui::TextColored(ImVec4(1, 1, 0, 1), "Shape Properties");
+                    TimeGUI::Separator();
+                    TimeGUI::TextColored(TEVector4(1, 1, 0, 1), "Shape Properties");
 
                     if (selectedCount > 0 && m_SelectedElementIdx != -1 &&
                         m_SelectedElementIdx < (int)m_VectorElements.size())
@@ -700,7 +706,7 @@ public:
                             else if (elem.FillRounding > 0.0f)
                                 combinedRounding = -elem.FillRounding;
 
-                            if (ImGui::SliderFloat("Rounding (In/Out)", &combinedRounding, -1.0f, 1.0f, "%.2f"))
+                            if (TimeGUI::SliderFloat("Rounding (In/Out)", &combinedRounding, -1.0f, 1.0f, "%.2f"))
                             {
                                 float sr = (combinedRounding > 0.0f) ? combinedRounding : 0.0f;
                                 float fr = (combinedRounding < 0.0f) ? -combinedRounding : 0.0f;
@@ -714,12 +720,12 @@ public:
                                 }
                                 m_PreviewDirty = true;
                             }
-                            if (ImGui::IsItemDeactivatedAfterEdit())
+                            if (TimeGUI::IsItemDeactivatedAfterEdit())
                                 SaveUndoState();
                         }
 
-                        ImVec4 sc = elem.StrokeColor;
-                        if (ImGui::ColorEdit4("Sel Stroke Color", (float *)&sc, ImGuiColorEditFlags_NoInputs))
+                        TEVector4 sc = elem.StrokeColor;
+                        if (TimeGUI::ColorEdit4("Sel Stroke Color", (float *)&sc, TimeGUIColorEditFlags_NoInputs))
                         {
                             for (auto &e : m_VectorElements)
                                 if (e.Selected)
@@ -728,18 +734,18 @@ public:
                             SaveUndoState();
                         }
                         float st = elem.StrokeThickness;
-                        if (ImGui::DragFloat("Sel Thickness", &st, 0.1f, 1.0f, 20.0f))
+                        if (TimeGUI::DragFloat("Sel Thickness", &st, 0.1f, 1.0f, 20.0f))
                         {
                             for (auto &e : m_VectorElements)
                                 if (e.Selected)
                                     e.StrokeThickness = st;
                             m_PreviewDirty = true;
                         }
-                        if (ImGui::IsItemDeactivatedAfterEdit())
+                        if (TimeGUI::IsItemDeactivatedAfterEdit())
                             SaveUndoState();
 
                         bool selUseFill = elem.FillColor.w > 0.0f;
-                        if (ImGui::Checkbox("Sel Use Fill", &selUseFill))
+                        if (TimeGUI::Checkbox("Sel Use Fill", &selUseFill))
                         {
                             for (auto &e : m_VectorElements)
                             {
@@ -753,8 +759,8 @@ public:
                         }
                         if (selUseFill)
                         {
-                            ImVec4 fc = elem.FillColor;
-                            if (ImGui::ColorEdit4("Sel Fill Color", (float *)&fc, ImGuiColorEditFlags_NoInputs))
+                            TEVector4 fc = elem.FillColor;
+                            if (TimeGUI::ColorEdit4("Sel Fill Color", (float *)&fc, TimeGUIColorEditFlags_NoInputs))
                             {
                                 for (auto &e : m_VectorElements)
                                     if (e.Selected)
@@ -766,8 +772,8 @@ public:
 
                         if (selectedCount >= 2)
                         {
-                            ImGui::Dummy(ImVec2(0, 10));
-                            if (ImGui::Button("Subtract Selected", ImVec2(-1, 30)))
+                            TimeGUI::Dummy(TEVector2(0, 10));
+                            if (TimeGUI::Button("Subtract Selected", TEVector2(-1, 30)))
                             {
                                 SaveUndoState();
                                 int blankIdx = -1;
@@ -808,13 +814,13 @@ public:
                                     m_PreviewDirty = true;
                                 }
                             }
-                            ImGui::Dummy(ImVec2(0, 5));
-                            if (ImGui::Button("Merge Selected", ImVec2(-1, 30)))
+                            TimeGUI::Dummy(TEVector2(0, 5));
+                            if (TimeGUI::Button("Merge Selected", TEVector2(-1, 30)))
                             {
                                 SaveUndoState();
                                 VectorElement merged;
                                 merged.Type = VectorShapeType::Pen;
-                                merged.FillColor = ImVec4(0, 0, 0, 0); // Default to unfilled
+                                merged.FillColor = TEVector4(0, 0, 0, 0); // Default to unfilled
                                 merged.StrokeColor = m_ActiveStrokeColor;
                                 merged.StrokeThickness = m_ActiveStrokeThickness;
                                 merged.Selected = true;
@@ -829,16 +835,17 @@ public:
                                             merged.FillColor = it->FillColor;
                                             fillFound = true;
                                         }
-                                        std::vector<ImVec2> pts;
+                                        std::vector<TEVector2> pts;
                                         if (it->Type == VectorShapeType::Rectangle && it->Points.size() >= 2)
                                         {
-                                            pts = {it->Points[0], ImVec2(it->Points[1].x, it->Points[0].y),
-                                                   it->Points[1], ImVec2(it->Points[0].x, it->Points[1].y)};
+                                            pts = {it->Points[0], TEVector2(it->Points[1].x, it->Points[0].y),
+                                                   it->Points[1], TEVector2(it->Points[0].x, it->Points[1].y)};
                                         }
                                         else if (it->Type == VectorShapeType::Triangle && it->Points.size() >= 2)
                                         {
-                                            pts = {ImVec2((it->Points[0].x + it->Points[1].x) * 0.5f, it->Points[0].y),
-                                                   ImVec2(it->Points[0].x, it->Points[1].y), it->Points[1]};
+                                            pts = {
+                                                TEVector2((it->Points[0].x + it->Points[1].x) * 0.5f, it->Points[0].y),
+                                                TEVector2(it->Points[0].x, it->Points[1].y), it->Points[1]};
                                         }
                                         else if (it->Type == VectorShapeType::Semicircle && it->Points.size() >= 1)
                                         {
@@ -846,8 +853,8 @@ public:
                                             for (int s = 0; s <= segments; s++)
                                             {
                                                 float t = 3.14159265f + (float)s * 3.14159265f / (float)segments;
-                                                pts.push_back(ImVec2(it->Points[0].x + it->Radius * cosf(t),
-                                                                     it->Points[0].y + it->RadiusY * sinf(t)));
+                                                pts.push_back(TEVector2(it->Points[0].x + it->Radius * cosf(t),
+                                                                        it->Points[0].y + it->RadiusY * sinf(t)));
                                             }
                                         }
                                         else if (it->Type == VectorShapeType::Circle && it->Points.size() >= 1)
@@ -856,8 +863,8 @@ public:
                                             for (int s = 0; s < segments; s++)
                                             {
                                                 float t = (float)s * 2.0f * 3.14159265f / (float)segments;
-                                                pts.push_back(ImVec2(it->Points[0].x + it->Radius * cosf(t),
-                                                                     it->Points[0].y + it->RadiusY * sinf(t)));
+                                                pts.push_back(TEVector2(it->Points[0].x + it->Radius * cosf(t),
+                                                                        it->Points[0].y + it->RadiusY * sinf(t)));
                                             }
                                         }
                                         else if (!it->SubPaths.empty())
@@ -890,7 +897,7 @@ public:
                     }
                     else
                     {
-                        if (ImGui::Checkbox("Subtract (Hole Cut)", &m_DefaultSubtract))
+                        if (TimeGUI::Checkbox("Subtract (Hole Cut)", &m_DefaultSubtract))
                         {
                         }
                         if (m_ActiveTool == VectorShapeType::Rectangle || m_ActiveTool == VectorShapeType::Triangle ||
@@ -902,23 +909,23 @@ public:
                             else if (m_DefaultFillRounding > 0.0f)
                                 combinedRounding = -m_DefaultFillRounding;
 
-                            if (ImGui::SliderFloat("Rounding (In/Out)", &combinedRounding, -1.0f, 1.0f, "%.2f"))
+                            if (TimeGUI::SliderFloat("Rounding (In/Out)", &combinedRounding, -1.0f, 1.0f, "%.2f"))
                             {
                                 m_DefaultStrokeRounding = (combinedRounding > 0.0f) ? combinedRounding : 0.0f;
                                 m_DefaultFillRounding = (combinedRounding < 0.0f) ? -combinedRounding : 0.0f;
                             }
                         }
                     }
-                    ImGui::Separator();
-                    if (ImGui::Button("Undo (Ctrl+Z)", ImVec2(-1, 30)))
+                    TimeGUI::Separator();
+                    if (TimeGUI::Button("Undo (Ctrl+Z)", TEVector2(-1, 30)))
                     {
                         Undo();
                     }
-                    if (ImGui::Button("Redo (Ctrl+Y)", ImVec2(-1, 30)))
+                    if (TimeGUI::Button("Redo (Ctrl+Y)", TEVector2(-1, 30)))
                     {
                         Redo();
                     }
-                    if (ImGui::Button("Clear Canvas", ImVec2(-1, 30)))
+                    if (TimeGUI::Button("Clear Canvas", TEVector2(-1, 30)))
                     {
                         SaveUndoState();
                         m_VectorElements.clear();
@@ -926,33 +933,33 @@ public:
                         m_PreviewDirty = true;
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn(); // Canvas / Drawing Window (Now in the Middle!)
-                if (ImGui::BeginChild("##VectorCanvas", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn(); // Canvas / Drawing Window (Now in the Middle!)
+                if (TimeGUI::BeginChild("##VectorCanvas", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Vector Canvas", ImVec4(0.4f, 0.7f, 1, 1));
-                    ImDrawList *dl = ImGui::GetWindowDrawList();
-                    ImVec2 p = ImGui::GetCursorScreenPos(), sz = ImGui::GetContentRegionAvail();
+                    DrawGlassHeader("Vector Canvas", TEVector4(0.4f, 0.7f, 1, 1));
+                    TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+                    TEVector2 p = TimeGUI::GetCursorScreenPos(), sz = TimeGUI::GetContentRegionAvail();
                     sz.y -= 44;
                     m_LastSimSize = sz; // Capture for export sync
 
                     // Handle keyboard shortcuts
                     bool ctrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
-                    if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Z))
+                    if (ctrl && TimeGUI::IsKeyPressed(TimeGUIKey_Z))
                     {
                         Undo();
                     }
-                    if (ctrl && ImGui::IsKeyPressed(ImGuiKey_Y))
+                    if (ctrl && TimeGUI::IsKeyPressed(TimeGUIKey_Y))
                     {
                         Redo();
                     }
-                    if (ctrl && ImGui::IsKeyPressed(ImGuiKey_C))
+                    if (ctrl && TimeGUI::IsKeyPressed(TimeGUIKey_C))
                     {
                         if (m_SelectedElementIdx != -1)
                             m_CopiedElement = m_VectorElements[m_SelectedElementIdx];
                     }
-                    if (ctrl && ImGui::IsKeyPressed(ImGuiKey_V))
+                    if (ctrl && TimeGUI::IsKeyPressed(TimeGUIKey_V))
                     {
                         if (m_CopiedElement.Points.size() > 0)
                         {
@@ -968,7 +975,7 @@ public:
                             SaveUndoState();
                         }
                     }
-                    if (ctrl && ImGui::IsKeyPressed(ImGuiKey_D))
+                    if (ctrl && TimeGUI::IsKeyPressed(TimeGUIKey_D))
                     {
                         if (m_SelectedElementIdx != -1)
                         {
@@ -984,35 +991,35 @@ public:
                             SaveUndoState();
                         }
                     }
-                    if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+                    if (TimeGUI::IsKeyPressed(TimeGUIKey_Escape))
                     {
                         m_SelectedElementIdx = -1;
                     }
 
                     // Draw background
-                    dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
+                    dl->AddRectFilled(p, TEVector2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
 
                     // Set clip rect to canvas area
-                    dl->PushClipRect(p, ImVec2(p.x + sz.x, p.y + sz.y), true);
+                    dl->PushClipRect(p, TEVector2(p.x + sz.x, p.y + sz.y), true);
 
                     // Draw Grid
                     float gridSpacing = 20.0f * m_CanvasZoom;
                     if (gridSpacing > 2.0f)
                     {
-                        ImVec2 gridStart = ImVec2(p.x + fmodf(m_CanvasPan.x * m_CanvasZoom, gridSpacing),
-                                                  p.y + fmodf(m_CanvasPan.y * m_CanvasZoom, gridSpacing));
+                        TEVector2 gridStart = TEVector2(p.x + fmodf(m_CanvasPan.x * m_CanvasZoom, gridSpacing),
+                                                        p.y + fmodf(m_CanvasPan.y * m_CanvasZoom, gridSpacing));
                         for (float x = gridStart.x; x < p.x + sz.x; x += gridSpacing)
-                            dl->AddLine(ImVec2(x, p.y), ImVec2(x, p.y + sz.y), IM_COL32(255, 255, 255, 20));
+                            dl->AddLine(TEVector2(x, p.y), TEVector2(x, p.y + sz.y), IM_COL32(255, 255, 255, 20));
                         for (float y = gridStart.y; y < p.y + sz.y; y += gridSpacing)
-                            dl->AddLine(ImVec2(p.x, y), ImVec2(p.x + sz.x, y), IM_COL32(255, 255, 255, 20));
+                            dl->AddLine(TEVector2(p.x, y), TEVector2(p.x + sz.x, y), IM_COL32(255, 255, 255, 20));
                     }
 
                     // Canvas interactions helper values
-                    bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows);
-                    ImVec2 mousePos = ImGui::GetMousePos();
-                    ImVec2 relativeMouse = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
-                    ImVec2 canvasMouse = ImVec2((relativeMouse.x / m_CanvasZoom - m_CanvasPan.x) / sz.x,
-                                                (relativeMouse.y / m_CanvasZoom - m_CanvasPan.y) / sz.y);
+                    bool hovered = TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_ChildWindows);
+                    TEVector2 mousePos = TimeGUI::GetMousePos();
+                    TEVector2 relativeMouse = TEVector2(mousePos.x - p.x, mousePos.y - p.y);
+                    TEVector2 canvasMouse = TEVector2((relativeMouse.x / m_CanvasZoom - m_CanvasPan.x) / sz.x,
+                                                      (relativeMouse.y / m_CanvasZoom - m_CanvasPan.y) / sz.y);
 
                     // Point-in-shape hover detection
                     int hoveredElementIdx = -1;
@@ -1036,11 +1043,12 @@ public:
                             }
                             else if (elem.Type == VectorShapeType::Triangle && elem.Points.size() >= 2)
                             {
-                                ImVec2 v0 = ImVec2((elem.Points[0].x + elem.Points[1].x) * 0.5f, elem.Points[0].y);
-                                ImVec2 v1 = ImVec2(elem.Points[0].x, elem.Points[1].y);
-                                ImVec2 v2 = ImVec2(elem.Points[1].x, elem.Points[1].y);
+                                TEVector2 v0 =
+                                    TEVector2((elem.Points[0].x + elem.Points[1].x) * 0.5f, elem.Points[0].y);
+                                TEVector2 v1 = TEVector2(elem.Points[0].x, elem.Points[1].y);
+                                TEVector2 v2 = TEVector2(elem.Points[1].x, elem.Points[1].y);
 
-                                auto Sign = [](ImVec2 p1, ImVec2 p2, ImVec2 p3)
+                                auto Sign = [](TEVector2 p1, TEVector2 p2, TEVector2 p3)
                                 { return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y); };
                                 float d1 = Sign(canvasMouse, v0, v1);
                                 float d2 = Sign(canvasMouse, v1, v2);
@@ -1128,69 +1136,75 @@ public:
                     }
 
                     // Save current OpenGL state
-                    GLint last_viewport[4];
-                    glGetIntegerv(GL_VIEWPORT, last_viewport);
-                    GLfloat last_clear_color[4];
-                    glGetFloatv(GL_COLOR_CLEAR_VALUE, last_clear_color);
+                    int last_viewport[4];
+                    TE::RenderCommand::GetViewport(last_viewport);
+                    float last_clear_color[4];
+                    TE::RenderCommand::GetClearColor(last_clear_color);
 
                     m_VectorCanvasFB->Bind();
-                    glViewport(0, 0, (int)sz.x, (int)sz.y);
-                    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-                    glClear(GL_COLOR_BUFFER_BIT);
+                    TE::RenderCommand::SetViewport(0, 0, (uint32_t)sz.x, (uint32_t)sz.y);
+                    TE::RenderCommand::SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
+                    TE::RenderCommand::Clear();
 
-                    ImGuiIO &io = ImGui::GetIO();
-                    ImDrawList *fboDl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
-                    fboDl->_ResetForNewFrame();
-                    fboDl->PushTextureID(io.Fonts->TexID);
-                    fboDl->AddDrawCmd();
-                    fboDl->PushClipRect(ImVec2(0, 0), sz, false);
+                    TimeGUI::TimeGUIIO &io = TimeGUI::GetIO();
+                    TimeGUI::TimeGUIDrawList fboDl = TimeGUI::CreateDrawList();
+                    fboDl.ResetForNewFrame();
+                    fboDl.PushTextureID(TimeGUI::GetFontAtlasTextureID());
+                    fboDl.AddDrawCmd();
+                    fboDl.PushClipRect(TEVector2(0, 0), sz, false);
 
                     // Render shapes to the FBO (passing hover/select index for red highlighting)
-                    RenderVectorShapes(fboDl, ImVec2(0, 0), sz, m_CanvasZoom, m_CanvasPan, hoveredElementIdx,
+                    RenderVectorShapes(fboDl, TEVector2(0, 0), sz, m_CanvasZoom, m_CanvasPan, hoveredElementIdx,
                                        m_SelectedElementIdx);
 
                     // Draw current drawing shape if active
                     if (m_IsDrawing)
                     {
-                        ImU32 fillCol = ImGui::ColorConvertFloat4ToU32(m_CurrentDrawingElement.FillColor);
-                        ImU32 strokeCol = ImGui::ColorConvertFloat4ToU32(m_CurrentDrawingElement.StrokeColor);
+                        ImU32 fillCol = TimeGUI::ColorConvertFloat4ToU32(m_CurrentDrawingElement.FillColor);
+                        ImU32 strokeCol = TimeGUI::ColorConvertFloat4ToU32(m_CurrentDrawingElement.StrokeColor);
 
-                        auto CanvasToFBO = [&](ImVec2 cp) -> ImVec2
+                        auto CanvasToFBO = [&](TEVector2 cp) -> TEVector2
                         {
-                            return ImVec2((cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                          (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                            return TEVector2((cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
+                                             (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         };
 
                         if (m_CurrentDrawingElement.Subtract)
                         {
-                            fboDl->AddCallback([](const ImDrawList *parent_list, const ImDrawCmd *cmd)
-                                               { glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ZERO, GL_ZERO); }, nullptr);
+                            fboDl.AddCallback(
+                                [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
+                                {
+                                    TE::RenderCommand::SetBlendFuncSeparate(TE::BlendFactor::Zero, TE::BlendFactor::One,
+                                                                            TE::BlendFactor::Zero,
+                                                                            TE::BlendFactor::Zero);
+                                },
+                                nullptr);
                         }
 
                         if (m_CurrentDrawingElement.Type == VectorShapeType::Pen)
                         {
                             if (m_CurrentDrawingElement.Points.size() >= 2)
                             {
-                                std::vector<ImVec2> screenPts;
+                                std::vector<TEVector2> screenPts;
                                 for (auto pt : m_CurrentDrawingElement.Points)
                                     screenPts.push_back(CanvasToFBO(pt));
-                                fboDl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, 0,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                fboDl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, 0,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Rectangle)
                         {
                             if (m_CurrentDrawingElement.Points.size() >= 2)
                             {
-                                ImVec2 p1 = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
-                                ImVec2 p2 = CanvasToFBO(m_CurrentDrawingElement.Points[1]);
+                                TEVector2 p1 = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
+                                TEVector2 p2 = CanvasToFBO(m_CurrentDrawingElement.Points[1]);
                                 float minX = std::min(p1.x, p2.x);
                                 float maxX = std::max(p1.x, p2.x);
                                 float minY = std::min(p1.y, p2.y);
                                 float maxY = std::max(p1.y, p2.y);
 
-                                std::vector<ImVec2> baseVerts = {ImVec2(minX, minY), ImVec2(maxX, minY),
-                                                                 ImVec2(maxX, maxY), ImVec2(minX, maxY)};
+                                std::vector<TEVector2> baseVerts = {TEVector2(minX, minY), TEVector2(maxX, minY),
+                                                                    TEVector2(maxX, maxY), TEVector2(minX, maxY)};
 
                                 float fillRounding = m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom;
                                 float strokeRounding = m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom;
@@ -1199,28 +1213,28 @@ public:
                                 {
                                     if (std::abs(fillRounding) > 0.001f)
                                     {
-                                        std::vector<ImVec2> fillVerts =
+                                        std::vector<TEVector2> fillVerts =
                                             GetRoundedPolygonPoints(baseVerts, fillRounding);
-                                        fboDl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
+                                        fboDl.AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                                     }
                                     else
                                     {
-                                        fboDl->AddRectFilled(p1, p2, fillCol);
+                                        fboDl.AddRectFilled(p1, p2, fillCol);
                                     }
                                 }
 
                                 if (std::abs(strokeRounding) > 0.001f)
                                 {
-                                    std::vector<ImVec2> strokeVerts =
+                                    std::vector<TEVector2> strokeVerts =
                                         GetRoundedPolygonPoints(baseVerts, strokeRounding);
-                                    fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
-                                                       ImDrawFlags_Closed,
-                                                       m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                    fboDl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
+                                                      ImDrawFlags_Closed,
+                                                      m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                                 }
                                 else
                                 {
-                                    fboDl->AddRect(p1, p2, strokeCol, 0.0f, 0,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                    fboDl.AddRect(p1, p2, strokeCol, 0.0f, 0,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                                 }
                             }
                         }
@@ -1228,140 +1242,139 @@ public:
                         {
                             if (m_CurrentDrawingElement.Points.size() >= 2)
                             {
-                                ImVec2 p1 = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
-                                ImVec2 p2 = CanvasToFBO(m_CurrentDrawingElement.Points[1]);
-                                ImVec2 v0 = ImVec2((p1.x + p2.x) * 0.5f, p1.y);
-                                ImVec2 v1 = ImVec2(p1.x, p2.y);
-                                ImVec2 v2 = ImVec2(p2.x, p2.y);
-                                std::vector<ImVec2> baseVerts = {v0, v1, v2};
+                                TEVector2 p1 = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
+                                TEVector2 p2 = CanvasToFBO(m_CurrentDrawingElement.Points[1]);
+                                TEVector2 v0 = TEVector2((p1.x + p2.x) * 0.5f, p1.y);
+                                TEVector2 v1 = TEVector2(p1.x, p2.y);
+                                TEVector2 v2 = TEVector2(p2.x, p2.y);
+                                std::vector<TEVector2> baseVerts = {v0, v1, v2};
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                 {
-                                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(
+                                    std::vector<TEVector2> fillVerts = GetRoundedPolygonPoints(
                                         baseVerts, m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom);
-                                    fboDl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
+                                    fboDl.AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                                 }
-                                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(
+                                std::vector<TEVector2> strokeVerts = GetRoundedPolygonPoints(
                                     baseVerts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
-                                fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
-                                                   ImDrawFlags_Closed,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                fboDl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
+                                                  ImDrawFlags_Closed,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Circle)
                         {
                             if (m_CurrentDrawingElement.Points.size() >= 1)
                             {
-                                ImVec2 center = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
+                                TEVector2 center = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
                                 float rx = m_CurrentDrawingElement.Radius * sz.x * m_CanvasZoom;
                                 float ry = m_CurrentDrawingElement.RadiusY * sz.y * m_CanvasZoom;
                                 const int segments = 64;
-                                std::vector<ImVec2> pts(segments);
+                                std::vector<TEVector2> pts(segments);
                                 for (int s = 0; s < segments; s++)
                                 {
                                     float t = (float)s * 2.0f * 3.14159265f / (float)segments;
-                                    pts[s] = ImVec2(center.x + rx * cosf(t), center.y + ry * sinf(t));
+                                    pts[s] = TEVector2(center.x + rx * cosf(t), center.y + ry * sinf(t));
                                 }
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
-                                    fboDl->AddConvexPolyFilled(pts.data(), segments, fillCol);
-                                fboDl->AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                    fboDl.AddConvexPolyFilled(pts.data(), segments, fillCol);
+                                fboDl.AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
                         else if (m_CurrentDrawingElement.Type == VectorShapeType::Semicircle)
                         {
                             if (m_CurrentDrawingElement.Points.size() >= 1)
                             {
-                                ImVec2 center = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
+                                TEVector2 center = CanvasToFBO(m_CurrentDrawingElement.Points[0]);
                                 float rx = m_CurrentDrawingElement.Radius * sz.x * m_CanvasZoom;
                                 float ry = m_CurrentDrawingElement.RadiusY * sz.y * m_CanvasZoom;
                                 const int segments = 32;
-                                std::vector<ImVec2> pts(segments + 1);
+                                std::vector<TEVector2> pts(segments + 1);
                                 for (int s = 0; s <= segments; s++)
                                 {
                                     float t = 3.14159265f + (float)s * 3.14159265f / (float)segments;
-                                    pts[s] = ImVec2(center.x + rx * cosf(t), center.y + ry * sinf(t));
+                                    pts[s] = TEVector2(center.x + rx * cosf(t), center.y + ry * sinf(t));
                                 }
                                 if (m_CurrentDrawingElement.FillColor.w > 0.0f)
                                 {
-                                    std::vector<ImVec2> fillVerts = GetRoundedPolygonPoints(
+                                    std::vector<TEVector2> fillVerts = GetRoundedPolygonPoints(
                                         pts, m_CurrentDrawingElement.FillRounding * sz.x * m_CanvasZoom);
-                                    fboDl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
+                                    fboDl.AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                                 }
-                                std::vector<ImVec2> strokeVerts = GetRoundedPolygonPoints(
+                                std::vector<TEVector2> strokeVerts = GetRoundedPolygonPoints(
                                     pts, m_CurrentDrawingElement.StrokeRounding * sz.x * m_CanvasZoom);
-                                fboDl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
-                                                   ImDrawFlags_Closed,
-                                                   m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
+                                fboDl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol,
+                                                  ImDrawFlags_Closed,
+                                                  m_CurrentDrawingElement.StrokeThickness * m_CanvasZoom);
                             }
                         }
 
                         if (m_CurrentDrawingElement.Subtract)
                         {
-                            fboDl->AddCallback([](const ImDrawList *parent_list, const ImDrawCmd *cmd)
-                                               { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }, nullptr);
+                            fboDl.AddCallback(
+                                [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
+                                {
+                                    TE::RenderCommand::SetBlendFunc(TE::BlendFactor::SrcAlpha,
+                                                                    TE::BlendFactor::OneMinusSrcAlpha);
+                                },
+                                nullptr);
                         }
                     }
 
-                    fboDl->PopClipRect();
+                    fboDl.PopClipRect();
 
                     // Render FBO draw data
-                    ImDrawData drawData;
-                    drawData.Valid = true;
-                    drawData.Textures = nullptr;
-                    drawData.AddDrawList(fboDl);
-                    drawData.DisplayPos = ImVec2(0, 0);
-                    drawData.DisplaySize = sz;
-                    drawData.FramebufferScale = ImVec2(1.0f, 1.0f);
-
-                    ImGui_ImplOpenGL3_RenderDrawData(&drawData);
-                    IM_DELETE(fboDl);
+                    TimeGUI::RenderDrawList(fboDl, sz);
+                    TimeGUI::DestroyDrawList(fboDl);
 
                     m_VectorCanvasFB->Unbind();
 
                     // Restore OpenGL state
-                    glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3]);
-                    glClearColor(last_clear_color[0], last_clear_color[1], last_clear_color[2], last_clear_color[3]);
+                    TE::RenderCommand::SetViewport(last_viewport[0], last_viewport[1], last_viewport[2],
+                                                   last_viewport[3]);
+                    TE::RenderCommand::SetClearColor(
+                        {last_clear_color[0], last_clear_color[1], last_clear_color[2], last_clear_color[3]});
 
                     // Draw the resulting FBO texture onto the main screen draw list
-                    dl->AddImage((ImTextureID)(intptr_t)m_VectorCanvasFB->GetColorAttachmentRendererID(), p,
-                                 ImVec2(p.x + sz.x, p.y + sz.y), ImVec2(0, 1), ImVec2(1, 0));
+                    dl->AddImage((TimeGUITextureID)(intptr_t)m_VectorCanvasFB->GetColorAttachmentRendererID(), p,
+                                 TEVector2(p.x + sz.x, p.y + sz.y), TEVector2(0, 1), TEVector2(1, 0));
 
                     // Draw anchors/handles for selection mode
                     if (m_ActiveTool == VectorShapeType::Selection && m_SelectedElementIdx != -1 &&
                         m_SelectedElementIdx < (int)m_VectorElements.size())
                     {
                         auto &elem = m_VectorElements[m_SelectedElementIdx];
-                        auto CanvasToScreen = [&](ImVec2 cp) -> ImVec2
+                        auto CanvasToScreen = [&](TEVector2 cp) -> TEVector2
                         {
-                            return ImVec2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                          p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                            return TEVector2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
+                                             p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         };
 
-                        std::vector<ImVec2> anchors;
+                        std::vector<TEVector2> anchors;
                         if ((elem.Type == VectorShapeType::Rectangle || elem.Type == VectorShapeType::Triangle) &&
                             elem.Points.size() >= 2)
                         {
-                            anchors.push_back(elem.Points[0]);                             // Anchor 0: Top-Left
-                            anchors.push_back(elem.Points[1]);                             // Anchor 1: Bottom-Right
-                            anchors.push_back(ImVec2(elem.Points[1].x, elem.Points[0].y)); // Anchor 2: Top-Right
-                            anchors.push_back(ImVec2(elem.Points[0].x, elem.Points[1].y)); // Anchor 3: Bottom-Left
+                            anchors.push_back(elem.Points[0]);                                // Anchor 0: Top-Left
+                            anchors.push_back(elem.Points[1]);                                // Anchor 1: Bottom-Right
+                            anchors.push_back(TEVector2(elem.Points[1].x, elem.Points[0].y)); // Anchor 2: Top-Right
+                            anchors.push_back(TEVector2(elem.Points[0].x, elem.Points[1].y)); // Anchor 3: Bottom-Left
                         }
                         else if ((elem.Type == VectorShapeType::Circle || elem.Type == VectorShapeType::Semicircle) &&
                                  elem.Points.size() >= 1)
                         {
-                            ImVec2 c = elem.Points[0];
-                            anchors.push_back(ImVec2(c.x - elem.Radius, c.y));  // Anchor 0: Left
-                            anchors.push_back(ImVec2(c.x + elem.Radius, c.y));  // Anchor 1: Right
-                            anchors.push_back(ImVec2(c.x, c.y - elem.RadiusY)); // Anchor 2: Top
-                            anchors.push_back(ImVec2(c.x, c.y + elem.RadiusY)); // Anchor 3: Bottom
+                            TEVector2 c = elem.Points[0];
+                            anchors.push_back(TEVector2(c.x - elem.Radius, c.y));  // Anchor 0: Left
+                            anchors.push_back(TEVector2(c.x + elem.Radius, c.y));  // Anchor 1: Right
+                            anchors.push_back(TEVector2(c.x, c.y - elem.RadiusY)); // Anchor 2: Top
+                            anchors.push_back(TEVector2(c.x, c.y + elem.RadiusY)); // Anchor 3: Bottom
                         }
 
                         for (int a = 0; a < (int)anchors.size(); a++)
                         {
-                            ImVec2 sc = CanvasToScreen(anchors[a]);
-                            dl->AddRectFilled(ImVec2(sc.x - 4, sc.y - 4), ImVec2(sc.x + 4, sc.y + 4),
+                            TEVector2 sc = CanvasToScreen(anchors[a]);
+                            dl->AddRectFilled(TEVector2(sc.x - 4, sc.y - 4), TEVector2(sc.x + 4, sc.y + 4),
                                               IM_COL32(255, 0, 0, 255));
-                            dl->AddRect(ImVec2(sc.x - 4, sc.y - 4), ImVec2(sc.x + 4, sc.y + 4),
+                            dl->AddRect(TEVector2(sc.x - 4, sc.y - 4), TEVector2(sc.x + 4, sc.y + 4),
                                         IM_COL32(255, 255, 255, 255));
                         }
                     }
@@ -1369,31 +1382,31 @@ public:
                     // Draw marquee selection rectangle (marching-ants style)
                     if (m_IsMarqueeSelecting)
                     {
-                        ImVec2 ms = ImVec2(p.x + (m_MarqueeStart.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                           p.y + (m_MarqueeStart.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
-                        ImVec2 me = ImVec2(p.x + (m_MarqueeEnd.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                           p.y + (m_MarqueeEnd.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                        TEVector2 ms = TEVector2(p.x + (m_MarqueeStart.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
+                                                 p.y + (m_MarqueeStart.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                        TEVector2 me = TEVector2(p.x + (m_MarqueeEnd.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
+                                                 p.y + (m_MarqueeEnd.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                         // Normalise so rMin is always top-left
-                        ImVec2 rMin = ImVec2(glm::min(ms.x, me.x), glm::min(ms.y, me.y));
-                        ImVec2 rMax = ImVec2(glm::max(ms.x, me.x), glm::max(ms.y, me.y));
+                        TEVector2 rMin = TEVector2(glm::min(ms.x, me.x), glm::min(ms.y, me.y));
+                        TEVector2 rMax = TEVector2(glm::max(ms.x, me.x), glm::max(ms.y, me.y));
 
                         // Semi-transparent fill
                         dl->AddRectFilled(rMin, rMax, IM_COL32(100, 160, 255, 30));
 
                         // Animated dashed border ("marching ants")
-                        float t = (float)ImGui::GetTime();
+                        float t = (float)TimeGUI::GetTime();
                         float dashLen = 6.0f, gapLen = 4.0f, stride = dashLen + gapLen;
-                        float dashOffset = glm::mod(t * 40.0f, stride);
+                        float dashOffset = Mod((t * 40.0f), stride);
                         ImU32 dashCol = IM_COL32(120, 190, 255, 230);
                         ImU32 outlineCol = IM_COL32(20, 20, 60, 180);
 
-                        auto DrawDashedLine = [&](ImVec2 a, ImVec2 b)
+                        auto DrawDashedLine = [&](TEVector2 a, TEVector2 b)
                         {
-                            ImVec2 dir = b - a;
-                            float len = TE::Length(dir);
+                            TEVector2 dir = b - a;
+                            float len = TEVector2::Length(dir);
                             if (len < 0.1f)
                                 return;
-                            ImVec2 n = TE::Normalize(dir); // unit direction
+                            TEVector2 n = TE::Normalize(dir); // unit direction
                             float pos = -dashOffset;
                             while (pos < len)
                             {
@@ -1401,8 +1414,8 @@ public:
                                 float e2 = glm::min(pos + dashLen, len);
                                 if (e2 > s)
                                 {
-                                    ImVec2 p1d = a + n * s;
-                                    ImVec2 p2d = a + n * e2;
+                                    TEVector2 p1d = a + n * s;
+                                    TEVector2 p2d = a + n * e2;
                                     dl->AddLine(p1d, p2d, outlineCol, 3.0f);
                                     dl->AddLine(p1d, p2d, dashCol, 1.5f);
                                 }
@@ -1410,13 +1423,13 @@ public:
                             }
                         };
 
-                        DrawDashedLine(ImVec2(rMin.x, rMin.y), ImVec2(rMax.x, rMin.y)); // top
-                        DrawDashedLine(ImVec2(rMax.x, rMin.y), ImVec2(rMax.x, rMax.y)); // right
-                        DrawDashedLine(ImVec2(rMax.x, rMax.y), ImVec2(rMin.x, rMax.y)); // bottom
-                        DrawDashedLine(ImVec2(rMin.x, rMax.y), ImVec2(rMin.x, rMin.y)); // left
+                        DrawDashedLine(TEVector2(rMin.x, rMin.y), TEVector2(rMax.x, rMin.y)); // top
+                        DrawDashedLine(TEVector2(rMax.x, rMin.y), TEVector2(rMax.x, rMax.y)); // right
+                        DrawDashedLine(TEVector2(rMax.x, rMax.y), TEVector2(rMin.x, rMax.y)); // bottom
+                        DrawDashedLine(TEVector2(rMin.x, rMax.y), TEVector2(rMin.x, rMin.y)); // left
 
                         // Corner dots
-                        for (auto corner : {rMin, ImVec2(rMax.x, rMin.y), rMax, ImVec2(rMin.x, rMax.y)})
+                        for (auto corner : {rMin, TEVector2(rMax.x, rMin.y), rMax, TEVector2(rMin.x, rMax.y)})
                             dl->AddCircleFilled(corner, 3.0f, IM_COL32(255, 255, 255, 200));
                     }
 
@@ -1425,59 +1438,59 @@ public:
                     // Handle canvas interactions
                     if (hovered)
                     {
-                        float wheel = ImGui::GetIO().MouseWheel;
+                        float wheel = TimeGUI::GetIO().MouseWheel;
                         if (wheel != 0.0f)
                         {
-                            ImVec2 mouseInCanvasSpace = ImVec2(relativeMouse.x / m_CanvasZoom - m_CanvasPan.x,
-                                                               relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
+                            TEVector2 mouseInCanvasSpace = TEVector2(relativeMouse.x / m_CanvasZoom - m_CanvasPan.x,
+                                                                     relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
                             m_CanvasZoom = std::clamp(m_CanvasZoom + wheel * 0.1f, 0.1f, 10.0f);
                             m_CanvasPan.x = relativeMouse.x / m_CanvasZoom - mouseInCanvasSpace.x;
                             m_CanvasPan.y = relativeMouse.y / m_CanvasZoom - mouseInCanvasSpace.y;
                         }
 
-                        if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+                        if (TimeGUI::IsMouseDragging(TimeGUIMouseButton_Right))
                         {
-                            m_CanvasPan.x += ImGui::GetIO().MouseDelta.x / m_CanvasZoom;
-                            m_CanvasPan.y += ImGui::GetIO().MouseDelta.y / m_CanvasZoom;
+                            m_CanvasPan.x += TimeGUI::GetIO().MouseDelta.x / m_CanvasZoom;
+                            m_CanvasPan.y += TimeGUI::GetIO().MouseDelta.y / m_CanvasZoom;
                         }
 
-                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        if (TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
                         {
                             // Check if clicked an anchor first
                             bool clickedAnchor = false;
                             if (m_ActiveTool == VectorShapeType::Selection && m_SelectedElementIdx != -1)
                             {
                                 auto &elem = m_VectorElements[m_SelectedElementIdx];
-                                auto CanvasToScreen = [&](ImVec2 cp) -> ImVec2
+                                auto CanvasToScreen = [&](TEVector2 cp) -> TEVector2
                                 {
-                                    return ImVec2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
-                                                  p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
+                                    return TEVector2(p.x + (cp.x * sz.x + m_CanvasPan.x) * m_CanvasZoom,
+                                                     p.y + (cp.y * sz.y + m_CanvasPan.y) * m_CanvasZoom);
                                 };
 
-                                std::vector<ImVec2> anchors;
+                                std::vector<TEVector2> anchors;
                                 if ((elem.Type == VectorShapeType::Rectangle ||
                                      elem.Type == VectorShapeType::Triangle) &&
                                     elem.Points.size() >= 2)
                                 {
                                     anchors.push_back(elem.Points[0]);
                                     anchors.push_back(elem.Points[1]);
-                                    anchors.push_back(ImVec2(elem.Points[1].x, elem.Points[0].y));
-                                    anchors.push_back(ImVec2(elem.Points[0].x, elem.Points[1].y));
+                                    anchors.push_back(TEVector2(elem.Points[1].x, elem.Points[0].y));
+                                    anchors.push_back(TEVector2(elem.Points[0].x, elem.Points[1].y));
                                 }
                                 else if ((elem.Type == VectorShapeType::Circle ||
                                           elem.Type == VectorShapeType::Semicircle) &&
                                          elem.Points.size() >= 1)
                                 {
-                                    ImVec2 c = elem.Points[0];
-                                    anchors.push_back(ImVec2(c.x - elem.Radius, c.y));
-                                    anchors.push_back(ImVec2(c.x + elem.Radius, c.y));
-                                    anchors.push_back(ImVec2(c.x, c.y - elem.RadiusY));
-                                    anchors.push_back(ImVec2(c.x, c.y + elem.RadiusY));
+                                    TEVector2 c = elem.Points[0];
+                                    anchors.push_back(TEVector2(c.x - elem.Radius, c.y));
+                                    anchors.push_back(TEVector2(c.x + elem.Radius, c.y));
+                                    anchors.push_back(TEVector2(c.x, c.y - elem.RadiusY));
+                                    anchors.push_back(TEVector2(c.x, c.y + elem.RadiusY));
                                 }
 
                                 for (int a = 0; a < (int)anchors.size(); a++)
                                 {
-                                    ImVec2 sc = CanvasToScreen(anchors[a]);
+                                    TEVector2 sc = CanvasToScreen(anchors[a]);
                                     float dx = mousePos.x - sc.x;
                                     float dy = mousePos.y - sc.y;
                                     if (dx * dx + dy * dy <= 36.0f) // 6 pixels threshold
@@ -1545,13 +1558,13 @@ public:
                                 }
                             }
                         }
-                        else if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+                        else if (TimeGUI::IsMouseDragging(TimeGUIMouseButton_Left))
                         {
                             if (m_IsMovingShape)
                             {
                                 m_WasDraggingShape = true;
-                                ImVec2 delta = ImVec2(canvasMouse.x - m_DragStartMousePos.x,
-                                                      canvasMouse.y - m_DragStartMousePos.y);
+                                TEVector2 delta = TEVector2(canvasMouse.x - m_DragStartMousePos.x,
+                                                            canvasMouse.y - m_DragStartMousePos.y);
                                 for (auto &elem : m_VectorElements)
                                 {
                                     if (elem.Selected)
@@ -1601,7 +1614,7 @@ public:
                                 else if (elem.Type == VectorShapeType::Circle ||
                                          elem.Type == VectorShapeType::Semicircle)
                                 {
-                                    ImVec2 c = elem.Points[0];
+                                    TEVector2 c = elem.Points[0];
                                     if (m_ActiveAnchorIdx == 0 || m_ActiveAnchorIdx == 1)
                                         elem.Radius = std::abs(canvasMouse.x - c.x);
                                     else if (m_ActiveAnchorIdx == 2 || m_ActiveAnchorIdx == 3)
@@ -1634,13 +1647,13 @@ public:
                                 else if (m_ActiveTool == VectorShapeType::Circle ||
                                          m_ActiveTool == VectorShapeType::Semicircle)
                                 {
-                                    ImVec2 p1 = m_CurrentDrawingElement.Points[0];
+                                    TEVector2 p1 = m_CurrentDrawingElement.Points[0];
                                     m_CurrentDrawingElement.Radius = std::abs(canvasMouse.x - p1.x);
                                     m_CurrentDrawingElement.RadiusY = std::abs(canvasMouse.y - p1.y);
                                 }
                             }
                         }
-                        else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                        else if (TimeGUI::IsMouseReleased(TimeGUIMouseButton_Left))
                         {
                             // Save undo on move complete
                             if (m_WasDraggingShape)
@@ -1689,7 +1702,7 @@ public:
                                     }
                                     else // Pen / merged
                                     {
-                                        auto accPts = [&](const std::vector<ImVec2> &pts)
+                                        auto accPts = [&](const std::vector<TEVector2> &pts)
                                         {
                                             for (auto &pt : pts)
                                             {
@@ -1742,7 +1755,7 @@ public:
                                 else if (m_ActiveTool == VectorShapeType::Circle ||
                                          m_ActiveTool == VectorShapeType::Semicircle)
                                 {
-                                    ImVec2 p1 = m_CurrentDrawingElement.Points[0];
+                                    TEVector2 p1 = m_CurrentDrawingElement.Points[0];
                                     m_CurrentDrawingElement.Radius = std::abs(canvasMouse.x - p1.x);
                                     m_CurrentDrawingElement.RadiusY = std::abs(canvasMouse.y - p1.y);
                                 }
@@ -1754,20 +1767,20 @@ public:
                         }
                     }
 
-                    ImGui::Dummy(sz);
-                    ImGui::Separator();
-                    ImGui::Text("Coords: X: %.1f, Y: %.1f | Zoom: %.1fx", canvasMouse.x * sz.x, canvasMouse.y * sz.y,
-                                m_CanvasZoom);
+                    TimeGUI::Dummy(sz);
+                    TimeGUI::Separator();
+                    TimeGUI::Text("Coords: X: %.1f, Y: %.1f | Zoom: %.1fx", canvasMouse.x * sz.x, canvasMouse.y * sz.y,
+                                  m_CanvasZoom);
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn(); // Element List (Now on the Right!)
-                if (ImGui::BeginChild("##VectorLayers", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn(); // Element List (Now on the Right!)
+                if (TimeGUI::BeginChild("##VectorLayers", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Element List", ImVec4(1, 1, 0.4f, 1));
+                    DrawGlassHeader("Element List", TEVector4(1, 1, 0.4f, 1));
                     for (int i = 0; i < (int)m_VectorElements.size(); i++)
                     {
-                        ImGui::PushID(i);
+                        TimeGUI::PushID(i);
                         const char *typeStr = "Unknown";
                         if (m_VectorElements[i].Type == VectorShapeType::Pen)
                             typeStr = m_VectorElements[i].SubPaths.size() > 1 ? "Group" : "Pen Path";
@@ -1783,16 +1796,16 @@ public:
                         bool isSub = m_VectorElements[i].Subtract;
                         // Indent subtract items as nested under their parent
                         if (isSub)
-                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 18.0f);
+                            TimeGUI::SetCursorPosX(TimeGUI::GetCursorPosX() + 18.0f);
 
                         // Selectable Element list item with red highlight if selected or hovered
                         bool isSel = m_VectorElements[i].Selected || (i == m_SelectedElementIdx);
-                        ImVec4 col = isSel ? ImVec4(1, 0.3f, 0.3f, 1)
-                                           : (isSub ? ImVec4(0.8f, 0.5f, 1.0f, 1) : ImVec4(1, 1, 1, 1));
-                        ImGui::TextColored(col, "%s%d: %s%s",
-                                           isSub ? "\xE2\x94\x9A " : "", // UTF-8 tree corner \u251A
-                                           i + 1, typeStr, isSub ? " [Cut]" : "");
-                        if (ImGui::IsItemClicked())
+                        TEVector4 col = isSel ? TEVector4(1, 0.3f, 0.3f, 1)
+                                              : (isSub ? TEVector4(0.8f, 0.5f, 1.0f, 1) : TEVector4(1, 1, 1, 1));
+                        TimeGUI::TextColored(col, "%s%d: %s%s",
+                                             isSub ? "\xE2\x94\x9A " : "", // UTF-8 tree corner \u251A
+                                             i + 1, typeStr, isSub ? " [Cut]" : "");
+                        if (TimeGUI::IsItemClicked())
                         {
                             m_SelectedElementIdx = i;
                             bool ctrlPressed =
@@ -1809,10 +1822,10 @@ public:
                             }
                         }
 
-                        ImGui::SameLine(ImGui::GetContentRegionAvail().x - 30);
+                        TimeGUI::SameLine(TimeGUI::GetContentRegionAvail().x - 30);
 
-                        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-                        if (ImGui::Button("X", ImVec2(22, 22)))
+                        TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(1.0f, 0.0f, 0.0f, 1.0f));
+                        if (TimeGUI::Button("X", TEVector2(22, 22)))
                         {
                             SaveUndoState();
                             m_VectorElements.erase(m_VectorElements.begin() + i);
@@ -1823,62 +1836,62 @@ public:
                             m_PreviewDirty = true;
                             i--;
                         }
-                        ImGui::PopStyleColor();
-                        ImGui::PopID();
+                        TimeGUI::PopStyleColor();
+                        TimeGUI::PopID();
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
                 UI_DrawExportPopup();
                 UI_DrawLoadingOverlay();
-                ImGui::EndTable();
+                TimeGUI::EndTable();
             }
         }
         else if (m_CreationMode == SpriteCreationMode::PixelPaint)
         {
-            if (ImGui::BeginTable("##MainPixelPaint", 3, ImGuiTableFlags_Resizable))
+            if (TimeGUI::BeginTable("##MainPixelPaint", 3, TimeGUITableFlags_Resizable))
             {
-                ImGui::TableNextColumn();
-                if (ImGui::BeginChild("##PixelTools", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn();
+                if (TimeGUI::BeginChild("##PixelTools", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Pixel Tools", ImVec4(0.4f, 0.8f, 1, 1));
+                    DrawGlassHeader("Pixel Tools", TEVector4(0.4f, 0.8f, 1, 1));
 
-                    ImGui::Text("Grid Dimensions:");
-                    ImGui::SetNextItemWidth(80);
-                    ImGui::InputInt("Width", &m_PixelGridWidth);
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(80);
-                    ImGui::InputInt("Height", &m_PixelGridHeight);
+                    TimeGUI::Text("Grid Dimensions:");
+                    TimeGUI::SetNextItemWidth(80);
+                    TimeGUI::InputInt("Width", &m_PixelGridWidth);
+                    TimeGUI::SameLine();
+                    TimeGUI::SetNextItemWidth(80);
+                    TimeGUI::InputInt("Height", &m_PixelGridHeight);
 
                     m_PixelGridWidth = std::clamp(m_PixelGridWidth, 1, 256);
                     m_PixelGridHeight = std::clamp(m_PixelGridHeight, 1, 256);
 
-                    if (ImGui::Button("Resize / Clear Grid", ImVec2(-1, 28)))
+                    if (TimeGUI::Button("Resize / Clear Grid", TEVector2(-1, 28)))
                     {
                         SaveUndoState();
-                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0, 0, 0, 0));
+                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, TEVector4(0, 0, 0, 0));
                         m_PreviewDirty = true;
                     }
 
-                    ImGui::Separator();
-                    ImGui::Text("Active Tool:");
-                    if (ImGui::RadioButton("Pencil", m_ActivePixelTool == 0))
+                    TimeGUI::Separator();
+                    TimeGUI::Text("Active Tool:");
+                    if (TimeGUI::RadioButton("Pencil", m_ActivePixelTool == 0))
                         m_ActivePixelTool = 0;
-                    if (ImGui::RadioButton("Eraser", m_ActivePixelTool == 1))
+                    if (TimeGUI::RadioButton("Eraser", m_ActivePixelTool == 1))
                         m_ActivePixelTool = 1;
-                    if (ImGui::RadioButton("Paint Bucket", m_ActivePixelTool == 2))
+                    if (TimeGUI::RadioButton("Paint Bucket", m_ActivePixelTool == 2))
                         m_ActivePixelTool = 2;
 
-                    ImGui::Separator();
-                    ImGui::Text("Color Palette:");
+                    TimeGUI::Separator();
+                    TimeGUI::Text("Color Palette:");
 
                     // Track color picker change to add color to history on edit deactivated
-                    if (ImGui::ColorPicker4("Color", (float *)&m_PixelPaintColor,
-                                            ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
+                    if (TimeGUI::ColorPicker4("Color", (float *)&m_PixelPaintColor,
+                                              TimeGUIColorEditFlags_NoInputs | TimeGUIColorEditFlags_NoLabel))
                     {
                         // Active editing
                     }
-                    if (ImGui::IsItemDeactivatedAfterEdit())
+                    if (TimeGUI::IsItemDeactivatedAfterEdit())
                     {
                         AddColorToHistory(m_PixelPaintColor);
                     }
@@ -1886,72 +1899,72 @@ public:
                     // Render recent color history buttons
                     if (!m_ColorHistory.empty())
                     {
-                        ImGui::Text("Recent Colors:");
+                        TimeGUI::Text("Recent Colors:");
                         for (int h = 0; h < (int)m_ColorHistory.size(); h++)
                         {
-                            ImGui::PushID(h);
-                            ImGui::PushStyleColor(ImGuiCol_Button, m_ColorHistory[h]);
-                            ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                                                  ImVec4(m_ColorHistory[h].x * 1.1f, m_ColorHistory[h].y * 1.1f,
-                                                         m_ColorHistory[h].z * 1.1f, m_ColorHistory[h].w));
-                            if (ImGui::Button("##HistoryColor", ImVec2(24, 24)))
+                            TimeGUI::PushID(h);
+                            TimeGUI::PushStyleColor(TimeGUICol_Button, m_ColorHistory[h]);
+                            TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered,
+                                                    TEVector4(m_ColorHistory[h].x * 1.1f, m_ColorHistory[h].y * 1.1f,
+                                                              m_ColorHistory[h].z * 1.1f, m_ColorHistory[h].w));
+                            if (TimeGUI::Button("##HistoryColor", TEVector2(24, 24)))
                             {
                                 m_PixelPaintColor = m_ColorHistory[h];
                             }
-                            ImGui::PopStyleColor(2);
-                            ImGui::PopID();
-                            if (h < (int)m_ColorHistory.size() - 1 && ImGui::GetContentRegionAvail().x > 30)
-                                ImGui::SameLine();
+                            TimeGUI::PopStyleColor(2);
+                            TimeGUI::PopID();
+                            if (h < (int)m_ColorHistory.size() - 1 && TimeGUI::GetContentRegionAvail().x > 30)
+                                TimeGUI::SameLine();
                         }
                     }
 
-                    ImGui::Separator();
-                    if (ImGui::Button("Clear Canvas", ImVec2(-1, 30)))
+                    TimeGUI::Separator();
+                    if (TimeGUI::Button("Clear Canvas", TEVector2(-1, 30)))
                     {
                         SaveUndoState();
-                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0, 0, 0, 0));
+                        m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, TEVector4(0, 0, 0, 0));
                         m_PreviewDirty = true;
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn(); // Pixel Canvas
-                if (ImGui::BeginChild("##PixelCanvas", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn(); // Pixel Canvas
+                if (TimeGUI::BeginChild("##PixelCanvas", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Pixel Canvas", ImVec4(0.4f, 0.7f, 1, 1));
-                    ImDrawList *dl = ImGui::GetWindowDrawList();
-                    ImVec2 p = ImGui::GetCursorScreenPos(), sz = ImGui::GetContentRegionAvail();
+                    DrawGlassHeader("Pixel Canvas", TEVector4(0.4f, 0.7f, 1, 1));
+                    TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+                    TEVector2 p = TimeGUI::GetCursorScreenPos(), sz = TimeGUI::GetContentRegionAvail();
                     sz.y -= 44;
 
                     // Pan/Zoom controls
-                    bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows);
-                    ImVec2 mousePos = ImGui::GetMousePos();
-                    ImVec2 relativeMouse = ImVec2(mousePos.x - p.x, mousePos.y - p.y);
+                    bool hovered = TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_ChildWindows);
+                    TEVector2 mousePos = TimeGUI::GetMousePos();
+                    TEVector2 relativeMouse = TEVector2(mousePos.x - p.x, mousePos.y - p.y);
 
                     if (hovered)
                     {
-                        float wheel = ImGui::GetIO().MouseWheel;
+                        float wheel = TimeGUI::GetIO().MouseWheel;
                         if (wheel != 0.0f)
                         {
-                            ImVec2 mouseInCanvasSpace = ImVec2(relativeMouse.x / m_CanvasZoom - m_CanvasPan.x,
-                                                               relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
+                            TEVector2 mouseInCanvasSpace = TEVector2(relativeMouse.x / m_CanvasZoom - m_CanvasPan.x,
+                                                                     relativeMouse.y / m_CanvasZoom - m_CanvasPan.y);
                             m_CanvasZoom = std::clamp(m_CanvasZoom + wheel * 0.1f, 0.1f, 10.0f);
                             m_CanvasPan.x = relativeMouse.x / m_CanvasZoom - mouseInCanvasSpace.x;
                             m_CanvasPan.y = relativeMouse.y / m_CanvasZoom - mouseInCanvasSpace.y;
                         }
 
-                        if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+                        if (TimeGUI::IsMouseDragging(TimeGUIMouseButton_Right))
                         {
-                            m_CanvasPan.x += ImGui::GetIO().MouseDelta.x / m_CanvasZoom;
-                            m_CanvasPan.y += ImGui::GetIO().MouseDelta.y / m_CanvasZoom;
+                            m_CanvasPan.x += TimeGUI::GetIO().MouseDelta.x / m_CanvasZoom;
+                            m_CanvasPan.y += TimeGUI::GetIO().MouseDelta.y / m_CanvasZoom;
                         }
                     }
 
                     // Draw board container background
-                    dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
+                    dl->AddRectFilled(p, TEVector2(p.x + sz.x, p.y + sz.y), IM_COL32(30, 30, 35, 255), 12.0f);
 
                     // Set clip rect to canvas area
-                    dl->PushClipRect(p, ImVec2(p.x + sz.x, p.y + sz.y), true);
+                    dl->PushClipRect(p, TEVector2(p.x + sz.x, p.y + sz.y), true);
 
                     // Calculate pixel board position centered or panned
                     float boxW = sz.x;
@@ -1964,10 +1977,10 @@ public:
                     {
                         for (int x = 0; x < m_PixelGridWidth; x++)
                         {
-                            ImVec2 p1 = ImVec2(p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom,
-                                               p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom);
-                            ImVec2 p2 = ImVec2(p.x + ((x + 1) * checkW + m_CanvasPan.x) * m_CanvasZoom,
-                                               p.y + ((y + 1) * checkH + m_CanvasPan.y) * m_CanvasZoom);
+                            TEVector2 p1 = TEVector2(p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom,
+                                                     p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom);
+                            TEVector2 p2 = TEVector2(p.x + ((x + 1) * checkW + m_CanvasPan.x) * m_CanvasZoom,
+                                                     p.y + ((y + 1) * checkH + m_CanvasPan.y) * m_CanvasZoom);
                             ImU32 bgCol = ((x + y) % 2 == 0) ? IM_COL32(45, 45, 50, 255) : IM_COL32(55, 55, 60, 255);
                             dl->AddRectFilled(p1, p2, bgCol);
                         }
@@ -1982,15 +1995,15 @@ public:
                         for (int x = 0; x <= m_PixelGridWidth; x++)
                         {
                             float px = p.x + (x * checkW + m_CanvasPan.x) * m_CanvasZoom;
-                            dl->AddLine(ImVec2(px, p.y + m_CanvasPan.y * m_CanvasZoom),
-                                        ImVec2(px, p.y + (sz.y + m_CanvasPan.y) * m_CanvasZoom),
+                            dl->AddLine(TEVector2(px, p.y + m_CanvasPan.y * m_CanvasZoom),
+                                        TEVector2(px, p.y + (sz.y + m_CanvasPan.y) * m_CanvasZoom),
                                         IM_COL32(255, 255, 255, 30));
                         }
                         for (int y = 0; y <= m_PixelGridHeight; y++)
                         {
                             float py = p.y + (y * checkH + m_CanvasPan.y) * m_CanvasZoom;
-                            dl->AddLine(ImVec2(p.x + m_CanvasPan.x * m_CanvasZoom, py),
-                                        ImVec2(p.x + (sz.x + m_CanvasPan.x) * m_CanvasZoom, py),
+                            dl->AddLine(TEVector2(p.x + m_CanvasPan.x * m_CanvasZoom, py),
+                                        TEVector2(p.x + (sz.x + m_CanvasPan.x) * m_CanvasZoom, py),
                                         IM_COL32(255, 255, 255, 30));
                         }
                     }
@@ -1998,7 +2011,7 @@ public:
                     // Paint interactions
                     int px = (int)((relativeMouse.x / m_CanvasZoom - m_CanvasPan.x) / boxW * m_PixelGridWidth);
                     int py = (int)((relativeMouse.y / m_CanvasZoom - m_CanvasPan.y) / boxH * m_PixelGridHeight);
-                    if (hovered && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                    if (hovered && TimeGUI::IsMouseDown(TimeGUIMouseButton_Left))
                     {
                         if (px >= 0 && px < m_PixelGridWidth && py >= 0 && py < m_PixelGridHeight)
                         {
@@ -2011,16 +2024,16 @@ public:
                             }
                             else if (m_ActivePixelTool == 1) // Eraser
                             {
-                                m_PixelGrid[py * m_PixelGridWidth + px] = ImVec4(0, 0, 0, 0);
+                                m_PixelGrid[py * m_PixelGridWidth + px] = TEVector4(0, 0, 0, 0);
                                 m_PreviewDirty = true;
                                 m_WasPixelPainting = true;
                             }
                             else if (m_ActivePixelTool == 2) // Paint Bucket
                             {
-                                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                                if (TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
                                 {
                                     SaveUndoState();
-                                    ImVec4 targetColor = m_PixelGrid[py * m_PixelGridWidth + px];
+                                    TEVector4 targetColor = m_PixelGrid[py * m_PixelGridWidth + px];
                                     FloodFill(px, py, targetColor, m_PixelPaintColor);
                                     m_PreviewDirty = true;
                                     AddColorToHistory(m_PixelPaintColor);
@@ -2029,45 +2042,45 @@ public:
                         }
                     }
                     // Save one undo step when a pixel stroke ends
-                    if (hovered && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && m_WasPixelPainting)
+                    if (hovered && TimeGUI::IsMouseReleased(TimeGUIMouseButton_Left) && m_WasPixelPainting)
                     {
                         SaveUndoState();
                         m_WasPixelPainting = false;
                     }
 
                     dl->PopClipRect();
-                    ImGui::Dummy(sz);
+                    TimeGUI::Dummy(sz);
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
-                ImGui::TableNextColumn(); // Preview
-                if (ImGui::BeginChild("##PixelPreview", ImVec2(0, 0), false))
+                TimeGUI::TableNextColumn(); // Preview
+                if (TimeGUI::BeginChild("##PixelPreview", TEVector2(0, 0), false))
                 {
-                    DrawGlassHeader("Preview", ImVec4(0.4f, 0.8f, 1, 1));
+                    DrawGlassHeader("Preview", TEVector4(0.4f, 0.8f, 1, 1));
 
                     if (m_PreviewFB)
                     {
-                        ImVec2 sz = ImGui::GetContentRegionAvail();
+                        TEVector2 sz = TimeGUI::GetContentRegionAvail();
                         sz.y -= 44;
                         if (sz.y < 50.0f)
                             sz.y = 50.0f;
 
-                        ImGui::Image((ImTextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
-                                     ImVec2(sz.x, sz.y), ImVec2(0, 1), ImVec2(1, 0));
+                        TimeGUI::Image((TimeGUITextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
+                                       TEVector2(sz.x, sz.y), TEVector2(0, 1), TEVector2(1, 0));
                     }
                 }
-                ImGui::EndChild();
+                TimeGUI::EndChild();
 
                 UI_DrawExportPopup();
                 UI_DrawLoadingOverlay();
-                ImGui::EndTable();
+                TimeGUI::EndTable();
             }
         }
-        ImGui::PopStyleVar(3);
+        TimeGUI::PopStyleVar(3);
     }
 
 private:
-    void ExecuteProceduralCode(ImDrawList *dl, ImVec2 p, ImVec2 sz, float dt)
+    void ExecuteProceduralCode(TimeGUI::TimeGUIDrawList dl, TEVector2 p, TEVector2 sz, float dt)
     {
         std::function<std::vector<float>(std::string)> Res = [&](std::string e) -> std::vector<float>
         {
@@ -2381,47 +2394,47 @@ private:
             m_PreviewFB = nullptr;
             return;
         }
-        ImGui::OpenPopup("Export Sprite Properties");
-        ImGui::SetNextWindowSize(ImVec2(520, 700));
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.14f, 0.98f));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 16.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.2f);
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.3f, 0.6f, 1.0f, 0.4f));
+        TimeGUI::OpenPopup("Export Sprite Properties");
+        TimeGUI::SetNextWindowSize(TEVector2(520, 700));
+        TimeGUI::PushStyleColor(TimeGUICol_WindowBg, TEVector4(0.12f, 0.12f, 0.14f, 0.98f));
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 8.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 16.0f);
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 1.2f);
+        TimeGUI::PushStyleColor(TimeGUICol_Border, TEVector4(0.3f, 0.6f, 1.0f, 0.4f));
 
-        if (ImGui::BeginPopupModal("Export Sprite Properties", &m_ShowExportPopup,
-                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar |
-                                       ImGuiWindowFlags_NoTitleBar))
+        if (TimeGUI::BeginPopupModal("Export Sprite Properties", &m_ShowExportPopup,
+                                     TimeGUIWindowFlags_NoResize | TimeGUIWindowFlags_NoScrollbar |
+                                         TimeGUIWindowFlags_NoTitleBar))
         {
-            ImDrawList *dl = ImGui::GetWindowDrawList();
-            ImVec2 p = ImGui::GetCursorScreenPos();
-            ImVec2 sz = ImGui::GetWindowSize();
-            dl->AddRectFilled(p, ImVec2(p.x + sz.x, p.y + 48), IM_COL32(45, 55, 80, 200), 16.0f,
+            TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+            TEVector2 p = TimeGUI::GetCursorScreenPos();
+            TEVector2 sz = TimeGUI::GetWindowSize();
+            dl->AddRectFilled(p, TEVector2(p.x + sz.x, p.y + 48), IM_COL32(45, 55, 80, 200), 16.0f,
                               ImDrawFlags_RoundCornersTop);
-            dl->AddLine(ImVec2(p.x, p.y + 48), ImVec2(p.x + sz.x, p.y + 48), IM_COL32(80, 140, 255, 100), 1.5f);
-            ImGui::SetCursorPosY(14);
-            ImGui::Indent(20);
-            ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "SPRITE EXPORT SETTINGS");
-            ImGui::SameLine(sz.x - 35);
-            if (ImGui::Button("X", ImVec2(24, 24)))
+            dl->AddLine(TEVector2(p.x, p.y + 48), TEVector2(p.x + sz.x, p.y + 48), IM_COL32(80, 140, 255, 100), 1.5f);
+            TimeGUI::SetCursorPosY(14);
+            TimeGUI::Indent(20);
+            TimeGUI::TextColored(TEVector4(0.5f, 0.8f, 1.0f, 1.0f), "SPRITE EXPORT SETTINGS");
+            TimeGUI::SameLine(sz.x - 35);
+            if (TimeGUI::Button("X", TEVector2(24, 24)))
                 m_ShowExportPopup = false;
-            ImGui::Unindent(20);
-            ImGui::SetCursorPosY(65);
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 20));
-            ImGui::Columns(2, "##ExpCols", false);
-            ImGui::SetColumnWidth(0, 150);
+            TimeGUI::Unindent(20);
+            TimeGUI::SetCursorPosY(65);
+            TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(10, 20));
+            TimeGUI::Columns(2, "##ExpCols", false);
+            TimeGUI::SetColumnWidth(0, 150);
             auto StyledLabel = [](const char *label)
             {
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
-                ImGui::Text(label);
+                TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + 4);
+                TimeGUI::Text(label);
             };
 
             StyledLabel("Output Path");
-            ImGui::NextColumn();
-            ImGui::SetNextItemWidth(sz.x - 220);
-            ImGui::InputText("##Path", m_ExportPath, 256);
-            ImGui::SameLine();
-            if (ImGui::Button("..."))
+            TimeGUI::NextColumn();
+            TimeGUI::SetNextItemWidth(sz.x - 220);
+            TimeGUI::InputText("##Path", m_ExportPath, 256);
+            TimeGUI::SameLine();
+            if (TimeGUI::Button("..."))
             {
                 std::string picked = PlatformUtils::SaveFile("PNG Files (*.png)\0*.png\0");
                 if (!picked.empty())
@@ -2431,25 +2444,25 @@ private:
                     strncpy_s(m_ExportPath, picked.c_str(), 256);
                 }
             }
-            ImGui::NextColumn();
+            TimeGUI::NextColumn();
 
             StyledLabel("Export Mode");
-            ImGui::NextColumn();
-            if (ImGui::RadioButton("Single", !m_ExportIsSheet))
+            TimeGUI::NextColumn();
+            if (TimeGUI::RadioButton("Single", !m_ExportIsSheet))
             {
                 m_ExportIsSheet = false;
                 m_ExportFrames = 1;
                 m_ExportCols = 1;
                 m_ExportRows = 1;
             }
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Sprite Sheet", m_ExportIsSheet))
+            TimeGUI::SameLine();
+            if (TimeGUI::RadioButton("Sprite Sheet", m_ExportIsSheet))
                 m_ExportIsSheet = true;
-            ImGui::NextColumn();
+            TimeGUI::NextColumn();
 
             StyledLabel("Match IDE Size");
-            ImGui::NextColumn();
-            if (ImGui::Checkbox("##MatchIDE", &m_ExportMatchIDE))
+            TimeGUI::NextColumn();
+            if (TimeGUI::Checkbox("##MatchIDE", &m_ExportMatchIDE))
             {
                 if (m_ExportMatchIDE && m_LastSimSize.x > 0)
                 {
@@ -2460,81 +2473,82 @@ private:
             if (m_ExportMatchIDE && m_LastSimSize.x > 0)
             {
                 m_ExportSize = m_LastSimSize; // Active sync
-                ImGui::SameLine();
-                ImGui::TextColored(ImVec4(0.5f, 0.7f, 1.0f, 1.0f), "(%.0f x %.0f)", m_LastSimSize.x, m_LastSimSize.y);
+                TimeGUI::SameLine();
+                TimeGUI::TextColored(TEVector4(0.5f, 0.7f, 1.0f, 1.0f), "(%.0f x %.0f)", m_LastSimSize.x,
+                                     m_LastSimSize.y);
             }
-            ImGui::NextColumn();
+            TimeGUI::NextColumn();
 
             StyledLabel("Cell Resolution");
-            ImGui::NextColumn();
-            ImGui::SetNextItemWidth(-1);
+            TimeGUI::NextColumn();
+            TimeGUI::SetNextItemWidth(-1);
             if (m_ExportMatchIDE)
             {
-                ImGui::BeginDisabled();
-                ImGui::DragFloat2("##Res", (float *)&m_ExportSize, 1.0f, 1.0f, 4096.0f, "%.0f px");
-                ImGui::EndDisabled();
+                TimeGUI::BeginDisabled();
+                TimeGUI::DragFloat2("##Res", (float *)&m_ExportSize, 1.0f, 1.0f, 4096.0f, "%.0f px");
+                TimeGUI::EndDisabled();
             }
             else
             {
-                if (ImGui::DragFloat2("##Res", (float *)&m_ExportSize, 1.0f, 1.0f, 4096.0f, "%.0f px"))
+                if (TimeGUI::DragFloat2("##Res", (float *)&m_ExportSize, 1.0f, 1.0f, 4096.0f, "%.0f px"))
                     m_PreviewDirty = true;
             }
-            ImGui::NextColumn();
+            TimeGUI::NextColumn();
 
             if (m_ExportIsSheet)
             {
                 StyledLabel("Total Frames");
-                ImGui::NextColumn();
-                ImGui::SetNextItemWidth(-1);
-                if (ImGui::InputInt("##F", &m_ExportFrames))
+                TimeGUI::NextColumn();
+                TimeGUI::SetNextItemWidth(-1);
+                if (TimeGUI::InputInt("##F", &m_ExportFrames))
                 {
                     if (m_ExportFrames < 1)
                         m_ExportFrames = 1;
                     m_ExportCols = (int)ceil(sqrt(m_ExportFrames));
                     m_ExportRows = (int)ceil((float)m_ExportFrames / m_ExportCols);
                 }
-                ImGui::NextColumn();
+                TimeGUI::NextColumn();
                 StyledLabel("Grid Layout");
-                ImGui::NextColumn();
-                ImGui::PushItemWidth(70);
-                if (ImGui::DragInt("##C", &m_ExportCols, 1, 1, 64))
+                TimeGUI::NextColumn();
+                TimeGUI::PushItemWidth(70);
+                if (TimeGUI::DragInt("##C", &m_ExportCols, 1, 1, 64))
                     m_ExportFrames = m_ExportCols * m_ExportRows;
-                ImGui::SameLine();
-                ImGui::Text("x");
-                ImGui::SameLine();
-                if (ImGui::DragInt("##R", &m_ExportRows, 1, 1, 64))
+                TimeGUI::SameLine();
+                TimeGUI::Text("x");
+                TimeGUI::SameLine();
+                if (TimeGUI::DragInt("##R", &m_ExportRows, 1, 1, 64))
                     m_ExportFrames = m_ExportCols * m_ExportRows;
-                ImGui::PopItemWidth();
+                TimeGUI::PopItemWidth();
             }
 
             StyledLabel("Transparent");
-            ImGui::NextColumn();
-            ImGui::Checkbox("##Trans", &m_ExportTransparent);
-            ImGui::NextColumn();
+            TimeGUI::NextColumn();
+            TimeGUI::Checkbox("##Trans", &m_ExportTransparent);
+            TimeGUI::NextColumn();
 
             StyledLabel("Content Offset");
-            ImGui::NextColumn();
-            ImGui::SetNextItemWidth(sz.x - 280);
-            if (ImGui::DragFloat2("##Offset", (float *)&m_ExportOffset, 0.5f, -4096.0f, 4096.0f, "%.1f px"))
+            TimeGUI::NextColumn();
+            TimeGUI::SetNextItemWidth(sz.x - 280);
+            if (TimeGUI::DragFloat2("##Offset", (float *)&m_ExportOffset, 0.5f, -4096.0f, 4096.0f, "%.1f px"))
                 m_PreviewDirty = true;
-            ImGui::SameLine();
-            if (ImGui::SmallButton("Reset##Off"))
+            TimeGUI::SameLine();
+            if (TimeGUI::SmallButton("Reset##Off"))
             {
-                m_ExportOffset = ImVec2(0.0f, 0.0f);
+                m_ExportOffset = TEVector2(0.0f, 0.0f);
                 m_PreviewDirty = true;
             }
-            ImGui::NextColumn();
+            TimeGUI::NextColumn();
 
-            ImGui::Columns(1);
-            ImGui::PopStyleVar();
+            TimeGUI::Columns(1);
+            TimeGUI::PopStyleVar();
 
             // --- Live Preview ---
-            ImGui::Spacing();
-            ImGui::Separator();
-            ImGui::Spacing();
-            ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "PREVIEW");
-            ImGui::SameLine(sz.x - 100);
-            if (ImGui::SmallButton("Refresh"))
+            TimeGUI::Spacing();
+            TimeGUI::Separator();
+            TimeGUI::Spacing();
+            TimeGUI::TextColored(TEVector4(0.5f, 0.8f, 1.0f, 1.0f), "PREVIEW");
+            TimeGUI::SameLine(sz.x - 100);
+            if (TimeGUI::SmallButton("Refresh"))
                 m_PreviewDirty = true;
 
             // Generate preview if needed
@@ -2554,12 +2568,12 @@ private:
                     previewW = previewH / aspect;
 
                 float indent = (sz.x - previewW) * 0.5f;
-                ImGui::SetCursorPosX(indent);
+                TimeGUI::SetCursorPosX(indent);
 
-                ImVec2 previewPos = ImGui::GetCursorScreenPos();
-                ImDrawList *pdl = ImGui::GetWindowDrawList();
-                pdl->AddRectFilled(previewPos, ImVec2(previewPos.x + previewW, previewPos.y + previewH),
-                                   IM_COL32(40, 40, 45, 255), 6.0f);
+                TEVector2 previewPos = TimeGUI::GetCursorScreenPos();
+                TimeGUI::TimeGUIDrawList pdl = TimeGUI::GetWindowDrawList();
+                pdl.AddRectFilled(previewPos, TEVector2(previewPos.x + previewW, previewPos.y + previewH),
+                                  IM_COL32(40, 40, 45, 255), 6.0f);
 
                 if (m_ExportTransparent)
                 {
@@ -2574,65 +2588,65 @@ private:
                             int ix = (int)(x / checkSize);
                             int iy = (int)(y / checkSize);
                             ImU32 col = ((ix + iy) % 2 == 0) ? IM_COL32(35, 35, 40, 255) : IM_COL32(50, 50, 55, 255);
-                            pdl->AddRectFilled(ImVec2(previewPos.x + x, previewPos.y + y),
-                                               ImVec2(previewPos.x + x + cw, previewPos.y + y + ch), col);
+                            pdl.AddRectFilled(TEVector2(previewPos.x + x, previewPos.y + y),
+                                              TEVector2(previewPos.x + x + cw, previewPos.y + y + ch), col);
                         }
                     }
                 }
 
-                ImGui::Image((ImTextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
-                             ImVec2(previewW, previewH), ImVec2(0, 1), ImVec2(1, 0));
-                pdl->AddRect(previewPos, ImVec2(previewPos.x + previewW, previewPos.y + previewH),
-                             IM_COL32(80, 140, 255, 80), 6.0f);
+                TimeGUI::Image((TimeGUITextureID)(intptr_t)m_PreviewFB->GetColorAttachmentRendererID(),
+                               TEVector2(previewW, previewH), TEVector2(0, 1), TEVector2(1, 0));
+                pdl.AddRect(previewPos, TEVector2(previewPos.x + previewW, previewPos.y + previewH),
+                            IM_COL32(80, 140, 255, 80), 6.0f);
             }
-            ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 65);
-            if (ImGui::Button("Cancel", ImVec2(130, 38)))
+            TimeGUI::SetCursorPosY(TimeGUI::GetWindowHeight() - 65);
+            if (TimeGUI::Button("Cancel", TEVector2(130, 38)))
                 m_ShowExportPopup = false;
-            ImGui::SameLine(sz.x - 150);
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.5f, 0.25f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.6f, 0.3f, 1.0f));
-            if (ImGui::Button("EXPORT NOW", ImVec2(130, 38)))
+            TimeGUI::SameLine(sz.x - 150);
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.15f, 0.5f, 0.25f, 1.0f));
+            TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(0.2f, 0.6f, 0.3f, 1.0f));
+            if (TimeGUI::Button("EXPORT NOW", TEVector2(130, 38)))
             {
                 m_ExportRequested = true;
                 m_ShowExportPopup = false;
             }
-            ImGui::PopStyleColor(2);
-            ImGui::EndPopup();
+            TimeGUI::PopStyleColor(2);
+            TimeGUI::EndPopup();
         }
-        ImGui::PopStyleVar(3);
-        ImGui::PopStyleColor(2);
+        TimeGUI::PopStyleVar(3);
+        TimeGUI::PopStyleColor(2);
     }
 
     void UI_DrawLoadingOverlay()
     {
         if (!m_ExportRequested)
             return;
-        ImGuiViewport *viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
-                                 ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollWithMouse |
-                                 ImGuiWindowFlags_AlwaysAutoResize;
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::Begin("##LoadingOverlay", nullptr, flags);
-        ImDrawList *dl = ImGui::GetWindowDrawList();
-        ImVec2 center = ImVec2(viewport->Pos.x + viewport->Size.x * 0.5f, viewport->Pos.y + viewport->Size.y * 0.5f);
-        dl->AddRectFilled(viewport->Pos, ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
-                          IM_COL32(15, 15, 20, 180));
-        float t = (float)ImGui::GetTime();
+        TimeGUI::TimeGUIViewport viewport = TimeGUI::GetMainViewport();
+        TimeGUI::SetNextWindowPos(viewport.Pos);
+        TimeGUI::SetNextWindowSize(viewport.Size);
+        TimeGUI::SetNextWindowViewport(viewport.ID);
+        TimeGUI::TimeGUIWindowFlags flags = TimeGUIWindowFlags_NoDecoration | TimeGUIWindowFlags_NoInputs |
+                                            TimeGUIWindowFlags_NoBackground | TimeGUIWindowFlags_NoScrollWithMouse |
+                                            TimeGUIWindowFlags_AlwaysAutoResize;
+        TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
+        TimeGUI::Begin("##LoadingOverlay", nullptr, flags);
+        TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+        TEVector2 center = TEVector2(viewport.Pos.x + viewport.Size.x * 0.5f, viewport.Pos.y + viewport.Size.y * 0.5f);
+        dl.AddRectFilled(viewport.Pos, TEVector2(viewport.Pos.x + viewport.Size.x, viewport.Pos.y + viewport.Size.y),
+                         IM_COL32(15, 15, 20, 180));
+        float t = (float)TimeGUI::GetTime();
         for (int i = 0; i < 8; i++)
         {
             float ang = t * 6.0f + i * (6.28f / 8.0f);
             float off = 30.0f;
             float r = (1.0f + sinf(ang)) * 4.0f + 2.0f;
-            dl->AddCircleFilled(ImVec2(center.x + cosf(ang) * off, center.y + sinf(ang) * off), r,
-                                IM_COL32(200, 220, 255, 200));
+            dl.AddCircleFilled(TEVector2(center.x + cosf(ang) * off, center.y + sinf(ang) * off), r,
+                               IM_COL32(200, 220, 255, 200));
         }
-        ImGui::SetCursorPos(ImVec2(viewport->Size.x * 0.5f - 80.0f, viewport->Size.y * 0.5f + 60.0f));
-        ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "GENERATING SPRITE SHEET...");
-        ImGui::End();
-        ImGui::PopStyleVar();
+        TimeGUI::SetCursorPos(TEVector2(viewport.Size.x * 0.5f - 80.0f, viewport.Size.y * 0.5f + 60.0f));
+        TimeGUI::TextColored(TEVector4(0.8f, 0.9f, 1.0f, 1.0f), "GENERATING SPRITE SHEET...");
+        TimeGUI::End();
+        TimeGUI::PopStyleVar();
     }
 
     void PerformExport()
@@ -2654,88 +2668,70 @@ private:
         spec.Height = totalH;
         auto fb = Framebuffer::Create(spec);
         fb->Bind();
-        glViewport(0, 0, totalW, totalH);
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        TE::RenderCommand::SetViewport(0, 0, (uint32_t)totalW, (uint32_t)totalH);
+        TE::RenderCommand::SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
+        TE::RenderCommand::Clear();
 
         // 2. Stub input state (strip hover/click from export)
-        ImGuiIO &io = ImGui::GetIO();
-        srand(0);
-        ImVec2 savedMousePos = io.MousePos;
-        bool savedMouseDown[5];
-        for (int i = 0; i < 5; i++)
-        {
-            savedMouseDown[i] = io.MouseDown[i];
-            io.MouseDown[i] = false;
-        }
-        io.MousePos = ImVec2(-9999.0f, -9999.0f);
+        TimeGUI::PushSuspendedInput();
         auto savedKeywords = m_Keywords;
 
         // 3. Build draw list in FRAMEBUFFER-NATIVE coordinates
-        ImDrawList *dl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
-        dl->_ResetForNewFrame();
-        dl->PushTextureID(io.Fonts->TexID);
-        dl->AddDrawCmd();
+        TimeGUI::TimeGUIDrawList dl = TimeGUI::CreateDrawList();
+        dl.ResetForNewFrame();
+        dl.PushTextureID(TimeGUI::GetFontAtlasTextureID());
+        dl.AddDrawCmd();
 
         // Force a non-intersecting clip rect for the whole FBO
-        dl->PushClipRect(ImVec2(0, 0), ImVec2((float)totalW, (float)totalH), false);
+        dl.PushClipRect(TEVector2(0, 0), TEVector2((float)totalW, (float)totalH), false);
 
         for (int i = 0; i < m_ExportFrames; i++)
         {
             int cx = i % m_ExportCols, cy = i / m_ExportCols;
-            ImVec2 origin = ImVec2((float)(cx * cellW), (float)(cy * cellH));
-            ImVec2 cellSize = ImVec2((float)cellW, (float)cellH);
+            TEVector2 origin = TEVector2((float)(cx * cellW), (float)(cy * cellH));
+            TEVector2 cellSize = TEVector2((float)cellW, (float)cellH);
 
             if (!m_ExportTransparent)
             {
-                dl->AddRectFilled(origin, ImVec2(origin.x + cellSize.x, origin.y + cellSize.y),
-                                  IM_COL32(30, 30, 35, 255), 12.0f);
+                dl.AddRectFilled(origin, TEVector2(origin.x + cellSize.x, origin.y + cellSize.y),
+                                 IM_COL32(30, 30, 35, 255), 12.0f);
             }
             // Apply export offset directly in pixel space (pan expects pixels, same as m_CanvasPan)
             if (m_CreationMode == SpriteCreationMode::Code)
-                ExecuteProceduralCode(dl, ImVec2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize,
+                ExecuteProceduralCode(dl, TEVector2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize,
                                       1.0f / 30.0f);
             else if (m_CreationMode == SpriteCreationMode::Vector)
                 RenderVectorShapes(dl, origin, cellSize, 1.0f, m_ExportOffset);
             else if (m_CreationMode == SpriteCreationMode::PixelPaint)
                 RenderPixelGrid(dl, origin, cellSize, 1.0f, m_ExportOffset);
         }
-        dl->PopClipRect();
+        dl.PopClipRect();
 
         // 4. Temporarily sync IO display size for projection matrix accuracy
-        ImVec2 savedDisplaySize = io.DisplaySize;
-        io.DisplaySize = ImVec2((float)totalW, (float)totalH);
+        TimeGUI::TimeGUIIO &io = TimeGUI::GetIO();
+        TEVector2 savedDisplaySize = io.DisplaySize;
+        io.DisplaySize = TEVector2((float)totalW, (float)totalH);
 
         // 5. Construct ImDrawData and Render
-        ImDrawData drawData;
-        drawData.Valid = true;
-        drawData.Textures = nullptr;
-        drawData.AddDrawList(dl);
-        drawData.DisplayPos = ImVec2(0, 0);
-        drawData.DisplaySize = ImVec2((float)totalW, (float)totalH);
-        drawData.FramebufferScale = ImVec2(1.0f, 1.0f);
+        TimeGUI::RenderDrawList(dl, TEVector2((float)totalW, (float)totalH));
 
-        ImGui_ImplOpenGL3_RenderDrawData(&drawData);
-
-        // 6. Restore IO state
+        // 6. Restore state
         io.DisplaySize = savedDisplaySize;
         m_Keywords = savedKeywords;
-        io.MousePos = savedMousePos;
-        for (int i = 0; i < 5; i++)
-            io.MouseDown[i] = savedMouseDown[i];
+        TimeGUI::PopSuspendedInput();
 
         // 6. Read pixels, flip Y, save
         std::vector<uint32_t> pixels(totalW * totalH);
-        glReadPixels(0, 0, totalW, totalH, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+        TE::RenderCommand::ReadPixelsRGBA(0, 0, totalW, totalH, pixels.data());
 
         std::vector<uint32_t> flipped(totalW * totalH);
         for (int y = 0; y < totalH; y++)
             memcpy(&flipped[y * totalW], &pixels[(totalH - 1 - y) * totalW], totalW * 4);
 
-        ImageUtils::SavePNG(m_ExportPath, totalW, totalH, 4, flipped.data());
+        AssetManager::ExportImagePNG(m_ExportPath, totalW, totalH, 4, flipped.data());
 
         // 7. Cleanup
-        IM_DELETE(dl);
+        TimeGUI::DestroyDrawList(dl);
         fb->Unbind();
         TE_CORE_INFO("Export Saved to: {0}", m_ExportPath);
     }
@@ -2752,99 +2748,82 @@ private:
         spec.Height = cellH;
         m_PreviewFB = Framebuffer::Create(spec);
         m_PreviewFB->Bind();
-        glViewport(0, 0, cellW, cellH);
+        TE::RenderCommand::SetViewport(0, 0, (uint32_t)cellW, (uint32_t)cellH);
 
         // Neutral background for preview: respect transparency flag so holes are transparent
         if (m_ExportTransparent)
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            TE::RenderCommand::SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
         else
-            glClearColor(0.12f, 0.12f, 0.15f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+            TE::RenderCommand::SetClearColor({0.12f, 0.12f, 0.15f, 1.0f});
+        TE::RenderCommand::Clear();
 
-        ImGuiIO &io = ImGui::GetIO();
-        srand(0);
-        ImVec2 savedMP = io.MousePos;
-        bool savedMD[5];
-        for (int i = 0; i < 5; i++)
-        {
-            savedMD[i] = io.MouseDown[i];
-            io.MouseDown[i] = false;
-        }
-        io.MousePos = ImVec2(-9999.0f, -9999.0f);
+        TimeGUI::PushSuspendedInput();
         auto savedKW = m_Keywords;
 
-        ImDrawList *dl = IM_NEW(ImDrawList)(ImGui::GetDrawListSharedData());
-        dl->_ResetForNewFrame();
-        dl->PushTextureID(io.Fonts->TexID);
+        TimeGUI::TimeGUIDrawList dl = TimeGUI::CreateDrawList();
+        dl.ResetForNewFrame();
+        dl.PushTextureID(TimeGUI::GetFontAtlasTextureID());
 
-        ImVec2 origin(0, 0);
-        ImVec2 cellSize((float)cellW, (float)cellH);
+        TEVector2 origin(0, 0);
+        TEVector2 cellSize((float)cellW, (float)cellH);
 
         // Force the first command to use the FULL FBO size as its ClipRect
-        dl->PushClipRect(ImVec2(0, 0), ImVec2((float)cellW, (float)cellH), false);
+        dl.PushClipRect(TEVector2(0, 0), TEVector2((float)cellW, (float)cellH), false);
 
         // Draw sprite (apply export offset for centering)
         // Apply export offset directly in pixel space (pan expects pixels, same as m_CanvasPan)
         if (m_CreationMode == SpriteCreationMode::Code)
-            ExecuteProceduralCode(dl, ImVec2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize,
+            ExecuteProceduralCode(dl, TEVector2(origin.x + m_ExportOffset.x, origin.y + m_ExportOffset.y), cellSize,
                                   1.0f / 60.0f);
         else if (m_CreationMode == SpriteCreationMode::Vector)
             RenderVectorShapes(dl, origin, cellSize, 1.0f, m_ExportOffset);
         else if (m_CreationMode == SpriteCreationMode::PixelPaint)
             RenderPixelGrid(dl, origin, cellSize, 1.0f, m_ExportOffset);
 
-        dl->PopClipRect();
+        dl.PopClipRect();
 
-        m_LastVtxCount = dl->VtxBuffer.Size;
-        m_LastCmdCount = dl->CmdBuffer.Size;
+        m_LastVtxCount = dl.GetVertexCount();
+        m_LastCmdCount = dl.GetCommandCount();
 
         m_Keywords = savedKW;
-        io.MousePos = savedMP;
-        for (int i = 0; i < 5; i++)
-            io.MouseDown[i] = savedMD[i];
+        TimeGUI::PopSuspendedInput();
 
-        ImDrawData drawData;
-        drawData.Valid = true;
-        drawData.Textures = nullptr;
-        drawData.AddDrawList(dl);
-        drawData.DisplayPos = ImVec2(0, 0);
-        drawData.DisplaySize = ImVec2((float)cellW, (float)cellH);
-        drawData.FramebufferScale = ImVec2(1.0f, 1.0f); // IMPORTANT: Force 1:1 pixel mapping
-
-        ImGui_ImplOpenGL3_RenderDrawData(&drawData);
-        IM_DELETE(dl);
+        TimeGUI::RenderDrawList(dl, TEVector2((float)cellW, (float)cellH));
+        TimeGUI::DestroyDrawList(dl);
         m_PreviewFB->Unbind();
     }
 
-    void RenderVectorShapes(ImDrawList *dl, ImVec2 origin, ImVec2 cellSize, float zoom = 1.0f,
-                            ImVec2 pan = ImVec2(0, 0), int hoveredIdx = -1, int selectedIdx = -1)
+    void RenderVectorShapes(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom = 1.0f,
+                            TEVector2 pan = TEVector2(0, 0), int hoveredIdx = -1, int selectedIdx = -1)
     {
-        ImVec2 baseCanvasSize = (m_LastSimSize.x > 0.0f && m_LastSimSize.y > 0.0f) ? m_LastSimSize : cellSize;
-        ImVec2 offset = ImVec2((cellSize.x - baseCanvasSize.x) * 0.5f, (cellSize.y - baseCanvasSize.y) * 0.5f);
+        TEVector2 baseCanvasSize = (m_LastSimSize.x > 0.0f && m_LastSimSize.y > 0.0f) ? m_LastSimSize : cellSize;
+        TEVector2 offset = TEVector2((cellSize.x - baseCanvasSize.x) * 0.5f, (cellSize.y - baseCanvasSize.y) * 0.5f);
 
         for (int i = 0; i < (int)m_VectorElements.size(); i++)
         {
             const auto &elem = m_VectorElements[i];
-            ImU32 fillCol = ImGui::ColorConvertFloat4ToU32(elem.FillColor);
-            ImU32 strokeCol = ImGui::ColorConvertFloat4ToU32(elem.StrokeColor);
+            ImU32 fillCol = TimeGUI::ColorConvertFloat4ToU32(elem.FillColor);
+            ImU32 strokeCol = TimeGUI::ColorConvertFloat4ToU32(elem.StrokeColor);
             if (i == hoveredIdx || i == selectedIdx)
             {
                 strokeCol = IM_COL32(255, 0, 0, 255);
             }
 
-            auto CanvasToScreen = [&](ImVec2 cp) -> ImVec2
+            auto CanvasToScreen = [&](TEVector2 cp) -> TEVector2
             {
-                return ImVec2(origin.x + (offset.x + cp.x * baseCanvasSize.x + pan.x) * zoom,
-                              origin.y + (offset.y + cp.y * baseCanvasSize.y + pan.y) * zoom);
+                return TEVector2(origin.x + (offset.x + cp.x * baseCanvasSize.x + pan.x) * zoom,
+                                 origin.y + (offset.y + cp.y * baseCanvasSize.y + pan.y) * zoom);
             };
 
             // Set subtractive blend mode: zero ONLY alpha channel, keep RGB (transparent hole)
             if (elem.Subtract)
             {
-                dl->AddCallback(
-                    [](const ImDrawList *parent_list, const ImDrawCmd *cmd)
+                dl.AddCallback(
+                    [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
                     {
-                        glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ZERO, GL_ZERO); // keep RGB, zero alpha
+                        TE::RenderCommand::SetBlendFuncSeparate(TE::BlendFactor::Zero, TE::BlendFactor::One,
+                                                                TE::BlendFactor::Zero,
+                                                                TE::BlendFactor::Zero); // keep RGB, zero alpha
                     },
                     nullptr);
             }
@@ -2853,8 +2832,13 @@ private:
             {
                 if (elem.Subtract)
                 {
-                    dl->AddCallback([](const ImDrawList *parent_list, const ImDrawCmd *cmd)
-                                    { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }, nullptr);
+                    dl.AddCallback(
+                        [](TimeGUI::TimeGUIDrawList parent_list, const void *cmd)
+                        {
+                            TE::RenderCommand::SetBlendFunc(TE::BlendFactor::SrcAlpha,
+                                                            TE::BlendFactor::OneMinusSrcAlpha);
+                        },
+                        nullptr);
                 }
             };
 
@@ -2870,21 +2854,21 @@ private:
                         {
                             if (subPath.size() < 2)
                                 continue;
-                            std::vector<ImVec2> screenPts;
+                            std::vector<TEVector2> screenPts;
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
-                            dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
-                                            elem.StrokeThickness * 2.0f * zoom);
+                            dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
+                                           elem.StrokeThickness * 2.0f * zoom);
                         }
                         // Draw fills on top to hide overlapping internal boundaries
                         for (const auto &subPath : elem.SubPaths)
                         {
                             if (subPath.size() < 3)
                                 continue;
-                            std::vector<ImVec2> screenPts;
+                            std::vector<TEVector2> screenPts;
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
-                            dl->AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
+                            dl.AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
                         }
                     }
                     else
@@ -2894,11 +2878,11 @@ private:
                         {
                             if (subPath.size() < 2)
                                 continue;
-                            std::vector<ImVec2> screenPts;
+                            std::vector<TEVector2> screenPts;
                             for (auto pt : subPath)
                                 screenPts.push_back(CanvasToScreen(pt));
-                            dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
-                                            elem.StrokeThickness * zoom);
+                            dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
+                                           elem.StrokeThickness * zoom);
                         }
                     }
                 }
@@ -2910,13 +2894,13 @@ private:
                         RestoreBlendIfNeeded();
                         continue;
                     }
-                    std::vector<ImVec2> screenPts;
+                    std::vector<TEVector2> screenPts;
                     for (auto pt : elem.Points)
                         screenPts.push_back(CanvasToScreen(pt));
                     if (elem.FillColor.w > 0.0f)
-                        dl->AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
-                    dl->AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
-                                    elem.StrokeThickness * zoom);
+                        dl.AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
+                    dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, ImDrawFlags_Closed,
+                                   elem.StrokeThickness * zoom);
                 }
             }
             else if (elem.Type == VectorShapeType::Rectangle)
@@ -2926,13 +2910,13 @@ private:
                     RestoreBlendIfNeeded();
                     continue;
                 }
-                ImVec2 p1 = CanvasToScreen(elem.Points[0]);
-                ImVec2 p2 = CanvasToScreen(elem.Points[1]);
+                TEVector2 p1 = CanvasToScreen(elem.Points[0]);
+                TEVector2 p2 = CanvasToScreen(elem.Points[1]);
                 float fillRounding = elem.FillRounding * baseCanvasSize.x * zoom;
                 float strokeRounding = elem.StrokeRounding * baseCanvasSize.x * zoom;
                 if (elem.FillColor.w > 0.0f)
-                    dl->AddRectFilled(p1, p2, fillCol, fillRounding);
-                dl->AddRect(p1, p2, strokeCol, strokeRounding, 0, elem.StrokeThickness * zoom);
+                    dl.AddRectFilled(p1, p2, fillCol, fillRounding);
+                dl.AddRect(p1, p2, strokeCol, strokeRounding, 0, elem.StrokeThickness * zoom);
             }
             else if (elem.Type == VectorShapeType::Triangle)
             {
@@ -2941,22 +2925,22 @@ private:
                     RestoreBlendIfNeeded();
                     continue;
                 }
-                ImVec2 p1 = CanvasToScreen(elem.Points[0]);
-                ImVec2 p2 = CanvasToScreen(elem.Points[1]);
-                ImVec2 v0 = ImVec2((p1.x + p2.x) * 0.5f, p1.y);
-                ImVec2 v1 = ImVec2(p1.x, p2.y);
-                ImVec2 v2 = ImVec2(p2.x, p2.y);
-                std::vector<ImVec2> baseVerts = {v0, v1, v2};
+                TEVector2 p1 = CanvasToScreen(elem.Points[0]);
+                TEVector2 p2 = CanvasToScreen(elem.Points[1]);
+                TEVector2 v0 = TEVector2((p1.x + p2.x) * 0.5f, p1.y);
+                TEVector2 v1 = TEVector2(p1.x, p2.y);
+                TEVector2 v2 = TEVector2(p2.x, p2.y);
+                std::vector<TEVector2> baseVerts = {v0, v1, v2};
                 if (elem.FillColor.w > 0.0f)
                 {
-                    std::vector<ImVec2> fillVerts =
+                    std::vector<TEVector2> fillVerts =
                         GetRoundedPolygonPoints(baseVerts, elem.FillRounding * baseCanvasSize.x * zoom);
-                    dl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
+                    dl.AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                 }
-                std::vector<ImVec2> strokeVerts =
+                std::vector<TEVector2> strokeVerts =
                     GetRoundedPolygonPoints(baseVerts, elem.StrokeRounding * baseCanvasSize.x * zoom);
-                dl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
-                                elem.StrokeThickness * zoom);
+                dl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
+                               elem.StrokeThickness * zoom);
             }
             else if (elem.Type == VectorShapeType::Circle)
             {
@@ -2965,20 +2949,20 @@ private:
                     RestoreBlendIfNeeded();
                     continue;
                 }
-                ImVec2 center = CanvasToScreen(elem.Points[0]);
+                TEVector2 center = CanvasToScreen(elem.Points[0]);
                 float rx = elem.Radius * baseCanvasSize.x * zoom;
                 float ry = elem.RadiusY * baseCanvasSize.y * zoom;
 
                 const int segments = 64;
-                std::vector<ImVec2> pts(segments);
+                std::vector<TEVector2> pts(segments);
                 for (int s = 0; s < segments; s++)
                 {
                     float t = (float)s * 2.0f * 3.14159265f / (float)segments;
-                    pts[s] = ImVec2(center.x + rx * cosf(t), center.y + ry * sinf(t));
+                    pts[s] = TEVector2(center.x + rx * cosf(t), center.y + ry * sinf(t));
                 }
                 if (elem.FillColor.w > 0.0f)
-                    dl->AddConvexPolyFilled(pts.data(), segments, fillCol);
-                dl->AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * zoom);
+                    dl.AddConvexPolyFilled(pts.data(), segments, fillCol);
+                dl.AddPolyline(pts.data(), segments, strokeCol, ImDrawFlags_Closed, elem.StrokeThickness * zoom);
             }
             else if (elem.Type == VectorShapeType::Semicircle)
             {
@@ -2987,38 +2971,38 @@ private:
                     RestoreBlendIfNeeded();
                     continue;
                 }
-                ImVec2 center = CanvasToScreen(elem.Points[0]);
+                TEVector2 center = CanvasToScreen(elem.Points[0]);
                 float rx = elem.Radius * baseCanvasSize.x * zoom;
                 float ry = elem.RadiusY * baseCanvasSize.y * zoom;
 
                 const int segments = 32;
-                std::vector<ImVec2> pts(segments + 1);
+                std::vector<TEVector2> pts(segments + 1);
                 for (int s = 0; s <= segments; s++)
                 {
                     float t = 3.14159265f + (float)s * 3.14159265f / (float)segments;
-                    pts[s] = ImVec2(center.x + rx * cosf(t), center.y + ry * sinf(t));
+                    pts[s] = TEVector2(center.x + rx * cosf(t), center.y + ry * sinf(t));
                 }
                 if (elem.FillColor.w > 0.0f)
                 {
-                    std::vector<ImVec2> fillVerts =
+                    std::vector<TEVector2> fillVerts =
                         GetRoundedPolygonPoints(pts, elem.FillRounding * baseCanvasSize.x * zoom);
-                    dl->AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
+                    dl.AddConvexPolyFilled(fillVerts.data(), (int)fillVerts.size(), fillCol);
                 }
-                std::vector<ImVec2> strokeVerts =
+                std::vector<TEVector2> strokeVerts =
                     GetRoundedPolygonPoints(pts, elem.StrokeRounding * baseCanvasSize.x * zoom);
-                dl->AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
-                                elem.StrokeThickness * zoom);
+                dl.AddPolyline(strokeVerts.data(), (int)strokeVerts.size(), strokeCol, ImDrawFlags_Closed,
+                               elem.StrokeThickness * zoom);
             }
 
             RestoreBlendIfNeeded();
         }
     }
 
-    void FloodFill(int startX, int startY, ImVec4 targetColor, ImVec4 replacementColor)
+    void FloodFill(int startX, int startY, TEVector4 targetColor, TEVector4 replacementColor)
     {
         if (startX < 0 || startX >= m_PixelGridWidth || startY < 0 || startY >= m_PixelGridHeight)
             return;
-        auto colorEquals = [](ImVec4 a, ImVec4 b)
+        auto colorEquals = [](TEVector4 a, TEVector4 b)
         {
             return std::abs(a.x - b.x) < 0.01f && std::abs(a.y - b.y) < 0.01f && std::abs(a.z - b.z) < 0.01f &&
                    std::abs(a.w - b.w) < 0.01f;
@@ -3054,11 +3038,12 @@ private:
         }
     }
 
-    void RenderPixelGrid(ImDrawList *dl, ImVec2 origin, ImVec2 cellSize, float zoom = 1.0f, ImVec2 pan = ImVec2(0, 0))
+    void RenderPixelGrid(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom = 1.0f,
+                         TEVector2 pan = TEVector2(0, 0))
     {
         if ((int)m_PixelGrid.size() != m_PixelGridWidth * m_PixelGridHeight)
         {
-            m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, ImVec4(0, 0, 0, 0));
+            m_PixelGrid.assign(m_PixelGridWidth * m_PixelGridHeight, TEVector4(0, 0, 0, 0));
         }
 
         float pixelW = cellSize.x / m_PixelGridWidth;
@@ -3068,13 +3053,14 @@ private:
         {
             for (int x = 0; x < m_PixelGridWidth; x++)
             {
-                ImVec4 col = m_PixelGrid[y * m_PixelGridWidth + x];
+                TEVector4 col = m_PixelGrid[y * m_PixelGridWidth + x];
                 if (col.w > 0.0f)
                 {
-                    ImVec2 p1 = ImVec2(origin.x + (x * pixelW + pan.x) * zoom, origin.y + (y * pixelH + pan.y) * zoom);
-                    ImVec2 p2 = ImVec2(origin.x + ((x + 1) * pixelW + pan.x) * zoom,
-                                       origin.y + ((y + 1) * pixelH + pan.y) * zoom);
-                    dl->AddRectFilled(p1, p2, ImGui::ColorConvertFloat4ToU32(col));
+                    TEVector2 p1 =
+                        TEVector2(origin.x + (x * pixelW + pan.x) * zoom, origin.y + (y * pixelH + pan.y) * zoom);
+                    TEVector2 p2 = TEVector2(origin.x + ((x + 1) * pixelW + pan.x) * zoom,
+                                             origin.y + ((y + 1) * pixelH + pan.y) * zoom);
+                    dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                 }
             }
         }
@@ -3084,10 +3070,10 @@ private:
     SpriteCreationMode m_CreationMode = SpriteCreationMode::Vector;
     std::vector<VectorElement> m_VectorElements;
     VectorShapeType m_ActiveTool = VectorShapeType::Pen;
-    ImVec4 m_ActiveFillColor = ImVec4(1.0f, 1.0f, 1.0f, 0.0f);
-    ImVec4 m_ActiveStrokeColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    TEVector4 m_ActiveFillColor = TEVector4(1.0f, 1.0f, 1.0f, 0.0f);
+    TEVector4 m_ActiveStrokeColor = TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
     float m_ActiveStrokeThickness = 2.0f;
-    ImVec2 m_CanvasPan = ImVec2(0.0f, 0.0f);
+    TEVector2 m_CanvasPan = TEVector2(0.0f, 0.0f);
     float m_CanvasZoom = 1.0f;
     bool m_IsDrawing = false;
     VectorElement m_CurrentDrawingElement;
@@ -3096,37 +3082,37 @@ private:
     int m_ActiveAnchorIdx = -1;
     bool m_IsDraggingAnchor = false;
     bool m_IsMovingShape = false;
-    ImVec2 m_DragStartMousePos = ImVec2(0.0f, 0.0f);
+    TEVector2 m_DragStartMousePos = TEVector2(0.0f, 0.0f);
     float m_DefaultStrokeRounding = 0.0f;
     float m_DefaultFillRounding = 0.0f;
     bool m_DefaultSubtract = false;
     // Marquee / rubber-band area selection
     bool m_IsMarqueeSelecting = false;
-    ImVec2 m_MarqueeStart = ImVec2(0, 0); // canvas-space start
-    ImVec2 m_MarqueeEnd = ImVec2(0, 0);   // canvas-space current
+    TEVector2 m_MarqueeStart = TEVector2(0, 0); // canvas-space start
+    TEVector2 m_MarqueeEnd = TEVector2(0, 0);   // canvas-space current
     std::vector<CustomKeyword> m_Keywords;
     std::vector<ISpriteLibrary *> m_Libraries;
     std::vector<ProceduralFunc> m_Registry;
     bool m_ShowExportPopup = false, m_ExportIsSheet = false, m_ExportTransparent = true, m_ExportRequested = false;
     bool m_ExportMatchIDE = true, m_PreviewDirty = true;
     char m_ExportPath[256] = "Sandbox/SavedSprites/NewSprite.png";
-    ImVec2 m_ExportSize = ImVec2(128, 128);
-    ImVec2 m_ExportOffset = ImVec2(0.0f, 0.0f); // Pixel offset for centering exported content
-    ImVec2 m_LastSimSize = ImVec2(0, 0);
+    TEVector2 m_ExportSize = TEVector2(128, 128);
+    TEVector2 m_ExportOffset = TEVector2(0.0f, 0.0f); // Pixel offset for centering exported content
+    TEVector2 m_LastSimSize = TEVector2(0, 0);
     int m_ExportFrames = 1, m_ExportCols = 1, m_ExportRows = 1;
     int m_LastVtxCount = 0, m_LastCmdCount = 0;
     std::shared_ptr<Framebuffer> m_PreviewFB = nullptr;
     std::shared_ptr<Framebuffer> m_VectorCanvasFB = nullptr;
-    std::vector<ImVec4> m_PixelGrid;
+    std::vector<TEVector4> m_PixelGrid;
     int m_PixelGridWidth = 32;
     int m_PixelGridHeight = 32;
     int m_ActivePixelTool = 0; // 0: pencil, 1: eraser, 2: bucket
-    ImVec4 m_PixelPaintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    TEVector4 m_PixelPaintColor = TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
     // Drag-commit flags so moves/resizes save exactly one undo step on mouse-up
     bool m_WasDraggingShape = false;
     bool m_WasDraggingAnchor = false;
     bool m_WasPixelPainting = false;
-    std::vector<ImVec4> m_ColorHistory;
+    std::vector<TEVector4> m_ColorHistory;
 };
 T_REGISTER_EDITOR_MODE(SpriteMode);
 } // namespace TE

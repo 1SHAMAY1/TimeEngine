@@ -13,7 +13,7 @@ public:
     virtual ~EditorMode() = default;
     virtual void OnEnter() {}
     virtual void OnUpdate(float dt) {}
-    virtual void OnImGuiRender() {}
+    virtual void OnTimeGUIRender() {}
     virtual void OnExit() {}
     virtual const char *GetName() const = 0;
     virtual const char *GetIcon() const { return ""; }

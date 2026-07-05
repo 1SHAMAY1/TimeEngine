@@ -1,4 +1,6 @@
 #include "Renderer/Material.hpp"
+#include "Core/Log.h"
+#include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 
 namespace TE
@@ -41,6 +43,30 @@ void Material::ApplyUniforms()
             m_Shader->SetUniform4f(name, val);
         for (auto const &[name, val] : m_Mat4Uniforms)
             m_Shader->SetUniformMat4(name, val);
+    }
+}
+
+void Material::OnContentBrowserCreate(const std::filesystem::path &path)
+{
+    std::filesystem::create_directories(path);
+    std::string baseName = "NewMaterial";
+    std::filesystem::path finalPath = path / (baseName + ".tematerial");
+    int counter = 1;
+    while (std::filesystem::exists(finalPath))
+    {
+        finalPath = path / (baseName + "_" + std::to_string(counter++) + ".tematerial");
+    }
+
+    auto newMaterial = std::make_shared<Material>(nullptr);
+    newMaterial->SetName(finalPath.stem().string());
+    MaterialSerializer serializer(newMaterial);
+    if (serializer.Serialize(finalPath))
+    {
+        TE_CORE_INFO("Created New Material at {0}", finalPath.string());
+    }
+    else
+    {
+        TE_CORE_ERROR("Failed to serialize and create Material at {0}", finalPath.string());
     }
 }
 

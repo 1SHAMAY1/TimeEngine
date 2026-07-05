@@ -2,7 +2,7 @@
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 
 namespace TE
 {
@@ -36,9 +36,9 @@ public:
 
     const char *GetClassName() const override { return StaticClassName; }
 
-    bool ContainsPoint(const glm::mat4 &worldModel, const TEVector2 &point) const override
+    bool ContainsPoint(const TE::TEMatrix4 &worldModel, const TEVector2 &point) const override
     {
-        glm::vec2 pos = {worldModel[3].x, worldModel[3].y};
+        TE::TEVector2 pos = {worldModel.m[3][0], worldModel.m[3][1]};
         float clickRadius = 0.5f;
         float dx = point.x - pos.x, dy = point.y - pos.y;
         return (dx * dx + dy * dy) <= clickRadius * clickRadius;

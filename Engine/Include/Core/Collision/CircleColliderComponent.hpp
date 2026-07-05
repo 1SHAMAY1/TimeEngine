@@ -12,17 +12,15 @@ public:
 
     T_PROPERTY(TEVector2, Offset, "Offset", TEVector2(0.0f, 0.0f))
     T_PROPERTY(float, Radius, "Radius", 0.5f)
-    T_PROPERTY(bool, isStatic, "Is Static", false)
-    T_PROPERTY(bool, isTrigger, "Is Trigger", false)
 
     CircleColliderComponent() { shape.type = CollisionType::Circle; }
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 
-    virtual void OnUpdateShape(const glm::mat4 &worldTransform) override
+    virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
         shape.circle.center = {worldTransform[3].x + Offset.x, worldTransform[3].y + Offset.y};
-        shape.circle.radius = Radius * glm::length(glm::vec3(worldTransform[0]));
+        shape.circle.radius = Radius * TEVector::Length(TEVector(worldTransform[0]));
     }
 };
 

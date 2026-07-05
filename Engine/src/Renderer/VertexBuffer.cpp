@@ -1,16 +1,35 @@
-﻿#include "Renderer/VertexBuffer.hpp"
+#include "Renderer/VertexBuffer.hpp"
 #include "Renderer/GraphicsAPI.hpp"
-#include "Renderer/RendererContext.hpp"
 #include "Renderer/OpenGL/OpenGLVertexBuffer.hpp"
+#include "Renderer/RendererContext.hpp"
+#if defined(TE_PLATFORM_MOBILE)
+#include "Renderer/OpenGLES/OpenGLESVertexBuffer.hpp"
+#endif
+#include "Renderer/DirectX11/DirectX11VertexBuffer.hpp"
+#include "Renderer/Vulkan/VulkanVertexBuffer.hpp"
 
-namespace TE {
-    VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size) {
-        switch (RendererContext::GetAPI()) {
-        case GraphicsAPI::None: return nullptr;
-        case GraphicsAPI::OpenGL: return new OpenGLVertexBuffer(vertices, size);
-        case GraphicsAPI::OpenGLES: /* TODO */ break;
-        case GraphicsAPI::Vulkan: /* TODO */ break;
-        }
+namespace TE
+{
+VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
+{
+    switch (RendererContext::GetAPI())
+    {
+    case GraphicsAPI::None:
         return nullptr;
+    case GraphicsAPI::OpenGL:
+        return new OpenGLVertexBuffer(vertices, size);
+#if defined(TE_PLATFORM_MOBILE)
+    case GraphicsAPI::OpenGLES:
+        return new OpenGLESVertexBuffer(vertices, size);
+#else
+    case GraphicsAPI::OpenGLES:
+        return nullptr;
+#endif
+    case GraphicsAPI::Vulkan:
+        return new VulkanVertexBuffer(vertices, size);
+    case GraphicsAPI::DirectX11:
+        return new DirectX11VertexBuffer(vertices, size);
     }
+    return nullptr;
 }
+} // namespace TE

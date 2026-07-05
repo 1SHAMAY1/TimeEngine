@@ -65,14 +65,14 @@ void TestTriangleLayer::OnDetach() {}
 
 void TestTriangleLayer::OnUpdate()
 {
-    s_Renderer2D->BeginFrame(glm::mat4(1.0f));
+    s_Renderer2D->BeginFrame(TEMatrix4(1.0f));
     // Submit a quad at the triangle's position for demonstration
     s_Renderer2D->SubmitQuad(TEVector2(-0.5f, -0.5f), TEVector2(1.0f, 1.0f), m_Material);
     s_Renderer2D->EndFrame();
     s_Renderer2D->Flush();
 }
 
-void TestTriangleLayer::OnImGuiRender() {}
+void TestTriangleLayer::OnTimeGUIRender() {}
 
 std::shared_ptr<Material> m_Material;
 } // namespace TE

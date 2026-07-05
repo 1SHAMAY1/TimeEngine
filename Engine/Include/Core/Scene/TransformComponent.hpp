@@ -1,6 +1,6 @@
 #pragma once
 #include "GameFrameWork/TComponent.hpp"
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 #include <vector>
 
 namespace TE
@@ -13,7 +13,7 @@ public:
     std::vector<EntityID> Children;
 
     TransformComponent() = default;
-    TransformComponent(const TEVector &position) { Transform.Position = position.ToGLM(); }
+    TransformComponent(const TEVector &position) { Transform.Position = position; }
 
     virtual const char *GetClassName() const override { return StaticClassName; }
 

@@ -1,15 +1,38 @@
-#include "Window/WindowsWindow.hpp"
-#include <GLFW/glfw3.h>
+// Windows/DXGI headers MUST be first.
+// glfw3native.h (GLFW_EXPOSE_NATIVE_WIN32) pulls in windows.h.
+// If windows.h arrives after engine headers its macros (near, far, min, max, ERROR...)
+// corrupt already-parsed engine declarations. Defining the guards here prevents that.
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+#include <dxgi.h>
 
+// Undefine polluting Windows.h macros
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
+// Engine headers (windows.h already in scope — no macro surprise)
+#include "Core/Asset/AssetManager.hpp"
 #include "Core/EngineSettings.hpp"
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Log.h"
 #include "Input/Input.hpp"
+#include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include "Renderer/RenderCommand.hpp"
 #include "Renderer/RendererContext.hpp"
+#include "Window/WindowsWindow.hpp"
 #include <filesystem>
-#include <stb_image.h>
 
 static bool s_GLFWInitialized = false;
 
@@ -42,6 +65,18 @@ void WindowsWindow::Init(const WindowProps &props)
         s_GLFWInitialized = true;
     }
 
+    switch (TE::RendererContext::GetAPI())
+    {
+    case TE::GraphicsAPI::OpenGL:
+        break;
+    case TE::GraphicsAPI::Vulkan:
+    case TE::GraphicsAPI::DirectX11:
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        break;
+    default:
+        break;
+    }
+
     m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
     if (!m_Window)
     {
@@ -49,7 +84,24 @@ void WindowsWindow::Init(const WindowProps &props)
         return;
     }
 
-    glfwMakeContextCurrent(m_Window);
+    if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::OpenGL)
+    {
+        glfwMakeContextCurrent(m_Window);
+    }
+    else if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
+    {
+        HWND hwnd = glfwGetWin32Window(m_Window);
+        auto *apiInstance = TE::RenderCommand::GetAPIInstance();
+        auto *dx11API = dynamic_cast<TE::DirectX11RendererAPI *>(apiInstance);
+        if (dx11API)
+        {
+            dx11API->InitWithWindow(hwnd, props.Width, props.Height);
+        }
+        else
+        {
+            TE_CORE_ERROR("RendererAPI is not DirectX11RendererAPI!");
+        }
+    }
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
     TE::Input::Init(m_Window); // Register window with input system
@@ -59,23 +111,20 @@ void WindowsWindow::Init(const WindowProps &props)
     // Set Window Icon
     {
         GLFWimage images[1];
-        int width, height, channels;
-        // Use standard stbi_load (declarations available if Texture.cpp compiled effectively, assuming stb_image.h
-        // included) We need to include stb_image.h Note: We use a hardcoded path or relative to execution directory
         std::string iconPath = "Resources/Branding/TimeEngineIcon.png";
         if (!std::filesystem::exists(iconPath))
             iconPath = "e:/TimeEngine/Resources/Branding/TimeEngineIcon.png";
 
         if (std::filesystem::exists(iconPath))
         {
-            stbi_set_flip_vertically_on_load(0); // Ensure icon is not flipped (Top-Left origin)
-            images[0].pixels = stbi_load(iconPath.c_str(), &width, &height, &channels, 4); // Force RGBA
-            if (images[0].pixels)
+            TE::ImageData img = TE::AssetManager::ImportImage(iconPath, 4);
+            if (img.Data)
             {
-                images[0].width = width;
-                images[0].height = height;
+                images[0].width = img.Width;
+                images[0].height = img.Height;
+                images[0].pixels = img.Data;
                 glfwSetWindowIcon(m_Window, 1, images);
-                stbi_image_free(images[0].pixels);
+                TE::AssetManager::FreeImage(img.Data);
             }
             else
             {
@@ -97,8 +146,8 @@ void WindowsWindow::Init(const WindowProps &props)
                               });
 
     // === FRAMEBUFFER SIZE CALLBACK ===
-    glfwSetFramebufferSizeCallback(m_Window,
-                                   [](GLFWwindow *window, int width, int height) { glViewport(0, 0, width, height); });
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
+                                   { TE::RenderCommand::SetViewport(0, 0, width, height); });
 
     glfwSetWindowCloseCallback(m_Window,
                                [](GLFWwindow *window)
@@ -227,7 +276,19 @@ void WindowsWindow::OnUpdate()
     }
 
     glfwPollEvents();
-    glfwSwapBuffers(m_Window);
+
+    if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
+    {
+        TE::DX11Context &ctx = TE::DX11Context::Get();
+        if (ctx.SwapChain)
+        {
+            ctx.SwapChain->Present(m_Data.VSync ? 1 : 0, 0);
+        }
+    }
+    else
+    {
+        glfwSwapBuffers(m_Window);
+    }
 }
 
 void WindowsWindow::SetVSync(bool enabled)
@@ -238,3 +299,9 @@ void WindowsWindow::SetVSync(bool enabled)
 }
 
 bool WindowsWindow::IsVSync() const { return m_Data.VSync; }
+
+void IWindow::Terminate() { glfwTerminate(); }
+
+void *IWindow::GetCurrentContext() { return glfwGetCurrentContext(); }
+
+void IWindow::MakeContextCurrent(void *context) { glfwMakeContextCurrent(static_cast<GLFWwindow *>(context)); }

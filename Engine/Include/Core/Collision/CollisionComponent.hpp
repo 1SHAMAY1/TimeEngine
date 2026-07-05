@@ -1,5 +1,6 @@
 #pragma once
 #include "CollisionTypes.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
 namespace TE
@@ -8,15 +9,16 @@ namespace TE
 class CollisionComponent : public TComponent
 {
 public:
+    GENERATED_BODY(CollisionComponent)
+
     CollisionShape shape;
-    bool isStatic = false;
-    bool isTrigger = false;
+    T_PROPERTY(bool, isStatic, "Is Static", false)
+    T_PROPERTY(bool, isTrigger, "Is Trigger", false)
     bool collided = false;
 
     virtual const char *GetClassName() const override { return StaticClassName; }
-    static constexpr const char *StaticClassName = "CollisionComponent";
 
-    virtual void OnUpdateShape(const glm::mat4 &worldTransform) {}
+    virtual void OnUpdateShape(const TEMatrix4 &worldTransform) {}
 };
 
 } // namespace TE

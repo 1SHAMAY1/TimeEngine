@@ -27,7 +27,7 @@ public:
     virtual std::string GetDefaultExtension() const override { return ".tesheet"; }
     virtual std::string GetDefaultIconPath() const override { return "Resources/Editor/SpriteSheetIcon.png"; }
 
-    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override {}
+    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override;
 
 private:
     AssetHandle m_Handle = 0;

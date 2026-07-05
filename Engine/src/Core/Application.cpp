@@ -1,14 +1,12 @@
 #include "Application.h"
-
-#include <glad/glad.h>
-
+#include "Core/Threading/ThreadingMacros.hpp"
 #include "Events/ApplicationEvent.h"
-#include "ImGUI/ImGuiLayer.hpp"
+#include "Layers/TimeGUILayer.hpp"
 #include "Log.h"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/TEColor.hpp"
+#include "Utils/TimeGUI.hpp"
 #include "Window/IWindow.hpp"
-#include <GLFW/glfw3.h>
 
 namespace TE
 {
@@ -22,15 +20,23 @@ Application::Application() : m_Running(true)
     TE::Log::Init(true, "TimeEngineLog.json");
     TE_CORE_INFO("Application Constructor called.");
 
+    // Initialize Thread pools
+    INIT_MAIN_THREAD();
+    INIT_RENDER_THREAD();
+    INIT_CALC_THREAD();
+    INIT_AI_THREAD();
+    INIT_WIDGET_THREAD();
+    INIT_GAMEPLAY_THREAD();
+
     m_Window = std::unique_ptr<IWindow>(IWindow::Create());
 
-    if (!gladLoadGLLoader((GLADloadproc)m_Window->GetGLLoaderFunction()))
+    if (!RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction()))
     {
-        TE_CORE_ERROR("Failed to initialize GLAD!");
+        TE_CORE_ERROR("Failed to initialize GLAD via RenderCommand!");
         return;
     }
 
-    TE_CORE_INFO("OpenGL Version: {0}", (const char *)glGetString(GL_VERSION));
+    TE_CORE_INFO("OpenGL Version: {0}", RenderCommand::GetVersionString());
 
     m_Window->SetEventCallback(
         [this](Event &e)
@@ -65,12 +71,19 @@ Application::Application() : m_Running(true)
                     TE_CLIENT_INFO("Window lost focus");
                     return false;
                 });
+
+            for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+            {
+                if (e.Handled())
+                    break;
+                (*--it)->OnEvent(e);
+            }
         });
 
 #ifdef TE_EDITOR
-    // === ImGui Layer Setup ===
-    m_ImGuiLayer = new ImGuiLayer();
-    PushOverlay(m_ImGuiLayer);
+    // === TimeGUI Layer Setup ===
+    m_TimeGUILayer = new TimeGUILayer();
+    PushOverlay(m_TimeGUILayer);
 #endif
 }
 
@@ -100,14 +113,14 @@ void Application::Run()
         }
 
 #ifdef TE_EDITOR
-        // ImGui Rendering
-        m_ImGuiLayer->Begin();
+        // TimeGUI Rendering
+        m_TimeGUILayer->Begin();
         for (Layer *layer : m_LayerStack)
         {
             if (layer)
-                layer->OnImGuiRender();
+                layer->OnTimeGUIRender();
         }
-        m_ImGuiLayer->End();
+        m_TimeGUILayer->End();
 #endif
 
         // Process any deferred layer removals after all layer operations are complete
@@ -121,7 +134,7 @@ void Application::Run()
 
     TE_CORE_INFO("Application Run ended.");
 
-    glfwTerminate();
+    IWindow::Terminate();
 }
 
 void Application::PushLayer(Layer *layer) { m_LayerStack.PushLayer(layer); }

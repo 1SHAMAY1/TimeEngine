@@ -33,13 +33,17 @@ public:
     } // Will be handled by AssetManager
     virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
 
-    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override {}
+    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override;
+
+    void SetName(const std::string &name) { m_Name = name; }
 
 private:
     uint32_t m_RendererID;
     std::string m_FilePath;
     std::string m_Name;
     AssetHandle m_Handle;
+    void *m_DX11SRV = nullptr;
+    void *m_DX11Texture = nullptr;
 };
 
 } // namespace TE

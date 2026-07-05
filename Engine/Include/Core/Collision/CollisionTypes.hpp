@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utility/MathUtils.hpp"
+#include "Utils/MathUtils.hpp"
 #include <cstdint>
 #include <cstring>
 #include <vector>

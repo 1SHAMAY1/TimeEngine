@@ -1,13 +1,23 @@
 #include "Core/Asset/AssetManager.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
+
 #include "Core/Asset/Asset.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
 #include "Core/Scene/Scene.hpp"
 #include "Renderer/Material.hpp"
+#include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/Sprite.hpp"
+#include "Renderer/SpriteSerializer.hpp"
 #include "Renderer/SpriteSheet.hpp"
+#include "Renderer/SpriteSheetSerializer.hpp"
 #include "Renderer/Texture.hpp"
+#include "Renderer/TextureSerializer.hpp"
 #include <filesystem>
+#include <unordered_set>
 
 namespace TE
 {
@@ -69,33 +79,38 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
     std::filesystem::path finalPath = path;
 
     // Resolve relative paths starting with Resources/
-    if (!std::filesystem::exists(finalPath))
+    std::string pathStr = path.string();
+    if (!std::filesystem::exists(finalPath) && (pathStr.find("Resources/") == 0 || pathStr.find("Resources\\") == 0))
     {
-        std::string pathStr = path.string();
-        if (pathStr.find("Resources/") == 0 || pathStr.find("Resources\\") == 0)
+        std::filesystem::path root = GetRootPath();
+        if (!root.empty())
         {
-            std::filesystem::path root = GetRootPath();
-            if (!root.empty())
-            {
-                finalPath = root / path;
-            }
+            finalPath = root / path;
         }
     }
 
-    TE_CORE_INFO("AssetManager: Loading asset from path {0}", finalPath.string());
-
-    if (!std::filesystem::exists(finalPath))
-    {
-        TE_CORE_ERROR("AssetManager: Failed to find asset at path: {0}", finalPath.string());
-        return 0;
-    }
-
-    // Cache check
+    // --- CACHE CHECK FIRST ---
     AssetHandle handle = AssetRegistry::RegisterPath(finalPath);
     if (HasAsset(handle))
     {
         return handle;
     }
+
+    // Keep track of failed loads to avoid repeatedly hitting disk and logging every frame
+    static std::unordered_set<std::wstring> s_FailedLoads;
+    if (s_FailedLoads.find(finalPath.wstring()) != s_FailedLoads.end())
+    {
+        return 0;
+    }
+
+    if (!std::filesystem::exists(finalPath))
+    {
+        TE_CORE_ERROR("AssetManager: Failed to find asset at path: {0}", finalPath.string());
+        s_FailedLoads.insert(finalPath.wstring());
+        return 0;
+    }
+
+    TE_CORE_INFO("AssetManager: Loading asset from path {0}", finalPath.string());
 
     // If it's a texture, we can actually load it for icons etc.
     if (finalPath.extension() == ".png" || finalPath.extension() == ".jpg")
@@ -104,7 +119,49 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
         AddAsset(tex->GetHandle(), tex);
         return tex->GetHandle();
     }
+    else if (finalPath.extension() == ".tematerial")
+    {
+        auto mat = std::make_shared<Material>(nullptr);
+        MaterialSerializer serializer(mat);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(mat->GetHandle(), mat);
+            return mat->GetHandle();
+        }
+    }
+    else if (finalPath.extension() == ".tesprite")
+    {
+        auto sprite = std::make_shared<Sprite>();
+        SpriteSerializer serializer(sprite);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(sprite->GetHandle(), sprite);
+            return sprite->GetHandle();
+        }
+    }
+    else if (finalPath.extension() == ".tespritesheet")
+    {
+        auto sheet = std::make_shared<SpriteSheet>();
+        SpriteSheetSerializer serializer(sheet);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(sheet->GetHandle(), sheet);
+            return sheet->GetHandle();
+        }
+    }
+    else if (finalPath.extension() == ".tetexture")
+    {
+        auto tex = std::make_shared<Texture>(finalPath.string());
+        TextureSerializer serializer(tex);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(tex->GetHandle(), tex);
+            return tex->GetHandle();
+        }
+    }
 
+    // If all load attempts failed, cache this path as a failed load to prevent retries
+    s_FailedLoads.insert(finalPath.wstring());
     return 0; // AssetRegistry will handle the mapping later
 }
 
@@ -156,6 +213,44 @@ TEVector2 AssetManager::GetDefaultIconSize(const std::string &type)
         return it->second.IconSize;
     }
     return {64.0f, 64.0f};
+}
+
+ImageData AssetManager::ImportImage(const std::string &filepath, int desiredChannels)
+{
+    ImageData img;
+    img.Data = stbi_load(filepath.c_str(), &img.Width, &img.Height, &img.Channels, desiredChannels);
+    if (desiredChannels > 0)
+    {
+        img.Channels = desiredChannels;
+    }
+    return img;
+}
+
+void AssetManager::FreeImage(unsigned char *data)
+{
+    if (data)
+    {
+        stbi_image_free(data);
+    }
+}
+
+bool AssetManager::ExportImagePNG(const std::string &path, int width, int height, int channels, const void *data)
+{
+    // Create directory if not exists
+    std::filesystem::path p = path;
+    if (p.has_parent_path())
+    {
+        std::filesystem::create_directories(p.parent_path());
+    }
+
+    int result = stbi_write_png(path.c_str(), width, height, channels, data, width * channels);
+    if (result == 0)
+    {
+        TE_CORE_ERROR("Failed to save PNG: {0}", path);
+        return false;
+    }
+    TE_CORE_INFO("Successfully saved PNG to {0}", path);
+    return true;
 }
 
 } // namespace TE

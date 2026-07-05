@@ -1,9 +1,11 @@
-﻿#pragma once
-#include "Utility/MathUtils.hpp"
+#pragma once
+#include "Utils/MathUtils.hpp"
 
-namespace TE {
+namespace TE
+{
 
-struct Particle {
+struct Particle
+{
     TEVector Position;
     TEVector Velocity;
     TEVector Acceleration;
@@ -15,4 +17,4 @@ struct Particle {
     bool Active = false;
 };
 
-}
+} // namespace TE

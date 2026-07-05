@@ -1,22 +1,24 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Events/Event.h"
+#include "Core/PreRequisites.h"
 
-struct WindowProps {
+struct WindowProps
+{
     std::string Title;
     unsigned int Width;
     unsigned int Height;
 
-    WindowProps(const std::string& title = "Time Engine",
-                unsigned int width = 1280,
-                unsigned int height = 720)
-        : Title(title), Width(width), Height(height) {}
+    WindowProps(const std::string &title = "Time Engine", unsigned int width = 1280, unsigned int height = 720)
+        : Title(title), Width(width), Height(height)
+    {
+    }
 };
 
-class IWindow {
+class IWindow
+{
 public:
-    using EventCallbackFn = std::function<void(TE::Event&)>;
+    using EventCallbackFn = std::function<void(TE::Event &)>;
 
     virtual ~IWindow() = default;
 
@@ -25,14 +27,17 @@ public:
     virtual unsigned int GetWidth() const = 0;
     virtual unsigned int GetHeight() const = 0;
 
-    virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+    virtual void SetEventCallback(const EventCallbackFn &callback) = 0;
     virtual void SetVSync(bool enabled) = 0;
     virtual bool IsVSync() const = 0;
 
-    virtual void* GetNativeWindow() const = 0;
+    virtual void *GetNativeWindow() const = 0;
 
-    virtual void* GetGLLoaderFunction() const = 0;
+    virtual void *GetGLLoaderFunction() const = 0;
 
+    static void Terminate();
+    static void *GetCurrentContext();
+    static void MakeContextCurrent(void *context);
 
-    static IWindow* Create(const WindowProps& props = WindowProps());
+    static IWindow *Create(const WindowProps &props = WindowProps());
 };

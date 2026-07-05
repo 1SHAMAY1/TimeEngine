@@ -1,7 +1,6 @@
 #include "Renderer/RenderBatcher.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/ShaderLibrary.hpp"
-#include <glad/glad.h>
 
 namespace TE
 {
@@ -34,28 +33,13 @@ void RenderBatcher::Flush()
     int lastBlendMode = 0;
 
     // Default blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    RenderCommand::SetBlendMode(0);
 
     for (const auto &cmd : m_DrawCommands)
     {
         if (cmd.blendMode != lastBlendMode)
         {
-            if (cmd.blendMode == 1) // Additive
-            {
-                glBlendFunc(GL_ONE, GL_ONE);
-                glDisable(GL_DEPTH_TEST);
-            }
-            else if (cmd.blendMode == 2) // Multiplicative
-            {
-                glBlendFunc(GL_DST_COLOR, GL_ZERO);
-                glDisable(GL_DEPTH_TEST);
-            }
-            else // Normal
-            {
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                glEnable(GL_DEPTH_TEST);
-            }
+            RenderCommand::SetBlendMode(cmd.blendMode);
             lastBlendMode = cmd.blendMode;
         }
 
@@ -73,7 +57,7 @@ void RenderBatcher::Flush()
     }
 
     // Reset to default
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    RenderCommand::SetBlendMode(0);
     m_DrawCommands.clear();
 }
 

@@ -113,7 +113,10 @@ void ShaderLibrary::SetMVP(Shader *shader, const glm::mat4 &model, const glm::ma
     }
 }
 
-void ShaderLibrary::SetColor(Shader *shader, const TEColor &color) { SetColor(shader, color.GetValue()); }
+void ShaderLibrary::SetColor(Shader *shader, const TEColor &color)
+{
+    SetColor(shader, reinterpret_cast<const glm::vec4 &>(color.GetValue()));
+}
 
 void ShaderLibrary::SetColor(Shader *shader, const glm::vec4 &color)
 {
@@ -156,7 +159,8 @@ void ShaderLibrary::SetLightColor(Shader *shader, const TEColor &color)
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_LightColor", color.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_LightColor",
+                                          reinterpret_cast<const glm::vec4 &>(color.GetValue()));
     }
 }
 
@@ -229,7 +233,8 @@ void ShaderLibrary::SetFog(Shader *shader, const TEColor &color, float density, 
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_FogColor", color.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_FogColor",
+                                          reinterpret_cast<const glm::vec4 &>(color.GetValue()));
         OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogDensity", density);
         OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogStart", start);
         OpenGLShaderLibrary::SetUniform1f(glShader, "u_FogEnd", end);
@@ -270,7 +275,7 @@ void ShaderLibrary::SetTint(Shader *shader, const TEColor &tint, float intensity
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Tint", tint.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Tint", reinterpret_cast<const glm::vec4 &>(tint.GetValue()));
         OpenGLShaderLibrary::SetUniform1f(glShader, "u_TintIntensity", intensity);
     }
 }
@@ -318,9 +323,12 @@ void ShaderLibrary::SetMaterial(Shader *shader, const TEColor &ambient, const TE
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.ambient", ambient.GetValue());
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.diffuse", diffuse.GetValue());
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.specular", specular.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.ambient",
+                                          reinterpret_cast<const glm::vec4 &>(ambient.GetValue()));
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.diffuse",
+                                          reinterpret_cast<const glm::vec4 &>(diffuse.GetValue()));
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Material.specular",
+                                          reinterpret_cast<const glm::vec4 &>(specular.GetValue()));
         OpenGLShaderLibrary::SetUniform1f(glShader, "u_Material.shininess", shininess);
     }
 }
@@ -330,7 +338,8 @@ void ShaderLibrary::SetEmissive(Shader *shader, const TEColor &emissive)
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Emissive", emissive.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_Emissive",
+                                          reinterpret_cast<const glm::vec4 &>(emissive.GetValue()));
     }
 }
 
@@ -507,8 +516,10 @@ void ShaderLibrary::SetParticleColor(Shader *shader, const TEColor &startColor, 
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         OpenGLShader *glShader = dynamic_cast<OpenGLShader *>(shader);
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleStartColor", startColor.GetValue());
-        OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleEndColor", endColor.GetValue());
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleStartColor",
+                                          reinterpret_cast<const glm::vec4 &>(startColor.GetValue()));
+        OpenGLShaderLibrary::SetUniform4f(glShader, "u_ParticleEndColor",
+                                          reinterpret_cast<const glm::vec4 &>(endColor.GetValue()));
     }
 }
 

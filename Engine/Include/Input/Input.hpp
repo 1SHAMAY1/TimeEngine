@@ -1,7 +1,5 @@
 #pragma once
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "Utils/TimeGUI.hpp"
 
 #include <chrono>
 #include <unordered_map>
@@ -59,8 +57,11 @@ public:
     TE_API static bool GetMouseButtonDown(int button); // 0=left, 1=right, 2=middle
     TE_API static bool GetMouseButtonUp(int button);
 
+    // --- TimeGUI Key Mapping ---
+    TE_API static int ToImGuiKey(KeyCode key);
+
 private:
-    static GLFWwindow *s_Window;
+    static void *s_Window;
     static std::unordered_map<KeyCode, InputState> s_KeyStates;
     static std::unordered_map<MouseCode, InputState> s_MouseStates;
     static float s_MouseScrollX;
