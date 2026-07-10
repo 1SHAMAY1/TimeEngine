@@ -31,9 +31,12 @@ By participating in this project, you agree to abide by our Code of Conduct (sta
    git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
    ```
 2. **Generate Project Files**:
-   Run `Scripts/GenerateProjectFiles.bat` on Windows.
+   Run the workspace generation script for your platform:
+   - **Windows**: `Scripts/Windows/GenerateProjectFiles.bat`
+   - **Linux**: `Scripts/Linux/GenerateProjectFiles.sh`
+   - **macOS**: `Scripts/Mac/GenerateProjectFiles.sh`
 3. **Build**:
-   Open `TimeEngine.sln` in Visual Studio 2022 and build the `Sandbox` project.
+   Open the generated IDE workspace/solution or build using the native platform tools (e.g. MSBuild on Windows, `make` on Linux, `xcodebuild` on macOS).
 
 ## Code Style
 

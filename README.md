@@ -108,8 +108,11 @@ The engine utilizes a modular ECS architecture. Below is the current development
 ## 🚀 Getting Started
 
 1.  **Clone**: `git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git`
-2.  **Generate**: Run `Scripts/GenerateProjectFiles.bat` to create the Visual Studio solution.
-3.  **Build**: Open `TimeEngine.sln` and build the **TimeEditor** project in `Debug` or `Release`.
+2.  **Generate**: Run the workspace generation script for your platform:
+    *   **Windows**: `Scripts/Windows/GenerateProjectFiles.bat`
+    *   **Linux**: `Scripts/Linux/GenerateProjectFiles.sh`
+    *   **macOS**: `Scripts/Mac/GenerateProjectFiles.sh`
+3.  **Build**: Open the generated IDE workspace/solution or run the build command for your platform:
 4.  **Launch**: Run `TimeEditor.exe` to access the Project Hub.
 
 ---

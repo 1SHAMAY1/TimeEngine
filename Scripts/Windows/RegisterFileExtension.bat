@@ -1,5 +1,5 @@
 @echo off
-pushd %~dp0\..
+pushd %~dp0\..\..
 
 :: Search for TimeEditor.exe in common build locations
 set "ENGINE_EXE=Bin\Debug-windows-x86_64\TimeEditor\TimeEditor.exe"
