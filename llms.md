@@ -82,7 +82,12 @@ Engine/
     Renderer/             # Renderer2D.cpp, and backend API source files
     Core/Layers/          # EditorLayer.cpp, etc.
 Scripts/
-  GenerateProjectFiles.bat  # Run first — generates .sln via Premake5
+  Windows/
+    GenerateProjectFiles.bat  # Run first on Windows — generates .sln via Premake5
+  Linux/
+    GenerateProjectFiles.sh   # Run first on Linux — generates Makefiles via Premake5
+  Mac/
+    GenerateProjectFiles.sh   # Run first on macOS — generates Xcode project via Premake5
 TimeEditor/                 # Editor app, entry point for manual QA
 ```
 
@@ -90,8 +95,12 @@ TimeEditor/                 # Editor app, entry point for manual QA
 ```bash
 git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
 cd TimeEngine
-Scripts/GenerateProjectFiles.bat   # generates TimeEngine.sln
-# Open TimeEngine.sln in VS2022, build TimeEditor, press F5
+# Run platform-specific script:
+Scripts/Windows/GenerateProjectFiles.bat  # Windows
+# OR
+Scripts/Linux/GenerateProjectFiles.sh    # Linux
+# OR
+Scripts/Mac/GenerateProjectFiles.sh      # macOS
 ```
 If Premake errors: `git submodule update --init --recursive`
 

@@ -1,11 +1,10 @@
 @echo off
 title Cleaning TimeEngine Workspace
-chcp 65001 >nul
 
-echo [🧹 Cleaning TimeEngine build artifacts, CMake, and Visual Studio files...]
+echo [=== Cleaning TimeEngine build artifacts, CMake, and Visual Studio files... ===]
 
-:: Change to root directory from Scripts/
-cd /d "%~dp0\.."
+:: Change to root directory from Scripts/Windows/
+cd /d "%~dp0\..\.."
 set "ROOT_DIR=%CD%"
 
 :: === Root build folders ===
@@ -38,5 +37,5 @@ for /r "%ROOT_DIR%" %%f in (*.vcxproj.user) do del /f /q "%%f" >nul 2>&1
 :: === .vs hidden folder ===
 rd /s /q "%ROOT_DIR%\.vs" >nul 2>&1
 
-echo [✅ Cleanup complete. All build, CMake, and Visual Studio artifacts removed.]
+echo [SUCCESS] Cleanup complete. All build, CMake, and Visual Studio artifacts removed.
 pause
