@@ -33,7 +33,8 @@ recent_projects.txt
 
 
 # Agents
-.agents/
+!.agents/
+!.agents/**
 
 # Sandbox
 Sandbox/*
