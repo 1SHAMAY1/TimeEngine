@@ -102,12 +102,7 @@ project "Docs"
     files {
         -- Root markdown & text docs
         "*.md",
-        "llms.md",
-        "README.md",
         "LICENSE",
-        "CONTRIBUTING.md",
-        "ROADMAP.md",
-        "SECURITY.md",
 
         -- Config / meta files
         ".agentsrules",
@@ -346,3 +341,141 @@ project "TimeEditor"
     filter "configurations:Dist"
         defines { "TE_DIST", "TE_PACKAGED", "TE_MINIMIZED" }
         optimize "On"
+
+-- ========== Dynamic Plugin Projects Discovery & Generation ==========
+
+group "Plugins"
+
+-- Find and configure all engine-level plugins
+local enginePlugins = os.matchfiles("Engine/Plugins/*/*.teplugin")
+for _, pluginPath in ipairs(enginePlugins) do
+    local pluginDir = path.getdirectory(pluginPath)
+    local pluginName = path.getbasename(pluginPath)
+    
+    project (pluginName)
+        location (pluginDir)
+        kind "SharedLib"
+        language "C++"
+        cppdialect "C++17"
+        staticruntime "off"
+
+        targetdir ("Bin/" .. outputdir .. "/TimeEditor/Plugins/" .. pluginName)
+        objdir ("Bin-Intermediate/" .. outputdir .. "/Plugins/" .. pluginName)
+
+        files {
+            pluginDir .. "/src/**.h",
+            pluginDir .. "/src/**.hpp",
+            pluginDir .. "/src/**.cpp"
+        }
+
+        includedirs {
+            "Engine/src",
+            "Engine/Include",
+            "Vendor/IMGUI/ImGui",
+            "Vendor/Customizable_Logger/Include",
+            "Vendor/GLM",
+            "Vendor/GLFW/glfw/include",
+            "Vendor/Velox/include",
+            "Vendor/Vulkan/include",
+            "Vendor/volk"
+        }
+
+        libdirs {
+            "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+            "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+        }
+
+        links {
+            "Engine",
+            "Customizable_Logger"
+        }
+
+        filter "system:windows"
+            systemversion "latest"
+            defines {
+                "TE_PLATFORM_WINDOWS"
+            }
+            postbuildcommands {
+                'xcopy /Y /D /Q "$(ProjectDir)*.teplugin" "$(OutDir)" > nul'
+            }
+
+        filter "configurations:Debug"
+            defines { "TE_DEBUG", "TE_EDITOR" }
+            symbols "On"
+
+        filter "configurations:Release"
+            defines { "TE_RELEASE", "TE_EDITOR" }
+            optimize "On"
+
+        filter "configurations:Dist"
+            defines { "TE_DIST", "TE_PACKAGED", "TE_MINIMIZED" }
+            optimize "On"
+end
+
+-- Find and configure all project-level plugins
+local projectPlugins = os.matchfiles("Projects/*/Plugins/*/*.teplugin")
+for _, pluginPath in ipairs(projectPlugins) do
+    local pluginDir = path.getdirectory(pluginPath)
+    local pluginName = path.getbasename(pluginPath)
+    
+    project (pluginName)
+        location (pluginDir)
+        kind "SharedLib"
+        language "C++"
+        cppdialect "C++17"
+        staticruntime "off"
+
+        targetdir ("Bin/" .. outputdir .. "/TimeEditor/Plugins/" .. pluginName)
+        objdir ("Bin-Intermediate/" .. outputdir .. "/Plugins/" .. pluginName)
+
+        files {
+            pluginDir .. "/src/**.h",
+            pluginDir .. "/src/**.hpp",
+            pluginDir .. "/src/**.cpp"
+        }
+
+        includedirs {
+            "Engine/src",
+            "Engine/Include",
+            "Vendor/IMGUI/ImGui",
+            "Vendor/Customizable_Logger/Include",
+            "Vendor/GLM",
+            "Vendor/GLFW/glfw/include",
+            "Vendor/Velox/include",
+            "Vendor/Vulkan/include",
+            "Vendor/volk"
+        }
+
+        libdirs {
+            "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+            "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+        }
+
+        links {
+            "Engine",
+            "Customizable_Logger"
+        }
+
+        filter "system:windows"
+            systemversion "latest"
+            defines {
+                "TE_PLATFORM_WINDOWS"
+            }
+            postbuildcommands {
+                'xcopy /Y /D /Q "$(ProjectDir)*.teplugin" "$(OutDir)" > nul'
+            }
+
+        filter "configurations:Debug"
+            defines { "TE_DEBUG", "TE_EDITOR" }
+            symbols "On"
+
+        filter "configurations:Release"
+            defines { "TE_RELEASE", "TE_EDITOR" }
+            optimize "On"
+
+        filter "configurations:Dist"
+            defines { "TE_DIST", "TE_PACKAGED", "TE_MINIMIZED" }
+            optimize "On"
+end
+
+group ""

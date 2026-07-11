@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/KeyCodes.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/MathUtils.hpp"
 #include <filesystem>
 #include <memory>

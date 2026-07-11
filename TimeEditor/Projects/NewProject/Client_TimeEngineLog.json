@@ -1,2 +1,5 @@
 {"timestamp":"2026-06-16 11:59:27.592","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
 {"timestamp":"2026-06-16 11:59:45.146","level":"INFO","category":"Client","message":"Window close event received."}
+{"timestamp":"2026-07-10 09:14:14.614","level":"INFO","category":"Client","message":"Welcome to Time Engine."}
+{"timestamp":"2026-07-10 09:14:59.645","level":"INFO","category":"Client","message":"Window resized: WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-07-10 09:17:41.046","level":"INFO","category":"Client","message":"Window close event received."}

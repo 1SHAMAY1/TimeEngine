@@ -57,6 +57,16 @@ public:
     virtual void OnTimeGUIRender() override;
     virtual void OnEvent(Event &event) override;
 
+    std::shared_ptr<Scene> GetActiveScene() const { return m_ActiveScene; }
+
+    static const std::vector<std::unique_ptr<class EditorMode>> &GetGlobalModes();
+    static void SetGlobalActiveMode(const std::string &name);
+    static class EditorMode *GetGlobalActiveMode();
+
+    // Selection Helpers
+    void SelectEntity(Entity entity, bool multiSelect = false, bool toggle = false);
+    void ClearSelection();
+
 private:
     void LoadSettings();
     void SaveSettings();
@@ -67,9 +77,7 @@ private:
 
     // Selection Helpers
     bool IsEntitySelected(Entity entity) const;
-    void SelectEntity(Entity entity, bool multiSelect = false, bool toggle = false);
     void SelectComponent(class TComponent *component);
-    void ClearSelection();
     void DeleteSelectedEntities();
     void PasteClipboard(const std::filesystem::path &targetFolder);
 
@@ -95,6 +103,7 @@ private:
     void UI_DrawViewport();
     void UI_DrawSettingsPanel();
     void UI_DrawProjectSettingsPanel();
+    void UI_DrawPluginsPanel();
     void UI_DrawGizmoText();
     void UI_ViewportContextMenu();
     void DrawComponentNode(Entity entity, class TComponent *comp);
@@ -112,6 +121,7 @@ private:
     bool m_ShowViewport = true;
     bool m_ShowSettings = false;
     bool m_ShowProjectSettings = false;
+    bool m_ShowPluginsSettings = false;
     bool m_ShowSaveScenePopup = false;
     bool m_SaveSceneAs = false;
     char m_SaveSceneNameBuffer[256] = "";

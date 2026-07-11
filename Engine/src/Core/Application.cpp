@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Core/Plugin/PluginManager.hpp"
 #include "Core/Threading/ThreadingMacros.hpp"
 #include "Events/ApplicationEvent.h"
 #include "Layers/TimeGUILayer.hpp"
@@ -85,9 +86,16 @@ Application::Application() : m_Running(true)
     m_TimeGUILayer = new TimeGUILayer();
     PushOverlay(m_TimeGUILayer);
 #endif
+
+    // Initialize Plugins
+    PluginManager::Initialize();
 }
 
-Application::~Application() { TE_CORE_INFO("Application Destructor called."); }
+Application::~Application()
+{
+    PluginManager::Shutdown();
+    TE_CORE_INFO("Application Destructor called.");
+}
 
 void Application::Close() { m_Running = false; }
 

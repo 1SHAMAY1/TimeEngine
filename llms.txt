@@ -17,9 +17,20 @@
 - **Physics**: `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
 - **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
 - **Scene System**: `Scene` class manages entities and components via ECS.
-- **Serialization**: `SceneSerializer` (text-based parser) for scenes and projects.
-- **Events**: `Event` system for window, input, and application life-cycles.
-- **Input**: Action-based input mapping (Keyboard/Mouse).
+- **Serialization**: Scene and Project serialization (YAML).
+- **Events**: Event systems for windowing, user input, and scene lifecycles.
+- **Input**: Action-based input mapping.
+- **Plugins Settings Panel**: Built-in GUI panel (toggled via `Edit -> Plugins`) showing discovered plugins and enabling runtime load/unload DLL manipulation.
+- **MCP Automation & SSE Server**: Built-in server providing remote programmatic automation:
+  - Port: `3000` (HTTP and SSE streams `/message`).
+  - Active Tools:
+    - *Metadata & Modes*: `get_engine_info`, `get_scene_hierarchy`, `get_editor_modes`, `set_editor_mode`.
+    - *Entities & ECS*: `create_entity`, `destroy_entity`, `add_component`, `set_entity_properties`.
+    - *Viewport Feedback*: `get_viewport_screenshot` (saves `temp_viewport_capture.png` locally).
+    - *Callback Deletion*: `delete_screenshot` (triggered explicitly by AI client to safely erase the temp screenshot file post-processing, avoiding race condition loss).
+    - *Simulated Input*: `send_editor_input` (simulates keys/clicks).
+    - *File I/O*: `create_directory`, `delete_file_or_directory`.
+  - Client shell wrapper script: `Scripts/MCP_Tools.sh`. Uses Python parsing script `Scripts/parse_json.py` to compile nested properties payload arguments safely on Windows.
 - **Ambient Light**: `AmbientLightComponent` exists (`Engine/Include/Core/Scene/AmbientLightComponent.hpp`) and supports gradient/multi-color ambient lighting.
 
 ## Development Patterns

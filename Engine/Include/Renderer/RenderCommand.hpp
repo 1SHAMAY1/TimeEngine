@@ -1,11 +1,12 @@
 #pragma once
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererAPI.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 
 namespace TE
 {
-class RenderCommand
+class TE_API RenderCommand
 {
 public:
     static void Init() { s_RendererAPI->Init(); }

@@ -9,9 +9,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Language-C%2B%2B20-blue.svg" alt="C++20">
-  <img src="https://img.shields.io/badge/Platform-Windows-lightgrey.svg" alt="Windows">
+  <img src="https://img.shields.io/badge/Language-C%2B%2B17-blue.svg" alt="C++17">
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Windows | Linux | macOS">
   <img src="https://img.shields.io/badge/Graphics-OpenGL%204.5-orange.svg" alt="OpenGL 4.5">
+  <img src="https://img.shields.io/badge/Graphics-Vulkan-red.svg" alt="Vulkan">
+  <img src="https://img.shields.io/badge/Graphics-DirectX%2011-blue.svg" alt="DirectX 11">
+  <img src="https://img.shields.io/badge/Graphics-OpenGL%20ES-yellowgreen.svg" alt="OpenGL ES">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT">
 </p>
 
@@ -41,6 +44,8 @@ The Time Engine workspace is built for developer productivity, featuring:
 *   **Horizontal Viewport Toolbar**: Quick-access interface for switching between selection, transform, and specialized editor modes.
 *   **TEPropertyDrawer**: A modular system for generating consistent and stable property inspectors automatically.
 *   **Modern Glass UI**: Translucent context menus and property panels for a clean, non-intrusive workspace.
+*   **Plugins Settings Panel**: A built-in GUI panel (via `Edit -> Plugins`) to dynamically view discovered plugins, load/unload DLLs, toggle their active state, and write persistent enabled properties to disk.
+*   **MCP Automation Interface**: A built-in SSE + JSON-RPC network automation interface allowing full, programmatic remote control of editor tools, screenshot retrieval, input simulation, and component properties editing.
 
 <p align="center">
   <img width="600" alt="Editor UI 1" src="https://github.com/user-attachments/assets/8e2ae8d9-fd04-4680-a0cb-19b1c76fbfdd" />
@@ -94,10 +99,13 @@ The engine utilizes a modular ECS architecture. Below is the current development
 
 ---
 
-### 🎨 Rendering & Lighting
-*   **OpenGL 4.5 Backend**: Utilizes modern rendering techniques for maximum efficiency.
-*   **Batch Rendering**: Optimized draw calls for quads, sprites, and procedural primitives to handle millions of objects.
-*   **Material System**: Flexible shader and texture management via a centralized library.
+### 🎨 Rendering & Graphics Backends
+*   **OpenGL 4.5**: Modern desktop rendering with DSA (Direct State Access) for maximum efficiency on Windows, Linux, and macOS.
+*   **Vulkan**: Low-overhead, explicit GPU API for high-performance rendering with full control over the graphics pipeline.
+*   **DirectX 11**: Native Windows rendering backend via D3D11 for broad hardware compatibility on the Windows platform.
+*   **OpenGL ES**: Lightweight ES backend targeting embedded and mobile-class hardware profiles.
+*   **Batch Rendering**: Optimized draw calls for quads, sprites, and procedural primitives across all backends.
+*   **Material System**: Flexible shader and texture management via a centralized, backend-agnostic library.
 
 <p align="center">
   <img width="1264" alt="Rendering Demo" src="https://github.com/user-attachments/assets/73eb1567-28cc-407b-bec5-3bb0841fad17" />
