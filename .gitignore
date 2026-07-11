@@ -32,10 +32,6 @@ recent_projects.txt
 .DS_Store
 
 
-# Agents
-!.agents/
-!.agents/**
-
 # Sandbox
 Sandbox/*
 !Sandbox/src/
@@ -46,3 +42,7 @@ Docs/
 # Engine Logs
 **/*.json
 recent_projects.txt
+
+# Agents
+!.agents/
+!.agents/**
