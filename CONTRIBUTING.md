@@ -45,6 +45,13 @@ We use `.clang-format` to maintain consistent code style. Please run clang-forma
 - **Naming**: PascalCase for Classes, camelCase for variables, SCREAMING_SNAKE_CASE for macros.
 - **Headers**: Use `#pragma once`.
 - **Indentation**: 4 spaces.
+ 
+- **Writing Plugins**:
+  - Save descriptors as `<PluginName>.teplugin` (containing `Name: ...`, `Version: ...`, `Description: ...`, `Enabled: true/false`).
+  - Keep the DLL inside the same plugin subdirectory. Discovered dynamically by `PluginManager`.
+- **Writing MCP Tools**:
+  - Add tool schemas to `Tool_GetEngineInfo()` inside `MCPPlugin.cpp`.
+  - Add dispatch handlers inside `DispatchToolCall()` mapping to your custom `Tool_<Name>` method.
 
 ### Component Registration
 When adding new components to the ECS (under `Engine/Include/Core/Scene/`), make sure to use the reflection macros so they register with the serialization and Editor systems:

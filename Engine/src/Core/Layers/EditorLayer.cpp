@@ -45,9 +45,27 @@
 
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
+#include "Core/Plugin/PluginManager.hpp"
+
+#include "Editor/EditorMode.hpp"
 
 namespace TE
 {
+
+const std::vector<std::unique_ptr<EditorMode>>& EditorLayer::GetGlobalModes()
+{
+    return EditorModeRegistry::GetModes();
+}
+
+void EditorLayer::SetGlobalActiveMode(const std::string& name)
+{
+    EditorModeRegistry::SetActiveMode(name);
+}
+
+EditorMode* EditorLayer::GetGlobalActiveMode()
+{
+    return EditorModeRegistry::GetActiveMode();
+}
 
 EditorLayer::EditorLayer(const std::string &name) : Layer(name) {}
 
@@ -695,6 +713,7 @@ void EditorLayer::OnTimeGUIRender()
         UI_DrawSaveScenePopup();
         UI_DrawSettingsPanel();
         UI_DrawProjectSettingsPanel();
+        UI_DrawPluginsPanel();
     }
 
     ProcessDeletionQueues();
@@ -744,6 +763,7 @@ void EditorLayer::UI_DrawMenubar()
             // Show checkmark if open, disable clicking if open (must close via panel close button)
             TimeGUI::MenuItem("Project Settings", "", &m_ShowProjectSettings, !m_ShowProjectSettings);
             TimeGUI::MenuItem("Editor Settings", "", &m_ShowSettings, !m_ShowSettings);
+            TimeGUI::MenuItem("Plugins", "", &m_ShowPluginsSettings, !m_ShowPluginsSettings);
 
             TimeGUI::EndMenu();
         }
@@ -2123,6 +2143,64 @@ void EditorLayer::UI_DrawProjectSettingsPanel()
             SaveSettings();
         }
         TimeGUI::TextColored(TEVector4(0.9f, 0.6f, 0.1f, 1.0f), "Note: Restart the application to apply API changes.");
+    }
+
+    TimeGUI::End();
+}
+
+void EditorLayer::UI_DrawPluginsPanel()
+{
+    if (!m_ShowPluginsSettings)
+        return;
+
+    TimeGUI::Begin("Plugins Settings", &m_ShowPluginsSettings);
+
+    const auto& discovered = PluginManager::GetDiscoveredPlugins();
+    const auto& loaded = PluginManager::GetLoadedPlugins();
+
+    TimeGUI::Text("Discovered Plugins: %d", (int)discovered.size());
+    TimeGUI::Separator();
+
+    for (const auto& info : discovered)
+    {
+        TimeGUI::PushID(info.Name.c_str());
+
+        bool isLoaded = false;
+        for (const auto& l : loaded)
+        {
+            if (l.Name == info.Name)
+            {
+                isLoaded = true;
+                break;
+            }
+        }
+
+        // Draw Plugin Info box
+        if (TimeGUI::CollapsingHeader(info.Name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            TimeGUI::Text("Version: %s", info.Version.c_str());
+            TimeGUI::Text("Description: %s", info.Description.c_str());
+            TimeGUI::Text("Descriptor Path: %s", info.Path.string().c_str());
+            TimeGUI::Text("Load Status: ");
+            TimeGUI::SameLine();
+            if (isLoaded)
+            {
+                TimeGUI::TextColored(TEVector4(0.2f, 0.8f, 0.2f, 1.0f), "Loaded & Active");
+            }
+            else
+            {
+                TimeGUI::TextColored(TEVector4(0.8f, 0.2f, 0.2f, 1.0f), "Not Loaded");
+            }
+
+            bool enabled = info.Enabled;
+            if (TimeGUI::Checkbox("Enabled", &enabled))
+            {
+                PluginManager::SetPluginEnabled(info.Name, enabled);
+            }
+        }
+
+        TimeGUI::PopID();
+        TimeGUI::Separator();
     }
 
     TimeGUI::End();

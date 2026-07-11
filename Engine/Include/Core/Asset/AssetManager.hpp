@@ -26,7 +26,7 @@ struct AssetTypeMetadata
     std::shared_ptr<Asset> Prototype;
 };
 
-class AssetManager
+class TE_API AssetManager
 {
 public:
     static void Init();

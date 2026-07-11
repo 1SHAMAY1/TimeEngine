@@ -1,0 +1,4 @@
+Name: MCPPlugin
+Version: 1.0
+Description: Model Context Protocol Integration Plugin
+Enabled: true

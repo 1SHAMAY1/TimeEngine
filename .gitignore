@@ -42,3 +42,6 @@ Sandbox/*
 # Docs
 Docs/
 
+# Engine Logs
+**/*.json
+recent_projects.txt

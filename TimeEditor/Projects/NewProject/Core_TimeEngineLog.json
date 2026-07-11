@@ -2998,3 +2998,275 @@
 {"timestamp":"2026-06-16 11:59:45.058","level":"DEBUG","category":"Core","message":"EditorLayer::OnImGuiRender - Active Mode: Level Editor (Default)"}
 {"timestamp":"2026-06-16 11:59:45.146","level":"DEBUG","category":"Core","message":"WindowClose"}
 {"timestamp":"2026-06-16 11:59:45.146","level":"INFO","category":"Core","message":"Application Run ended."}
+{"timestamp":"2026-07-10 09:14:14.614","level":"INFO","category":"Core","message":"Log Initialized!"}
+{"timestamp":"2026-07-10 09:14:14.630","level":"INFO","category":"Core","message":"Application Constructor called."}
+{"timestamp":"2026-07-10 09:14:14.644","level":"INFO","category":"Core","message":"GLFW initialized successfully."}
+{"timestamp":"2026-07-10 09:14:15.102","level":"INFO","category":"Core","message":"Window successfully created: {0} ({1}x{2})Time Engine1280720"}
+{"timestamp":"2026-07-10 09:14:15.107","level":"INFO","category":"Core","message":"OpenGL Version: {0}4.6.0 NVIDIA 610.62"}
+{"timestamp":"2026-07-10 09:14:15.107","level":"INFO","category":"Core","message":"Creating TimeGUI context..."}
+{"timestamp":"2026-07-10 09:14:15.107","level":"INFO","category":"Core","message":"Initializing ImGuiIO..."}
+{"timestamp":"2026-07-10 09:14:15.107","level":"INFO","category":"Core","message":"Fetching application window..."}
+{"timestamp":"2026-07-10 09:14:15.107","level":"INFO","category":"Core","message":"Initializing ImGui platform/renderer backends..."}
+{"timestamp":"2026-07-10 09:14:15.109","level":"INFO","category":"Core","message":"TimeGUI context initialized successfully."}
+{"timestamp":"2026-07-10 09:14:15.109","level":"INFO","category":"Core","message":"Initializing Plugin Manager..."}
+{"timestamp":"2026-07-10 09:14:15.109","level":"INFO","category":"Core","message":"Scanning engine plugins at: E:\TimeEngine\Bin\Debug-windows-x86_64\TimeEditor\Plugins"}
+{"timestamp":"2026-07-10 09:14:15.110","level":"INFO","category":"Core","message":"Discovered engine plugin: MCPPlugin (E:\TimeEngine\Bin\Debug-windows-x86_64\TimeEditor\Plugins\MCPPlugin\MCPPlugin.teplugin)"}
+{"timestamp":"2026-07-10 09:14:15.111","level":"INFO","category":"Core","message":"Loading plugin library: E:\TimeEngine\Bin\Debug-windows-x86_64\TimeEditor\Plugins\MCPPlugin\MCPPlugin.dll"}
+{"timestamp":"2026-07-10 09:14:15.113","level":"INFO","category":"Core","message":"Loaded and initializing plugin: MCPPlugin"}
+{"timestamp":"2026-07-10 09:14:15.113","level":"INFO","category":"Core","message":"[MCPPlugin] OnLoad called. Initializing MCP Server..."}
+{"timestamp":"2026-07-10 09:14:15.113","level":"INFO","category":"Core","message":"TimeEditor Constructor started."}
+{"timestamp":"2026-07-10 09:14:15.113","level":"INFO","category":"Core","message":"Application Run started."}
+{"timestamp":"2026-07-10 09:14:15.117","level":"INFO","category":"Core","message":"[MCPPlugin] MCP Server listening on 127.0.0.1:3000..."}
+{"timestamp":"2026-07-10 09:14:15.135","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 510, 439"}
+{"timestamp":"2026-07-10 09:14:15.440","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 511, 439"}
+{"timestamp":"2026-07-10 09:14:15.569","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 512, 439"}
+{"timestamp":"2026-07-10 09:14:15.662","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 513, 438"}
+{"timestamp":"2026-07-10 09:14:15.908","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 514, 438"}
+{"timestamp":"2026-07-10 09:14:16.005","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 515, 438"}
+{"timestamp":"2026-07-10 09:14:16.423","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 516, 438"}
+{"timestamp":"2026-07-10 09:14:16.721","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 517, 438"}
+{"timestamp":"2026-07-10 09:14:16.805","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 518, 438"}
+{"timestamp":"2026-07-10 09:14:19.306","level":"INFO","category":"Core","message":"Attempting to load project: E:\TimeEngine\TimeEditor\Projects\NewProject\NewProject.teproj"}
+{"timestamp":"2026-07-10 09:14:19.314","level":"INFO","category":"Core","message":"Project loaded successfully. Pushing EditorLayer."}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"Removing Logo."}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"EditorLayer::OnAttach processing..."}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"AssetManager initializing..."}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"AssetManager: Registered asset type {0} (.{1}) -> {2}Scene.tesceneResources/Editor/SceneIcon.png"}
+{"timestamp":"2026-07-10 09:14:19.315","level":"ERROR","category":"Core","message":"Failed to load texture: {0}Resources/Editor/TextureIcon.png"}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"AssetManager: Registered asset type {0} (.{1}) -> {2}Texture2DResources/Editor/TextureIcon.png"}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"AssetManager: Registered asset type {0} (.{1}) -> {2}MaterialResources/Editor/MaterialIcon.png"}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"AssetManager: Registered asset type {0} (.{1}) -> {2}Sprite.tespriteResources/Editor/SpriteIcon.png"}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"AssetManager: Registered asset type {0} (.{1}) -> {2}SpriteSheet.tesheetResources/Editor/SpriteSheetIcon.png"}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"Setting Theme..."}
+{"timestamp":"2026-07-10 09:14:19.315","level":"INFO","category":"Core","message":"Initializing Framebuffer..."}
+{"timestamp":"2026-07-10 09:14:19.319","level":"INFO","category":"Core","message":"Initializing Renderer2D..."}
+{"timestamp":"2026-07-10 09:14:19.356","level":"INFO","category":"Core","message":"Initializing PhysicsWorld..."}
+{"timestamp":"2026-07-10 09:14:19.363","level":"INFO","category":"Core","message":"Creating Test Physics Bodies..."}
+{"timestamp":"2026-07-10 09:14:19.363","level":"INFO","category":"Core","message":"Creating Debug Material..."}
+{"timestamp":"2026-07-10 09:14:19.374","level":"INFO","category":"Core","message":"Loading Icons..."}
+{"timestamp":"2026-07-10 09:14:19.410","level":"INFO","category":"Core","message":"EditorLayer::OnAttach Finished."}
+{"timestamp":"2026-07-10 09:14:19.582","level":"INFO","category":"Core","message":"AssetManager: Loading asset from path {0}E:\TimeEngine\TimeEditor\Projects\NewProject\Assets\NewTexture.tetexture"}
+{"timestamp":"2026-07-10 09:14:19.588","level":"ERROR","category":"Core","message":"Failed to load texture: {0}E:\TimeEngine\TimeEditor\Projects\NewProject\Assets\NewTexture.tetexture"}
+{"timestamp":"2026-07-10 09:14:20.628","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 407, 476"}
+{"timestamp":"2026-07-10 09:14:20.787","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 376, 512"}
+{"timestamp":"2026-07-10 09:14:20.995","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 389, 535"}
+{"timestamp":"2026-07-10 09:14:21.165","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 557, 500"}
+{"timestamp":"2026-07-10 09:14:21.365","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 841, 273"}
+{"timestamp":"2026-07-10 09:14:21.558","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 978, 199"}
+{"timestamp":"2026-07-10 09:14:21.728","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 828, 176"}
+{"timestamp":"2026-07-10 09:14:21.890","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 320, 93"}
+{"timestamp":"2026-07-10 09:14:22.080","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 192, 76"}
+{"timestamp":"2026-07-10 09:14:22.245","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 211, 51"}
+{"timestamp":"2026-07-10 09:14:22.432","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 142, 20"}
+{"timestamp":"2026-07-10 09:14:22.593","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 110, 13"}
+{"timestamp":"2026-07-10 09:14:22.757","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 103, 11"}
+{"timestamp":"2026-07-10 09:14:22.757","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:22.922","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:23.085","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 104, 11"}
+{"timestamp":"2026-07-10 09:14:23.405","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 71, 7"}
+{"timestamp":"2026-07-10 09:14:23.582","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 69, 6"}
+{"timestamp":"2026-07-10 09:14:23.582","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:23.747","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:24.567","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 67, 33"}
+{"timestamp":"2026-07-10 09:14:24.732","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 87, 76"}
+{"timestamp":"2026-07-10 09:14:24.893","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 88, 76"}
+{"timestamp":"2026-07-10 09:14:25.055","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:25.219","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:26.189","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 90, 84"}
+{"timestamp":"2026-07-10 09:14:26.351","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 166, 249"}
+{"timestamp":"2026-07-10 09:14:26.521","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 223, 283"}
+{"timestamp":"2026-07-10 09:14:26.682","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 233, 275"}
+{"timestamp":"2026-07-10 09:14:26.843","level":"DEBUG","category":"Core","message":"MouseScrolledEvent: 0, -1"}
+{"timestamp":"2026-07-10 09:14:26.844","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 239, 267"}
+{"timestamp":"2026-07-10 09:14:27.027","level":"DEBUG","category":"Core","message":"MouseScrolledEvent: 0, -2"}
+{"timestamp":"2026-07-10 09:14:27.360","level":"DEBUG","category":"Core","message":"MouseScrolledEvent: 0, -1"}
+{"timestamp":"2026-07-10 09:14:27.519","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 233, 265"}
+{"timestamp":"2026-07-10 09:14:27.683","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 133, 168"}
+{"timestamp":"2026-07-10 09:14:27.852","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 108, 35"}
+{"timestamp":"2026-07-10 09:14:28.269","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 114, 20"}
+{"timestamp":"2026-07-10 09:14:28.432","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 83, 12"}
+{"timestamp":"2026-07-10 09:14:28.606","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 101, 54"}
+{"timestamp":"2026-07-10 09:14:28.767","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 153, 69"}
+{"timestamp":"2026-07-10 09:14:28.927","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 315, 71"}
+{"timestamp":"2026-07-10 09:14:29.097","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 440, 71"}
+{"timestamp":"2026-07-10 09:14:29.266","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 446, 71"}
+{"timestamp":"2026-07-10 09:14:29.429","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 431, 70"}
+{"timestamp":"2026-07-10 09:14:29.599","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 429, 68"}
+{"timestamp":"2026-07-10 09:14:29.759","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:29.928","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:30.102","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 423, 67"}
+{"timestamp":"2026-07-10 09:14:30.272","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 421, 65"}
+{"timestamp":"2026-07-10 09:14:30.444","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:30.623","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:30.786","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 416, 65"}
+{"timestamp":"2026-07-10 09:14:30.951","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 273, 56"}
+{"timestamp":"2026-07-10 09:14:31.124","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 125, 20"}
+{"timestamp":"2026-07-10 09:14:31.286","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 112, 12"}
+{"timestamp":"2026-07-10 09:14:31.448","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 96, 3"}
+{"timestamp":"2026-07-10 09:14:31.616","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 76, 0"}
+{"timestamp":"2026-07-10 09:14:31.787","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 69, 4"}
+{"timestamp":"2026-07-10 09:14:31.948","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:32.113","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:32.771","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 76, 26"}
+{"timestamp":"2026-07-10 09:14:32.943","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 104, 82"}
+{"timestamp":"2026-07-10 09:14:33.431","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:33.596","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:36.311","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 274, 258"}
+{"timestamp":"2026-07-10 09:14:36.476","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 280, 119"}
+{"timestamp":"2026-07-10 09:14:37.835","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 243, 70"}
+{"timestamp":"2026-07-10 09:14:38.156","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 244, 70"}
+{"timestamp":"2026-07-10 09:14:38.355","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1089, 159"}
+{"timestamp":"2026-07-10 09:14:53.639","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 388, 696"}
+{"timestamp":"2026-07-10 09:14:53.824","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 246, 668"}
+{"timestamp":"2026-07-10 09:14:54.034","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 114, 660"}
+{"timestamp":"2026-07-10 09:14:54.208","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 78, 656"}
+{"timestamp":"2026-07-10 09:14:54.374","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 90, 648"}
+{"timestamp":"2026-07-10 09:14:54.660","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 108, 641"}
+{"timestamp":"2026-07-10 09:14:54.828","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 118, 641"}
+{"timestamp":"2026-07-10 09:14:55.014","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 121, 640"}
+{"timestamp":"2026-07-10 09:14:55.181","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 123, 640"}
+{"timestamp":"2026-07-10 09:14:55.181","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:55.343","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:55.344","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:55.508","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:55.839","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 168, 669"}
+{"timestamp":"2026-07-10 09:14:56.029","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 213, 663"}
+{"timestamp":"2026-07-10 09:14:56.196","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 189, 653"}
+{"timestamp":"2026-07-10 09:14:56.372","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 162, 637"}
+{"timestamp":"2026-07-10 09:14:56.565","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 154, 633"}
+{"timestamp":"2026-07-10 09:14:56.732","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 152, 632"}
+{"timestamp":"2026-07-10 09:14:56.732","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:56.895","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:56.895","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:57.095","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:57.267","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 200, 647"}
+{"timestamp":"2026-07-10 09:14:57.441","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 233, 655"}
+{"timestamp":"2026-07-10 09:14:57.615","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 234, 655"}
+{"timestamp":"2026-07-10 09:14:57.615","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:57.615","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:57.780","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:57.943","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:58.277","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:58.277","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:58.444","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:58.444","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:14:58.794","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 358, 644"}
+{"timestamp":"2026-07-10 09:14:58.794","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 408, 637"}
+{"timestamp":"2026-07-10 09:14:58.978","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1197, 77"}
+{"timestamp":"2026-07-10 09:14:59.645","level":"DEBUG","category":"Core","message":"WindowResizeEvent: 1920, 1111"}
+{"timestamp":"2026-07-10 09:14:59.647","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1280, 43"}
+{"timestamp":"2026-07-10 09:15:00.195","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1372, 184"}
+{"timestamp":"2026-07-10 09:15:00.356","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1885, 215"}
+{"timestamp":"2026-07-10 09:15:00.521","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1919, 159"}
+{"timestamp":"2026-07-10 09:15:00.684","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1897, 130"}
+{"timestamp":"2026-07-10 09:15:00.845","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:00.845","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1897, 129"}
+{"timestamp":"2026-07-10 09:15:01.005","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:01.484","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1895, 129"}
+{"timestamp":"2026-07-10 09:15:01.654","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1879, 147"}
+{"timestamp":"2026-07-10 09:15:01.817","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1851, 198"}
+{"timestamp":"2026-07-10 09:15:01.817","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1850, 199"}
+{"timestamp":"2026-07-10 09:15:01.979","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1845, 221"}
+{"timestamp":"2026-07-10 09:15:02.140","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1845, 232"}
+{"timestamp":"2026-07-10 09:15:02.301","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1845, 236"}
+{"timestamp":"2026-07-10 09:15:02.464","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1845, 237"}
+{"timestamp":"2026-07-10 09:15:02.626","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:02.785","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:03.104","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1871, 156"}
+{"timestamp":"2026-07-10 09:15:03.266","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1891, 98"}
+{"timestamp":"2026-07-10 09:15:03.428","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1892, 95"}
+{"timestamp":"2026-07-10 09:15:03.594","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1892, 110"}
+{"timestamp":"2026-07-10 09:15:03.797","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:03.959","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:04.440","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1879, 148"}
+{"timestamp":"2026-07-10 09:15:04.615","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1861, 200"}
+{"timestamp":"2026-07-10 09:15:04.780","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1843, 267"}
+{"timestamp":"2026-07-10 09:15:04.941","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1841, 281"}
+{"timestamp":"2026-07-10 09:15:05.111","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1841, 285"}
+{"timestamp":"2026-07-10 09:15:05.112","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1841, 286"}
+{"timestamp":"2026-07-10 09:15:05.283","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1846, 303"}
+{"timestamp":"2026-07-10 09:15:05.447","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1850, 310"}
+{"timestamp":"2026-07-10 09:15:05.608","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:05.800","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:07.005","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1521, 458"}
+{"timestamp":"2026-07-10 09:15:07.182","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1152, 540"}
+{"timestamp":"2026-07-10 09:15:07.347","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 929, 593"}
+{"timestamp":"2026-07-10 09:15:07.569","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 870, 615"}
+{"timestamp":"2026-07-10 09:15:08.869","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 859, 588"}
+{"timestamp":"2026-07-10 09:15:09.033","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 849, 568"}
+{"timestamp":"2026-07-10 09:15:09.241","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 844, 563"}
+{"timestamp":"2026-07-10 09:15:09.242","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:09.411","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:09.901","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 843, 563"}
+{"timestamp":"2026-07-10 09:15:10.064","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 838, 548"}
+{"timestamp":"2026-07-10 09:15:10.225","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 838, 547"}
+{"timestamp":"2026-07-10 09:15:10.226","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:10.226","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:10.389","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1246, 439"}
+{"timestamp":"2026-07-10 09:15:10.553","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1645, 197"}
+{"timestamp":"2026-07-10 09:15:10.715","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1686, 170"}
+{"timestamp":"2026-07-10 09:15:10.889","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1727, 165"}
+{"timestamp":"2026-07-10 09:15:11.051","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1728, 165"}
+{"timestamp":"2026-07-10 09:15:11.051","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:11.051","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1729, 164"}
+{"timestamp":"2026-07-10 09:15:11.211","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:11.695","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1709, 164"}
+{"timestamp":"2026-07-10 09:15:11.872","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1074, 363"}
+{"timestamp":"2026-07-10 09:15:12.034","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 977, 405"}
+{"timestamp":"2026-07-10 09:15:12.196","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 842, 414"}
+{"timestamp":"2026-07-10 09:15:12.364","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 826, 398"}
+{"timestamp":"2026-07-10 09:15:12.526","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 824, 393"}
+{"timestamp":"2026-07-10 09:15:12.853","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 830, 383"}
+{"timestamp":"2026-07-10 09:15:13.015","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 830, 380"}
+{"timestamp":"2026-07-10 09:15:13.016","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:13.337","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 831, 366"}
+{"timestamp":"2026-07-10 09:15:13.499","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 831, 364"}
+{"timestamp":"2026-07-10 09:15:15.090","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 831, 362"}
+{"timestamp":"2026-07-10 09:15:15.266","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 831, 355"}
+{"timestamp":"2026-07-10 09:15:16.408","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 830, 355"}
+{"timestamp":"2026-07-10 09:15:16.570","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 825, 379"}
+{"timestamp":"2026-07-10 09:15:16.733","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 825, 385"}
+{"timestamp":"2026-07-10 09:15:16.893","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 825, 389"}
+{"timestamp":"2026-07-10 09:15:17.052","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 825, 390"}
+{"timestamp":"2026-07-10 09:15:17.212","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 825, 391"}
+{"timestamp":"2026-07-10 09:15:17.704","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 825, 392"}
+{"timestamp":"2026-07-10 09:15:17.866","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 835, 367"}
+{"timestamp":"2026-07-10 09:15:18.039","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 835, 358"}
+{"timestamp":"2026-07-10 09:15:18.198","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 835, 353"}
+{"timestamp":"2026-07-10 09:15:18.390","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 836, 346"}
+{"timestamp":"2026-07-10 09:15:18.715","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 836, 345"}
+{"timestamp":"2026-07-10 09:15:19.037","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 838, 337"}
+{"timestamp":"2026-07-10 09:15:19.196","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 838, 333"}
+{"timestamp":"2026-07-10 09:15:19.358","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 838, 332"}
+{"timestamp":"2026-07-10 09:15:19.518","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 838, 331"}
+{"timestamp":"2026-07-10 09:15:20.324","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:20.486","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 850, 351"}
+{"timestamp":"2026-07-10 09:15:20.646","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1145, 418"}
+{"timestamp":"2026-07-10 09:15:20.808","level":"DEBUG","category":"Core","message":"MouseButtonPressedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:20.809","level":"DEBUG","category":"Core","message":"MouseButtonReleasedEvent: 0"}
+{"timestamp":"2026-07-10 09:15:20.969","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1228, 421"}
+{"timestamp":"2026-07-10 09:15:21.135","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1318, 580"}
+{"timestamp":"2026-07-10 09:15:21.295","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1658, 641"}
+{"timestamp":"2026-07-10 09:15:21.454","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1692, 798"}
+{"timestamp":"2026-07-10 09:15:21.618","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1576, 967"}
+{"timestamp":"2026-07-10 09:15:22.622","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1457, 1055"}
+{"timestamp":"2026-07-10 09:15:22.783","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1449, 1087"}
+{"timestamp":"2026-07-10 09:17:33.318","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1411, 984"}
+{"timestamp":"2026-07-10 09:17:33.319","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1402, 974"}
+{"timestamp":"2026-07-10 09:17:33.319","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 1393, 965"}
+{"timestamp":"2026-07-10 09:17:33.480","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 788, 615"}
+{"timestamp":"2026-07-10 09:17:33.640","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 615, 628"}
+{"timestamp":"2026-07-10 09:17:33.804","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 611, 638"}
+{"timestamp":"2026-07-10 09:17:33.979","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 388, 953"}
+{"timestamp":"2026-07-10 09:17:34.162","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 211, 984"}
+{"timestamp":"2026-07-10 09:17:34.347","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 191, 953"}
+{"timestamp":"2026-07-10 09:17:34.508","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 172, 953"}
+{"timestamp":"2026-07-10 09:17:34.712","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 167, 953"}
+{"timestamp":"2026-07-10 09:17:35.361","level":"DEBUG","category":"Core","message":"MouseMovedEvent: 693, 1100"}
+{"timestamp":"2026-07-10 09:17:41.046","level":"DEBUG","category":"Core","message":"WindowClose"}
+{"timestamp":"2026-07-10 09:17:41.047","level":"INFO","category":"Core","message":"Application Run ended."}
+{"timestamp":"2026-07-10 09:17:41.119","level":"INFO","category":"Core","message":"Shutting down Plugin Manager..."}
+{"timestamp":"2026-07-10 09:17:41.119","level":"INFO","category":"Core","message":"Unloading plugin: MCPPlugin"}
+{"timestamp":"2026-07-10 09:17:41.119","level":"INFO","category":"Core","message":"[MCPPlugin] OnUnload called. Stopping MCP Server..."}
+{"timestamp":"2026-07-10 09:17:41.119","level":"INFO","category":"Core","message":"[MCPPlugin] MCP Server stopped."}
+{"timestamp":"2026-07-10 09:17:41.120","level":"INFO","category":"Core","message":"Application Destructor called."}

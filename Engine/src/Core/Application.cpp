@@ -7,6 +7,7 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/TimeGUI.hpp"
 #include "Window/IWindow.hpp"
+#include "Core/Plugin/PluginManager.hpp"
 
 namespace TE
 {
@@ -85,9 +86,16 @@ Application::Application() : m_Running(true)
     m_TimeGUILayer = new TimeGUILayer();
     PushOverlay(m_TimeGUILayer);
 #endif
+
+    // Initialize Plugins
+    PluginManager::Initialize();
 }
 
-Application::~Application() { TE_CORE_INFO("Application Destructor called."); }
+Application::~Application()
+{
+    PluginManager::Shutdown();
+    TE_CORE_INFO("Application Destructor called.");
+}
 
 void Application::Close() { m_Running = false; }
 

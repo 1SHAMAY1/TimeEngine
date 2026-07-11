@@ -7,12 +7,14 @@
 namespace TE
 {
 
-class Scene : public Asset
+class TE_API Scene : public Asset
 {
 public:
     Scene();
     Scene(const std::string &name);
     ~Scene() = default;
+    Scene(const Scene&) = delete;
+    Scene& operator=(const Scene&) = delete;
 
     virtual AssetHandle GetHandle() const override { return m_Handle; }
     virtual const std::string &GetType() const override
@@ -39,6 +41,8 @@ public:
     void SetParent(Entity child, Entity parent);
 
     EntityManager &GetEntityManager() { return m_EntityManager; }
+
+    static class ComponentRegistry &GetGlobalComponentRegistry();
 
 private:
     EntityManager m_EntityManager;

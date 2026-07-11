@@ -38,6 +38,7 @@ public:
 
     static Application &Get() { return *s_Instance; }
     IWindow &GetWindow() const { return *m_Window; }
+    const LayerStack& GetLayerStack() const { return m_LayerStack; }
 
 private:
     std::unique_ptr<IWindow> m_Window;

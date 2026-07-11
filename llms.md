@@ -27,6 +27,13 @@
 - Inbuilt 2D Sprite Editor & IDE — data-driven procedural scripting, recursive expression evaluation
 - `AmbientLightComponent` — global scene illumination (Sky/Horizon/Ground Color, Intensity, etc.)
 - ImGui-based editor layers with docking, Properties panel, Scene Hierarchy using `TimeGUI` wrapper
+- Plugin Settings Tab — Built-in GUI panel (`Edit -> Plugins`) managing DLL enable/disable loading lifecycle and persistent state files.
+- MCP Automation Server — SSE-based HTTP JSON-RPC port 3000 API exposing:
+  - Modes: `get_editor_modes`, `set_editor_mode`.
+  - Viewport: `get_viewport_screenshot` (saves `temp_viewport_capture.png`), `delete_screenshot` (confirm cleanup explicitly).
+  - ECS & Setup: `create_entity`, `destroy_entity`, `add_component`, `set_entity_properties`.
+  - Action Simulation: `send_editor_input` (simulates keyboard and mouse clicks).
+  - Script tool helper: `Scripts/MCP_Tools.sh` with PowerShell argument JSON compiler `Scripts/parse_json.py`.
 
 ## NOT yet implemented (do not hallucinate these)
 - Time Manipulation runtime (rewind, snapshots, branching) — design phase only
