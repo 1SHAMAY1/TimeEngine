@@ -18,7 +18,7 @@ public:
 
 // Helper macros for exporting plugin creation/destruction functions
 #ifdef TE_PLATFORM_WINDOWS
-    #define TE_PLUGIN_EXPORT extern "C" __declspec(dllexport)
+#define TE_PLUGIN_EXPORT extern "C" __declspec(dllexport)
 #else
-    #define TE_PLUGIN_EXPORT extern "C"
+#define TE_PLUGIN_EXPORT extern "C"
 #endif

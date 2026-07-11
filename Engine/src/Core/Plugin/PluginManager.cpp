@@ -1,21 +1,21 @@
 #include "Core/Plugin/PluginManager.hpp"
-#include "Core/Project/Project.hpp"
 #include "Core/Log.h"
+#include "Core/Project/Project.hpp"
 #include <fstream>
 #include <sstream>
 
 namespace TE
 {
 
-typedef IPlugin* (*CreatePluginFn)();
-typedef void (*DestroyPluginFn)(IPlugin*);
+typedef IPlugin *(*CreatePluginFn)();
+typedef void (*DestroyPluginFn)(IPlugin *);
 
 void PluginManager::Initialize()
 {
     TE_CORE_INFO("Initializing Plugin Manager...");
     DiscoverPlugins();
 
-    for (const auto& info : s_DiscoveredPlugins)
+    for (const auto &info : s_DiscoveredPlugins)
     {
         if (info.Enabled)
         {
@@ -64,7 +64,7 @@ void PluginManager::DiscoverPlugins()
     TE_CORE_INFO("Scanning engine plugins at: ", enginePluginsDir.string());
     if (std::filesystem::exists(enginePluginsDir))
     {
-        for (const auto& entry : std::filesystem::recursive_directory_iterator(enginePluginsDir))
+        for (const auto &entry : std::filesystem::recursive_directory_iterator(enginePluginsDir))
         {
             if (entry.path().extension() == ".teplugin")
             {
@@ -87,7 +87,7 @@ void PluginManager::DiscoverPlugins()
         TE_CORE_INFO("Scanning project plugins at: ", projectPluginsDir.string());
         if (std::filesystem::exists(projectPluginsDir))
         {
-            for (const auto& entry : std::filesystem::recursive_directory_iterator(projectPluginsDir))
+            for (const auto &entry : std::filesystem::recursive_directory_iterator(projectPluginsDir))
             {
                 if (entry.path().extension() == ".teplugin")
                 {
@@ -104,7 +104,7 @@ void PluginManager::DiscoverPlugins()
     }
 }
 
-bool PluginManager::ParsePluginDescriptor(const std::filesystem::path& path, PluginInfo& outInfo)
+bool PluginManager::ParsePluginDescriptor(const std::filesystem::path &path, PluginInfo &outInfo)
 {
     std::ifstream hin(path);
     if (!hin.is_open())
@@ -125,7 +125,8 @@ bool PluginManager::ParsePluginDescriptor(const std::filesystem::path& path, Plu
         std::string val = line.substr(colon + 1);
 
         // Trim helper
-        auto trim = [](std::string& s) {
+        auto trim = [](std::string &s)
+        {
             s.erase(0, s.find_first_not_of(" \t\r\n"));
             s.erase(s.find_last_not_of(" \t\r\n") + 1);
         };
@@ -145,7 +146,7 @@ bool PluginManager::ParsePluginDescriptor(const std::filesystem::path& path, Plu
     return !outInfo.Name.empty();
 }
 
-void PluginManager::LoadPlugin(const std::filesystem::path& pluginDescriptorPath)
+void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath)
 {
     PluginInfo info;
     if (!ParsePluginDescriptor(pluginDescriptorPath, info))
@@ -157,7 +158,7 @@ void PluginManager::LoadPlugin(const std::filesystem::path& pluginDescriptorPath
     info.LibraryPath = pluginDescriptorPath.parent_path() / (info.Name + ".dll");
 
     // Check if already loaded
-    for (const auto& instance : s_LoadedPluginInstances)
+    for (const auto &instance : s_LoadedPluginInstances)
     {
         if (instance.Info.Name == info.Name)
             return;
@@ -179,7 +180,7 @@ void PluginManager::LoadPlugin(const std::filesystem::path& pluginDescriptorPath
         return;
     }
 
-    IPlugin* instance = createFn();
+    IPlugin *instance = createFn();
     if (!instance)
     {
         TE_CORE_ERROR("CreatePluginInstance returned nullptr for plugin: ", info.Name);
@@ -199,7 +200,7 @@ void PluginManager::LoadPlugin(const std::filesystem::path& pluginDescriptorPath
     instance->OnLoad();
 }
 
-void PluginManager::UnloadPlugin(const std::string& name)
+void PluginManager::UnloadPlugin(const std::string &name)
 {
     for (auto it = s_LoadedPluginInstances.begin(); it != s_LoadedPluginInstances.end(); ++it)
     {
@@ -233,14 +234,14 @@ void PluginManager::UnloadPlugin(const std::string& name)
     }
 }
 
-void PluginManager::SetPluginEnabled(const std::string& name, bool enabled)
+void PluginManager::SetPluginEnabled(const std::string &name, bool enabled)
 {
-    for (auto& info : s_DiscoveredPlugins)
+    for (auto &info : s_DiscoveredPlugins)
     {
         if (info.Name == name)
         {
             info.Enabled = enabled;
-            
+
             // Rewrite descriptor to persist state across restarts
             std::vector<std::string> lines;
             std::ifstream hin(info.Path);
@@ -269,7 +270,7 @@ void PluginManager::SetPluginEnabled(const std::string& name, bool enabled)
                 std::ofstream hout(info.Path);
                 if (hout.is_open())
                 {
-                    for (const auto& l : lines)
+                    for (const auto &l : lines)
                     {
                         hout << l << "\n";
                     }

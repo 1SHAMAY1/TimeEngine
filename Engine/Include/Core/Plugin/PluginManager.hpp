@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Core/Plugin/IPlugin.hpp"
+#include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include <filesystem>
 
 #ifdef TE_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -22,7 +22,7 @@ struct PluginInfo
     std::string Version;
     std::string Description;
     bool Enabled = true;
-    std::filesystem::path Path; // Path to the .teplugin file
+    std::filesystem::path Path;        // Path to the .teplugin file
     std::filesystem::path LibraryPath; // Path to the compiled .dll
 };
 
@@ -32,16 +32,16 @@ public:
     static void Initialize();
     static void Shutdown();
 
-    static void LoadPlugin(const std::filesystem::path& pluginDescriptorPath);
-    static void UnloadPlugin(const std::string& name);
-    static void SetPluginEnabled(const std::string& name, bool enabled);
+    static void LoadPlugin(const std::filesystem::path &pluginDescriptorPath);
+    static void UnloadPlugin(const std::string &name);
+    static void SetPluginEnabled(const std::string &name, bool enabled);
 
-    static const std::vector<PluginInfo>& GetLoadedPlugins() { return s_LoadedPlugins; }
-    static const std::vector<PluginInfo>& GetDiscoveredPlugins() { return s_DiscoveredPlugins; }
+    static const std::vector<PluginInfo> &GetLoadedPlugins() { return s_LoadedPlugins; }
+    static const std::vector<PluginInfo> &GetDiscoveredPlugins() { return s_DiscoveredPlugins; }
 
 private:
     static void DiscoverPlugins();
-    static bool ParsePluginDescriptor(const std::filesystem::path& path, PluginInfo& outInfo);
+    static bool ParsePluginDescriptor(const std::filesystem::path &path, PluginInfo &outInfo);
 
 private:
     struct LoadedPluginInstance
@@ -50,9 +50,9 @@ private:
 #ifdef TE_PLATFORM_WINDOWS
         HMODULE Module = nullptr;
 #else
-        void* Module = nullptr;
+        void *Module = nullptr;
 #endif
-        IPlugin* Instance = nullptr;
+        IPlugin *Instance = nullptr;
     };
 
     inline static std::vector<PluginInfo> s_DiscoveredPlugins;

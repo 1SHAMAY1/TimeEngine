@@ -2,10 +2,10 @@
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 
 namespace TE
 {
@@ -15,9 +15,8 @@ Scene::Scene() : m_Name("Untitled Scene"), m_Handle(0)
     SetIcon("Resources/Editor/SceneIcon.png", {64.0f, 64.0f}, ".tescene");
     for (const auto &[name, meta] : ComponentRegistry::Get().GetComponents())
     {
-        m_EntityManager.RegisterComponentFactory(name, [this, &meta](EntityID id) -> TComponent * {
-            return meta.Factory(&this->m_EntityManager, id);
-        });
+        m_EntityManager.RegisterComponentFactory(name, [this, &meta](EntityID id) -> TComponent *
+                                                 { return meta.Factory(&this->m_EntityManager, id); });
     }
 }
 
@@ -26,9 +25,8 @@ Scene::Scene(const std::string &name) : m_Name(name), m_Handle(0)
     SetIcon("Resources/Editor/SceneIcon.png", {64.0f, 64.0f}, ".tescene");
     for (const auto &[name, meta] : ComponentRegistry::Get().GetComponents())
     {
-        m_EntityManager.RegisterComponentFactory(name, [this, &meta](EntityID id) -> TComponent * {
-            return meta.Factory(&this->m_EntityManager, id);
-        });
+        m_EntityManager.RegisterComponentFactory(name, [this, &meta](EntityID id) -> TComponent *
+                                                 { return meta.Factory(&this->m_EntityManager, id); });
     }
 }
 
@@ -93,9 +91,6 @@ void Scene::OnContentBrowserCreate(const std::filesystem::path &path)
     }
 }
 
-class ComponentRegistry &Scene::GetGlobalComponentRegistry()
-{
-    return ComponentRegistry::Get();
-}
+class ComponentRegistry &Scene::GetGlobalComponentRegistry() { return ComponentRegistry::Get(); }
 
 } // namespace TE

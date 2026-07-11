@@ -48,8 +48,8 @@ class EntityManager
 public:
     EntityManager() = default;
     ~EntityManager() = default;
-    EntityManager(const EntityManager&) = delete;
-    EntityManager& operator=(const EntityManager&) = delete;
+    EntityManager(const EntityManager &) = delete;
+    EntityManager &operator=(const EntityManager &) = delete;
 
     // Entity management
     Entity CreateEntity();

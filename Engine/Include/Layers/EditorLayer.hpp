@@ -59,9 +59,9 @@ public:
 
     std::shared_ptr<Scene> GetActiveScene() const { return m_ActiveScene; }
 
-    static const std::vector<std::unique_ptr<class EditorMode>>& GetGlobalModes();
-    static void SetGlobalActiveMode(const std::string& name);
-    static class EditorMode* GetGlobalActiveMode();
+    static const std::vector<std::unique_ptr<class EditorMode>> &GetGlobalModes();
+    static void SetGlobalActiveMode(const std::string &name);
+    static class EditorMode *GetGlobalActiveMode();
 
     // Selection Helpers
     void SelectEntity(Entity entity, bool multiSelect = false, bool toggle = false);

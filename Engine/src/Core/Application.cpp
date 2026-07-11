@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Core/Plugin/PluginManager.hpp"
 #include "Core/Threading/ThreadingMacros.hpp"
 #include "Events/ApplicationEvent.h"
 #include "Layers/TimeGUILayer.hpp"
@@ -7,7 +8,6 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/TimeGUI.hpp"
 #include "Window/IWindow.hpp"
-#include "Core/Plugin/PluginManager.hpp"
 
 namespace TE
 {

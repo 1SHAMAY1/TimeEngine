@@ -52,20 +52,11 @@
 namespace TE
 {
 
-const std::vector<std::unique_ptr<EditorMode>>& EditorLayer::GetGlobalModes()
-{
-    return EditorModeRegistry::GetModes();
-}
+const std::vector<std::unique_ptr<EditorMode>> &EditorLayer::GetGlobalModes() { return EditorModeRegistry::GetModes(); }
 
-void EditorLayer::SetGlobalActiveMode(const std::string& name)
-{
-    EditorModeRegistry::SetActiveMode(name);
-}
+void EditorLayer::SetGlobalActiveMode(const std::string &name) { EditorModeRegistry::SetActiveMode(name); }
 
-EditorMode* EditorLayer::GetGlobalActiveMode()
-{
-    return EditorModeRegistry::GetActiveMode();
-}
+EditorMode *EditorLayer::GetGlobalActiveMode() { return EditorModeRegistry::GetActiveMode(); }
 
 EditorLayer::EditorLayer(const std::string &name) : Layer(name) {}
 
@@ -2155,18 +2146,18 @@ void EditorLayer::UI_DrawPluginsPanel()
 
     TimeGUI::Begin("Plugins Settings", &m_ShowPluginsSettings);
 
-    const auto& discovered = PluginManager::GetDiscoveredPlugins();
-    const auto& loaded = PluginManager::GetLoadedPlugins();
+    const auto &discovered = PluginManager::GetDiscoveredPlugins();
+    const auto &loaded = PluginManager::GetLoadedPlugins();
 
     TimeGUI::Text("Discovered Plugins: %d", (int)discovered.size());
     TimeGUI::Separator();
 
-    for (const auto& info : discovered)
+    for (const auto &info : discovered)
     {
         TimeGUI::PushID(info.Name.c_str());
 
         bool isLoaded = false;
-        for (const auto& l : loaded)
+        for (const auto &l : loaded)
         {
             if (l.Name == info.Name)
             {
