@@ -18,6 +18,9 @@ struct ParticleEmitterComponent
 
     float Accumulator = 0.0f;
     ParticlePool *Pool = nullptr;
+
+    bool PhysicsSimulated = false;
+    float Bounciness = 0.5f;
 };
 
 } // namespace TE
