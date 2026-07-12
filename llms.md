@@ -5,35 +5,50 @@
 - **Core differentiator**: Deterministic simulation + Time Manipulation (rewind, slow-motion, state-branching)
 - **Status**: Active development. Not all systems are complete. Do not assume a feature exists unless listed below.
 
-## Stack
-| Concern | Choice |
-|---|---|
-| Language | C++20 |
-| Graphics | OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES |
-| Architecture | Entity-Component System (ECS) |
-| Build | Premake5 → MSBuild / Visual Studio 2022 |
-| UI | TimeGUI (Strict ImGui Abstraction Wrapper) |
-| Serialization | YAML via SceneSerializer |
+## Core Architecture
+- **Language**: C++20
+- **Graphics API**: OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES
+- **Architecture**: Entity-Component System (ECS)
+- **Build System**: Premake5 / MSBuild
+- **UI**: TimeGUI (Strict ImGui Abstraction Wrapper)
 
-## Confirmed Systems (implemented)
-- `Renderer2D` — batched quad/sprite rendering
-- `Renderer3D` — basic 3D batching
-- Multi-API Backends — support for Vulkan, OpenGL ES, DirectX 11, and OpenGL core profile.
-- `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
-- `Scene` — entity/component manager via ECS
-- `SceneSerializer` — text-based parser save/load for scenes and projects
-- `Event` system — window, input, application lifecycle events
-- Input — action-based keyboard/mouse mapping
-- Inbuilt 2D Sprite Editor & IDE — data-driven procedural scripting, recursive expression evaluation
-- `AmbientLightComponent` — global scene illumination (Sky/Horizon/Ground Color, Intensity, etc.)
-- ImGui-based editor layers with docking, Properties panel, Scene Hierarchy using `TimeGUI` wrapper
-- Plugin Settings Tab — Built-in GUI panel (`Edit -> Plugins`) managing DLL enable/disable loading lifecycle and persistent state files.
-- MCP Automation Server — SSE-based HTTP JSON-RPC port 3000 API exposing:
-  - Modes: `get_editor_modes`, `set_editor_mode`.
-  - Viewport: `get_viewport_screenshot` (saves `temp_viewport_capture.png`), `delete_screenshot` (confirm cleanup explicitly).
-  - ECS & Setup: `create_entity`, `destroy_entity`, `add_component`, `set_entity_properties`.
-  - Action Simulation: `send_editor_input` (simulates keyboard and mouse clicks).
-  - Script tool helper: `Scripts/MCP_Tools.sh` with PowerShell argument JSON compiler `Scripts/parse_json.py`.
+## Key APIs & Systems
+- **Renderer**: `Renderer2D` and `Renderer3D` (optimized batching for quads/sprites). Supports Vulkan, OpenGL ES, DirectX 11, and OpenGL core profile.
+- **Physics**: `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
+- **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
+- **Scene System**: `Scene` class manages entities and components via ECS.
+- **Serialization**: Scene and Project serialization (YAML).
+- **Events**: Event systems for windowing, user input, and scene lifecycles.
+- **Input**: Action-based input mapping.
+- **Plugins Settings Panel**: Built-in GUI panel (toggled via `Edit -> Plugins`) showing discovered plugins and enabling runtime load/unload DLL manipulation.
+- **MCP Automation & SSE Server**: Built-in server providing remote programmatic automation:
+  - Port: `3000` (HTTP and SSE streams `/message`).
+  - Active Tools:
+    - *Metadata & Modes*: `get_engine_info`, `get_scene_hierarchy`, `get_editor_modes`, `set_editor_mode`.
+    - *Entities & ECS*: `create_entity`, `destroy_entity`, `add_component`, `set_entity_properties`.
+    - *Viewport Feedback*: `get_viewport_screenshot` (saves `temp_viewport_capture.png` locally).
+    - *Callback Deletion*: `delete_screenshot` (triggered explicitly by AI client to safely erase the temp screenshot file post-processing, avoiding race condition loss).
+    - *Simulated Input*: `send_editor_input` (simulates keys/clicks).
+    - *File I/O*: `create_directory`, `delete_file_or_directory`.
+  - Client shell wrapper script: `Scripts/MCP_Tools.sh`. Uses Python parsing script `Scripts/parse_json.py` to compile nested properties payload arguments safely on Windows.
+- **Ambient Light**: `AmbientLightComponent` exists (`Engine/Include/Core/Scene/AmbientLightComponent.hpp`) and supports gradient/multi-color ambient lighting.
+- **Advanced Performance Profiler**: Real-time profiler dashboard toggled via the Viewport menu:
+  - Timing Hooks: Tracks `GameTime` (Editor updates), `RenderTime` (batcher flush steps), `PhysicsTime` (simulation steps), and `UITime` (UI drawing).
+  - Memory & Stack Profiling: Tracks heap/stack allocations. Supports scoped function stack allocation tracking using RAII `StackProfileScope` and class allocations:
+    - Record allocation (e.g. in constructor): `ProfilingLayer::TrackClassAllocation("MyNewClass", sizeof(*this));`
+    - Record deallocation (e.g. in destructor): `ProfilingLayer::TrackClassDeallocation("MyNewClass", sizeof(*this));`
+
+## Development Patterns
+- Use `TE_CORE_LOG` for engine-side logging.
+- Use `TE_CLIENT_LOG` for sandbox/game logging.
+- Prefer `Ref<T>` (smart pointers) for resource management.
+- All files should include `#pragma once`.
+- Components live under `Engine/Include/Core/Scene/` and register via macros (e.g. `T_REGISTER_COMPONENT`).
+
+## Setup
+1. Run the workspace generation script in `Scripts/` (e.g. `Scripts/Windows/GenerateProjectFiles.bat` for Windows).
+2. Build with MSBuild or Visual Studio.
+3. Launch TimeEditor to access the Project Hub.
 
 ## NOT yet implemented (do not hallucinate these)
 - Time Manipulation runtime (rewind, snapshots, branching) — design phase only
@@ -42,7 +57,6 @@
 - Networking
 - Cross-platform support (Windows only)
 
-## Conventions
 | Pattern | Rule |
 |---|---|
 | Logging (engine) | `TE_CORE_LOG` |
