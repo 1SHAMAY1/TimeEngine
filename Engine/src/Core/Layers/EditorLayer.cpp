@@ -1,5 +1,4 @@
 #include "Layers/EditorLayer.hpp"
-#include "Layers/ProfilingLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Core/KeyCodes.hpp"
@@ -20,6 +19,7 @@
 #include "Editor/EditorToolbar.hpp"
 #include "Editor/SpriteMode.hpp"
 #include "Input/Input.hpp"
+#include "Layers/ProfilingLayer.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
@@ -197,7 +197,7 @@ void EditorLayer::OnAttach()
         [](void *instance) { return &static_cast<TransformComponent *>(instance)->Parent; });
 
     LoadSettings();
-    
+
     m_ProfilingLayer = new ProfilingLayer();
     m_ProfilingLayer->SetVisible(false);
     Application::Get().PushOverlay(m_ProfilingLayer);
@@ -1899,14 +1899,14 @@ void EditorLayer::UI_DrawViewport()
                     SaveSettings();
                 if (TimeGUI::Checkbox("Show Physics", &m_EditorSettings.ShowPhysicsColliders))
                     SaveSettings();
-                
+
                 bool showProfiler = m_ProfilingLayer && m_ProfilingLayer->IsVisible();
                 if (TimeGUI::Checkbox("Show Profiler", &showProfiler))
                 {
                     if (m_ProfilingLayer)
                         m_ProfilingLayer->SetVisible(showProfiler);
                 }
-                
+
                 TimeGUI::EndPopup();
             }
 

@@ -27,10 +27,7 @@ StackProfileScope::StackProfileScope(const std::string &name, size_t size) : fun
     ProfilingLayer::PushStackFrame(name, size);
 }
 
-StackProfileScope::~StackProfileScope()
-{
-    ProfilingLayer::PopStackFrame(funcName);
-}
+StackProfileScope::~StackProfileScope() { ProfilingLayer::PopStackFrame(funcName); }
 
 void ProfilingLayer::TrackClassAllocation(const std::string &className, size_t sizeBytes, bool isHeap)
 {
@@ -490,7 +487,8 @@ void ProfilingLayer::RenderSystemInfo()
     TimeGUI::Separator();
 
     // Frame Time Breakdown (Stacked Bar)
-    float sumTime = m_CurrentMetrics.gameTime + m_CurrentMetrics.renderTime + m_CurrentMetrics.physicsTime + m_CurrentMetrics.uiTime;
+    float sumTime = m_CurrentMetrics.gameTime + m_CurrentMetrics.renderTime + m_CurrentMetrics.physicsTime +
+                    m_CurrentMetrics.uiTime;
     float gamePct = sumTime > 0.0f ? m_CurrentMetrics.gameTime / sumTime : 0.0f;
     float renderPct = sumTime > 0.0f ? m_CurrentMetrics.renderTime / sumTime : 0.0f;
     float physicsPct = sumTime > 0.0f ? m_CurrentMetrics.physicsTime / sumTime : 0.0f;
@@ -512,25 +510,29 @@ void ProfilingLayer::RenderSystemInfo()
         float wGame = width * gamePct;
         if (wGame > 0.0f)
         {
-            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wGame, barPos.y + height), IM_COL32(50, 205, 50, 255));
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wGame, barPos.y + height),
+                                   IM_COL32(50, 205, 50, 255));
             currentX += wGame;
         }
         float wRender = width * renderPct;
         if (wRender > 0.0f)
         {
-            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wRender, barPos.y + height), IM_COL32(30, 144, 255, 255));
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wRender, barPos.y + height),
+                                   IM_COL32(30, 144, 255, 255));
             currentX += wRender;
         }
         float wPhysics = width * physicsPct;
         if (wPhysics > 0.0f)
         {
-            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wPhysics, barPos.y + height), IM_COL32(255, 127, 80, 255));
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wPhysics, barPos.y + height),
+                                   IM_COL32(255, 127, 80, 255));
             currentX += wPhysics;
         }
         float wUI = width * uiPct;
         if (wUI > 0.0f)
         {
-            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wUI, barPos.y + height), IM_COL32(255, 215, 0, 255));
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wUI, barPos.y + height),
+                                   IM_COL32(255, 215, 0, 255));
             currentX += wUI;
         }
     }
