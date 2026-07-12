@@ -32,6 +32,11 @@
     - *File I/O*: `create_directory`, `delete_file_or_directory`.
   - Client shell wrapper script: `Scripts/MCP_Tools.sh`. Uses Python parsing script `Scripts/parse_json.py` to compile nested properties payload arguments safely on Windows.
 - **Ambient Light**: `AmbientLightComponent` exists (`Engine/Include/Core/Scene/AmbientLightComponent.hpp`) and supports gradient/multi-color ambient lighting.
+- **Advanced Performance Profiler**: Real-time profiler dashboard toggled via the Viewport menu:
+  - Timing Hooks: Tracks `GameTime` (Editor updates), `RenderTime` (batcher flush steps), `PhysicsTime` (simulation steps), and `UITime` (UI drawing).
+  - Memory & Stack Profiling: Tracks heap/stack allocations. Supports scoped function stack allocation tracking using RAII `StackProfileScope` and class allocations:
+    - Record allocation (e.g. in constructor): `ProfilingLayer::TrackClassAllocation("MyNewClass", sizeof(*this));`
+    - Record deallocation (e.g. in destructor): `ProfilingLayer::TrackClassDeallocation("MyNewClass", sizeof(*this));`
 
 ## Development Patterns
 - Use `TE_CORE_LOG` for engine-side logging.

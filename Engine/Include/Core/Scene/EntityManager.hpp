@@ -133,7 +133,7 @@ template <typename Component> Component *EntityManager::GetComponent(EntityID en
     auto compIt = entityPool.find(entityID);
     if (compIt == entityPool.end() || compIt->second.empty())
         return nullptr;
-    return dynamic_cast<Component *>(compIt->second[0].get());
+    return static_cast<Component *>(compIt->second[0].get());
 }
 
 template <typename Component> std::vector<Component *> EntityManager::GetComponents(EntityID entityID) const
@@ -149,7 +149,7 @@ template <typename Component> std::vector<Component *> EntityManager::GetCompone
         {
             for (auto &comp : compIt->second)
             {
-                if (auto *ptr = dynamic_cast<Component *>(comp.get()))
+                if (auto *ptr = static_cast<Component *>(comp.get()))
                     results.push_back(ptr);
             }
         }

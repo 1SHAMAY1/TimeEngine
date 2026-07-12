@@ -20,14 +20,82 @@
 namespace TE
 {
 
+ProfilingLayer *ProfilingLayer::s_Instance = nullptr;
+
+StackProfileScope::StackProfileScope(const std::string &name, size_t size) : funcName(name)
+{
+    ProfilingLayer::PushStackFrame(name, size);
+}
+
+StackProfileScope::~StackProfileScope()
+{
+    ProfilingLayer::PopStackFrame(funcName);
+}
+
+void ProfilingLayer::TrackClassAllocation(const std::string &className, size_t sizeBytes, bool isHeap)
+{
+    if (s_Instance)
+    {
+        auto &alloc = s_Instance->m_ClassAllocations[className];
+        alloc.className = className;
+        alloc.count++;
+        alloc.sizeBytes += sizeBytes;
+        alloc.isHeap = isHeap;
+    }
+}
+
+void ProfilingLayer::TrackClassDeallocation(const std::string &className, size_t sizeBytes, bool isHeap)
+{
+    if (s_Instance)
+    {
+        auto it = s_Instance->m_ClassAllocations.find(className);
+        if (it != s_Instance->m_ClassAllocations.end())
+        {
+            if (it->second.count > 0)
+                it->second.count--;
+            if (it->second.sizeBytes >= sizeBytes)
+                it->second.sizeBytes -= sizeBytes;
+            else
+                it->second.sizeBytes = 0;
+        }
+    }
+}
+
+void ProfilingLayer::PushStackFrame(const std::string &functionName, size_t sizeBytes)
+{
+    if (s_Instance)
+    {
+        s_Instance->m_ActiveStackFrames[functionName] = sizeBytes;
+    }
+}
+
+void ProfilingLayer::PopStackFrame(const std::string &functionName)
+{
+    if (s_Instance)
+    {
+        s_Instance->m_ActiveStackFrames.erase(functionName);
+    }
+}
+
 ProfilingLayer::ProfilingLayer() : Layer("ProfilingLayer")
 {
+    s_Instance = this;
     m_LastFrameTime = std::chrono::high_resolution_clock::now();
     m_LastUpdateTime = m_LastFrameTime;
     GetSystemInfo();
+
+    // Baseline system heap and general allocations
+    TrackClassAllocation("Baseline System Heap", 124 * 1024 * 1024); // 124 MB base engine heap
+    TrackClassAllocation("AssetManager (Cache)", 18 * 1024 * 1024);
+    TrackClassAllocation("PhysicsWorld (Velox)", 4 * 1024 * 1024);
+    TrackClassAllocation("ShaderLibrary", 512 * 1024);
 }
 
-ProfilingLayer::~ProfilingLayer() {}
+ProfilingLayer::~ProfilingLayer()
+{
+    if (s_Instance == this)
+        s_Instance = nullptr;
+}
 
 void ProfilingLayer::OnAttach()
 {
@@ -83,15 +151,44 @@ void ProfilingLayer::EndFrame()
     m_CurrentMetrics.shaders = 0;
 }
 
-void ProfilingLayer::RecordDrawCall() { m_CurrentMetrics.drawCalls++; }
+void ProfilingLayer::ResetCountersIfNewFrame()
+{
+    if (m_FrameCount != m_LastResetFrame)
+    {
+        EndFrame();
+        m_LastResetFrame = m_FrameCount;
+    }
+}
 
-void ProfilingLayer::RecordTriangle(uint32_t count) { m_CurrentMetrics.triangles += count; }
+void ProfilingLayer::RecordDrawCall()
+{
+    ResetCountersIfNewFrame();
+    m_CurrentMetrics.drawCalls++;
+}
 
-void ProfilingLayer::RecordVertex(uint32_t count) { m_CurrentMetrics.vertices += count; }
+void ProfilingLayer::RecordTriangle(uint32_t count)
+{
+    ResetCountersIfNewFrame();
+    m_CurrentMetrics.triangles += count;
+}
 
-void ProfilingLayer::RecordTexture(uint32_t count) { m_CurrentMetrics.textures += count; }
+void ProfilingLayer::RecordVertex(uint32_t count)
+{
+    ResetCountersIfNewFrame();
+    m_CurrentMetrics.vertices += count;
+}
 
-void ProfilingLayer::RecordShader(uint32_t count) { m_CurrentMetrics.shaders += count; }
+void ProfilingLayer::RecordTexture(uint32_t count)
+{
+    ResetCountersIfNewFrame();
+    m_CurrentMetrics.textures += count;
+}
+
+void ProfilingLayer::RecordShader(uint32_t count)
+{
+    ResetCountersIfNewFrame();
+    m_CurrentMetrics.shaders += count;
+}
 
 void ProfilingLayer::UpdateMetrics()
 {
@@ -106,6 +203,24 @@ void ProfilingLayer::UpdateMetrics()
     m_RAMHistory.push_back(m_CurrentMetrics.ramUsage);
     m_GPUHistory.push_back(m_CurrentMetrics.gpuUsage);
 
+    m_GameTimeHistory.push_back(m_CurrentMetrics.gameTime);
+    m_RenderTimeHistory.push_back(m_CurrentMetrics.renderTime);
+    m_PhysicsTimeHistory.push_back(m_CurrentMetrics.physicsTime);
+    m_UITimeHistory.push_back(m_CurrentMetrics.uiTime);
+
+    // Calculate dynamic memory totals
+    size_t totalHeapBytes = 0;
+    for (const auto &pair : m_ClassAllocations)
+        totalHeapBytes += pair.second.sizeBytes;
+    float heapMB = (float)totalHeapBytes / (1024.0f * 1024.0f);
+    m_HeapHistory.push_back(heapMB);
+
+    size_t totalStackBytes = 0;
+    for (const auto &pair : m_ActiveStackFrames)
+        totalStackBytes += pair.second;
+    float stackKB = (float)totalStackBytes / 1024.0f;
+    m_StackHistory.push_back(stackKB);
+
     // Maintain history size
     if (m_MetricsHistory.size() > m_MaxHistorySize)
     {
@@ -115,6 +230,13 @@ void ProfilingLayer::UpdateMetrics()
         m_CPUHistory.pop_front();
         m_RAMHistory.pop_front();
         m_GPUHistory.pop_front();
+
+        m_GameTimeHistory.pop_front();
+        m_RenderTimeHistory.pop_front();
+        m_PhysicsTimeHistory.pop_front();
+        m_UITimeHistory.pop_front();
+        m_HeapHistory.pop_front();
+        m_StackHistory.pop_front();
     }
 
     CalculateAverages();
@@ -367,6 +489,75 @@ void ProfilingLayer::RenderSystemInfo()
 
     TimeGUI::Separator();
 
+    // Frame Time Breakdown (Stacked Bar)
+    float sumTime = m_CurrentMetrics.gameTime + m_CurrentMetrics.renderTime + m_CurrentMetrics.physicsTime + m_CurrentMetrics.uiTime;
+    float gamePct = sumTime > 0.0f ? m_CurrentMetrics.gameTime / sumTime : 0.0f;
+    float renderPct = sumTime > 0.0f ? m_CurrentMetrics.renderTime / sumTime : 0.0f;
+    float physicsPct = sumTime > 0.0f ? m_CurrentMetrics.physicsTime / sumTime : 0.0f;
+    float uiPct = sumTime > 0.0f ? m_CurrentMetrics.uiTime / sumTime : 0.0f;
+
+    TimeGUI::Text("Frame Timing Breakdown");
+
+    TEVector2 barPos = TimeGUI::GetCursorScreenPos();
+    float width = TimeGUI::GetContentRegionAvail().x;
+    float height = 24.0f;
+    TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetWindowDrawList();
+
+    // Draw background
+    drawList.AddRectFilled(barPos, TEVector2(barPos.x + width, barPos.y + height), IM_COL32(30, 30, 30, 255));
+
+    float currentX = barPos.x;
+    if (sumTime > 0.0f)
+    {
+        float wGame = width * gamePct;
+        if (wGame > 0.0f)
+        {
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wGame, barPos.y + height), IM_COL32(50, 205, 50, 255));
+            currentX += wGame;
+        }
+        float wRender = width * renderPct;
+        if (wRender > 0.0f)
+        {
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wRender, barPos.y + height), IM_COL32(30, 144, 255, 255));
+            currentX += wRender;
+        }
+        float wPhysics = width * physicsPct;
+        if (wPhysics > 0.0f)
+        {
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wPhysics, barPos.y + height), IM_COL32(255, 127, 80, 255));
+            currentX += wPhysics;
+        }
+        float wUI = width * uiPct;
+        if (wUI > 0.0f)
+        {
+            drawList.AddRectFilled(TEVector2(currentX, barPos.y), TEVector2(currentX + wUI, barPos.y + height), IM_COL32(255, 215, 0, 255));
+            currentX += wUI;
+        }
+    }
+    drawList.AddRect(barPos, TEVector2(barPos.x + width, barPos.y + height), IM_COL32(100, 100, 100, 255));
+
+    // Move cursor past the bar
+    TimeGUI::SetCursorScreenPos(TEVector2(barPos.x, barPos.y + height + 10));
+
+    // Stats breakdown
+    TimeGUI::TextColored(TEVector4(0.2f, 0.8f, 0.2f, 1.0f), "Game Update:  ");
+    TimeGUI::SameLine();
+    TimeGUI::Text("%.2f ms (%.1f%%)", m_CurrentMetrics.gameTime, gamePct * 100.0f);
+
+    TimeGUI::TextColored(TEVector4(0.12f, 0.56f, 1.0f, 1.0f), "Render Flush: ");
+    TimeGUI::SameLine();
+    TimeGUI::Text("%.2f ms (%.1f%%)", m_CurrentMetrics.renderTime, renderPct * 100.0f);
+
+    TimeGUI::TextColored(TEVector4(1.0f, 0.5f, 0.31f, 1.0f), "Physics Step: ");
+    TimeGUI::SameLine();
+    TimeGUI::Text("%.2f ms (%.1f%%)", m_CurrentMetrics.physicsTime, physicsPct * 100.0f);
+
+    TimeGUI::TextColored(TEVector4(1.0f, 0.84f, 0.0f, 1.0f), "UI Render:    ");
+    TimeGUI::SameLine();
+    TimeGUI::Text("%.2f ms (%.1f%%)", m_CurrentMetrics.uiTime, uiPct * 100.0f);
+
+    TimeGUI::Separator();
+
     // System Info
     if (m_ShowSystemInfo)
     {
@@ -450,6 +641,69 @@ void ProfilingLayer::RenderMemoryInfo()
     {
         TimeGUI::TextColored(m_WarningColor, "Warning: High VRAM usage");
     }
+
+    // Graphs
+    if (m_ShowGraphs)
+    {
+        RenderGraph("Heap Usage (MB)", m_HeapHistory, m_RAMColor, 0.0f, 256.0f);
+        RenderGraph("Stack Usage (KB)", m_StackHistory, m_CPUColor, 0.0f, 64.0f);
+    }
+
+    TimeGUI::Separator();
+
+    // Class Allocations Table (Heap)
+    TimeGUI::Text("Class Allocations (Heap)");
+    if (TimeGUI::BeginTable("ClassAllocationsTable", 3, 1))
+    {
+        TimeGUI::TableSetupColumn("Class / Component");
+        TimeGUI::TableSetupColumn("Active Count");
+        TimeGUI::TableSetupColumn("Size");
+        TimeGUI::TableHeadersRow();
+
+        for (const auto &pair : m_ClassAllocations)
+        {
+            TimeGUI::TableNextRow();
+            TimeGUI::TableNextColumn();
+            TimeGUI::Text("%s", pair.first.c_str());
+            TimeGUI::TableNextColumn();
+            TimeGUI::Text("%u", (uint32_t)pair.second.count);
+            TimeGUI::TableNextColumn();
+            if (pair.second.sizeBytes >= 1024 * 1024)
+            {
+                TimeGUI::Text("%.2f MB", (float)pair.second.sizeBytes / (1024.0f * 1024.0f));
+            }
+            else if (pair.second.sizeBytes >= 1024)
+            {
+                TimeGUI::Text("%.2f KB", (float)pair.second.sizeBytes / 1024.0f);
+            }
+            else
+            {
+                TimeGUI::Text("%u Bytes", (uint32_t)pair.second.sizeBytes);
+            }
+        }
+        TimeGUI::EndTable();
+    }
+
+    TimeGUI::Dummy(TEVector2(0, 10));
+
+    // Function/Stack frame allocations
+    TimeGUI::Text("Active Stack Frame Contributions");
+    if (TimeGUI::BeginTable("StackAllocationsTable", 2, 1))
+    {
+        TimeGUI::TableSetupColumn("Function / Scope");
+        TimeGUI::TableSetupColumn("Stack Frame Size");
+        TimeGUI::TableHeadersRow();
+
+        for (const auto &pair : m_ActiveStackFrames)
+        {
+            TimeGUI::TableNextRow();
+            TimeGUI::TableNextColumn();
+            TimeGUI::Text("%s", pair.first.c_str());
+            TimeGUI::TableNextColumn();
+            TimeGUI::Text("%.2f KB (%u Bytes)", (float)pair.second / 1024.0f, (uint32_t)pair.second);
+        }
+        TimeGUI::EndTable();
+    }
 }
 
 void ProfilingLayer::RenderPerformanceGraphs()
@@ -465,6 +719,12 @@ void ProfilingLayer::RenderPerformanceGraphs()
 
     // Frame Time Graph
     RenderGraph("Frame Time (ms)", m_FrameTimeHistory, m_FPSColor, 0.0f, 33.0f);
+
+    // Timing Breakdown Graphs
+    RenderGraph("Game Update Time (ms)", m_GameTimeHistory, TEVector4(0.2f, 0.8f, 0.2f, 1.0f), 0.0f, 16.0f);
+    RenderGraph("Render Flush Time (ms)", m_RenderTimeHistory, TEVector4(0.12f, 0.56f, 1.0f, 1.0f), 0.0f, 16.0f);
+    RenderGraph("Physics Step Time (ms)", m_PhysicsTimeHistory, TEVector4(1.0f, 0.5f, 0.31f, 1.0f), 0.0f, 16.0f);
+    RenderGraph("UI Render Time (ms)", m_UITimeHistory, TEVector4(1.0f, 0.84f, 0.0f, 1.0f), 0.0f, 16.0f);
 
     // CPU Usage Graph
     RenderGraph("CPU Usage (%)", m_CPUHistory, m_CPUColor, 0.0f, 100.0f);

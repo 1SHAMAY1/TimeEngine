@@ -1,6 +1,8 @@
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Log.h"
+#include "Layers/ProfilingLayer.hpp"
 #include <algorithm>
+#include <chrono>
 #include <velox/VeloxAPI.h>
 
 namespace TE
@@ -109,6 +111,10 @@ void PhysicsWorld::Step(float dt)
     if (!m_VeloxWorld)
         return;
 
+    StackProfileScope scope("PhysicsWorld::Step", sizeof(PhysicsWorld) + sizeof(dt));
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+
     // 1. Sync any manual position/velocity updates from client code to Velox
     for (auto *body : m_Bodies)
     {
@@ -141,6 +147,14 @@ void PhysicsWorld::Step(float dt)
             body->Position = {x, y};
             body->IsSleeping = Velox_IsSleeping((VeloxWorld *)m_VeloxWorld, body->m_VeloxEntityID);
         }
+    }
+
+    auto endTime = std::chrono::high_resolution_clock::now();
+    float durationMs = std::chrono::duration<float, std::milli>(endTime - startTime).count();
+
+    if (auto *profiler = ProfilingLayer::GetInstance())
+    {
+        profiler->RecordPhysicsTime(durationMs);
     }
 }
 

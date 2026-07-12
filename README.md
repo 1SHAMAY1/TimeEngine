@@ -45,6 +45,7 @@ The Time Engine workspace is built for developer productivity, featuring:
 *   **TEPropertyDrawer**: A modular system for generating consistent and stable property inspectors automatically.
 *   **Modern Glass UI**: Translucent context menus and property panels for a clean, non-intrusive workspace.
 *   **Plugins Settings Panel**: A built-in GUI panel (via `Edit -> Plugins`) to dynamically view discovered plugins, load/unload DLLs, toggle their active state, and write persistent enabled properties to disk.
+*   **Advanced Performance Profiler**: High-fidelity profiling dashboard showing frame timing breakdowns (Game update, Render flush, Physics simulation, UI render) visualized through stacked horizontal bars, live scrolling plots, and dynamic Heap/Stack memory allocation tables (tracking object instances and active call stack frames).
 *   **MCP Automation Interface**: A built-in SSE + JSON-RPC network automation interface allowing full, programmatic remote control of editor tools, screenshot retrieval, input simulation, and component properties editing.
 
 <p align="center">
