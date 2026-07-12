@@ -11,10 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-blue.svg" alt="C++17">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Windows | Linux | macOS">
-  <img src="https://img.shields.io/badge/Graphics-OpenGL%204.5-orange.svg" alt="OpenGL 4.5">
-  <img src="https://img.shields.io/badge/Graphics-Vulkan-red.svg" alt="Vulkan">
-  <img src="https://img.shields.io/badge/Graphics-DirectX%2011-blue.svg" alt="DirectX 11">
-  <img src="https://img.shields.io/badge/Graphics-OpenGL%20ES-yellowgreen.svg" alt="OpenGL ES">
+  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT">
 </p>
 
@@ -130,8 +127,8 @@ The engine utilizes a modular ECS architecture. Below is the current development
 
 TimeEngine is optimized for development with AI coding assistants (e.g., Gemini, Claude, Cursor). We provide structured context files to help LLMs understand our architecture, folder structure, and vendor wrapper constraints immediately:
 
-*   [llms.md](file:///E:/TimeEngine/llms.md) / [llms.txt](file:///E:/TimeEngine/llms.txt): Detailed mapping of project architectures, directory structures, vendor library wrapping rules (e.g., `TimeGUI` wrapper for ImGui, `MathUtils` for GLM), and coding conventions.
-*   [.agentsrules](file:///E:/TimeEngine/.agentsrules): System-level instructions loaded by agentic frameworks to enforce coding standards automatically.
+*   [llms.md](llms.md) / [llms.txt](llms.txt): Detailed mapping of project architectures, directory structures, vendor library wrapping rules (e.g., `TimeGUI` wrapper for ImGui, `MathUtils` for GLM), and coding conventions.
+*   [.agents/rules/priority.md](.agents/rules/priority.md): System-level instructions loaded by agentic frameworks to enforce coding standards automatically.
 
 ---
 
