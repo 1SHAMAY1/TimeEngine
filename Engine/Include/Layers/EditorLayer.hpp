@@ -126,6 +126,7 @@ private:
     bool m_SaveSceneAs = false;
     char m_SaveSceneNameBuffer[256] = "";
     char m_SaveScenePathBuffer[256] = "";
+    class ProfilingLayer *m_ProfilingLayer = nullptr;
 
     std::filesystem::path m_ContentBrowserCurrentDirectory;
     char m_ContentBrowserPathBuffer[512] = "";

@@ -36,7 +36,7 @@ public:
 
             TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + 4.0f);
 
-            // 1. Editor Mode Selector (UE5 style)
+            // 1. Editor Mode Selector (standard style)
             EditorMode *activeMode = EditorModeRegistry::GetActiveMode();
             std::string modeLabel = activeMode ? activeMode->GetName() : "Selection Mode";
 

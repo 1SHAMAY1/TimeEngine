@@ -4,10 +4,26 @@
 #include <chrono>
 #include <deque>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace TE
 {
+
+struct MemoryAllocation
+{
+    std::string className;
+    size_t count = 0;
+    size_t sizeBytes = 0;
+    bool isHeap = true;
+};
+
+struct StackProfileScope
+{
+    std::string funcName;
+    StackProfileScope(const std::string &name, size_t size);
+    ~StackProfileScope();
+};
 
 struct PerformanceMetrics
 {
@@ -23,6 +39,12 @@ struct PerformanceMetrics
     uint32_t shaders = 0;
     float gpuMemory = 0.0f;
     float vramUsage = 0.0f;
+
+    // Timing Breakdown (in ms)
+    float gameTime = 0.0f;
+    float renderTime = 0.0f;
+    float physicsTime = 0.0f;
+    float uiTime = 0.0f;
 };
 
 class ProfilingLayer : public Layer
@@ -30,6 +52,8 @@ class ProfilingLayer : public Layer
 public:
     ProfilingLayer();
     virtual ~ProfilingLayer();
+
+    static ProfilingLayer *GetInstance() { return s_Instance; }
 
     virtual void OnAttach() override;
     virtual void OnDetach() override;
@@ -45,6 +69,12 @@ public:
     void RecordVertex(uint32_t count);
     void RecordTexture(uint32_t count);
     void RecordShader(uint32_t count);
+
+    // ===== Timing Registration =====
+    void RecordGameTime(float ms) { m_CurrentMetrics.gameTime = ms; }
+    void RecordRenderTime(float ms) { m_CurrentMetrics.renderTime = ms; }
+    void RecordPhysicsTime(float ms) { m_CurrentMetrics.physicsTime = ms; }
+    void RecordUITime(float ms) { m_CurrentMetrics.uiTime = ms; }
 
     // ===== System Info =====
     void UpdateSystemMetrics();
@@ -71,7 +101,21 @@ public:
     bool IsVisible() const { return m_IsVisible; }
     void ToggleVisibility() { m_IsVisible = !m_IsVisible; }
 
+    // Timing Histories
+    std::deque<float> m_GameTimeHistory;
+    std::deque<float> m_RenderTimeHistory;
+    std::deque<float> m_PhysicsTimeHistory;
+    std::deque<float> m_UITimeHistory;
+
+    // ===== Memory Tracking =====
+    static void TrackClassAllocation(const std::string &className, size_t sizeBytes, bool isHeap = true);
+    static void TrackClassDeallocation(const std::string &className, size_t sizeBytes, bool isHeap = true);
+    static void PushStackFrame(const std::string &functionName, size_t sizeBytes);
+    static void PopStackFrame(const std::string &functionName);
+
 private:
+    static ProfilingLayer *s_Instance;
+
     // ===== Performance Data =====
     PerformanceMetrics m_CurrentMetrics;
     std::deque<PerformanceMetrics> m_MetricsHistory;
@@ -80,6 +124,12 @@ private:
     std::deque<float> m_CPUHistory;
     std::deque<float> m_RAMHistory;
     std::deque<float> m_GPUHistory;
+
+    // Memory Allocations Tracking
+    std::unordered_map<std::string, MemoryAllocation> m_ClassAllocations;
+    std::unordered_map<std::string, size_t> m_ActiveStackFrames;
+    std::deque<float> m_HeapHistory;
+    std::deque<float> m_StackHistory;
 
     // ===== Timing =====
     std::chrono::high_resolution_clock::time_point m_LastFrameTime;
@@ -144,11 +194,15 @@ private:
                       const std::deque<float> &data, const TEVector4 &color, float minValue, float maxValue,
                       const std::string &label);
 
+    void ResetCountersIfNewFrame();
+
     // ===== Utility Functions =====
     std::string FormatBytes(uint64_t bytes);
     std::string FormatTime(float seconds);
     std::string FormatPercentage(float percentage);
     TEVector4 GetColorForValue(float value, float warningThreshold, float criticalThreshold);
+
+    uint32_t m_LastResetFrame = 0;
 };
 
 } // namespace TE

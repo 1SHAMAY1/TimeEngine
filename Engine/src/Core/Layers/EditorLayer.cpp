@@ -19,6 +19,7 @@
 #include "Editor/EditorToolbar.hpp"
 #include "Editor/SpriteMode.hpp"
 #include "Input/Input.hpp"
+#include "Layers/ProfilingLayer.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
@@ -196,12 +197,23 @@ void EditorLayer::OnAttach()
         [](void *instance) { return &static_cast<TransformComponent *>(instance)->Parent; });
 
     LoadSettings();
+
+    m_ProfilingLayer = new ProfilingLayer();
+    m_ProfilingLayer->SetVisible(false);
+    Application::Get().PushOverlay(m_ProfilingLayer);
+
     TE_CORE_INFO("EditorLayer::OnAttach Finished.");
 }
 
 void EditorLayer::OnDetach()
 {
     TE_CORE_INFO("EditorLayer Detached");
+    if (m_ProfilingLayer)
+    {
+        Application::Get().PopOverlay(m_ProfilingLayer);
+        delete m_ProfilingLayer;
+        m_ProfilingLayer = nullptr;
+    }
     // Clean up bodies
     for (auto *body : m_TestBodies)
         delete body;
@@ -210,6 +222,8 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate()
 {
+    StackProfileScope scope("EditorLayer::OnUpdate", sizeof(EditorLayer));
+    auto startTime = std::chrono::high_resolution_clock::now();
     float dt = TimeGUI::GetIO().DeltaTime;
     if (dt > 0.05f)
         dt = 0.05f; // Clamp
@@ -495,6 +509,13 @@ void EditorLayer::OnUpdate()
     }
 
     m_Framebuffer->Unbind();
+
+    auto endTime = std::chrono::high_resolution_clock::now();
+    float durationMs = std::chrono::duration<float, std::milli>(endTime - startTime).count();
+    if (m_ProfilingLayer)
+    {
+        m_ProfilingLayer->RecordGameTime(durationMs);
+    }
 }
 
 void EditorLayer::OnEvent(Event &event)
@@ -615,6 +636,8 @@ static bool DrawPlusButton(const char *id, float offsetX = 40.0f)
 */
 void EditorLayer::OnTimeGUIRender()
 {
+    StackProfileScope scope("EditorLayer::OnTimeGUIRender", 4096); // 4 KB simulated stack frame size
+    auto startTime = std::chrono::high_resolution_clock::now();
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
     bool opt_fullscreen = opt_fullscreen_persistant;
@@ -710,6 +733,13 @@ void EditorLayer::OnTimeGUIRender()
     ProcessDeletionQueues();
 
     TimeGUI::End();
+
+    auto endTime = std::chrono::high_resolution_clock::now();
+    float durationMs = std::chrono::duration<float, std::milli>(endTime - startTime).count();
+    if (m_ProfilingLayer)
+    {
+        m_ProfilingLayer->RecordUITime(durationMs);
+    }
 }
 
 void EditorLayer::UI_DrawMenubar()
@@ -1869,6 +1899,14 @@ void EditorLayer::UI_DrawViewport()
                     SaveSettings();
                 if (TimeGUI::Checkbox("Show Physics", &m_EditorSettings.ShowPhysicsColliders))
                     SaveSettings();
+
+                bool showProfiler = m_ProfilingLayer && m_ProfilingLayer->IsVisible();
+                if (TimeGUI::Checkbox("Show Profiler", &showProfiler))
+                {
+                    if (m_ProfilingLayer)
+                        m_ProfilingLayer->SetVisible(showProfiler);
+                }
+
                 TimeGUI::EndPopup();
             }
 
@@ -3372,7 +3410,7 @@ void EditorLayer::SaveScene()
         std::filesystem::create_directories(finalPath);
     }
 
-    // For now we hardcode "CurrentScene.tescene" as requested in UE5 style level workflow
+    // Hardcoded default scene path
     finalPath = finalPath / "CurrentScene.tescene";
 
     SceneSerializer serializer(m_ActiveScene);

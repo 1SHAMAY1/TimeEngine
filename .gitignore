@@ -46,3 +46,7 @@ recent_projects.txt
 # Agents
 !.agents/
 !.agents/**
+
+# ImGui layout config
+*.ini
+imgui.ini
