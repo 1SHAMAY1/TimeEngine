@@ -91,6 +91,8 @@ namespace TE {
         bool IsLogToConsoleEnabled() const { return m_LogToConsole; }
         const std::string& GetLogLevel() const { return m_LogLevel; }
         bool IsLogCategoryEnabled(const std::string& category) const;
+        const std::unordered_map<std::string, bool>& GetLogCategories() const { return m_LogCategories; }
+        std::unordered_map<std::string, bool>& GetLogCategories() { return m_LogCategories; }
         bool IsLogTimestampEnabled() const { return m_LogTimestamp; }
         const std::string& GetLogFile() const { return m_LogFile; }
         

@@ -1,6 +1,7 @@
 #include "Layers/EditorLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Collision/PolygonColliderComponent.hpp"
+#include "Core/EngineSettings.hpp"
 #include "Core/KeyCodes.hpp"
 #include "Core/Log.h"
 #include "Core/Physics/PhysicsWorld.hpp"
@@ -197,6 +198,10 @@ void EditorLayer::OnAttach()
         [](void *instance) { return &static_cast<TransformComponent *>(instance)->Parent; });
 
     LoadSettings();
+
+    m_TerminalHistory.push_back("Welcome to TimeEngine Console!");
+    m_TerminalHistory.push_back("Type 'help' to see available commands.");
+    m_TerminalHistory.push_back("Root directory: " + Project::GetProjectDirectory().string());
 
     m_ProfilingLayer = new ProfilingLayer();
     m_ProfilingLayer->SetVisible(false);
@@ -710,6 +715,7 @@ void EditorLayer::OnTimeGUIRender()
                 TimeGUI::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
                 TimeGUI::DockBuilderDockWindow("Properties", dock_id_right_bottom);
                 TimeGUI::DockBuilderDockWindow("Content Browser", dock_id_bottom);
+                TimeGUI::DockBuilderDockWindow("Console & Terminal", dock_id_bottom);
 
                 TimeGUI::DockBuilderFinish(dockspace_id);
             }
@@ -723,6 +729,7 @@ void EditorLayer::OnTimeGUIRender()
     if (!isSpriteMode)
     {
         UI_DrawContentBrowser();
+        UI_DrawConsolePanel();
         UI_DrawAssetEditors();
         UI_DrawSaveScenePopup();
         UI_DrawSettingsPanel();
@@ -793,6 +800,7 @@ void EditorLayer::UI_DrawMenubar()
             TimeGUI::MenuItem("Scene Hierarchy", "", &m_ShowSceneHierarchy);
             TimeGUI::MenuItem("Properties", "", &m_ShowProperties);
             TimeGUI::MenuItem("Content Browser", "", &m_ShowContentBrowser);
+            TimeGUI::MenuItem("Console & Terminal", "", &m_ShowConsolePanel);
             TimeGUI::EndMenu();
         }
         TimeGUI::EndMenuBar();
@@ -2053,6 +2061,42 @@ void EditorLayer::UI_DrawSettingsPanel()
             SetDarkThemeColors();
     }
 
+    if (TimeGUI::CollapsingHeader("Logger Filter", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        auto &settings = EngineSettings::Get();
+
+        // Log Level Dropdown
+        std::string currentLevel = settings.GetLogLevel();
+        const char *levels[] = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"};
+        int currentLevelIndex = 0;
+        for (int i = 0; i < 5; i++)
+        {
+            if (currentLevel == levels[i])
+            {
+                currentLevelIndex = i;
+                break;
+            }
+        }
+
+        if (TimeGUI::Combo("Min Log Level", &currentLevelIndex, levels, 5))
+        {
+            settings.SetLogLevel(levels[currentLevelIndex]);
+        }
+
+        TimeGUI::Separator();
+        TimeGUI::Text("Filter Categories:");
+
+        auto &categories = settings.GetLogCategories();
+        for (auto &[name, enabled] : categories)
+        {
+            bool val = enabled;
+            if (TimeGUI::Checkbox(name, &val))
+            {
+                settings.SetLogCategory(name, val);
+            }
+        }
+    }
+
     if (TimeGUI::CollapsingHeader("Shortcuts", ImGuiTreeNodeFlags_DefaultOpen))
     {
         auto &shortcuts = m_EditorSettings.Shortcuts;
@@ -2233,6 +2277,282 @@ void EditorLayer::UI_DrawPluginsPanel()
     }
 
     TimeGUI::End();
+}
+
+void EditorLayer::UI_DrawConsolePanel()
+{
+    if (!m_ShowConsolePanel)
+        return;
+
+    TimeGUI::Begin("Console & Terminal", &m_ShowConsolePanel);
+
+    if (TimeGUI::BeginTabBar("ConsoleTabs"))
+    {
+        if (TimeGUI::BeginTabItem("Output Log"))
+        {
+            // Clear button
+            if (TimeGUI::Button("Clear"))
+            {
+                Log::ClearMessageBuffer();
+            }
+            TimeGUI::SameLine();
+
+            // Filter search text
+            static char searchFilter[128] = "";
+            TimeGUI::SetNextItemWidth(200.0f);
+            TimeGUI::InputText("Filter Search", searchFilter, sizeof(searchFilter));
+
+            TimeGUI::SameLine();
+            // Scroll to bottom button
+            if (TimeGUI::Button("Scroll to Bottom"))
+            {
+                m_ScrollToConsoleBottom = true;
+            }
+
+            TimeGUI::Separator();
+
+            // List of logs
+            TimeGUI::BeginChild("LogList", TEVector2(0, 0), false, TimeGUIWindowFlags_HorizontalScrollbar);
+
+            auto messages = Log::GetMessageBuffer();
+            auto &settings = EngineSettings::Get();
+            std::string minLevel = settings.GetLogLevel();
+
+            // Helper to map levels to int
+            auto LevelToInt = [](const std::string &lvl) -> int {
+                if (lvl == "DEBUG") return 0;
+                if (lvl == "INFO") return 1;
+                if (lvl == "WARNING") return 2;
+                if (lvl == "ERROR") return 3;
+                if (lvl == "CRITICAL") return 4;
+                return 1; // default to INFO
+            };
+            int minLevelInt = LevelToInt(minLevel);
+
+            // Render messages
+            for (const auto &msg : messages)
+            {
+                // Filter by Level
+                if (LevelToInt(msg.Level) < minLevelInt)
+                    continue;
+
+                // Filter by Category
+                if (!settings.IsLogCategoryEnabled(msg.Category))
+                    continue;
+
+                // Filter by Search Query
+                if (searchFilter[0] != '\0')
+                {
+                    if (msg.Message.find(searchFilter) == std::string::npos &&
+                        msg.Category.find(searchFilter) == std::string::npos)
+                    {
+                        continue;
+                    }
+                }
+
+                // Draw piece-by-piece to match professional Rider/terminal color scheme
+                TEColor tsColor(0.5f, 0.5f, 0.5f, 1.0f); // Dim gray
+                TEColor catColor(0.4f, 0.6f, 0.8f, 1.0f); // Steel blue
+                TEColor msgColor(0.9f, 0.92f, 0.95f, 1.0f); // Normal text
+
+                TEColor lvlColor(1.0f, 1.0f, 1.0f, 1.0f);
+                if (msg.Level == "DEBUG") lvlColor = TEColor(0.3f, 0.6f, 0.9f, 1.0f); // Soft blue
+                else if (msg.Level == "INFO") lvlColor = TEColor(0.2f, 0.8f, 0.2f, 1.0f); // Green
+                else if (msg.Level == "WARNING") lvlColor = TEColor(0.9f, 0.9f, 0.2f, 1.0f); // Yellow
+                else if (msg.Level == "ERROR") lvlColor = TEColor(0.9f, 0.3f, 0.3f, 1.0f); // Red
+                else if (msg.Level == "CRITICAL") lvlColor = TEColor(1.0f, 0.1f, 0.1f, 1.0f); // Bright Red
+
+                TimeGUI::TextColored(tsColor, "[%s]", msg.Timestamp.c_str());
+                TimeGUI::SameLine();
+                TimeGUI::TextColored(lvlColor, "[%s]", msg.Level.c_str());
+                TimeGUI::SameLine();
+                TimeGUI::TextColored(catColor, "[%s]", msg.Category.c_str());
+                TimeGUI::SameLine();
+                TimeGUI::TextColored(msgColor, "%s", msg.Message.c_str());
+            }
+
+            if (m_ScrollToConsoleBottom)
+            {
+                TimeGUI::SetScrollHereY(1.0f);
+                m_ScrollToConsoleBottom = false;
+            }
+
+            TimeGUI::EndChild();
+            TimeGUI::EndTabItem();
+        }
+
+        if (TimeGUI::BeginTabItem("Terminal"))
+        {
+            // History child window
+            float footerHeight = TimeGUI::GetFrameHeight() + TimeGUI::GetStyle().ItemSpacing.y + 10.0f;
+            TimeGUI::BeginChild("TerminalHistory", TEVector2(0, -footerHeight), false, TimeGUIWindowFlags_HorizontalScrollbar);
+
+            for (const auto &line : m_TerminalHistory)
+            {
+                // If it starts with Command execution prefix, make it a different color
+                if (line.rfind("TimeEngine> ", 0) == 0)
+                {
+                    TimeGUI::TextColored(TEColor(0.3f, 0.7f, 1.0f, 1.0f), "%s", line.c_str());
+                }
+                else
+                {
+                    TimeGUI::TextUnformatted(line.c_str());
+                }
+            }
+
+            if (m_ScrollToConsoleBottom)
+            {
+                TimeGUI::SetScrollHereY(1.0f);
+            }
+
+            TimeGUI::EndChild();
+            TimeGUI::Separator();
+
+            // Command line input text
+            TimeGUI::Text("TimeEngine>");
+            TimeGUI::SameLine();
+            TimeGUI::SetNextItemWidth(-1.0f);
+            if (TimeGUI::InputText("##TerminalInput", m_TerminalInputBuffer, sizeof(m_TerminalInputBuffer), TimeGUIInputTextFlags_EnterReturnsTrue))
+            {
+                std::string cmd(m_TerminalInputBuffer);
+                // trim whitespace
+                while (!cmd.empty() && std::isspace((unsigned char)cmd.front())) cmd.erase(cmd.begin());
+                while (!cmd.empty() && std::isspace((unsigned char)cmd.back())) cmd.pop_back();
+
+                if (!cmd.empty())
+                {
+                    ExecuteTerminalCommand(cmd);
+                }
+                m_TerminalInputBuffer[0] = '\0';
+                m_ScrollToConsoleBottom = true;
+            }
+
+            TimeGUI::EndTabItem();
+        }
+        TimeGUI::EndTabBar();
+    }
+    TimeGUI::End();
+}
+
+void EditorLayer::ExecuteTerminalCommand(const std::string &commandLine)
+{
+    m_TerminalHistory.push_back("TimeEngine> " + commandLine);
+    m_TerminalCommandHistory.push_back(commandLine);
+
+    if (commandLine == "help")
+    {
+        m_TerminalHistory.push_back("Available Engine Commands:");
+        m_TerminalHistory.push_back("  help              - Display this help message.");
+        m_TerminalHistory.push_back("  clear             - Clear the console window.");
+        m_TerminalHistory.push_back("  fps               - Print the current frames per second.");
+        m_TerminalHistory.push_back("  list_entities     - List all active entities in the current scene.");
+        m_TerminalHistory.push_back("  create_entity <N> - Create a new entity with name <N>.");
+        m_TerminalHistory.push_back("  destroy_entity <I>- Destroy the entity with ID <I>.");
+        m_TerminalHistory.push_back("  [system commands] - Any other command will run in the project root directory.");
+    }
+    else if (commandLine == "clear")
+    {
+        m_TerminalHistory.clear();
+    }
+    else if (commandLine == "fps")
+    {
+        float fps = 1.0f / TimeGUI::GetIO().DeltaTime;
+        m_TerminalHistory.push_back("Current Frame Rate: " + std::to_string(fps) + " FPS");
+    }
+    else if (commandLine == "list_entities")
+    {
+        if (m_ActiveScene)
+        {
+            auto &entityManager = m_ActiveScene->GetEntityManager();
+            const auto &entities = entityManager.GetAliveEntities();
+            m_TerminalHistory.push_back("Alive Entities count: " + std::to_string(entities.size()));
+            for (EntityID id : entities)
+            {
+                Entity entity(id);
+                std::string name = "Entity " + std::to_string(id);
+                if (entityManager.HasComponent<TagComponent>(entity))
+                {
+                    name = entityManager.GetComponents<TagComponent>(entity)[0]->Tag;
+                }
+                m_TerminalHistory.push_back(" - ID: " + std::to_string(id) + " | Tag: " + name);
+            }
+        }
+        else
+        {
+            m_TerminalHistory.push_back("Error: No active scene loaded.");
+        }
+    }
+    else if (commandLine.rfind("create_entity ", 0) == 0)
+    {
+        if (m_ActiveScene)
+        {
+            std::string entityName = commandLine.substr(14);
+            Entity entity = m_ActiveScene->CreateEntity(entityName);
+            m_TerminalHistory.push_back("Created entity: '" + entityName + "' (ID: " + std::to_string(entity.GetID()) + ")");
+        }
+        else
+        {
+            m_TerminalHistory.push_back("Error: No active scene loaded.");
+        }
+    }
+    else if (commandLine.rfind("destroy_entity ", 0) == 0)
+    {
+        if (m_ActiveScene)
+        {
+            try
+            {
+                EntityID id = std::stoull(commandLine.substr(15));
+                Entity entity(id);
+                m_ActiveScene->DestroyEntity(entity);
+                m_TerminalHistory.push_back("Destroyed entity with ID: " + std::to_string(id));
+            }
+            catch (...)
+            {
+                m_TerminalHistory.push_back("Error: Invalid entity ID format.");
+            }
+        }
+        else
+        {
+            m_TerminalHistory.push_back("Error: No active scene loaded.");
+        }
+    }
+    else
+    {
+        // Run system command in project directory
+        std::string projectDir = Project::GetProjectDirectory().string();
+        std::string fullCmd = "cd /d \"" + projectDir + "\" && " + commandLine;
+#ifdef _WIN32
+        FILE *fp = _popen(fullCmd.c_str(), "r");
+#else
+        FILE *fp = popen(fullCmd.c_str(), "r");
+#endif
+        if (fp)
+        {
+            char buffer[256];
+            bool hasOutput = false;
+            while (fgets(buffer, sizeof(buffer), fp))
+            {
+                hasOutput = true;
+                std::string line(buffer);
+                while (!line.empty() && (line.back() == '\n' || line.back() == '\r'))
+                    line.pop_back();
+                m_TerminalHistory.push_back(line);
+            }
+#ifdef _WIN32
+            _pclose(fp);
+#else
+            pclose(fp);
+#endif
+            if (!hasOutput)
+            {
+                m_TerminalHistory.push_back("Command finished with no output.");
+            }
+        }
+        else
+        {
+            m_TerminalHistory.push_back("Error: Failed to execute system command.");
+        }
+    }
 }
 
 void EditorLayer::HandleViewportInput()
@@ -3635,6 +3955,9 @@ void EditorLayer::LoadSettings()
         return;
 
     std::filesystem::path configDir = Project::GetProjectDirectory() / "config";
+    if (!std::filesystem::exists(configDir))
+        std::filesystem::create_directory(configDir);
+
     std::filesystem::path projectSettingsPath = configDir / "ProjectSettings.ini";
     std::filesystem::path editorSettingsPath = configDir / "EditorSettings.ini";
 

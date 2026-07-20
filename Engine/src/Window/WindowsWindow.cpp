@@ -141,7 +141,7 @@ void WindowsWindow::Init(const WindowProps &props)
                                   data.Width = width;
                                   data.Height = height;
                                   TE::WindowResizeEvent event(width, height);
-                                  TE_CORE_DEBUG(event.ToString());
+                                  TE_INPUT_DEBUG(event.ToString());
                                   data.EventCallback(event);
                               });
 
@@ -154,7 +154,7 @@ void WindowsWindow::Init(const WindowProps &props)
                                {
                                    WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
                                    TE::WindowCloseEvent event;
-                                   TE_CORE_DEBUG(event.ToString());
+                                   TE_INPUT_DEBUG(event.ToString());
                                    data.EventCallback(event);
                                });
 
@@ -165,13 +165,13 @@ void WindowsWindow::Init(const WindowProps &props)
                                      if (iconified)
                                      {
                                          TE::WindowLostFocusEvent event;
-                                         TE_CORE_DEBUG(event.ToString());
+                                         TE_INPUT_DEBUG(event.ToString());
                                          data.EventCallback(event);
                                      }
                                      else
                                      {
                                          TE::WindowFocusEvent event;
-                                         TE_CORE_DEBUG(event.ToString());
+                                         TE_INPUT_DEBUG(event.ToString());
                                          data.EventCallback(event);
                                      }
                                  });
@@ -186,21 +186,21 @@ void WindowsWindow::Init(const WindowProps &props)
                            case GLFW_PRESS:
                            {
                                TE::KeyPressedEvent event((TE::KeyCode)key, false);
-                               TE_CORE_DEBUG(event.ToString());
+                               TE_INPUT_DEBUG(event.ToString());
                                data.EventCallback(event);
                                break;
                            }
                            case GLFW_RELEASE:
                            {
                                TE::KeyReleasedEvent event((TE::KeyCode)key);
-                               TE_CORE_DEBUG(event.ToString());
+                               TE_INPUT_DEBUG(event.ToString());
                                data.EventCallback(event);
                                break;
                            }
                            case GLFW_REPEAT:
                            {
                                TE::KeyPressedEvent event((TE::KeyCode)key, true);
-                               TE_CORE_DEBUG(event.ToString());
+                               TE_INPUT_DEBUG(event.ToString());
                                data.EventCallback(event);
                                break;
                            }
@@ -212,7 +212,7 @@ void WindowsWindow::Init(const WindowProps &props)
                         {
                             WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
                             TE::KeyTypedEvent event((TE::KeyCode)codepoint);
-                            TE_CORE_DEBUG(event.ToString());
+                            TE_INPUT_DEBUG(event.ToString());
                             data.EventCallback(event);
                         });
 
@@ -224,13 +224,13 @@ void WindowsWindow::Init(const WindowProps &props)
                                    if (action == GLFW_PRESS)
                                    {
                                        TE::MouseButtonPressedEvent event((TE::MouseCode)button);
-                                       TE_CORE_DEBUG(event.ToString());
+                                       TE_INPUT_DEBUG(event.ToString());
                                        data.EventCallback(event);
                                    }
                                    else if (action == GLFW_RELEASE)
                                    {
                                        TE::MouseButtonReleasedEvent event((TE::MouseCode)button);
-                                       TE_CORE_DEBUG(event.ToString());
+                                       TE_INPUT_DEBUG(event.ToString());
                                        data.EventCallback(event);
                                    }
                                });
@@ -241,7 +241,7 @@ void WindowsWindow::Init(const WindowProps &props)
                               WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
                               TE::Input::SetMouseScrollDelta((float)xOffset, (float)yOffset);
                               TE::MouseScrolledEvent event((float)xOffset, (float)yOffset);
-                              TE_CORE_DEBUG(event.ToString());
+                              TE_INPUT_DEBUG(event.ToString());
                               data.EventCallback(event);
                           });
 
@@ -250,7 +250,7 @@ void WindowsWindow::Init(const WindowProps &props)
                              {
                                  WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
                                  TE::MouseMovedEvent event((float)xpos, (float)ypos);
-                                 TE_CORE_DEBUG(event.ToString());
+                                 TE_INPUT_DEBUG(event.ToString());
                                  data.EventCallback(event);
                              });
 

@@ -32,6 +32,9 @@
     - *File I/O*: `create_directory`, `delete_file_or_directory`.
   - Client shell wrapper script: `Scripts/MCP_Tools.sh`. Uses Python parsing script `Scripts/parse_json.py` to compile nested properties payload arguments safely on Windows.
 - **Ambient Light**: `AmbientLightComponent` exists (`Engine/Include/Core/Scene/AmbientLightComponent.hpp`) and supports gradient/multi-color ambient lighting.
+- **Console & Terminal Panel**: Toggled via `Window -> Console & Terminal` and docked at the bottom:
+  - Output Log Tab: Shows core and client log history with real-time level/category filters and search capabilities.
+  - Terminal Tab: Offers a CLI shell executing in the opened project's root folder (`Project::GetProjectDirectory()`), allowing engine-level commands (`help`, `fps`, `list_entities`, `create_entity`, `destroy_entity`) and native OS system commands.
 - **Advanced Performance Profiler**: Real-time profiler dashboard toggled via the Viewport menu:
   - Timing Hooks: Tracks `GameTime` (Editor updates), `RenderTime` (batcher flush steps), `PhysicsTime` (simulation steps), and `UITime` (UI drawing).
   - Memory & Stack Profiling: Tracks heap/stack allocations. Supports scoped function stack allocation tracking using RAII `StackProfileScope` and class allocations:

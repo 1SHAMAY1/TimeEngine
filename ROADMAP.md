@@ -54,11 +54,11 @@ This document outlines the current state and missing features of TimeEngine, map
 ## 🔴 Long-Term Infrastructure (Missing Systems)
 
 ### 1. Editor UI Logging & Console
-- [ ] **Logger Filter Control**:
+- [x] **Logger Filter Control**:
   - Expose customizable logger controls (filter by severity/category) inside the **Editor Settings** panel.
-- [ ] **Output Log Window**:
+- [x] **Output Log Window**:
   - Integrate a live GUI logger window displaying core and client logs natively.
-- [ ] **Built-in Editor Terminal**:
+- [x] **Built-in Editor Terminal**:
   - Integrate a command-line console interface directly inside the workspace window.
 
 ### 2. Audio Engine (Completely Missing)

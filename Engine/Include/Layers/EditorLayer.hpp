@@ -127,6 +127,16 @@ private:
     char m_SaveSceneNameBuffer[256] = "";
     char m_SaveScenePathBuffer[256] = "";
     class ProfilingLayer *m_ProfilingLayer = nullptr;
+    bool m_ShowConsolePanel = true;
+
+    // Terminal/Console State
+    char m_TerminalInputBuffer[256] = "";
+    std::vector<std::string> m_TerminalHistory;
+    std::vector<std::string> m_TerminalCommandHistory;
+    int m_TerminalHistoryScrollPos = -1;
+    bool m_ScrollToConsoleBottom = false;
+    void UI_DrawConsolePanel();
+    void ExecuteTerminalCommand(const std::string &commandLine);
 
     std::filesystem::path m_ContentBrowserCurrentDirectory;
     char m_ContentBrowserPathBuffer[512] = "";

@@ -650,11 +650,6 @@ void SyncFromImGui()
     s_StyleInstance.ItemSpacing = style.ItemSpacing;
     s_StyleInstance.FramePadding = style.FramePadding;
     s_StyleInstance.WindowPadding = style.WindowPadding;
-
-    for (int i = 0; i < TimeGUICol_COUNT; ++i)
-    {
-        s_StyleInstance.Colors[i] = TEColor(style.Colors[i].x, style.Colors[i].y, style.Colors[i].z, style.Colors[i].w);
-    }
 }
 
 void SyncToImGui()
@@ -1140,6 +1135,7 @@ float GetCursorPosX() { return ImGui::GetCursorPosX(); }
 float GetCursorPosY() { return ImGui::GetCursorPosY(); }
 
 TEVector2 GetCursorScreenPos() { return ImGui::GetCursorScreenPos(); }
+void SetScrollHereY(float centerYRatio) { ImGui::SetScrollHereY(centerYRatio); }
 
 bool IsItemHovered(int flags) { return ImGui::IsItemHovered(TranslateHoveredFlags((TimeGUIHoveredFlags)flags)); }
 
