@@ -2319,12 +2319,18 @@ void EditorLayer::UI_DrawConsolePanel()
             std::string minLevel = settings.GetLogLevel();
 
             // Helper to map levels to int
-            auto LevelToInt = [](const std::string &lvl) -> int {
-                if (lvl == "DEBUG") return 0;
-                if (lvl == "INFO") return 1;
-                if (lvl == "WARNING") return 2;
-                if (lvl == "ERROR") return 3;
-                if (lvl == "CRITICAL") return 4;
+            auto LevelToInt = [](const std::string &lvl) -> int
+            {
+                if (lvl == "DEBUG")
+                    return 0;
+                if (lvl == "INFO")
+                    return 1;
+                if (lvl == "WARNING")
+                    return 2;
+                if (lvl == "ERROR")
+                    return 3;
+                if (lvl == "CRITICAL")
+                    return 4;
                 return 1; // default to INFO
             };
             int minLevelInt = LevelToInt(minLevel);
@@ -2351,16 +2357,21 @@ void EditorLayer::UI_DrawConsolePanel()
                 }
 
                 // Draw piece-by-piece to match professional Rider/terminal color scheme
-                TEColor tsColor(0.5f, 0.5f, 0.5f, 1.0f); // Dim gray
-                TEColor catColor(0.4f, 0.6f, 0.8f, 1.0f); // Steel blue
+                TEColor tsColor(0.5f, 0.5f, 0.5f, 1.0f);    // Dim gray
+                TEColor catColor(0.4f, 0.6f, 0.8f, 1.0f);   // Steel blue
                 TEColor msgColor(0.9f, 0.92f, 0.95f, 1.0f); // Normal text
 
                 TEColor lvlColor(1.0f, 1.0f, 1.0f, 1.0f);
-                if (msg.Level == "DEBUG") lvlColor = TEColor(0.3f, 0.6f, 0.9f, 1.0f); // Soft blue
-                else if (msg.Level == "INFO") lvlColor = TEColor(0.2f, 0.8f, 0.2f, 1.0f); // Green
-                else if (msg.Level == "WARNING") lvlColor = TEColor(0.9f, 0.9f, 0.2f, 1.0f); // Yellow
-                else if (msg.Level == "ERROR") lvlColor = TEColor(0.9f, 0.3f, 0.3f, 1.0f); // Red
-                else if (msg.Level == "CRITICAL") lvlColor = TEColor(1.0f, 0.1f, 0.1f, 1.0f); // Bright Red
+                if (msg.Level == "DEBUG")
+                    lvlColor = TEColor(0.3f, 0.6f, 0.9f, 1.0f); // Soft blue
+                else if (msg.Level == "INFO")
+                    lvlColor = TEColor(0.2f, 0.8f, 0.2f, 1.0f); // Green
+                else if (msg.Level == "WARNING")
+                    lvlColor = TEColor(0.9f, 0.9f, 0.2f, 1.0f); // Yellow
+                else if (msg.Level == "ERROR")
+                    lvlColor = TEColor(0.9f, 0.3f, 0.3f, 1.0f); // Red
+                else if (msg.Level == "CRITICAL")
+                    lvlColor = TEColor(1.0f, 0.1f, 0.1f, 1.0f); // Bright Red
 
                 TimeGUI::TextColored(tsColor, "[%s]", msg.Timestamp.c_str());
                 TimeGUI::SameLine();
@@ -2385,7 +2396,8 @@ void EditorLayer::UI_DrawConsolePanel()
         {
             // History child window
             float footerHeight = TimeGUI::GetFrameHeight() + TimeGUI::GetStyle().ItemSpacing.y + 10.0f;
-            TimeGUI::BeginChild("TerminalHistory", TEVector2(0, -footerHeight), false, TimeGUIWindowFlags_HorizontalScrollbar);
+            TimeGUI::BeginChild("TerminalHistory", TEVector2(0, -footerHeight), false,
+                                TimeGUIWindowFlags_HorizontalScrollbar);
 
             for (const auto &line : m_TerminalHistory)
             {
@@ -2412,12 +2424,15 @@ void EditorLayer::UI_DrawConsolePanel()
             TimeGUI::Text("TimeEngine>");
             TimeGUI::SameLine();
             TimeGUI::SetNextItemWidth(-1.0f);
-            if (TimeGUI::InputText("##TerminalInput", m_TerminalInputBuffer, sizeof(m_TerminalInputBuffer), TimeGUIInputTextFlags_EnterReturnsTrue))
+            if (TimeGUI::InputText("##TerminalInput", m_TerminalInputBuffer, sizeof(m_TerminalInputBuffer),
+                                   TimeGUIInputTextFlags_EnterReturnsTrue))
             {
                 std::string cmd(m_TerminalInputBuffer);
                 // trim whitespace
-                while (!cmd.empty() && std::isspace((unsigned char)cmd.front())) cmd.erase(cmd.begin());
-                while (!cmd.empty() && std::isspace((unsigned char)cmd.back())) cmd.pop_back();
+                while (!cmd.empty() && std::isspace((unsigned char)cmd.front()))
+                    cmd.erase(cmd.begin());
+                while (!cmd.empty() && std::isspace((unsigned char)cmd.back()))
+                    cmd.pop_back();
 
                 if (!cmd.empty())
                 {
@@ -2488,7 +2503,8 @@ void EditorLayer::ExecuteTerminalCommand(const std::string &commandLine)
         {
             std::string entityName = commandLine.substr(14);
             Entity entity = m_ActiveScene->CreateEntity(entityName);
-            m_TerminalHistory.push_back("Created entity: '" + entityName + "' (ID: " + std::to_string(entity.GetID()) + ")");
+            m_TerminalHistory.push_back("Created entity: '" + entityName + "' (ID: " + std::to_string(entity.GetID()) +
+                                        ")");
         }
         else
         {
