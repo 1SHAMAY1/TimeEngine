@@ -743,6 +743,7 @@ TE_API float GetCursorPosY();
 TE_API TEVector2 GetCursorScreenPos();
 TE_API float GetFrameHeight();
 TE_API TEVector2 GetContentRegionAvail();
+TE_API void SetScrollHereY(float centerYRatio = 0.5f);
 
 TE_API bool IsItemHovered(int flags = 0);
 TE_API bool IsItemActive();
