@@ -1,0 +1,127 @@
+name: Sync Roadmap Milestones
+
+on:
+  push:
+    paths:
+      - 'ROADMAP.md'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-level: '20'
+
+      - name: Install dependencies
+        run: npm install @octokit/action
+
+      - name: Run sync script
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read the ROADMAP.md file
+            const roadmapPath = path.join(process.env.GITHUB_WORKSPACE, 'ROADMAP.md');
+            if (!fs.existsSync(roadmapPath)) {
+              console.log("ROADMAP.md not found.");
+              return;
+            }
+            const content = fs.readFileSync(roadmapPath, 'utf8');
+            const lines = content.split('\n');
+
+            // Parse categories and milestones
+            // Looking for lines like "### 1. Multi-API Renderer & Windowing Backend"
+            // and their nested checklists like "- [x] Batched 2D Renderer..."
+            let categories = [];
+            let currentCategory = null;
+
+            for (let line of lines) {
+              const categoryMatch = line.match(/^###\s+(.*)$/);
+              if (categoryMatch) {
+                currentCategory = {
+                  name: categoryMatch[1].trim(),
+                  items: []
+                };
+                categories.push(currentCategory);
+                continue;
+              }
+
+              // Parse items under category
+              if (currentCategory) {
+                const itemMatch = line.match(/^\s*-\s+\[([ x/])\]\s+(.*)$/i);
+                if (itemMatch) {
+                  const state = itemMatch[1].toLowerCase();
+                  const description = itemMatch[2].trim();
+                  currentCategory.items.push({
+                    description,
+                    completed: state === 'x',
+                    inProgress: state === '/'
+                  });
+                }
+              }
+            }
+
+            console.log("Parsed categories and milestones from ROADMAP.md:", JSON.stringify(categories, null, 2));
+
+            // Fetch current milestones from GitHub repo
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: existingMilestones } = await github.rest.issues.listMilestones({
+              owner,
+              repo,
+              state: 'all'
+            });
+
+            console.log(`Found ${existingMilestones.length} existing milestones on GitHub.`);
+
+            for (const category of categories) {
+              const milestoneTitle = category.name;
+              
+              // Calculate status
+              const totalItems = category.items.length;
+              const completedItems = category.items.filter(i => i.completed).length;
+              const isCompleted = totalItems > 0 && completedItems === totalItems;
+              const targetState = isCompleted ? 'closed' : 'open';
+
+              // Find if this milestone already exists
+              const match = existingMilestones.find(m => m.title === milestoneTitle);
+
+              if (match) {
+                // Update milestone if state is different
+                if (match.state !== targetState) {
+                  console.log(`Updating Milestone "${milestoneTitle}" to ${targetState}...`);
+                  await github.rest.issues.updateMilestone({
+                    owner,
+                    repo,
+                    milestone_number: match.number,
+                    state: targetState
+                  });
+                } else {
+                  console.log(`Milestone "${milestoneTitle}" is already in state: ${match.state}.`);
+                }
+              } else {
+                // Create milestone
+                console.log(`Creating Milestone "${milestoneTitle}" with state ${targetState}...`);
+                await github.rest.issues.createMilestone({
+                  owner,
+                  repo,
+                  title: milestoneTitle,
+                  state: targetState,
+                  description: `Tracked from ROADMAP.md. Status: ${completedItems}/${totalItems} completed.`
+                });
+              }
+            }
