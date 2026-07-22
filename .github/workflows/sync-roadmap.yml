@@ -4,6 +4,16 @@ on:
   push:
     paths:
       - 'ROADMAP.md'
+      - '.github/workflows/sync-roadmap.yml'
+  pull_request:
+    paths:
+      - 'ROADMAP.md'
+      - '.github/workflows/sync-roadmap.yml'
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
   workflow_dispatch:
 
 permissions:
@@ -20,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-level: '20'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install @octokit/action
@@ -33,7 +43,29 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
-            // Read the ROADMAP.md file
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+            // Helper to delete an issue via GraphQL API
+            const deleteIssueGraphQL = async (issueNodeId) => {
+              const mutation = `
+                mutation($input: DeleteIssueInput!) {
+                  deleteIssue(input: $input) {
+                    clientMutationId
+                  }
+                }
+              `;
+              try {
+                await github.graphql(mutation, {
+                  input: {
+                    issueId: issueNodeId
+                  }
+                });
+                console.log(`Deleted issue node: ${issueNodeId}`);
+              } catch (err) {
+                console.error(`GraphQL deletion failed for node ${issueNodeId}:`, err.message);
+              }
+            };
+
             const roadmapPath = path.join(process.env.GITHUB_WORKSPACE, 'ROADMAP.md');
             if (!fs.existsSync(roadmapPath)) {
               console.log("ROADMAP.md not found.");
@@ -44,30 +76,26 @@ jobs:
 
             let categories = [];
             let currentCategory = null;
-            let currentSection = ""; // "Completed", "Short-Term", "Long-Term"
+            let currentSection = "";
 
             for (let line of lines) {
-              // Capture section headers (e.g. "## 🟢 Completed Milestones" or "## 🟡 Short-Term Goals")
               const sectionMatch = line.match(/^##\s+.*?(Completed|Short-Term|Long-Term).*$/i);
               if (sectionMatch) {
                 currentSection = sectionMatch[1].trim();
                 continue;
               }
 
-              // Capture category headers (### 1. Multi-API Renderer...)
               const categoryMatch = line.match(/^###\s+(.*)$/);
               if (categoryMatch) {
-                const sectionPrefix = currentSection ? `[${currentSection}] ` : "";
                 currentCategory = {
-                  name: `${sectionPrefix}${categoryMatch[1].trim()}`,
+                  originalSection: currentSection,
                   rawTitle: categoryMatch[1].trim(),
-                  items: [] // Flat list of nested parsed objects
+                  items: []
                 };
                 categories.push(currentCategory);
                 continue;
               }
 
-              // Parse items: - [x] or - [/] or - [ ] (supports indentation)
               if (currentCategory) {
                 const itemMatch = line.match(/^(\s*)-\s+\[([ xX\/])\]\s+(.*)$/);
                 if (itemMatch) {
@@ -83,41 +111,89 @@ jobs:
               }
             }
 
-            console.log("Parsed Categories:", JSON.stringify(categories, null, 2));
-
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // Retrieve all milestones
+            // Fetch all milestones (open and closed)
             const { data: existingMilestones } = await github.rest.issues.listMilestones({
-              owner,
-              repo,
-              state: 'all'
-            });
-
-            // Retrieve all issues to locate or create matching tracking issues
-            const { data: existingIssues } = await github.rest.issues.listForRepo({
               owner,
               repo,
               state: 'all',
               per_page: 100
             });
 
+            console.log("Fetching all issues...");
+            const existingIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
+            console.log(`Total issues fetched: ${existingIssues.length}`);
+
+            // Pre-process categories to calculate milestone titles based on completion
             for (const category of categories) {
-              const milestoneTitle = category.name;
-              
-              // Calculate completion status
               const totalItems = category.items.length;
               const completedItems = category.items.filter(i => i.state === 'x').length;
               const isCompleted = totalItems > 0 && completedItems === totalItems;
-              const targetMilestoneState = isCompleted ? 'closed' : 'open';
 
-              let milestone = existingMilestones.find(m => m.title === milestoneTitle);
+              const sectionPrefix = isCompleted ? "Completed" : category.originalSection;
+              category.name = `[${sectionPrefix}] ${category.rawTitle}`;
+              category.isCompleted = isCompleted;
+            }
 
-              // 1. Sync Milestone
+            // Cleanup step: Delete legacy/renamed milestones, and resolve duplicates
+            const seenMilestones = new Set();
+            for (const m of existingMilestones) {
+              const isCurrentMilestoneName = categories.some(cat => cat.name === m.title);
+
+              if (!isCurrentMilestoneName || seenMilestones.has(m.title)) {
+                console.log(`Deleting legacy/duplicate milestone: "${m.title}" (ID: ${m.number})`);
+                try {
+                  await github.rest.issues.deleteMilestone({
+                    owner,
+                    repo,
+                    milestone_number: m.number
+                  });
+                  await sleep(500);
+                } catch (err) {
+                  console.error(`Failed to delete milestone ${m.title}: ${err.message}`);
+                }
+              } else {
+                seenMilestones.add(m.title);
+              }
+            }
+
+            // Refetch active milestones after cleanup
+            const { data: activeMilestones } = await github.rest.issues.listMilestones({
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
+
+            // Delete legacy overview tracking issues (e.g. "Tracking: ...") from milestones
+            for (const issue of existingIssues) {
+              if (issue.title.startsWith("Tracking:")) {
+                console.log(`Deleting legacy overview tracking issue permanently: "${issue.title}" (ID: #${issue.number})`);
+                await deleteIssueGraphQL(issue.node_id);
+                await sleep(500);
+              }
+            }
+
+            for (const category of categories) {
+              const milestoneTitle = category.name;
+              const totalItems = category.items.length;
+              const completedItems = category.items.filter(i => i.state === 'x').length;
+              const targetMilestoneState = category.isCompleted ? 'closed' : 'open';
+
+              console.log(`Processing Milestone: "${milestoneTitle}" (${completedItems}/${totalItems} completed, state: ${targetMilestoneState})`);
+
+              let milestone = activeMilestones.find(m => m.title === milestoneTitle);
+
               if (milestone) {
                 if (milestone.state !== targetMilestoneState) {
-                  console.log(`Updating Milestone "${milestoneTitle}" to state: ${targetMilestoneState}`);
+                  console.log(`Updating Milestone "${milestoneTitle}" status to ${targetMilestoneState}`);
                   const res = await github.rest.issues.updateMilestone({
                     owner,
                     repo,
@@ -125,6 +201,7 @@ jobs:
                     state: targetMilestoneState
                   });
                   milestone = res.data;
+                  await sleep(500);
                 }
               } else {
                 console.log(`Creating Milestone "${milestoneTitle}"`);
@@ -136,48 +213,74 @@ jobs:
                   description: `Tracked from ROADMAP.md. Status: ${completedItems}/${totalItems} completed.`
                 });
                 milestone = res.data;
+                await sleep(500);
               }
 
-              // 2. Generate the nested checklist body for the Issue
-              // Maps state ('x' -> [x], '/' -> [x] (close enough) or [ ] with notes, ' ' -> [ ])
-              let issueBody = `This issue tracks progress for milestone **${milestoneTitle}**.\n\n### Task List\n\n`;
-              for (const item of category.items) {
-                const space = " ".repeat(item.indent);
-                let mark = " ";
-                if (item.state === 'x') mark = "x";
-                // Let's treat ongoing [/] as unfinished but add a label/comment
-                const suffix = item.state === '/' ? " *(In Progress)*" : "";
-                issueBody += `${space}- [${mark}] ${item.description}${suffix}\n`;
-              }
-              issueBody += `\n*Last synchronized from ROADMAP.md*`;
+              // Create/Sync sub-issues inside milestone
+              const activeSubTaskTitles = category.items.map(item => `${item.description}`);
 
-              // 3. Sync Tracking Issue representing this category
-              const issueTitle = `Tracking: ${milestoneTitle}`;
-              let issue = existingIssues.find(i => i.title === issueTitle);
-              const targetIssueState = isCompleted ? 'closed' : 'open';
-
-              if (issue) {
-                // Update body & status if changed
-                if (issue.body !== issueBody || issue.state !== targetIssueState || issue.milestone?.number !== milestone.number) {
-                  console.log(`Updating Issue "${issueTitle}"`);
-                  await github.rest.issues.update({
-                    owner,
-                    repo,
-                    issue_number: issue.number,
-                    body: issueBody,
-                    state: targetIssueState,
-                    milestone: milestone.number
-                  });
+              // Dissociate and delete any issues currently assigned to this milestone that are NOT active subtasks in the roadmap
+              const issuesInMilestone = existingIssues.filter(i => i.milestone?.number === milestone.number);
+              for (const issue of issuesInMilestone) {
+                if (!activeSubTaskTitles.includes(issue.title)) {
+                  console.log(`Permanently deleting unmapped/duplicate issue #${issue.number} ("${issue.title}") from Milestone #${milestone.number}`);
+                  await deleteIssueGraphQL(issue.node_id);
+                  await sleep(500);
                 }
-              } else {
-                console.log(`Creating Issue "${issueTitle}"`);
-                await github.rest.issues.create({
-                  owner,
-                  repo,
-                  title: issueTitle,
-                  body: issueBody,
-                  milestone: milestone.number,
-                  labels: ['roadmap-tracking']
-                });
+              }
+
+              // Create/Sync active sub-issues inside milestone
+              for (const item of category.items) {
+                const subIssueTitle = `${item.description}`;
+                const subTargetState = item.state === 'x' ? 'closed' : 'open';
+
+                // Find matching issues in the repo
+                const matches = existingIssues.filter(i => i.title === subIssueTitle);
+                
+                let subIssue = null;
+                if (matches.length > 0) {
+                  // Use the first match to link to the milestone
+                  subIssue = matches[0];
+                  
+                  // Delete duplicate issues permanently
+                  for (let i = 1; i < matches.length; i++) {
+                    const duplicate = matches[i];
+                    console.log(`Permanently deleting duplicate issue: "${duplicate.title}" (ID: #${duplicate.number})`);
+                    await deleteIssueGraphQL(duplicate.node_id);
+                    await sleep(500);
+                  }
+                }
+
+                try {
+                  if (subIssue) {
+                    const needsMilestoneUpdate = !subIssue.milestone || subIssue.milestone.number !== milestone.number;
+                    const needsStateUpdate = subIssue.state !== subTargetState;
+
+                    if (needsMilestoneUpdate || needsStateUpdate) {
+                      console.log(`Updating sub-issue: "${subIssueTitle}" -> State: ${subTargetState}, Milestone: #${milestone.number}`);
+                      await github.rest.issues.update({
+                        owner,
+                        repo,
+                        issue_number: subIssue.number,
+                        state: subTargetState,
+                        milestone: milestone.number
+                      });
+                      await sleep(500);
+                    }
+                  } else {
+                    console.log(`Creating new sub-issue: "${subIssueTitle}" in Milestone #${milestone.number}`);
+                    await github.rest.issues.create({
+                      owner,
+                      repo,
+                      title: subIssueTitle,
+                      milestone: milestone.number,
+                      body: `Part of milestone **${milestoneTitle}**.\nTracks: ${subIssueTitle}`,
+                      labels: ['roadmap-subtask']
+                    });
+                    await sleep(500);
+                  }
+                } catch (err) {
+                  console.error(`Error processing issue "${subIssueTitle}": ${err.message}`);
+                }
               }
             }
