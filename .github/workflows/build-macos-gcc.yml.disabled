@@ -1,0 +1,43 @@
+name: macOS Build (Mac GCC)
+
+on:
+  pull_request:
+    branches: [ main, ecs, editor, gameplay, ui, samples ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos-gcc:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install GCC 14 and Premake
+        run: |
+          brew install gcc@14 premake
+
+      - name: Build Logger Dependency (Mac GCC)
+        run: |
+          mkdir -p Vendor/Customizable_Logger/build
+          cd Vendor/Customizable_Logger/build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+          cmake --build . --config Debug
+
+      - name: Build GLFW Dependency (Mac GCC)
+        run: |
+          mkdir -p Vendor/GLFW/build
+          cd Vendor/GLFW/build
+          cmake ../glfw -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+          cmake --build . --config Debug
+
+      - name: Generate Makefiles with Premake
+        run: premake5 gmake2 --file=Premake5.lua
+
+      - name: Build Solution (Mac GCC)
+        run: make config=debug -j$(sysctl -n hw.ncpu) CC=gcc-14 CXX=g++-14

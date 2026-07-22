@@ -2,6 +2,7 @@
 #include <shlobj.h>
 #include <string>
 #include <windows.h>
+#include <commdlg.h>
 
 namespace TE
 {

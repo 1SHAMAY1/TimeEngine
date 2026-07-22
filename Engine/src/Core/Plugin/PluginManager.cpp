@@ -1,11 +1,34 @@
+#include "Core/PreRequisites.h"
 #include "Core/Plugin/PluginManager.hpp"
 #include "Core/Log.h"
 #include "Core/Project/Project.hpp"
 #include <fstream>
 #include <sstream>
 
+#ifndef TE_PLATFORM_WINDOWS
+#include <dlfcn.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#else
+#include <unistd.h>
+#include <limits.h>
+#endif
+#endif
+
 namespace TE
 {
+
+
+static std::string GetSharedLibraryName(const std::string& name)
+{
+#ifdef TE_PLATFORM_WINDOWS
+    return name + ".dll";
+#elif defined(__APPLE__)
+    return "lib" + name + ".dylib";
+#else
+    return "lib" + name + ".so";
+#endif
+}
 
 typedef IPlugin *(*CreatePluginFn)();
 typedef void (*DestroyPluginFn)(IPlugin *);
@@ -56,9 +79,26 @@ void PluginManager::DiscoverPlugins()
     s_DiscoveredPlugins.clear();
 
     // 1. Discover engine-level plugins (relative to the executable directory)
+    std::filesystem::path exeDir;
+#ifdef TE_PLATFORM_WINDOWS
     wchar_t exePath[MAX_PATH];
     GetModuleFileNameW(NULL, exePath, MAX_PATH);
-    std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
+    exeDir = std::filesystem::path(exePath).parent_path();
+#elif defined(__APPLE__)
+    char path[1024];
+    uint32_t size = sizeof(path);
+    if (_NSGetExecutablePath(path, &size) == 0)
+        exeDir = std::filesystem::path(path).parent_path();
+    else
+        exeDir = std::filesystem::current_path();
+#else
+    char result[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    if (count > 0)
+        exeDir = std::filesystem::path(std::string(result, count)).parent_path();
+    else
+        exeDir = std::filesystem::current_path();
+#endif
     std::filesystem::path enginePluginsDir = exeDir / "Plugins";
 
     TE_CORE_INFO("Scanning engine plugins at: ", enginePluginsDir.string());
@@ -72,7 +112,7 @@ void PluginManager::DiscoverPlugins()
                 if (ParsePluginDescriptor(entry.path(), info))
                 {
                     // Compute library path relative to the .teplugin file location
-                    info.LibraryPath = entry.path().parent_path() / (info.Name + ".dll");
+                    info.LibraryPath = entry.path().parent_path() / GetSharedLibraryName(info.Name);
                     s_DiscoveredPlugins.push_back(info);
                     TE_CORE_INFO("Discovered engine plugin: ", info.Name, " (", entry.path().string(), ")");
                 }
@@ -94,7 +134,7 @@ void PluginManager::DiscoverPlugins()
                     PluginInfo info;
                     if (ParsePluginDescriptor(entry.path(), info))
                     {
-                        info.LibraryPath = entry.path().parent_path() / (info.Name + ".dll");
+                        info.LibraryPath = entry.path().parent_path() / GetSharedLibraryName(info.Name);
                         s_DiscoveredPlugins.push_back(info);
                         TE_CORE_INFO("Discovered project plugin: ", info.Name, " (", entry.path().string(), ")");
                     }
@@ -155,7 +195,7 @@ void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath
         return;
     }
 
-    info.LibraryPath = pluginDescriptorPath.parent_path() / (info.Name + ".dll");
+    info.LibraryPath = pluginDescriptorPath.parent_path() / GetSharedLibraryName(info.Name);
 
     // Check if already loaded
     for (const auto &instance : s_LoadedPluginInstances)
@@ -168,7 +208,11 @@ void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath
     HMODULE module = LoadLibraryW(info.LibraryPath.wstring().c_str());
     if (!module)
     {
+#ifdef TE_PLATFORM_WINDOWS
         TE_CORE_ERROR("Failed to load plugin DLL: ", info.LibraryPath.string(), ". Error code: ", GetLastError());
+#else
+        TE_CORE_ERROR("Failed to load plugin: ", info.LibraryPath.string(), ". Error: ", dlerror());
+#endif
         return;
     }
 

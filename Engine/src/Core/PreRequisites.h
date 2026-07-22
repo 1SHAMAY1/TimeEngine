@@ -25,6 +25,11 @@
 #include <atomic>             // Atomic operations
 #include <queue>              // Queue operations
 
+#ifdef __MINGW32__
+#include <sec_api/string_s.h>
+#endif
+
+
 // ====================================================================================
 // Platform Detection & API Export Macros
 // ====================================================================================
@@ -37,7 +42,7 @@
         #define TE_API __declspec(dllimport)
     #endif
 #else
-    #error "TimeEngine only supports Windows currently!"
+    #define TE_API __attribute__((visibility("default")))
 #endif
 
 // ====================================================================================
@@ -151,3 +156,100 @@ static constexpr const char* TEEnumTooltip     = "No tooltip provided."
 // === [Property Marker Macro] ===
 // Marker only (zero runtime overhead)
 #define TEPROPERTY(...) [[maybe_unused]]
+
+// ====================================================================================
+// Cross-Platform Compiler Helpers
+// ====================================================================================
+#ifndef _WIN32
+#include <cstring>
+template <size_t Size>
+inline int strcpy_s(char (&dest)[Size], const char* src) {
+    if (src == nullptr) return 22; // EINVAL
+    size_t src_len = std::strlen(src);
+    if (src_len >= Size) {
+        if (Size > 0) dest[0] = '\0';
+        return 34; // ERANGE
+    }
+    std::strncpy(dest, src, Size - 1);
+    dest[src_len] = '\0';
+    return 0;
+}
+
+template <size_t Size>
+inline int strncpy_s(char (&dest)[Size], const char* src, size_t count) {
+    if (src == nullptr) return 22; // EINVAL
+    size_t copy_len = count < Size ? count : Size - 1;
+    std::strncpy(dest, src, copy_len);
+    dest[copy_len] = '\0';
+    return 0;
+}
+#endif
+
+#ifndef _MSC_VER
+    #if defined(__i386__) || defined(__x86_64__)
+        #define __debugbreak() __asm__ volatile("int $3")
+    #elif defined(__aarch64__)
+        #define __debugbreak() __asm__ volatile("brk #0xf000")
+    #elif defined(__arm__)
+        #define __debugbreak() __asm__ volatile("udf #254")
+    #else
+        #include <signal.h>
+        #define __debugbreak() raise(SIGTRAP)
+    #endif
+#endif
+
+// ====================================================================================
+// Centralized Cross-Platform OS Workarounds
+// ====================================================================================
+#ifdef TE_PLATFORM_WINDOWS
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #include <Windows.h>
+    #ifdef ERROR
+        #undef ERROR
+    #endif
+    #ifdef GetClassName
+        #undef GetClassName
+    #endif
+#endif
+
+#if defined(__APPLE__) && !defined(__clang__)
+    // GCC on macOS compatibility fix for SDK assertions
+    #define xnu_static_assert_struct_size(...)
+    #define xnu_static_assert_struct_size_kernel_user(...)
+    #define xnu_static_assert_struct_size_kernel_user64_user32(...)
+#endif
+
+#ifndef TE_PLATFORM_WINDOWS
+    #include <dlfcn.h>
+    using HMODULE = void*;
+    #define GetProcAddress dlsym
+    #define FreeLibrary dlclose
+
+    inline HMODULE LoadLibraryW(const wchar_t* wpath) {
+        std::wstring ws(wpath);
+        std::string path(ws.begin(), ws.end());
+        return dlopen(path.c_str(), RTLD_NOW);
+    }
+#endif
+
+// ====================================================================================
+// Centralized Graphics API Support Detection
+// ====================================================================================
+#ifdef TE_PLATFORM_WINDOWS
+    #define TE_SUPPORT_OPENGL
+    #define TE_SUPPORT_DIRECTX11
+    #define TE_SUPPORT_VULKAN
+#elif defined(__APPLE__)
+    #define TE_SUPPORT_METAL
+    // OpenGL, Vulkan, and DX11 are excluded or unsupported on macOS
+#else // Linux
+    #define TE_SUPPORT_OPENGL
+    #define TE_SUPPORT_VULKAN
+#endif
+
+

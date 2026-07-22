@@ -1,7 +1,4 @@
-// Windows/DXGI headers MUST be first.
-// glfw3native.h (GLFW_EXPOSE_NATIVE_WIN32) pulls in windows.h.
-// If windows.h arrives after engine headers its macros (near, far, min, max, ERROR...)
-// corrupt already-parsed engine declarations. Defining the guards here prevents that.
+#ifdef TE_PLATFORM_WINDOWS
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -15,10 +12,14 @@
 #ifdef ERROR
 #undef ERROR
 #endif
+#endif
 
 #include <GLFW/glfw3.h>
+
+#ifdef TE_PLATFORM_WINDOWS
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#endif
 
 // Engine headers (windows.h already in scope — no macro surprise)
 #include "Core/Asset/AssetManager.hpp"
@@ -88,6 +89,7 @@ void WindowsWindow::Init(const WindowProps &props)
     {
         glfwMakeContextCurrent(m_Window);
     }
+#ifdef TE_PLATFORM_WINDOWS
     else if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
     {
         HWND hwnd = glfwGetWin32Window(m_Window);
@@ -102,6 +104,7 @@ void WindowsWindow::Init(const WindowProps &props)
             TE_CORE_ERROR("RendererAPI is not DirectX11RendererAPI!");
         }
     }
+#endif
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
     TE::Input::Init(m_Window); // Register window with input system
@@ -277,6 +280,7 @@ void WindowsWindow::OnUpdate()
 
     glfwPollEvents();
 
+#ifdef TE_PLATFORM_WINDOWS
     if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
     {
         TE::DX11Context &ctx = TE::DX11Context::Get();
@@ -286,6 +290,7 @@ void WindowsWindow::OnUpdate()
         }
     }
     else
+#endif
     {
         glfwSwapBuffers(m_Window);
     }

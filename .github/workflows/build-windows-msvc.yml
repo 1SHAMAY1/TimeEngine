@@ -1,13 +1,14 @@
-name: Windows Build & Merge Safety
+name: Windows Build (MSVC)
 
 on:
   pull_request:
     branches: [ main, ecs, editor, gameplay, ui, samples ]
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build-windows:
+  build-windows-msvc:
     runs-on: windows-2022
 
     steps:
@@ -45,3 +46,4 @@ jobs:
       - name: Build Solution
         shell: cmd
         run: msbuild TimeEngine.sln /p:Configuration=Debug /p:Platform=x64 /m
+

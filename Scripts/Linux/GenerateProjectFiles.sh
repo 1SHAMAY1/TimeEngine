@@ -67,7 +67,7 @@ echo "[≡ Generating Makefiles with Premake...]"
 cd "$ROOT_DIR"
 
 if command -v premake5 &> /dev/null; then
-    premake5 gmake2
+    premake5 gmake2 --file=Premake5.lua
 else
     echo "[!] premake5 not found in PATH. Please install premake5 or ensure it is in your PATH."
     read -p "Press Enter to exit..."

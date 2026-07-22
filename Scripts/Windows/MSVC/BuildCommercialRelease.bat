@@ -2,8 +2,8 @@
 title Building TimeEngine Commercial Release (Distribution)
 echo [=== Building TimeEngine Commercial Release (Dist) ===]
 
-:: Go to root (2 directories back from Scripts/Windows/)
-cd /d "%~dp0\..\.."
+:: Go to root (3 directories back from Scripts/Windows/MSVC/)
+cd /d "%~dp0\..\..\.."
 set "ROOT_DIR=%CD%"
 
 :: Check for Solution

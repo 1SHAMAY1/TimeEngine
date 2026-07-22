@@ -34,7 +34,7 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include "imgui_internal.h"
+
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -538,7 +538,7 @@ static bool DrawVec3Control(const std::string &label, TE::TEVector &values, floa
 {
     bool changed = false;
 
-    ImGuiIO &io = TimeGUI::GetIO();
+    TimeGUIIO &io = TimeGUI::GetIO();
     auto boldFont = io.Fonts->Fonts[0];
 
     TimeGUI::PushID(label.c_str());
@@ -551,7 +551,7 @@ static bool DrawVec3Control(const std::string &label, TE::TEVector &values, floa
     TimeGUI::PushMultiItemsWidths(3, TimeGUI::CalcItemWidth());
     TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2{0, 0});
 
-    float lineHeight = GImGui->Font->LegacySize + GImGui->Style.FramePadding.y * 2.0f;
+    float lineHeight = TimeGUI::GetFrameHeight();
     TEVector2 buttonSize = {lineHeight + 3.0f, lineHeight};
 
     // X Axis (Red)
@@ -634,7 +634,7 @@ static bool DrawPlusButton(const char *id, float offsetX = 40.0f)
     TimeGUI::PopStyleColor(4);
 
     if (TimeGUI::IsItemHovered())
-        TimeGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
+        TimeGUI::SetMouseCursor(TimeGUI::TimeGUIMouseCursor_Hand);
 
     return clicked;
 }
@@ -646,9 +646,9 @@ void EditorLayer::OnTimeGUIRender()
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
     bool opt_fullscreen = opt_fullscreen_persistant;
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_NoWindowMenuButton;
+    static TimeGUI::TimeGUIDockNodeFlags dockspace_flags = TimeGUI::TimeGUIDockNodeFlags_NoWindowMenuButton;
 
-    ImGuiWindowFlags window_flags = TimeGUIWindowFlags_MenuBar | TimeGUIWindowFlags_NoDocking;
+    TimeGUI::TimeGUIWindowFlags window_flags = TimeGUI::TimeGUIWindowFlags_MenuBar | TimeGUI::TimeGUIWindowFlags_NoDocking;
     if (opt_fullscreen)
     {
         TimeGUI::TimeGUIViewport mainViewport = TimeGUI::GetMainViewport();
@@ -657,13 +657,13 @@ void EditorLayer::OnTimeGUIRender()
         TimeGUI::SetNextWindowViewport(mainViewport.ID);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 0.0f);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= TimeGUIWindowFlags_NoTitleBar | TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoResize |
-                        TimeGUIWindowFlags_NoMove;
-        window_flags |= TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUIWindowFlags_NoNavFocus;
+        window_flags |= TimeGUI::TimeGUIWindowFlags_NoTitleBar | TimeGUI::TimeGUIWindowFlags_NoCollapse | TimeGUI::TimeGUIWindowFlags_NoResize |
+                        TimeGUI::TimeGUIWindowFlags_NoMove;
+        window_flags |= TimeGUI::TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUI::TimeGUIWindowFlags_NoNavFocus;
     }
 
-    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-        window_flags |= TimeGUIWindowFlags_NoBackground;
+    if (dockspace_flags & TimeGUI::TimeGUIDockNodeFlags_PassthruCentralNode)
+        window_flags |= TimeGUI::TimeGUIWindowFlags_NoBackground;
 
     TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(0.0f, 0.0f));
     TimeGUI::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
@@ -687,9 +687,9 @@ void EditorLayer::OnTimeGUIRender()
     {
         // DockSpace
         auto &io = TimeGUI::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        if (io.ConfigFlags & TimeGUI::TimeGUIConfigFlags_DockingEnable)
         {
-            ImGuiID dockspace_id = TimeGUI::GetID("MyDockSpace");
+            unsigned int dockspace_id = TimeGUI::GetID("MyDockSpace");
             TimeGUI::DockSpace(dockspace_id, TEVector2(0.0f, 0.0f), dockspace_flags);
 
             static bool s_FirstTime = true;
@@ -698,18 +698,18 @@ void EditorLayer::OnTimeGUIRender()
                 s_FirstTime = false;
 
                 TimeGUI::DockBuilderRemoveNode(dockspace_id);
-                TimeGUI::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+                TimeGUI::DockBuilderAddNode(dockspace_id, dockspace_flags | TimeGUI::TimeGUIDockNodeFlags_DockSpace);
                 TimeGUI::DockBuilderSetNodeSize(dockspace_id, TimeGUI::GetMainViewport().Size);
 
-                ImGuiID dock_main_id = dockspace_id;
-                ImGuiID dock_id_right =
-                    TimeGUI::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
-                ImGuiID dock_id_bottom =
-                    TimeGUI::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
+                unsigned int dock_main_id = dockspace_id;
+                unsigned int dock_id_right =
+                    TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Right, 0.2f, nullptr, &dock_main_id);
+                unsigned int dock_id_bottom =
+                    TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Down, 0.25f, nullptr, &dock_main_id);
 
                 // Split the right panel into Top (Hierarchy) and Bottom (Properties)
-                ImGuiID dock_id_right_bottom =
-                    TimeGUI::DockBuilderSplitNode(dock_id_right, ImGuiDir_Down, 0.5f, nullptr, &dock_id_right);
+                unsigned int dock_id_right_bottom =
+                    TimeGUI::DockBuilderSplitNode(dock_id_right, TimeGUI::TimeGUIDir_Down, 0.5f, nullptr, &dock_id_right);
 
                 TimeGUI::DockBuilderDockWindow("Viewport", dock_main_id);
                 TimeGUI::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
@@ -835,9 +835,9 @@ void EditorLayer::UI_DrawSceneHierarchy()
             TimeGUI::SetNextItemAllowOverlap();
             // Increased FramePadding for consistent ~34px height across all nodes
             TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10));
-            ImGuiTreeNodeFlags flags = (IsEntitySelected(entity) ? ImGuiTreeNodeFlags_Selected : 0) |
-                                       (hasChildren ? 0 : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_OpenOnArrow |
-                                       ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
+            TimeGUI::TimeGUITreeNodeFlags flags = (IsEntitySelected(entity) ? TimeGUI::TimeGUITreeNodeFlags_Selected : 0) |
+                                       (hasChildren ? 0 : TimeGUI::TimeGUITreeNodeFlags_Leaf) | TimeGUI::TimeGUITreeNodeFlags_OpenOnArrow |
+                                       TimeGUI::TimeGUITreeNodeFlags_FramePadding | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth;
 
             bool opened = false;
 
@@ -852,7 +852,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
                 TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
                 if (TimeGUI::InputText("##RenameEntity", buffer, sizeof(buffer),
-                                       ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+                                       TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue | TimeGUI::TimeGUIInputTextFlags_AutoSelectAll))
                 {
                     if (auto *tagComp = entityManager.GetComponent<TagComponent>(entity))
                         tagComp->Tag = std::string(buffer);
@@ -874,7 +874,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
                     m_SelectedComponent = nullptr;
                 }
 
-                if (TimeGUI::IsItemFocused() && TimeGUI::IsKeyPressed(ImGuiKey_F2))
+                if (TimeGUI::IsItemFocused() && TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_F2))
                     m_RenamingEntityID = id;
 
                 // Buttons (Far Right)
@@ -974,8 +974,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
         TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10)); // Taller bar (~34px)
         TimeGUI::SetNextItemAllowOverlap();
         bool rootOpened =
-            TimeGUI::TreeNodeEx("Scene Root", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
-                                                  ImGuiTreeNodeFlags_AllowOverlap | ImGuiTreeNodeFlags_Framed);
+            TimeGUI::TreeNodeEx("Scene Root", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth |
+                                                  TimeGUI::TimeGUITreeNodeFlags_AllowOverlap | TimeGUI::TimeGUITreeNodeFlags_Framed);
         TimeGUI::PopStyleVar(); // Pop FramePadding
 
         if (rootOpened)
@@ -1062,7 +1062,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
                               m_ComponentParentForAdd ? m_ComponentParentForAdd->GetClassName() : "Entity");
                 TimeGUI::Separator();
                 if (TimeGUI::BeginChild("AddComponentScroll", TEVector2(250, 300), false,
-                                        TimeGUIWindowFlags_NoScrollbar))
+                                        TimeGUI::TimeGUIWindowFlags_NoScrollbar))
                 {
                     for (auto const &[name, factory] : ComponentRegistry::Get().GetEntries())
                     {
@@ -1091,7 +1091,7 @@ void EditorLayer::UI_DrawSceneHierarchy()
             ClearSelection();
 
         // Right-click on empty space to create entity
-        if (TimeGUI::BeginPopupContextWindow("", ImGuiPopupFlags_MouseButtonRight))
+        if (TimeGUI::BeginPopupContextWindow("", TimeGUI::TimeGUIPopupFlags_MouseButtonRight))
         {
             if (TimeGUI::MenuItem("Create Empty Entity"))
             {
@@ -1190,7 +1190,7 @@ void EditorLayer::UI_DrawProperties()
 
         if (auto *transformComp = entityManager.GetComponent<TransformComponent>(m_SelectedEntity))
         {
-            if (TimeGUI::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+            if (TimeGUI::CollapsingHeader("Transform", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
             {
                 DrawVec3Control("Position", transformComp->Transform.Position);
 
@@ -1214,7 +1214,7 @@ void EditorLayer::UI_DrawProperties()
             TimeGUI::PushID(std::to_string((uintptr_t)m_SelectedComponent));
             TimeGUI::PushStyleColor(TimeGUICol_Header, TEVector4(0.3f, 0.4f, 0.6f, 0.6f)); // Glass header
             bool opened =
-                TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(), ImGuiTreeNodeFlags_DefaultOpen);
+                TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(), TimeGUI::TimeGUITreeNodeFlags_DefaultOpen);
             TimeGUI::PopStyleColor();
 
             if (opened)
@@ -1231,7 +1231,7 @@ void EditorLayer::UI_DrawProperties()
                 // Component Transform
                 if (strcmp(m_SelectedComponent->GetClassName(), "AmbientLightComponent") != 0)
                 {
-                    if (TimeGUI::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+                    if (TimeGUI::TreeNodeEx("Transform", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
                     {
                         DrawVec3Control("Position", m_SelectedComponent->Transform.Position);
 
@@ -1285,8 +1285,8 @@ void EditorLayer::UI_DrawProperties()
         {
             // Default: Show all components in a clean list
             TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
-            bool componentsOpened = TimeGUI::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen |
-                                                                                ImGuiTreeNodeFlags_AllowOverlap);
+            bool componentsOpened = TimeGUI::CollapsingHeader("Components", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen |
+                                                                                TimeGUI::TimeGUITreeNodeFlags_AllowOverlap);
             TimeGUI::PopStyleVar();
 
             if (componentsOpened)
@@ -1300,7 +1300,7 @@ void EditorLayer::UI_DrawProperties()
 
                     TimeGUI::PushID(std::to_string((uintptr_t)comp));
                     TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
-                    bool headerOpen = TimeGUI::CollapsingHeader(className, ImGuiTreeNodeFlags_DefaultOpen);
+                    bool headerOpen = TimeGUI::CollapsingHeader(className, TimeGUI::TimeGUITreeNodeFlags_DefaultOpen);
                     TimeGUI::PopStyleVar();
 
                     if (headerOpen)
@@ -1416,7 +1416,7 @@ void EditorLayer::UI_DrawContentBrowser()
         }
 
         TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 4.0f);
-        if (TimeGUI::InputText("##PathInput", m_ContentBrowserPathBuffer, 512, ImGuiInputTextFlags_EnterReturnsTrue))
+        if (TimeGUI::InputText("##PathInput", m_ContentBrowserPathBuffer, 512, TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue))
         {
             std::filesystem::path assetPath = Project::GetAssetDirectory();
             std::filesystem::path targetPath = assetPath / m_ContentBrowserPathBuffer;
@@ -1549,7 +1549,7 @@ void EditorLayer::UI_DrawContentBrowser()
                 }
             }
 
-            if (TimeGUI::IsItemHovered() && TimeGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            if (TimeGUI::IsItemHovered() && TimeGUI::IsMouseDoubleClicked(TimeGUI::TimeGUIMouseButton_Left))
             {
                 if (isDir)
                 {
@@ -1629,7 +1629,8 @@ void EditorLayer::UI_DrawContentBrowser()
             // Drag Drop Source (Future)
             if (TimeGUI::BeginDragDropSource())
             {
-                const wchar_t *itemPath = relativePath.c_str();
+                std::wstring itemPathString = relativePath.wstring();
+                const wchar_t *itemPath = itemPathString.c_str();
                 TimeGUI::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
                 TimeGUI::EndDragDropSource();
             }
@@ -1640,7 +1641,7 @@ void EditorLayer::UI_DrawContentBrowser()
                 strncpy_s(nameBuffer, filenameString.c_str(), sizeof(nameBuffer));
                 TimeGUI::PushItemWidth(thumbnailSize);
                 if (TimeGUI::InputText("##RenameBrowserItem", nameBuffer, sizeof(nameBuffer),
-                                       ImGuiInputTextFlags_EnterReturnsTrue))
+                                       TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue))
                 {
                     std::filesystem::path newPath = path.parent_path() / nameBuffer;
                     if (!isDir)
@@ -1676,7 +1677,7 @@ void EditorLayer::UI_DrawContentBrowser()
                     m_RenamingBrowserPath.clear();
                 }
                 TimeGUI::PopItemWidth();
-                if (!TimeGUI::IsItemActive() && TimeGUI::IsMouseClicked(ImGuiMouseButton_Left))
+                if (!TimeGUI::IsItemActive() && TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Left))
                 {
                     m_RenamingBrowserPath.clear();
                 }
@@ -1693,7 +1694,7 @@ void EditorLayer::UI_DrawContentBrowser()
 
     TimeGUI::Columns(1);
 
-    if (TimeGUI::BeginPopupContextWindow("ContentBrowserContextMenu", ImGuiPopupFlags_MouseButtonRight))
+    if (TimeGUI::BeginPopupContextWindow("ContentBrowserContextMenu", TimeGUI::TimeGUIPopupFlags_MouseButtonRight))
     {
         // Glass AAA Style settings for this specific popup
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(12, 12));
@@ -1714,7 +1715,7 @@ void EditorLayer::UI_DrawContentBrowser()
         TEVector2 folderCursorPos = TimeGUI::GetCursorPos();
         bool createFolderSelected = false;
         if (TimeGUI::Selectable("##FolderRow", &createFolderSelected,
-                                ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                                TimeGUI::TimeGUISelectableFlags_SpanAllColumns | TimeGUI::TimeGUISelectableFlags_AllowOverlap,
                                 TEVector2(0, 32)))
         {
             // Find unique folder name e.g. "New Folder", "New Folder (1)"
@@ -1764,7 +1765,7 @@ void EditorLayer::UI_DrawContentBrowser()
             // Draw an invisible selectable that covers the entire row
             bool selected = false;
             if (TimeGUI::Selectable("##AssetTypeRow", &selected,
-                                    ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                                    TimeGUI::TimeGUISelectableFlags_SpanAllColumns | TimeGUI::TimeGUISelectableFlags_AllowOverlap,
                                     TEVector2(0, 32)))
             {
                 entry.Prototype->OnContentBrowserCreate(rootPath);
@@ -1815,12 +1816,12 @@ void EditorLayer::UI_DrawViewport()
         return;
 
     TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, TEVector2(0, 0));
-    TimeGUI::Begin("Viewport", nullptr, TimeGUIWindowFlags_NoMove | TimeGUIWindowFlags_NoCollapse);
+    TimeGUI::Begin("Viewport", nullptr, TimeGUI::TimeGUIWindowFlags_NoMove | TimeGUI::TimeGUIWindowFlags_NoCollapse);
 
     m_ViewportFocused = TimeGUI::IsWindowFocused();
     m_ViewportHovered = TimeGUI::IsWindowHovered();
     if (m_ViewportHovered)
-        TimeGUI::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+        TimeGUI::SetMouseCursor(TimeGUI::TimeGUIMouseCursor_ResizeAll);
 
     auto &shortcuts = m_EditorSettings.Shortcuts;
 
@@ -1971,7 +1972,7 @@ void EditorLayer::UI_DrawViewport()
     {
         KeyCode delCode =
             m_EditorSettings.Shortcuts.count("Delete") ? m_EditorSettings.Shortcuts.at("Delete") : Key::Delete;
-        if (TimeGUI::IsKeyPressed((ImGuiKey)Input::ToImGuiKey(delCode)) || TimeGUI::IsKeyPressed(ImGuiKey_Backspace))
+        if (TimeGUI::IsKeyPressed((TimeGUI::TimeGUIKey)Input::ToImGuiKey(delCode)) || TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Backspace))
         {
             DeleteSelectedEntities();
         }
@@ -1982,7 +1983,7 @@ void EditorLayer::UI_DrawViewport()
             auto checkGizmo = [&](const std::string &name, GizmoType type)
             {
                 KeyCode code = shortcuts.count(name) ? shortcuts.at(name) : (KeyCode)0;
-                if (code != (KeyCode)0 && TimeGUI::IsKeyPressed((ImGuiKey)Input::ToImGuiKey(code)))
+                if (code != (KeyCode)0 && TimeGUI::IsKeyPressed((TimeGUI::TimeGUIKey)Input::ToImGuiKey(code)))
                     m_GizmoType = type;
             };
 
@@ -2002,7 +2003,7 @@ void EditorLayer::UI_DrawViewport()
         TimeGUI::PushStyleColor(TimeGUICol_ChildBg, TEVector4(0.1f, 0.6f, 0.2f, 0.8f));
         TimeGUI::PushStyleVar(TimeGUIStyleVar_ChildRounding, 8.0f);
 
-        if (TimeGUI::BeginChild("SaveMessage", TEVector2(200.0f, 40.0f), false, TimeGUIWindowFlags_NoScrollbar))
+        if (TimeGUI::BeginChild("SaveMessage", TEVector2(200.0f, 40.0f), false, TimeGUI::TimeGUIWindowFlags_NoScrollbar))
         {
             TEVector2 textSize = TimeGUI::CalcTextSize("Saving Scene...");
             TimeGUI::SetCursorPos(TEVector2((200.0f - textSize.x) * 0.5f, (40.0f - textSize.y) * 0.5f));
@@ -2025,13 +2026,13 @@ void EditorLayer::UI_DrawSettingsPanel()
 
     TimeGUI::Begin("Editor Settings", &m_ShowSettings);
 
-    if (TimeGUI::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("General", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         if (TimeGUI::Checkbox("Allow Navigation", &m_EditorSettings.AllowNavigation))
             SaveSettings();
     }
 
-    if (TimeGUI::CollapsingHeader("Viewport", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Viewport", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         if (TimeGUI::Checkbox("Show Physics Colliders", &m_EditorSettings.ShowPhysicsColliders))
             SaveSettings();
@@ -2041,7 +2042,7 @@ void EditorLayer::UI_DrawSettingsPanel()
             SaveSettings();
     }
 
-    if (TimeGUI::CollapsingHeader("Theme", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Theme", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         auto &colors = TimeGUI::GetStyle().Colors;
         TimeGUI::ColorEdit4("Window Bg", (float *)&colors[TimeGUICol_WindowBg]);
@@ -2061,7 +2062,7 @@ void EditorLayer::UI_DrawSettingsPanel()
             SetDarkThemeColors();
     }
 
-    if (TimeGUI::CollapsingHeader("Logger Filter", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Logger Filter", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         auto &settings = EngineSettings::Get();
 
@@ -2097,7 +2098,7 @@ void EditorLayer::UI_DrawSettingsPanel()
         }
     }
 
-    if (TimeGUI::CollapsingHeader("Shortcuts", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Shortcuts", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         auto &shortcuts = m_EditorSettings.Shortcuts;
         TimeGUI::Columns(2);
@@ -2117,7 +2118,7 @@ void EditorLayer::UI_DrawSettingsPanel()
                 TimeGUI::OpenPopup(("Rebind##" + name).c_str());
             }
 
-            if (TimeGUI::BeginPopupModal(("Rebind##" + name).c_str(), nullptr, TimeGUIWindowFlags_AlwaysAutoResize))
+            if (TimeGUI::BeginPopupModal(("Rebind##" + name).c_str(), nullptr, TimeGUI::TimeGUIWindowFlags_AlwaysAutoResize))
             {
                 TimeGUI::Text("Press any key to rebind '%s'...", name.c_str());
                 TimeGUI::Separator();
@@ -2154,7 +2155,7 @@ void EditorLayer::UI_DrawProjectSettingsPanel()
     TimeGUI::Begin("Project Settings", &m_ShowProjectSettings);
     TimeGUI::Text("Project Name: %s", Project::GetActiveConfig().Name.c_str());
 
-    if (TimeGUI::CollapsingHeader("Game Configuration", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Game Configuration", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         const char *items[] = {"2D", "3D"};
         int currentItem = (int)m_ProjectSettings.ConfigType;
@@ -2192,7 +2193,7 @@ void EditorLayer::UI_DrawProjectSettingsPanel()
         }
     }
 
-    if (TimeGUI::CollapsingHeader("Renderer Settings", ImGuiTreeNodeFlags_DefaultOpen))
+    if (TimeGUI::CollapsingHeader("Renderer Settings", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
     {
         const char *apiItems[] = {"OpenGL", "OpenGLES", "Vulkan", "DirectX11"};
         int currentApi = 0;
@@ -2249,7 +2250,7 @@ void EditorLayer::UI_DrawPluginsPanel()
         }
 
         // Draw Plugin Info box
-        if (TimeGUI::CollapsingHeader(info.Name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+        if (TimeGUI::CollapsingHeader(info.Name.c_str(), TimeGUI::TimeGUITreeNodeFlags_DefaultOpen))
         {
             TimeGUI::Text("Version: %s", info.Version.c_str());
             TimeGUI::Text("Description: %s", info.Description.c_str());
@@ -2312,7 +2313,7 @@ void EditorLayer::UI_DrawConsolePanel()
             TimeGUI::Separator();
 
             // List of logs
-            TimeGUI::BeginChild("LogList", TEVector2(0, 0), false, TimeGUIWindowFlags_HorizontalScrollbar);
+            TimeGUI::BeginChild("LogList", TEVector2(0, 0), false, TimeGUI::TimeGUIWindowFlags_HorizontalScrollbar);
 
             auto messages = Log::GetMessageBuffer();
             auto &settings = EngineSettings::Get();
@@ -2397,7 +2398,7 @@ void EditorLayer::UI_DrawConsolePanel()
             // History child window
             float footerHeight = TimeGUI::GetFrameHeight() + TimeGUI::GetStyle().ItemSpacing.y + 10.0f;
             TimeGUI::BeginChild("TerminalHistory", TEVector2(0, -footerHeight), false,
-                                TimeGUIWindowFlags_HorizontalScrollbar);
+                                TimeGUI::TimeGUIWindowFlags_HorizontalScrollbar);
 
             for (const auto &line : m_TerminalHistory)
             {
@@ -2425,7 +2426,7 @@ void EditorLayer::UI_DrawConsolePanel()
             TimeGUI::SameLine();
             TimeGUI::SetNextItemWidth(-1.0f);
             if (TimeGUI::InputText("##TerminalInput", m_TerminalInputBuffer, sizeof(m_TerminalInputBuffer),
-                                   TimeGUIInputTextFlags_EnterReturnsTrue))
+                                   TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue))
             {
                 std::string cmd(m_TerminalInputBuffer);
                 // trim whitespace
@@ -2580,17 +2581,17 @@ void EditorLayer::HandleViewportInput()
     UpdateGizmoHover();
 
     // 1. Escape Key to Deselect
-    if (m_ViewportFocused && TimeGUI::IsKeyPressed(ImGuiKey_Escape))
+    if (m_ViewportFocused && TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Escape))
     {
         ClearSelection();
     }
 
     // 2. Click Handling (Selection)
     // BLOCK selection if we are hovering a gizmo or already dragging one
-    if (m_ViewportHovered && !TimeGUI::IsMouseDown(ImGuiMouseButton_Right) && m_HoveredGizmoAxis == -1 &&
+    if (m_ViewportHovered && !TimeGUI::IsMouseDown(TimeGUI::TimeGUIMouseButton_Right) && m_HoveredGizmoAxis == -1 &&
         m_GizmoOperation == -1)
     {
-        if (TimeGUI::IsMouseClicked(ImGuiMouseButton_Left) || TimeGUI::IsMouseClicked(ImGuiMouseButton_Right))
+        if (TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Left) || TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Right))
         {
             TEVector2 mousePos = TimeGUI::GetMousePos();
             glm::vec2 viewportMouse = {mousePos.x - m_ViewportPos.x, mousePos.y - m_ViewportPos.y};
@@ -2669,11 +2670,11 @@ void EditorLayer::HandleViewportInput()
             }
             else
             {
-                if (TimeGUI::IsMouseClicked(ImGuiMouseButton_Left))
+                if (TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Left))
                     ClearSelection();
             }
 
-            if (TimeGUI::IsMouseClicked(ImGuiMouseButton_Right))
+            if (TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Right))
                 TimeGUI::OpenPopup("ViewportContextMenu");
         }
     }
@@ -2691,7 +2692,7 @@ void EditorLayer::UpdateCamera(float dt)
     KeyCode moveRightCode = shortcuts.count("MoveRight") ? shortcuts.at("MoveRight") : Key::D;
     KeyCode sprintCode = shortcuts.count("Sprint") ? shortcuts.at("Sprint") : Key::LeftShift;
 
-    if (m_ViewportHovered && TimeGUI::IsMouseDown(ImGuiMouseButton_Right))
+    if (m_ViewportHovered && TimeGUI::IsMouseDown(TimeGUI::TimeGUIMouseButton_Right))
     {
         float speed = (m_EditorSettings.BaseCameraSpeed * m_EditorSettings.SpeedMultiplier);
         if (Input::IsKeyPressed(sprintCode))
@@ -3164,10 +3165,10 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
     bool isSelected = (m_SelectedComponent == comp);
     bool hasChildren = !comp->GetChildrenComponents().empty();
 
-    ImGuiTreeNodeFlags cFlags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_SpanAvailWidth |
-                                ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowOverlap;
+    TimeGUI::TimeGUITreeNodeFlags cFlags = (isSelected ? TimeGUI::TimeGUITreeNodeFlags_Selected : 0) | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth |
+                                TimeGUI::TimeGUITreeNodeFlags_FramePadding | TimeGUI::TimeGUITreeNodeFlags_AllowOverlap;
     if (!hasChildren)
-        cFlags |= ImGuiTreeNodeFlags_Leaf;
+        cFlags |= TimeGUI::TimeGUITreeNodeFlags_Leaf;
 
     std::string cName = comp->InstanceName.empty() ? comp->GetClassName() : comp->InstanceName;
 
@@ -3183,7 +3184,7 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
         strncpy(cBuffer, cName.c_str(), sizeof(cBuffer) - 1);
         TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
         if (TimeGUI::InputText("##RenameComp", cBuffer, sizeof(cBuffer),
-                               ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+                               TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue | TimeGUI::TimeGUIInputTextFlags_AutoSelectAll))
         {
             comp->InstanceName = std::string(cBuffer);
             m_RenamingComponent = nullptr;
@@ -3200,7 +3201,7 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
             SelectEntity(entity);  // Select entity first (clears component selection)
             SelectComponent(comp); // Select component second (sets selection for gizmo)
         }
-        if (TimeGUI::IsItemFocused() && TimeGUI::IsKeyPressed(ImGuiKey_F2))
+        if (TimeGUI::IsItemFocused() && TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_F2))
             m_RenamingComponent = comp;
 
         // Buttons (Far Right)
@@ -3363,7 +3364,7 @@ void EditorLayer::UI_DrawGizmos()
 
     if (m_LastViewportX > 0.0f && m_LastViewportY > 0.0f)
     {
-        if (m_ViewportFocused && TimeGUI::IsMouseDown(ImGuiMouseButton_Left))
+        if (m_ViewportFocused && TimeGUI::IsMouseDown(TimeGUI::TimeGUIMouseButton_Left))
         {
             if (m_GizmoOperation == -1)
             {
@@ -3817,17 +3818,17 @@ void EditorLayer::UI_DrawAssetEditors()
 
     TimeGUI::Begin("Asset Editors");
 
-    if (TimeGUI::BeginTabBar("AssetEditorsTabBar", ImGuiTabBarFlags_Reorderable))
+    if (TimeGUI::BeginTabBar("AssetEditorsTabBar", TimeGUI::TimeGUITabBarFlags_Reorderable))
     {
         for (size_t i = 0; i < m_OpenEditorTabs.size();)
         {
             auto &tab = m_OpenEditorTabs[i];
             bool open = true;
 
-            ImGuiTabItemFlags flags = ImGuiTabItemFlags_None;
+            TimeGUI::TimeGUITabItemFlags flags = TimeGUI::TimeGUITabItemFlags_None;
             if (m_ActiveTabRequest == (int)i)
             {
-                flags |= ImGuiTabItemFlags_SetSelected;
+                flags |= TimeGUI::TimeGUITabItemFlags_SetSelected;
                 m_ActiveTabRequest = -1; // Reset request
             }
 

@@ -1,18 +1,56 @@
 # Labeler Configuration
 # Labels PRs based on changed files using actions/labeler@v5 syntax
 
-ECS:
+CI/CD:
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/**/*'
+
+Docs:
   - changed-files:
     - any-glob-to-any-file:
-      - 'Engine/src/ECS/**/*'
-      - 'Engine/Include/ECS/**/*'
+      - '**/*.md'
+      - '**/*.txt'
 
-Editor:
+Vendor:
   - changed-files:
     - any-glob-to-any-file:
-      - 'Engine/src/Core/Layers/**/*'
-      - 'Engine/Include/Layers/**/*'
+      - 'Vendor/**/*'
+      - '.gitmodules'
 
+AI Agents:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.agents/**/*'
+      - '.agentrules/**/*'
+      - '.agentrules'
+
+Automation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Scripts/**/*'
+      - 'Premake5.lua'
+      - '**/premake5.exe'
+      - '**/premake5'
+
+resources:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/resources/**/*'
+      - '**/Resources/**/*'
+
+projects:
+  - changed-files:
+    - any-glob-to-any-file: 'Projects/**/*'
+
+application:
+  - changed-files:
+    - any-glob-to-any-file: 'TimeEditor/**/*'
+
+plugin:
+  - changed-files:
+    - any-glob-to-any-file: 'Engine/Plugins/**/*'
+
+# Folder tags inside either src or include
 Core:
   - changed-files:
     - any-glob-to-any-file:
@@ -25,11 +63,98 @@ Renderer:
       - 'Engine/src/Renderer/**/*'
       - 'Engine/Include/Renderer/**/*'
 
-UI:
+Platform:
   - changed-files:
-    - any-glob-to-any-file: 'Vendor/IMGUI/**/*'
+    - any-glob-to-any-file:
+      - 'Engine/src/Platform/**/*'
+      - 'Engine/Include/Platform/**/*'
 
-Samples:
+Utils:
   - changed-files:
-    - any-glob-to-any-file: 'TimeEditor/**/*'
+    - any-glob-to-any-file:
+      - 'Engine/src/Utils/**/*'
+      - 'Engine/Include/Utils/**/*'
 
+Window:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Window/**/*'
+      - 'Engine/Include/Window/**/*'
+
+ECS:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/ECS/**/*'
+      - 'Engine/Include/ECS/**/*'
+
+GameFrameWork:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/GameFrameWork/**/*'
+      - 'Engine/Include/GameFrameWork/**/*'
+
+Input:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Input/**/*'
+      - 'Engine/Include/Input/**/*'
+
+Threading:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Threading/**/*'
+      - 'Engine/Include/Threading/**/*'
+
+Time:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Time/**/*'
+      - 'Engine/Include/Time/**/*'
+
+Asset:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Asset/**/*'
+      - 'Engine/Include/Asset/**/*'
+
+Collision:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Collision/**/*'
+      - 'Engine/Include/Collision/**/*'
+
+Events:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Events/**/*'
+      - 'Engine/Include/Events/**/*'
+
+Physics:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Physics/**/*'
+      - 'Engine/Include/Physics/**/*'
+
+Plugin:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Plugin/**/*'
+      - 'Engine/Include/Plugin/**/*'
+
+Project:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Project/**/*'
+      - 'Engine/Include/Project/**/*'
+
+Scene:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/Scene/**/*'
+      - 'Engine/Include/Scene/**/*'
+
+engine:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'Engine/src/*'
+      - 'Engine/Include/*'
