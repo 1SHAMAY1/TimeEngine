@@ -51,7 +51,6 @@ jobs:
               const sectionMatch = line.match(/^##\s+.*?(Completed|Short-Term|Long-Term).*$/i);
               if (sectionMatch) {
                 currentSection = sectionMatch[1].trim();
-                console.log(`Matched Section: ${currentSection}`);
                 continue;
               }
 
@@ -61,76 +60,124 @@ jobs:
                 const sectionPrefix = currentSection ? `[${currentSection}] ` : "";
                 currentCategory = {
                   name: `${sectionPrefix}${categoryMatch[1].trim()}`,
-                  items: []
+                  rawTitle: categoryMatch[1].trim(),
+                  items: [] // Flat list of nested parsed objects
                 };
                 categories.push(currentCategory);
-                console.log(`Matched Category: ${currentCategory.name}`);
                 continue;
               }
 
-              // Parse list items: - [x] or - [/] or - [ ]
+              // Parse items: - [x] or - [/] or - [ ] (supports indentation)
               if (currentCategory) {
-                const itemMatch = line.match(/^\s*-\s+\[([ xX\/])\]\s+(.*)$/);
+                const itemMatch = line.match(/^(\s*)-\s+\[([ xX\/])\]\s+(.*)$/);
                 if (itemMatch) {
-                  const state = itemMatch[1].toLowerCase();
-                  const description = itemMatch[2].trim();
+                  const indent = itemMatch[1].length;
+                  const state = itemMatch[2].toLowerCase();
+                  const description = itemMatch[3].trim();
                   currentCategory.items.push({
-                    description,
-                    completed: state === 'x',
-                    inProgress: state === '/'
+                    indent,
+                    state,
+                    description
                   });
                 }
               }
             }
 
-            console.log("Parsed Categories & Checklist Items:", JSON.stringify(categories, null, 2));
+            console.log("Parsed Categories:", JSON.stringify(categories, null, 2));
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // Retrieve all milestones (both open and closed)
+            // Retrieve all milestones
             const { data: existingMilestones } = await github.rest.issues.listMilestones({
               owner,
               repo,
               state: 'all'
             });
 
-            console.log(`Existing Milestones count: ${existingMilestones.length}`);
+            // Retrieve all issues to locate or create matching tracking issues
+            const { data: existingIssues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
 
             for (const category of categories) {
               const milestoneTitle = category.name;
               
+              // Calculate completion status
               const totalItems = category.items.length;
-              const completedItems = category.items.filter(i => i.completed).length;
-              
-              // A milestone is marked as closed if all its items are completed (state === 'x')
+              const completedItems = category.items.filter(i => i.state === 'x').length;
               const isCompleted = totalItems > 0 && completedItems === totalItems;
-              const targetState = isCompleted ? 'closed' : 'open';
+              const targetMilestoneState = isCompleted ? 'closed' : 'open';
 
-              console.log(`Category: "${milestoneTitle}" | Items: ${completedItems}/${totalItems} completed | Target State: ${targetState}`);
+              let milestone = existingMilestones.find(m => m.title === milestoneTitle);
 
-              const match = existingMilestones.find(m => m.title === milestoneTitle);
-
-              if (match) {
-                if (match.state !== targetState) {
-                  console.log(`Updating Milestone "${milestoneTitle}" from ${match.state} to ${targetState}...`);
-                  await github.rest.issues.updateMilestone({
+              // 1. Sync Milestone
+              if (milestone) {
+                if (milestone.state !== targetMilestoneState) {
+                  console.log(`Updating Milestone "${milestoneTitle}" to state: ${targetMilestoneState}`);
+                  const res = await github.rest.issues.updateMilestone({
                     owner,
                     repo,
-                    milestone_number: match.number,
-                    state: targetState
+                    milestone_number: milestone.number,
+                    state: targetMilestoneState
                   });
-                } else {
-                  console.log(`Milestone "${milestoneTitle}" already matching target state: ${match.state}`);
+                  milestone = res.data;
                 }
               } else {
-                console.log(`Creating new Milestone "${milestoneTitle}" with state ${targetState}...`);
-                await github.rest.issues.createMilestone({
+                console.log(`Creating Milestone "${milestoneTitle}"`);
+                const res = await github.rest.issues.createMilestone({
                   owner,
                   repo,
                   title: milestoneTitle,
-                  state: targetState,
+                  state: targetMilestoneState,
                   description: `Tracked from ROADMAP.md. Status: ${completedItems}/${totalItems} completed.`
+                });
+                milestone = res.data;
+              }
+
+              // 2. Generate the nested checklist body for the Issue
+              // Maps state ('x' -> [x], '/' -> [x] (close enough) or [ ] with notes, ' ' -> [ ])
+              let issueBody = `This issue tracks progress for milestone **${milestoneTitle}**.\n\n### Task List\n\n`;
+              for (const item of category.items) {
+                const space = " ".repeat(item.indent);
+                let mark = " ";
+                if (item.state === 'x') mark = "x";
+                // Let's treat ongoing [/] as unfinished but add a label/comment
+                const suffix = item.state === '/' ? " *(In Progress)*" : "";
+                issueBody += `${space}- [${mark}] ${item.description}${suffix}\n`;
+              }
+              issueBody += `\n*Last synchronized from ROADMAP.md*`;
+
+              // 3. Sync Tracking Issue representing this category
+              const issueTitle = `Tracking: ${milestoneTitle}`;
+              let issue = existingIssues.find(i => i.title === issueTitle);
+              const targetIssueState = isCompleted ? 'closed' : 'open';
+
+              if (issue) {
+                // Update body & status if changed
+                if (issue.body !== issueBody || issue.state !== targetIssueState || issue.milestone?.number !== milestone.number) {
+                  console.log(`Updating Issue "${issueTitle}"`);
+                  await github.rest.issues.update({
+                    owner,
+                    repo,
+                    issue_number: issue.number,
+                    body: issueBody,
+                    state: targetIssueState,
+                    milestone: milestone.number
+                  });
+                }
+              } else {
+                console.log(`Creating Issue "${issueTitle}"`);
+                await github.rest.issues.create({
+                  owner,
+                  repo,
+                  title: issueTitle,
+                  body: issueBody,
+                  milestone: milestone.number,
+                  labels: ['roadmap-tracking']
                 });
               }
             }
