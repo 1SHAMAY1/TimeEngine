@@ -1,21 +1,16 @@
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <Windows.h>
-#include <d3d11.h>
-// glad must come after windows.h on Windows
+#include "Renderer/Texture.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-#include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #include "Renderer/RendererContext.hpp"
-#include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include <filesystem>
 #include <glad/glad.h>
+
+#ifdef TE_SUPPORT_DIRECTX11
+#include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include <d3d11.h>
+#endif
 
 namespace TE
 {
@@ -26,10 +21,15 @@ Texture::Texture(const std::string &path)
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Name = std::filesystem::path(path).filename().string();
 
-    ImageData img = AssetManager::ImportImage(path, (RendererContext::GetAPI() == GraphicsAPI::DirectX11) ? 4 : 0);
+    bool isDX11 = false;
+#ifdef TE_SUPPORT_DIRECTX11
+    isDX11 = (RendererContext::GetAPI() == GraphicsAPI::DirectX11);
+#endif
+    ImageData img = AssetManager::ImportImage(path, isDX11 ? 4 : 0);
 
     if (img.Data)
     {
+#ifdef TE_SUPPORT_DIRECTX11
         if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
         {
             DX11Context &ctx = DX11Context::Get();
@@ -74,6 +74,7 @@ Texture::Texture(const std::string &path)
             AssetManager::FreeImage(img.Data);
         }
         else
+#endif
         {
             GLenum internalFormat = 0, dataFormat = 0;
             if (img.Channels == 4)
@@ -124,6 +125,7 @@ Texture::~Texture()
     {
         glDeleteTextures(1, &m_RendererID);
     }
+#ifdef TE_SUPPORT_DIRECTX11
     if (m_DX11SRV)
     {
         ((ID3D11ShaderResourceView *)m_DX11SRV)->Release();
@@ -132,10 +134,12 @@ Texture::~Texture()
     {
         ((ID3D11Texture2D *)m_DX11Texture)->Release();
     }
+#endif
 }
 
 void Texture::Bind(uint32_t slot) const
 {
+#ifdef TE_SUPPORT_DIRECTX11
     if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
     {
         DX11Context &ctx = DX11Context::Get();
@@ -145,6 +149,7 @@ void Texture::Bind(uint32_t slot) const
         }
     }
     else
+#endif
     {
         glBindTextureUnit(slot, m_RendererID);
     }
@@ -152,6 +157,7 @@ void Texture::Bind(uint32_t slot) const
 
 void Texture::Unbind() const
 {
+#ifdef TE_SUPPORT_DIRECTX11
     if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
     {
         DX11Context &ctx = DX11Context::Get();
@@ -162,6 +168,7 @@ void Texture::Unbind() const
         }
     }
     else
+#endif
     {
         glBindTexture(GL_TEXTURE_2D, 0);
     }

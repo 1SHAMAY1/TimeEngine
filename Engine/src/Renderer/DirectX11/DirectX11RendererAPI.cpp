@@ -54,34 +54,6 @@ static D3D11_BLEND ToDXBlend(BlendFactor factor)
 }
 
 // -------------------------------------------------------------------------
-//  RendererAPI factory — consolidated here so all backend headers are visible
-// -------------------------------------------------------------------------
-GraphicsAPI RendererAPI::GetAPI() { return RendererContext::GetAPI(); }
-
-std::unique_ptr<RendererAPI> RendererAPI::Create()
-{
-    switch (RendererContext::GetAPI())
-    {
-    case GraphicsAPI::None:
-        return nullptr;
-    case GraphicsAPI::OpenGL:
-        return std::make_unique<OpenGLRendererAPI>();
-#if defined(TE_PLATFORM_MOBILE)
-    case GraphicsAPI::OpenGLES:
-        return std::make_unique<OpenGLESRendererAPI>();
-#else
-    case GraphicsAPI::OpenGLES:
-        return nullptr;
-#endif
-    case GraphicsAPI::Vulkan:
-        return std::make_unique<VulkanRendererAPI>();
-    case GraphicsAPI::DirectX11:
-        return std::make_unique<DirectX11RendererAPI>();
-    }
-    return nullptr;
-}
-
-// -------------------------------------------------------------------------
 //  Lifecycle
 // -------------------------------------------------------------------------
 DirectX11RendererAPI::~DirectX11RendererAPI()

@@ -34,8 +34,12 @@ for /r "%ROOT_DIR%" %%f in (*.vcxproj) do del /f /q "%%f" >nul 2>&1
 for /r "%ROOT_DIR%" %%f in (*.vcxproj.filters) do del /f /q "%%f" >nul 2>&1
 for /r "%ROOT_DIR%" %%f in (*.vcxproj.user) do del /f /q "%%f" >nul 2>&1
 
+:: === GNU Make generated files ===
+for /r "%ROOT_DIR%" %%f in (Makefile) do del /f /q "%%f" >nul 2>&1
+for /r "%ROOT_DIR%" %%f in (*.make) do del /f /q "%%f" >nul 2>&1
+
 :: === .vs hidden folder ===
 rd /s /q "%ROOT_DIR%\.vs" >nul 2>&1
 
-echo [SUCCESS] Cleanup complete. All build, CMake, and Visual Studio artifacts removed.
+echo [SUCCESS] Cleanup complete. All build, CMake, Visual Studio, and Make artifacts removed.
 pause

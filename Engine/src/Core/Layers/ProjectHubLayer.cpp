@@ -9,7 +9,6 @@
 #include <fstream>
 
 #include "Renderer/Texture.hpp"
-#include <Windows.h>
 
 // Note: Ensure PlatformUtils.hpp is implemented for Windows/Project Folder picking
 

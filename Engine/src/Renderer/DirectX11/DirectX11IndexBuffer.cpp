@@ -7,6 +7,7 @@
 #include "Renderer/DirectX11/DirectX11IndexBuffer.hpp"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #include <Windows.h>
+#include <cstring>
 #include <d3d11.h>
 #include <iostream>
 

@@ -69,7 +69,7 @@ echo "[≡ Generating Xcode workspace with Premake...]"
 cd "$ROOT_DIR"
 
 if command -v premake5 &> /dev/null; then
-    premake5 xcode4
+    premake5 xcode4 --file=Premake5.lua
 else
     echo "[!] premake5 not found in PATH. Please install premake5 (e.g., via Homebrew: brew install premake) or ensure it is in your PATH."
     read -p "Press Enter to exit..."

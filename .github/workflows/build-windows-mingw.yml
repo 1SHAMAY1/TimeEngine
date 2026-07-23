@@ -1,0 +1,54 @@
+name: Windows Build (MinGW/GCC)
+
+on:
+  pull_request:
+    branches: [ main, ecs, editor, gameplay, ui, samples ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows-mingw:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+
+      - name: Build Logger Dependency
+        shell: msys2 {0}
+        run: |
+          cd Vendor/Customizable_Logger
+          mkdir -p build
+          cd build
+          cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug
+          mingw32-make SHELL=cmd.exe
+
+      - name: Build GLFW Dependency
+        shell: msys2 {0}
+        run: |
+          cd Vendor/GLFW
+          mkdir -p build
+          cd build
+          cmake ../glfw -G "MinGW Makefiles" -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug
+          mingw32-make SHELL=cmd.exe
+
+      - name: Generate Makefiles with Premake
+        shell: msys2 {0}
+        run: ./Vendor/Premake/premake5.exe gmake2
+
+      - name: Build Solution (MinGW GCC)
+        shell: msys2 {0}
+        run: mingw32-make SHELL=cmd.exe config=debug -j$(nproc)

@@ -1,0 +1,42 @@
+name: macOS Build (Apple Clang)
+
+on:
+  pull_request:
+    branches: [ main, ecs, editor, gameplay, ui, samples ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos-clang:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install Premake5
+        run: brew install premake
+
+      - name: Build Logger Dependency (Apple Clang)
+        run: |
+          mkdir -p Vendor/Customizable_Logger/build
+          cd Vendor/Customizable_Logger/build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build . --config Debug
+
+      - name: Build GLFW Dependency (Apple Clang)
+        run: |
+          mkdir -p Vendor/GLFW/build
+          cd Vendor/GLFW/build
+          cmake ../glfw -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build . --config Debug
+
+      - name: Generate Makefiles with Premake
+        run: premake5 gmake2 --file=Premake5.lua
+
+      - name: Build Solution (Apple Clang)
+        run: make config=debug -j$(sysctl -n hw.ncpu) CC=clang CXX=clang++

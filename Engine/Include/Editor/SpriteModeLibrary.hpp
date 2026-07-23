@@ -500,7 +500,7 @@ public:
                            if (a.size() < 4)
                                return {0};
                            float dx = a[0] - a[2], dy = a[1] - a[3];
-                           return {sqrt(dx * dx + dy * dy)};
+                           return {sqrtf(dx * dx + dy * dy)};
                        }});
         reg.push_back({"LerpVec2", "Vec2 LerpVec2(v1, v2, t)", "Interpolate between two Vec2 points.", "Math",
                        TEVector4(0.4f, 1, 0.6f, 1), nullptr,

@@ -1,5 +1,8 @@
 #include "Renderer/TEColor.hpp"
+#include "Core/PreRequisites.h"
+#ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/TEOpenGLColor.hpp"
+#endif
 #include "Renderer/RendererContext.hpp"
 #include "Utils/MathUtils.hpp"
 #include <glm/glm.hpp>
@@ -28,8 +31,10 @@ const TEColor &TEColor::Red()
 {
     switch (RendererContext::GetAPI())
     {
+#ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return TEOpenGLColor::Red;
+#endif
     default:
         static TEColor fallback = {1, 0, 0, 1};
         return fallback;
@@ -40,8 +45,10 @@ const TEColor &TEColor::Green()
 {
     switch (RendererContext::GetAPI())
     {
+#ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return TEOpenGLColor::Green;
+#endif
     default:
         static TEColor fallback = {0, 1, 0, 1};
         return fallback;
@@ -52,8 +59,10 @@ const TEColor &TEColor::Blue()
 {
     switch (RendererContext::GetAPI())
     {
+#ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return TEOpenGLColor::Blue;
+#endif
     default:
         static TEColor fallback = {0, 0, 1, 1};
         return fallback;
@@ -64,8 +73,10 @@ const TEColor &TEColor::White()
 {
     switch (RendererContext::GetAPI())
     {
+#ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return TEOpenGLColor::White;
+#endif
     default:
         static TEColor fallback = {1, 1, 1, 1};
         return fallback;
@@ -76,8 +87,10 @@ const TEColor &TEColor::Black()
 {
     switch (RendererContext::GetAPI())
     {
+#ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return TEOpenGLColor::Black;
+#endif
     default:
         static TEColor fallback = {0, 0, 0, 1};
         return fallback;
@@ -88,8 +101,10 @@ const TEColor &TEColor::Transparent()
 {
     switch (RendererContext::GetAPI())
     {
+#ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return TEOpenGLColor::Transparent;
+#endif
     default:
         static TEColor fallback = {0, 0, 0, 0};
         return fallback;

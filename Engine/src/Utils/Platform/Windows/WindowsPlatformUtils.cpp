@@ -1,4 +1,5 @@
 #include "Utils/PlatformUtils.hpp"
+#include <commdlg.h>
 #include <shlobj.h>
 #include <string>
 #include <windows.h>

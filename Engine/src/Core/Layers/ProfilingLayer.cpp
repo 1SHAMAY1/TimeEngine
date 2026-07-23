@@ -12,9 +12,6 @@
 #include <psapi.h>
 #include <windows.h>
 #pragma comment(lib, "pdh.lib")
-#else
-#include <sys/statvfs.h>
-#include <sys/sysinfo.h>
 #endif
 
 namespace TE
@@ -302,8 +299,8 @@ float ProfilingLayer::GetSystemCPUUsage()
 
     if (cpuQuery == NULL)
     {
-        PdhOpenQuery(NULL, NULL, &cpuQuery);
-        PdhAddCounter(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
+        PdhOpenQueryW(NULL, 0, &cpuQuery);
+        PdhAddCounterW(cpuQuery, L"\\Processor(_Total)\\% Processor Time", 0, &cpuTotal);
         PdhCollectQueryData(cpuQuery);
         return 0.0f;
     }

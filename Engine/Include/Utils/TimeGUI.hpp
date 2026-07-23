@@ -452,6 +452,45 @@ enum TimeGUITableFlags_
 };
 typedef int TimeGUITableFlags;
 
+// Tab Bar flags wrapper
+enum TimeGUITabBarFlags_
+{
+    TimeGUITabBarFlags_None = 0,
+    TimeGUITabBarFlags_Reorderable = 1 << 0,
+    TimeGUITabBarFlags_AutoSelectNewTabs = 1 << 1,
+    TimeGUITabBarFlags_TabListPopupButton = 1 << 2,
+    TimeGUITabBarFlags_NoCloseWithMiddleMouseButton = 1 << 3,
+    TimeGUITabBarFlags_NoTabListPopupButton = 1 << 4,
+    TimeGUITabBarFlags_FittingPolicyResizeDown = 1 << 5,
+    TimeGUITabBarFlags_FittingPolicyScroll = 1 << 6,
+};
+typedef int TimeGUITabBarFlags;
+
+// Tab Item flags wrapper
+enum TimeGUITabItemFlags_
+{
+    TimeGUITabItemFlags_None = 0,
+    TimeGUITabItemFlags_UnsavedDocument = 1 << 0,
+    TimeGUITabItemFlags_SetSelected = 1 << 1,
+    TimeGUITabItemFlags_NoCloseWithMiddleMouseButton = 1 << 2,
+    TimeGUITabItemFlags_NoPushId = 1 << 3,
+    TimeGUITabItemFlags_NoTooltip = 1 << 4,
+    TimeGUITabItemFlags_Leading = 1 << 5,
+    TimeGUITabItemFlags_Trailing = 1 << 6,
+};
+typedef int TimeGUITabItemFlags;
+
+// Direction wrapper
+enum TimeGUIDir_
+{
+    TimeGUIDir_None = -1,
+    TimeGUIDir_Left = 0,
+    TimeGUIDir_Up = 1,
+    TimeGUIDir_Right = 2,
+    TimeGUIDir_Down = 3,
+};
+typedef int TimeGUIDir;
+
 // Table Column flags wrapper
 enum TimeGUITableColumnFlags_
 {

@@ -13,6 +13,8 @@
 namespace TE
 {
 
+template <typename T> struct TEPropertyDrawer;
+
 class TComponent;
 using EntityID = uint64_t;
 
@@ -305,8 +307,6 @@ private:
     std::map<std::string, EnumMetadata> m_Enums;
     std::vector<EntityPreset> m_EntityPresets;
 };
-
-template <typename T> struct TEPropertyDrawer;
 
 // Mark a component as internal (hidden from Scene Hierarchy component tree)
 struct TEComponentInternalRegistrar

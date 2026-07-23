@@ -1,5 +1,7 @@
 workspace "TimeEngine"
-    architecture "x64"
+    filter "system:not macosx"
+        architecture "x64"
+    filter {}
     startproject "TimeEditor"
 
     configurations { "Debug", "Release", "Dist" }
@@ -66,10 +68,17 @@ group "Vendor"
                 "VELOX_EXPORTS"
             }
 
+        filter { "system:windows", "action:vs*" }
             postbuildcommands {
                 -- Copy DLL and LIB to TimeEditor
                 'xcopy /Y /D /Q "..\\..\\Bin\\' .. outputdir .. '\\Velox\\Velox.dll" "..\\..\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul',
                 'xcopy /Y /D /Q "..\\..\\Bin\\' .. outputdir .. '\\Velox\\Velox.lib" "..\\..\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul'
+            }
+
+        filter { "system:windows", "action:gmake*" }
+            postbuildcommands {
+                '{COPY} "../../Bin/' .. outputdir .. '/Velox/Velox.dll" "../../Bin/' .. outputdir .. '/TimeEditor/"',
+                '{COPY} "../../Bin/' .. outputdir .. '/Velox/Velox.lib" "../../Bin/' .. outputdir .. '/TimeEditor/"'
             }
 
         filter "configurations:Debug"
@@ -159,7 +168,7 @@ project "Engine"
         "Engine/src/Layers/**.cpp",
         "Engine/src/Core/Project/**.cpp",
         "Engine/Include/Core/Project/**.hpp",
-        "Engine/src/Platform/Windows/**.cpp",        
+        "Engine/src/Utils/Platform/Windows/**.cpp",        
         
         -- GLAD
         "Vendor/GLAD/src/glad.c",
@@ -177,6 +186,29 @@ project "Engine"
         -- volk
         "Vendor/volk/volk.c"
     }
+
+    -- Exclude Windows and DirectX11 specific source files on non-Windows platforms
+    filter "system:not windows"
+        removefiles {
+            "Engine/src/Renderer/DirectX11/**",
+            "Engine/Include/Renderer/DirectX11/**",
+            "Engine/src/Utils/Platform/Windows/**"
+        }
+    filter {}
+
+    -- Exclude non-Metal renderers on macOS (OpenGL, OpenGLES, Vulkan) since Metal is not yet present
+    filter "system:macosx"
+        removefiles {
+            --"Engine/src/Renderer/OpenGL/**",
+            --"Engine/Include/Renderer/OpenGL/**",
+            "Engine/src/Renderer/OpenGLES/**",
+            "Engine/Include/Renderer/OpenGLES/**",
+            "Engine/src/Renderer/Vulkan/**",
+            "Engine/Include/Renderer/Vulkan/**",
+            "Vendor/volk/**"
+        }
+    filter {}
+
 
     vpaths {
         ["Header Files/*"] = {
@@ -209,21 +241,43 @@ project "Engine"
         "%{IncludeDir.OpenGLES}"
     }
 
-    libdirs {
-        "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-        "Vendor/GLFW/build/src/%{cfg.buildcfg}"
-    }
+    filter "action:vs*"
+        libdirs {
+            "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+            "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+        }
+    filter "action:gmake*"
+        libdirs {
+            "Vendor/Customizable_Logger/build/lib",
+            "Vendor/GLFW/build/src"
+        }
+    filter {}
 
     links {
         "Customizable_Logger",
         "Velox",
-        "glfw3",
-        "opengl32.lib"
+        "glfw3"
     }
+
+    filter "system:windows"
+        links { "opengl32" }
+    filter "system:linux"
+        links { "GL" }
+    filter "system:macosx"
+        links {
+            "Cocoa.framework",
+            "IOKit.framework",
+            "CoreFoundation.framework",
+            "CoreVideo.framework",
+            "QuartzCore.framework"
+        }
+    filter {}
 
     dependson { "Logger", "Velox" }
 
-    buildoptions { "/utf-8", "/FS" }
+    filter "action:vs*"
+        buildoptions { "/utf-8", "/FS" }
+    filter {}
 
     filter "system:windows"
         systemversion "latest"
@@ -233,15 +287,27 @@ project "Engine"
             "IMGUI_IMPL_OPENGL_LOADER_GLAD"
         }
         links {
-            "d3d11.lib",
-            "dxgi.lib",
-            "d3dcompiler.lib"
+            "d3d11",
+            "dxgi",
+            "d3dcompiler",
+            "gdi32",
+            "comdlg32",
+            "ole32",
+            "uuid",
+            "pdh"
         }
 
+    filter { "system:windows", "action:vs*" }
         postbuildcommands {
             -- Copy DLL and LIB to TimeEditor
             'xcopy /Y /D /Q "..\\Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "..\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul',
             'xcopy /Y /D /Q "..\\Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "..\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul'
+        }
+
+    filter { "system:windows", "action:gmake*" }
+        postbuildcommands {
+            '{COPY} "../Bin/' .. outputdir .. '/Engine/Engine.dll" "../Bin/' .. outputdir .. '/TimeEditor/"',
+            '{COPY} "../Bin/' .. outputdir .. '/Engine/Engine.lib" "../Bin/' .. outputdir .. '/TimeEditor/"'
         }
 
     filter "configurations:Debug"
@@ -300,35 +366,69 @@ project "TimeEditor"
         "%{IncludeDir.volk}"
     }
 
-    libdirs {
-        "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-        "Vendor/GLFW/build/src/%{cfg.buildcfg}"
-    }
+    filter "action:vs*"
+        libdirs {
+            "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+            "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+        }
+    filter "action:gmake*"
+        libdirs {
+            "Vendor/Customizable_Logger/build/lib",
+            "Vendor/GLFW/build/src"
+        }
+    filter {}
 
     links {
         "Engine",
         "Customizable_Logger",
         "Velox",
-        "glfw3",
-        "opengl32.lib"
+        "glfw3"
     }
+
+    filter "system:windows"
+        links { "opengl32" }
+    filter "system:linux"
+        links { "GL" }
+    filter "system:macosx"
+        links {
+            "Cocoa.framework",
+            "IOKit.framework",
+            "CoreFoundation.framework",
+            "CoreVideo.framework",
+            "QuartzCore.framework"
+        }
+    filter {}
 
     dependson { "Engine", "Logger", "Velox" }
 
-    buildoptions { "/utf-8" }
+    filter "action:vs*"
+        buildoptions { "/utf-8" }
+    filter {}
 
     filter "system:windows"
         systemversion "latest"
         defines { "TE_PLATFORM_WINDOWS" }
         links {
-            "d3d11.lib",
-            "dxgi.lib",
-            "d3dcompiler.lib"
+            "d3d11",
+            "dxgi",
+            "d3dcompiler",
+            "gdi32",
+            "comdlg32",
+            "ole32",
+            "uuid"
         }
 
-        postbuildcommands {
-            '\"%{wks.location}Bin\\' .. outputdir .. '\\%{prj.name}\\%{prj.name}.exe\" --register'
-        }
+        if os.getenv("CI") ~= "true" and os.getenv("GITHUB_ACTIONS") ~= "true" then
+            filter { "system:windows", "action:vs*" }
+                postbuildcommands {
+                    '\"%{wks.location}Bin\\' .. outputdir .. '\\%{prj.name}\\%{prj.name}.exe\" --register'
+                }
+
+            filter { "system:windows", "action:gmake*" }
+                postbuildcommands {
+                    '\"%{cfg.targetdir}/%{prj.name}.exe\" --register'
+                }
+        end
 
     filter "configurations:Debug"
         defines { "TE_DEBUG", "TE_EDITOR" }
@@ -380,10 +480,17 @@ for _, pluginPath in ipairs(enginePlugins) do
             "Vendor/volk"
         }
 
-        libdirs {
-            "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-            "Vendor/GLFW/build/src/%{cfg.buildcfg}"
-        }
+        filter "action:vs*"
+            libdirs {
+                "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+                "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+            }
+        filter "action:gmake*"
+            libdirs {
+                "Vendor/Customizable_Logger/build/lib",
+                "Vendor/GLFW/build/src"
+            }
+        filter {}
 
         links {
             "Engine",
@@ -395,8 +502,18 @@ for _, pluginPath in ipairs(enginePlugins) do
             defines {
                 "TE_PLATFORM_WINDOWS"
             }
+            links {
+                "ws2_32"
+            }
+
+        filter { "system:windows", "action:vs*" }
             postbuildcommands {
                 'xcopy /Y /D /Q "$(ProjectDir)*.teplugin" "$(OutDir)" > nul'
+            }
+
+        filter { "system:windows", "action:gmake*" }
+            postbuildcommands {
+                '{COPY} "' .. pluginName .. '.teplugin" "%{cfg.targetdir}/"'
             }
 
         filter "configurations:Debug"
@@ -446,10 +563,17 @@ for _, pluginPath in ipairs(projectPlugins) do
             "Vendor/volk"
         }
 
-        libdirs {
-            "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-            "Vendor/GLFW/build/src/%{cfg.buildcfg}"
-        }
+        filter "action:vs*"
+            libdirs {
+                "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+                "Vendor/GLFW/build/src/%{cfg.buildcfg}"
+            }
+        filter "action:gmake*"
+            libdirs {
+                "Vendor/Customizable_Logger/build/lib",
+                "Vendor/GLFW/build/src"
+            }
+        filter {}
 
         links {
             "Engine",
@@ -461,8 +585,18 @@ for _, pluginPath in ipairs(projectPlugins) do
             defines {
                 "TE_PLATFORM_WINDOWS"
             }
+            links {
+                "ws2_32"
+            }
+
+        filter { "system:windows", "action:vs*" }
             postbuildcommands {
                 'xcopy /Y /D /Q "$(ProjectDir)*.teplugin" "$(OutDir)" > nul'
+            }
+
+        filter { "system:windows", "action:gmake*" }
+            postbuildcommands {
+                '{COPY} "' .. pluginName .. '.teplugin" "%{cfg.targetdir}/"'
             }
 
         filter "configurations:Debug"
