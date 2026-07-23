@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Core/Plugin/PluginManager.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include <fstream>
 #include <sstream>
@@ -10,16 +10,15 @@
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #else
-#include <unistd.h>
 #include <limits.h>
+#include <unistd.h>
 #endif
 #endif
 
 namespace TE
 {
 
-
-static std::string GetSharedLibraryName(const std::string& name)
+static std::string GetSharedLibraryName(const std::string &name)
 {
 #ifdef TE_PLATFORM_WINDOWS
     return name + ".dll";

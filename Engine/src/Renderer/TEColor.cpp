@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/TEColor.hpp"
+#include "Core/PreRequisites.h"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/TEOpenGLColor.hpp"
 #endif

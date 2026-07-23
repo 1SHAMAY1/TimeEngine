@@ -308,7 +308,6 @@ private:
     std::vector<EntityPreset> m_EntityPresets;
 };
 
-
 // Mark a component as internal (hidden from Scene Hierarchy component tree)
 struct TEComponentInternalRegistrar
 {

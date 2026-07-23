@@ -30,15 +30,15 @@ inline int RunEngine(int argc, char **argv)
 }
 
 #ifdef TE_PLATFORM_WINDOWS
-    #ifdef TE_PACKAGED
-    #include <windows.h>
-    int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-    {
-        return RunEngine(__argc, __argv);
-    }
-    #else
-    int main(int argc, char **argv) { return RunEngine(argc, argv); }
-    #endif
+#ifdef TE_PACKAGED
+#include <windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    return RunEngine(__argc, __argv);
+}
 #else
-    int main(int argc, char **argv) { return RunEngine(argc, argv); }
+int main(int argc, char **argv) { return RunEngine(argc, argv); }
+#endif
+#else
+int main(int argc, char **argv) { return RunEngine(argc, argv); }
 #endif

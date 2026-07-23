@@ -648,7 +648,8 @@ void EditorLayer::OnTimeGUIRender()
     bool opt_fullscreen = opt_fullscreen_persistant;
     static TimeGUI::TimeGUIDockNodeFlags dockspace_flags = TimeGUI::TimeGUIDockNodeFlags_NoWindowMenuButton;
 
-    TimeGUI::TimeGUIWindowFlags window_flags = TimeGUI::TimeGUIWindowFlags_MenuBar | TimeGUI::TimeGUIWindowFlags_NoDocking;
+    TimeGUI::TimeGUIWindowFlags window_flags =
+        TimeGUI::TimeGUIWindowFlags_MenuBar | TimeGUI::TimeGUIWindowFlags_NoDocking;
     if (opt_fullscreen)
     {
         TimeGUI::TimeGUIViewport mainViewport = TimeGUI::GetMainViewport();
@@ -657,8 +658,8 @@ void EditorLayer::OnTimeGUIRender()
         TimeGUI::SetNextWindowViewport(mainViewport.ID);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, 0.0f);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= TimeGUI::TimeGUIWindowFlags_NoTitleBar | TimeGUI::TimeGUIWindowFlags_NoCollapse | TimeGUI::TimeGUIWindowFlags_NoResize |
-                        TimeGUI::TimeGUIWindowFlags_NoMove;
+        window_flags |= TimeGUI::TimeGUIWindowFlags_NoTitleBar | TimeGUI::TimeGUIWindowFlags_NoCollapse |
+                        TimeGUI::TimeGUIWindowFlags_NoResize | TimeGUI::TimeGUIWindowFlags_NoMove;
         window_flags |= TimeGUI::TimeGUIWindowFlags_NoBringToFrontOnFocus | TimeGUI::TimeGUIWindowFlags_NoNavFocus;
     }
 
@@ -702,14 +703,14 @@ void EditorLayer::OnTimeGUIRender()
                 TimeGUI::DockBuilderSetNodeSize(dockspace_id, TimeGUI::GetMainViewport().Size);
 
                 unsigned int dock_main_id = dockspace_id;
-                unsigned int dock_id_right =
-                    TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Right, 0.2f, nullptr, &dock_main_id);
-                unsigned int dock_id_bottom =
-                    TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Down, 0.25f, nullptr, &dock_main_id);
+                unsigned int dock_id_right = TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Right,
+                                                                           0.2f, nullptr, &dock_main_id);
+                unsigned int dock_id_bottom = TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Down,
+                                                                            0.25f, nullptr, &dock_main_id);
 
                 // Split the right panel into Top (Hierarchy) and Bottom (Properties)
-                unsigned int dock_id_right_bottom =
-                    TimeGUI::DockBuilderSplitNode(dock_id_right, TimeGUI::TimeGUIDir_Down, 0.5f, nullptr, &dock_id_right);
+                unsigned int dock_id_right_bottom = TimeGUI::DockBuilderSplitNode(
+                    dock_id_right, TimeGUI::TimeGUIDir_Down, 0.5f, nullptr, &dock_id_right);
 
                 TimeGUI::DockBuilderDockWindow("Viewport", dock_main_id);
                 TimeGUI::DockBuilderDockWindow("Scene Hierarchy", dock_id_right);
@@ -835,9 +836,10 @@ void EditorLayer::UI_DrawSceneHierarchy()
             TimeGUI::SetNextItemAllowOverlap();
             // Increased FramePadding for consistent ~34px height across all nodes
             TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10));
-            TimeGUI::TimeGUITreeNodeFlags flags = (IsEntitySelected(entity) ? TimeGUI::TimeGUITreeNodeFlags_Selected : 0) |
-                                       (hasChildren ? 0 : TimeGUI::TimeGUITreeNodeFlags_Leaf) | TimeGUI::TimeGUITreeNodeFlags_OpenOnArrow |
-                                       TimeGUI::TimeGUITreeNodeFlags_FramePadding | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth;
+            TimeGUI::TimeGUITreeNodeFlags flags =
+                (IsEntitySelected(entity) ? TimeGUI::TimeGUITreeNodeFlags_Selected : 0) |
+                (hasChildren ? 0 : TimeGUI::TimeGUITreeNodeFlags_Leaf) | TimeGUI::TimeGUITreeNodeFlags_OpenOnArrow |
+                TimeGUI::TimeGUITreeNodeFlags_FramePadding | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth;
 
             bool opened = false;
 
@@ -852,7 +854,8 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
                 TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
                 if (TimeGUI::InputText("##RenameEntity", buffer, sizeof(buffer),
-                                       TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue | TimeGUI::TimeGUIInputTextFlags_AutoSelectAll))
+                                       TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue |
+                                           TimeGUI::TimeGUIInputTextFlags_AutoSelectAll))
                 {
                     if (auto *tagComp = entityManager.GetComponent<TagComponent>(entity))
                         tagComp->Tag = std::string(buffer);
@@ -973,9 +976,9 @@ void EditorLayer::UI_DrawSceneHierarchy()
 
         TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 10)); // Taller bar (~34px)
         TimeGUI::SetNextItemAllowOverlap();
-        bool rootOpened =
-            TimeGUI::TreeNodeEx("Scene Root", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth |
-                                                  TimeGUI::TimeGUITreeNodeFlags_AllowOverlap | TimeGUI::TimeGUITreeNodeFlags_Framed);
+        bool rootOpened = TimeGUI::TreeNodeEx(
+            "Scene Root", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth |
+                              TimeGUI::TimeGUITreeNodeFlags_AllowOverlap | TimeGUI::TimeGUITreeNodeFlags_Framed);
         TimeGUI::PopStyleVar(); // Pop FramePadding
 
         if (rootOpened)
@@ -1213,8 +1216,8 @@ void EditorLayer::UI_DrawProperties()
         {
             TimeGUI::PushID(std::to_string((uintptr_t)m_SelectedComponent));
             TimeGUI::PushStyleColor(TimeGUICol_Header, TEVector4(0.3f, 0.4f, 0.6f, 0.6f)); // Glass header
-            bool opened =
-                TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(), TimeGUI::TimeGUITreeNodeFlags_DefaultOpen);
+            bool opened = TimeGUI::CollapsingHeader(m_SelectedComponent->GetClassName(),
+                                                    TimeGUI::TimeGUITreeNodeFlags_DefaultOpen);
             TimeGUI::PopStyleColor();
 
             if (opened)
@@ -1285,8 +1288,8 @@ void EditorLayer::UI_DrawProperties()
         {
             // Default: Show all components in a clean list
             TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(5, 8));
-            bool componentsOpened = TimeGUI::CollapsingHeader("Components", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen |
-                                                                                TimeGUI::TimeGUITreeNodeFlags_AllowOverlap);
+            bool componentsOpened = TimeGUI::CollapsingHeader(
+                "Components", TimeGUI::TimeGUITreeNodeFlags_DefaultOpen | TimeGUI::TimeGUITreeNodeFlags_AllowOverlap);
             TimeGUI::PopStyleVar();
 
             if (componentsOpened)
@@ -1416,7 +1419,8 @@ void EditorLayer::UI_DrawContentBrowser()
         }
 
         TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 4.0f);
-        if (TimeGUI::InputText("##PathInput", m_ContentBrowserPathBuffer, 512, TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue))
+        if (TimeGUI::InputText("##PathInput", m_ContentBrowserPathBuffer, 512,
+                               TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue))
         {
             std::filesystem::path assetPath = Project::GetAssetDirectory();
             std::filesystem::path targetPath = assetPath / m_ContentBrowserPathBuffer;
@@ -1715,7 +1719,8 @@ void EditorLayer::UI_DrawContentBrowser()
         TEVector2 folderCursorPos = TimeGUI::GetCursorPos();
         bool createFolderSelected = false;
         if (TimeGUI::Selectable("##FolderRow", &createFolderSelected,
-                                TimeGUI::TimeGUISelectableFlags_SpanAllColumns | TimeGUI::TimeGUISelectableFlags_AllowOverlap,
+                                TimeGUI::TimeGUISelectableFlags_SpanAllColumns |
+                                    TimeGUI::TimeGUISelectableFlags_AllowOverlap,
                                 TEVector2(0, 32)))
         {
             // Find unique folder name e.g. "New Folder", "New Folder (1)"
@@ -1765,7 +1770,8 @@ void EditorLayer::UI_DrawContentBrowser()
             // Draw an invisible selectable that covers the entire row
             bool selected = false;
             if (TimeGUI::Selectable("##AssetTypeRow", &selected,
-                                    TimeGUI::TimeGUISelectableFlags_SpanAllColumns | TimeGUI::TimeGUISelectableFlags_AllowOverlap,
+                                    TimeGUI::TimeGUISelectableFlags_SpanAllColumns |
+                                        TimeGUI::TimeGUISelectableFlags_AllowOverlap,
                                     TEVector2(0, 32)))
             {
                 entry.Prototype->OnContentBrowserCreate(rootPath);
@@ -1972,7 +1978,8 @@ void EditorLayer::UI_DrawViewport()
     {
         KeyCode delCode =
             m_EditorSettings.Shortcuts.count("Delete") ? m_EditorSettings.Shortcuts.at("Delete") : Key::Delete;
-        if (TimeGUI::IsKeyPressed((TimeGUI::TimeGUIKey)Input::ToImGuiKey(delCode)) || TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Backspace))
+        if (TimeGUI::IsKeyPressed((TimeGUI::TimeGUIKey)Input::ToImGuiKey(delCode)) ||
+            TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Backspace))
         {
             DeleteSelectedEntities();
         }
@@ -2003,7 +2010,8 @@ void EditorLayer::UI_DrawViewport()
         TimeGUI::PushStyleColor(TimeGUICol_ChildBg, TEVector4(0.1f, 0.6f, 0.2f, 0.8f));
         TimeGUI::PushStyleVar(TimeGUIStyleVar_ChildRounding, 8.0f);
 
-        if (TimeGUI::BeginChild("SaveMessage", TEVector2(200.0f, 40.0f), false, TimeGUI::TimeGUIWindowFlags_NoScrollbar))
+        if (TimeGUI::BeginChild("SaveMessage", TEVector2(200.0f, 40.0f), false,
+                                TimeGUI::TimeGUIWindowFlags_NoScrollbar))
         {
             TEVector2 textSize = TimeGUI::CalcTextSize("Saving Scene...");
             TimeGUI::SetCursorPos(TEVector2((200.0f - textSize.x) * 0.5f, (40.0f - textSize.y) * 0.5f));
@@ -2118,7 +2126,8 @@ void EditorLayer::UI_DrawSettingsPanel()
                 TimeGUI::OpenPopup(("Rebind##" + name).c_str());
             }
 
-            if (TimeGUI::BeginPopupModal(("Rebind##" + name).c_str(), nullptr, TimeGUI::TimeGUIWindowFlags_AlwaysAutoResize))
+            if (TimeGUI::BeginPopupModal(("Rebind##" + name).c_str(), nullptr,
+                                         TimeGUI::TimeGUIWindowFlags_AlwaysAutoResize))
             {
                 TimeGUI::Text("Press any key to rebind '%s'...", name.c_str());
                 TimeGUI::Separator();
@@ -2591,7 +2600,8 @@ void EditorLayer::HandleViewportInput()
     if (m_ViewportHovered && !TimeGUI::IsMouseDown(TimeGUI::TimeGUIMouseButton_Right) && m_HoveredGizmoAxis == -1 &&
         m_GizmoOperation == -1)
     {
-        if (TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Left) || TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Right))
+        if (TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Left) ||
+            TimeGUI::IsMouseClicked(TimeGUI::TimeGUIMouseButton_Right))
         {
             TEVector2 mousePos = TimeGUI::GetMousePos();
             glm::vec2 viewportMouse = {mousePos.x - m_ViewportPos.x, mousePos.y - m_ViewportPos.y};
@@ -3165,8 +3175,9 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
     bool isSelected = (m_SelectedComponent == comp);
     bool hasChildren = !comp->GetChildrenComponents().empty();
 
-    TimeGUI::TimeGUITreeNodeFlags cFlags = (isSelected ? TimeGUI::TimeGUITreeNodeFlags_Selected : 0) | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth |
-                                TimeGUI::TimeGUITreeNodeFlags_FramePadding | TimeGUI::TimeGUITreeNodeFlags_AllowOverlap;
+    TimeGUI::TimeGUITreeNodeFlags cFlags =
+        (isSelected ? TimeGUI::TimeGUITreeNodeFlags_Selected : 0) | TimeGUI::TimeGUITreeNodeFlags_SpanAvailWidth |
+        TimeGUI::TimeGUITreeNodeFlags_FramePadding | TimeGUI::TimeGUITreeNodeFlags_AllowOverlap;
     if (!hasChildren)
         cFlags |= TimeGUI::TimeGUITreeNodeFlags_Leaf;
 
@@ -3184,7 +3195,8 @@ void EditorLayer::DrawComponentNode(Entity entity, TComponent *comp)
         strncpy(cBuffer, cName.c_str(), sizeof(cBuffer) - 1);
         TimeGUI::SetNextItemWidth(TimeGUI::GetContentRegionAvail().x - 40.0f);
         if (TimeGUI::InputText("##RenameComp", cBuffer, sizeof(cBuffer),
-                               TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue | TimeGUI::TimeGUIInputTextFlags_AutoSelectAll))
+                               TimeGUI::TimeGUIInputTextFlags_EnterReturnsTrue |
+                                   TimeGUI::TimeGUIInputTextFlags_AutoSelectAll))
         {
             comp->InstanceName = std::string(cBuffer);
             m_RenamingComponent = nullptr;

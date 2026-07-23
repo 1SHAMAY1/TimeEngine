@@ -1,15 +1,15 @@
+#include "Renderer/Texture.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
 #include "Renderer/RendererContext.hpp"
-#include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include <filesystem>
 #include <glad/glad.h>
 
 #ifdef TE_SUPPORT_DIRECTX11
-#include <d3d11.h>
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include <d3d11.h>
 #endif
 
 namespace TE
