@@ -1044,6 +1044,11 @@ bool CollapsingHeader(const std::string &label, int flags)
     return ImGui::CollapsingHeader(label.c_str(), TranslateTreeNodeFlags(flags));
 }
 
+void SetNextItemOpen(bool isOpen)
+{
+    ImGui::SetNextItemOpen(isOpen);
+}
+
 void OpenPopup(const std::string &strId) { ImGui::OpenPopup(strId.c_str()); }
 
 bool BeginPopup(const std::string &strId, int flags)
@@ -1099,10 +1104,11 @@ void PopItemWidth() { ImGui::PopItemWidth(); }
 
 void SetNextItemAllowOverlap() { ImGui::SetNextItemAllowOverlap(); }
 
-void Image(TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0, const TEVector2 &uv1)
+void Image(TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0, const TEVector2 &uv1,
+           const TEVector4 &tintCol)
 {
-    ImGui::Image(ImTextureRef((ImTextureID)(uintptr_t)userTextureId), ImVec2(size.x, size.y), ImVec2(uv0.x, uv0.y),
-                 ImVec2(uv1.x, uv1.y));
+    ImGui::ImageWithBg(ImTextureRef((ImTextureID)(uintptr_t)userTextureId), ImVec2(size.x, size.y), ImVec2(uv0.x, uv0.y),
+                       ImVec2(uv1.x, uv1.y), ImVec4(0, 0, 0, 0), ImVec4(tintCol.x, tintCol.y, tintCol.z, tintCol.w));
 }
 
 bool ImageButton(const std::string &strId, TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0,

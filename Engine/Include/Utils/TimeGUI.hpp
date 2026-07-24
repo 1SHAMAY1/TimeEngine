@@ -763,7 +763,7 @@ TE_API void PopItemWidth();
 TE_API void SetNextItemAllowOverlap();
 
 TE_API void Image(TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0 = {0, 0},
-                  const TEVector2 &uv1 = {1, 1});
+                  const TEVector2 &uv1 = {1, 1}, const TEVector4 &tintCol = {1, 1, 1, 1});
 TE_API bool ImageButton(const std::string &strId, TimeGUITextureID userTextureId, const TEVector2 &size,
                         const TEVector2 &uv0 = {0, 0}, const TEVector2 &uv1 = {1, 1});
 
@@ -822,6 +822,7 @@ TE_API bool TreeNodeEx(const std::string &label, int flags = 0);
 TE_API bool TreeNodeEx(void *ptrId, int flags, const std::string &text);
 TE_API void TreePop();
 TE_API bool CollapsingHeader(const std::string &label, int flags = 0);
+TE_API void SetNextItemOpen(bool isOpen);
 
 TE_API void OpenPopup(const std::string &strId);
 TE_API bool BeginPopup(const std::string &strId, int flags = 0);

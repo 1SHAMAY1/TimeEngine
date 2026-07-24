@@ -5,6 +5,7 @@
 #include "Core/Events/MouseEvent.h"
 #include "Core/Scene/Scene.hpp"
 #include "Layers/Layer.hpp"
+#include "Editor/AssetEditor.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/GraphicsAPI.hpp"
 #include <filesystem>
@@ -145,13 +146,6 @@ private:
     std::filesystem::path m_ClipboardPath;
     bool m_ClipboardIsCut = false;
 
-    struct EditorTab
-    {
-        std::string Title;
-        std::filesystem::path AssetPath;
-        std::string Type;
-        std::shared_ptr<class Asset> LoadedAsset;
-    };
     std::vector<EditorTab> m_OpenEditorTabs;
     int m_ActiveTabRequest = -1;
 

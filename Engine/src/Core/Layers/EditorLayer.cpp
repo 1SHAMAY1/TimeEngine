@@ -1,5 +1,7 @@
 #include "Layers/EditorLayer.hpp"
 #include "Core/Application.h"
+#include "Editor/AssetEditorRegistry.hpp"
+#include <imgui.h>
 #include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Core/EngineSettings.hpp"
 #include "Core/KeyCodes.hpp"
@@ -24,6 +26,12 @@
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
+#include "Renderer/Sprite.hpp"
+#include "Renderer/SpriteSerializer.hpp"
+#include "Renderer/SpriteSheet.hpp"
+#include "Renderer/SpriteSheetSerializer.hpp"
+#include "Renderer/Texture.hpp"
+#include "Renderer/TextureSerializer.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -1521,7 +1529,7 @@ void EditorLayer::UI_DrawContentBrowser()
                     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0, 0, 0, 0));
 
                 TimeGUI::ImageButton(filenameString.c_str(), iconId, TEVector2(thumbnailSize, thumbnailSize),
-                                     TEVector2(0, 1), TEVector2(1, 0));
+                                     TEVector2(0, 0), TEVector2(1, 1));
                 TimeGUI::PopStyleColor();
             }
             else
@@ -1541,7 +1549,9 @@ void EditorLayer::UI_DrawContentBrowser()
                     m_SelectedEntities.clear();
                     m_SelectedComponent = nullptr;
 
-                    if (path.extension() == ".tematerial" || path.extension() == ".tetexture")
+                    if (path.extension() == ".tematerial" || path.extension() == ".tetexture" ||
+                        path.extension() == ".tespritesheet" || path.extension() == ".tesheet" ||
+                        path.extension() == ".tesprite")
                     {
                         AssetHandle handle = AssetManager::LoadAsset(path);
                         m_SelectedBrowserAsset = AssetManager::GetAsset<Asset>(handle);
@@ -1565,10 +1575,18 @@ void EditorLayer::UI_DrawContentBrowser()
                 {
                     LoadScene(path);
                 }
-                else if (path.extension() == ".tematerial" || path.extension() == ".tetexture")
+                else if (path.extension() == ".tematerial" || path.extension() == ".tetexture" ||
+                         path.extension() == ".tespritesheet" || path.extension() == ".tesheet" ||
+                         path.extension() == ".tesprite")
                 {
                     std::string title = path.filename().stem().string();
-                    std::string type = (path.extension() == ".tematerial") ? "Material" : "Texture";
+                    std::string type = "Texture";
+                    if (path.extension() == ".tematerial")
+                        type = "Material";
+                    else if (path.extension() == ".tespritesheet" || path.extension() == ".tesheet")
+                        type = "SpriteSheet";
+                    else if (path.extension() == ".tesprite")
+                        type = "Sprite";
 
                     bool alreadyOpen = false;
                     for (size_t i = 0; i < m_OpenEditorTabs.size(); ++i)
@@ -2300,6 +2318,27 @@ void EditorLayer::UI_DrawConsolePanel()
     {
         if (TimeGUI::BeginTabItem("Output Log"))
         {
+            // Pinned Vector Chrono Clock Header (TimeEngineIcon.png procedurally drawn)
+            TEVector2 headerPos = TimeGUI::GetCursorScreenPos();
+            float cx = headerPos.x + 22.0f;
+            float cy = headerPos.y + 22.0f;
+
+            auto drawList = TimeGUI::GetWindowDrawList();
+            drawList->AddCircle(ImVec2(cx, cy), 18.0f, IM_COL32(0, 235, 255, 255), 0, 2.0f); // Cyan outer ring
+            drawList->AddCircle(ImVec2(cx, cy), 14.0f, IM_COL32(0, 200, 235, 180), 0, 1.2f); // Inner cyan ring
+            drawList->AddLine(ImVec2(cx - 14.0f, cy), ImVec2(cx, cy), IM_COL32(200, 200, 200, 255), 1.5f); // Left gray bar
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx + 14.0f, cy), IM_COL32(255, 50, 50, 255), 2.5f); // Red 3 o'clock hand
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx, cy + 14.0f), IM_COL32(200, 200, 200, 255), 1.8f); // Vertical stem
+            drawList->AddCircleFilled(ImVec2(cx, cy), 3.0f, IM_COL32(255, 255, 255, 255)); // Center dot
+
+            TimeGUI::SetCursorScreenPos(TEVector2(headerPos.x + 50.0f, headerPos.y + 4.0f));
+            TimeGUI::TextColored(TEVector4(0.0f, 0.92f, 1.0f, 1.0f), "TIME ENGINE");
+            TimeGUI::SetCursorScreenPos(TEVector2(headerPos.x + 50.0f, headerPos.y + 22.0f));
+            TimeGUI::TextDisabled("Welcome to TimeEngine");
+
+            TimeGUI::Dummy(TEVector2(0.0f, 44.0f));
+            TimeGUI::Separator();
+
             // Clear button
             if (TimeGUI::Button("Clear"))
             {
@@ -2404,6 +2443,27 @@ void EditorLayer::UI_DrawConsolePanel()
 
         if (TimeGUI::BeginTabItem("Terminal"))
         {
+            // Pinned Vector Chrono Clock Header (TimeEngineIcon.png procedurally drawn)
+            TEVector2 headerPos = TimeGUI::GetCursorScreenPos();
+            float cx = headerPos.x + 22.0f;
+            float cy = headerPos.y + 22.0f;
+
+            auto drawList = TimeGUI::GetWindowDrawList();
+            drawList->AddCircle(ImVec2(cx, cy), 18.0f, IM_COL32(0, 235, 255, 255), 0, 2.0f); // Cyan outer ring
+            drawList->AddCircle(ImVec2(cx, cy), 14.0f, IM_COL32(0, 200, 235, 180), 0, 1.2f); // Inner cyan ring
+            drawList->AddLine(ImVec2(cx - 14.0f, cy), ImVec2(cx, cy), IM_COL32(200, 200, 200, 255), 1.5f); // Left gray bar
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx + 14.0f, cy), IM_COL32(255, 50, 50, 255), 2.5f); // Red 3 o'clock hand
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx, cy + 14.0f), IM_COL32(200, 200, 200, 255), 1.8f); // Vertical stem
+            drawList->AddCircleFilled(ImVec2(cx, cy), 3.0f, IM_COL32(255, 255, 255, 255)); // Center dot
+
+            TimeGUI::SetCursorScreenPos(TEVector2(headerPos.x + 50.0f, headerPos.y + 4.0f));
+            TimeGUI::TextColored(TEVector4(0.0f, 0.92f, 1.0f, 1.0f), "TIME ENGINE");
+            TimeGUI::SetCursorScreenPos(TEVector2(headerPos.x + 50.0f, headerPos.y + 22.0f));
+            TimeGUI::TextDisabled("Welcome to TimeEngine");
+
+            TimeGUI::Dummy(TEVector2(0.0f, 44.0f));
+            TimeGUI::Separator();
+
             // History child window
             float footerHeight = TimeGUI::GetFrameHeight() + TimeGUI::GetStyle().ItemSpacing.y + 10.0f;
             TimeGUI::BeginChild("TerminalHistory", TEVector2(0, -footerHeight), false,
@@ -3847,91 +3907,13 @@ void EditorLayer::UI_DrawAssetEditors()
             if (TimeGUI::BeginTabItem((tab.Title + " (" + tab.Type + ")###" + tab.AssetPath.string()).c_str(), &open,
                                       flags))
             {
-                if (tab.Type == "Material")
+                if (auto editor = AssetEditorRegistry::GetEditor(tab.Type))
                 {
-                    auto mat = std::dynamic_pointer_cast<Material>(tab.LoadedAsset);
-                    if (mat)
-                    {
-                        TimeGUI::Text("Material Editor Settings");
-                        TimeGUI::Separator();
-
-                        char nameBuffer[256];
-                        strncpy_s(nameBuffer, mat->GetName().c_str(), sizeof(nameBuffer));
-                        if (TimeGUI::InputText("Material Name", nameBuffer, sizeof(nameBuffer)))
-                        {
-                            mat->SetName(nameBuffer);
-                            MaterialSerializer serializer(mat);
-                            serializer.Serialize(tab.AssetPath);
-                            tab.Title = nameBuffer; // Sync tab title
-                        }
-
-                        auto color = mat->GetColor().GetValue();
-                        float colorArr[4] = {color.r, color.g, color.b, color.a};
-                        if (TimeGUI::ColorEdit4("Albedo Color", colorArr))
-                        {
-                            mat->SetColor(TEColor(colorArr[0], colorArr[1], colorArr[2], colorArr[3]));
-                            MaterialSerializer serializer(mat);
-                            serializer.Serialize(tab.AssetPath);
-                        }
-                    }
+                    editor->DrawEditor(tab);
                 }
-                else if (tab.Type == "Texture")
+                else
                 {
-                    auto tex = std::dynamic_pointer_cast<Texture>(tab.LoadedAsset);
-                    if (tex)
-                    {
-                        TimeGUI::Text("Texture Editor Settings");
-                        TimeGUI::Separator();
-
-                        TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), TEVector2(128.0f, 128.0f),
-                                       TEVector2(0.0f, 1.0f), TEVector2(1.0f, 0.0f));
-
-                        TimeGUI::Separator();
-                        TimeGUI::Text("Import Settings");
-
-                        // Import Texture Source file from folder structure
-                        static char importPathBuffer[512] = "";
-                        TimeGUI::InputText("Source File Path", importPathBuffer, sizeof(importPathBuffer));
-                        TimeGUI::SameLine();
-                        if (TimeGUI::Button("Browse..."))
-                        {
-                            std::string filepath = PlatformUtils::OpenFile(
-                                "Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files "
-                                "(*.*)\0*.*\0");
-                            if (!filepath.empty())
-                            {
-                                strcpy_s(importPathBuffer, filepath.c_str());
-
-                                std::filesystem::path importSrc = filepath;
-                                if (std::filesystem::exists(importSrc))
-                                {
-                                    std::filesystem::path destPng = tab.AssetPath;
-                                    destPng.replace_extension(importSrc.extension());
-
-                                    // If destination has a different extension, clean up the old PNG companion
-                                    if (importSrc.extension() != ".png")
-                                    {
-                                        std::filesystem::path oldPng = tab.AssetPath;
-                                        oldPng.replace_extension(".png");
-                                        if (std::filesystem::exists(oldPng))
-                                            std::filesystem::remove(oldPng);
-                                    }
-
-                                    std::filesystem::copy_file(importSrc, destPng,
-                                                               std::filesystem::copy_options::overwrite_existing);
-
-                                    // Force recreation and reload of Texture
-                                    auto newTex = std::make_shared<Texture>(destPng.string());
-                                    newTex->SetName(tab.AssetPath.stem().string());
-                                    TextureSerializer serializer(newTex);
-                                    serializer.Serialize(tab.AssetPath);
-
-                                    tab.LoadedAsset = newTex; // Update loaded asset cache
-                                    TE_CORE_INFO("Imported texture source from {0}", importSrc.string());
-                                }
-                            }
-                        }
-                    }
+                    TimeGUI::TextDisabled("No registered asset editor for type: %s", tab.Type.c_str());
                 }
 
                 TimeGUI::EndTabItem();

@@ -1,4 +1,9 @@
 Texture2D: NewTexture
-ImagePath: blank.png
+ImagePath: E:\TimeEngine\TimeEditor\Projects\NewProject\Assets\NewTexture.png
+Width: 130
+Height: 130
+Channels: 4
 FilterMode: Linear
 WrapMode: Repeat
+GenerateMipmaps: true
+PremultipliedAlpha: true

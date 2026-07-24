@@ -3,6 +3,16 @@
 #include <chrono>
 #include <iomanip>
 #include <mutex>
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace TE
 {
@@ -13,8 +23,160 @@ static std::vector<LogMessage> s_MessageBuffer;
 static std::mutex s_LogMutex;
 static constexpr size_t MAX_LOG_MESSAGES = 1000;
 
+static bool s_Initialized = false;
+
+struct TermCaps
+{
+    bool isTTY = false;
+    bool ansi = false;
+    bool truecolor = false;
+};
+
+static TermCaps DetectTerminal()
+{
+    TermCaps caps;
+#ifdef _WIN32
+    caps.isTTY = (_isatty(_fileno(stdout)) != 0);
+    if (caps.isTTY)
+    {
+        HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        DWORD mode = 0;
+        if (hOut != INVALID_HANDLE_VALUE && GetConsoleMode(hOut, &mode))
+        {
+            if (SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+                caps.ansi = true;
+        }
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+    }
+    caps.truecolor = caps.ansi;
+#else
+    caps.isTTY = (isatty(fileno(stdout)) != 0);
+    const char *term = std::getenv("TERM");
+    const char *colorterm = std::getenv("COLORTERM");
+    caps.ansi = caps.isTTY && term && std::string(term) != "dumb";
+    caps.truecolor = caps.ansi && colorterm &&
+                     (std::string(colorterm) == "truecolor" || std::string(colorterm) == "24bit");
+#endif
+    if (std::getenv("NO_COLOR"))
+    {
+        caps.ansi = false;
+        caps.truecolor = false;
+    }
+    return caps;
+}
+
+struct RGB
+{
+    uint8_t r = 0;
+    uint8_t g = 0;
+    uint8_t b = 0;
+    bool empty = true;
+};
+
+static void PrintBanner(const TermCaps &caps)
+{
+    if (!caps.isTTY || !caps.ansi)
+    {
+        // Clean Plain-Text Fallback for redirected file output / non-ANSI terminals
+        std::printf("\n========================================================================\n");
+        std::printf("                     TIME ENGINE - Welcome to TimeEngine                \n");
+        std::printf("========================================================================\n\n");
+        std::fflush(stdout);
+        return;
+    }
+
+    // 14x14 RGB Bitmap of TimeEngineIcon.png
+    RGB C{0, 235, 255, false};   // Cyan outer ring
+    RGB c{0, 160, 200, false};   // Dark cyan inner ring
+    RGB R{255, 60, 60, false};   // Red 3 o'clock arrow hand
+    RGB W{245, 245, 245, false}; // White vertical stem / hub
+    RGB _{0, 0, 0, true};        // Empty / transparent
+
+    std::vector<std::vector<RGB>> bitmap = {
+        {_, _, C, C, C, C, C, C, C, C, C, _, _, _},
+        {_, C, _, _, _, _, _, _, _, _, _, C, _, _},
+        {C, _, _, c, c, c, c, c, c, _, _, C, _, _},
+        {C, _, c, _, _, _, _, _, _, c, _, C, _, _},
+        {C, _, c, _, _, _, _, _, _, c, _, C, _, _},
+        {C, c, _, W, W, _, R, R, R, R, c, C, _, _},
+        {C, _, c, _, _, W, _, _, _, c, _, C, _, _},
+        {C, _, _, c, _, W, _, c, c, _, _, C, _, _},
+        {C, _, _, _, c, W, c, _, _, _, _, C, _, _},
+        {_, C, _, _, _, W, _, _, _, _, C, _, _, _},
+        {_, _, C, C, C, W, C, C, C, C, _, _, _, _},
+        {_, _, _, _, _, W, _, _, _, _, _, _, _, _},
+        {_, _, _, _, _, W, _, _, _, _, _, _, _, _},
+        {_, _, _, _, _, _, _, _, _, _, _, _, _, _}
+    };
+
+    // Title lines paired alongside the 7 half-block pixel rows
+    const char *magenta = "\033[95m";
+    const char *brightCyan = "\033[96m";
+    const char *yellow = "\033[93m";
+    const char *reset = "\033[0m";
+
+    std::vector<std::string> titleLines = {
+        std::string(magenta) + "████████╗██╗███╗   ███╗███████╗ " + brightCyan + "███████╗███╗   ██╗██████╗ ██╗███╗   ██╗███████╗" + reset,
+        std::string(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan + "██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝" + reset,
+        std::string(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan + "█████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗  " + reset,
+        std::string(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan + "██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝  " + reset,
+        std::string(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan + "███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗" + reset,
+        std::string(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan + "╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝" + reset,
+        std::string(yellow)  + "                                 Welcome to TimeEngine" + reset
+    };
+
+    std::printf("\n");
+    for (size_t y = 0; y < 14; y += 2)
+    {
+        size_t lineIdx = y / 2;
+        // Print 14 half-block columns for left icon
+        for (size_t x = 0; x < 14; ++x)
+        {
+            const RGB &top = bitmap[y][x];
+            const RGB &bot = bitmap[y + 1][x];
+
+            if (top.empty && bot.empty)
+            {
+                std::printf(" ");
+            }
+            else
+            {
+                if (!top.empty)
+                    std::printf("\033[38;2;%d;%d;%dm", top.r, top.g, top.b);
+                else
+                    std::printf("\033[39m");
+
+                if (!bot.empty)
+                    std::printf("\033[48;2;%d;%d;%dm", bot.r, bot.g, bot.b);
+                else
+                    std::printf("\033[49m");
+
+                std::printf("▀");
+            }
+        }
+        std::printf("%s   ", reset);
+
+        // Print corresponding title line
+        if (lineIdx < titleLines.size())
+            std::printf("%s", titleLines[lineIdx].c_str());
+
+        std::printf("\n");
+    }
+
+    std::printf("\033[36m-------------------------------------------------------------------------------------------------------------------%s\n\n", reset);
+    std::fflush(stdout);
+}
+
 void Log::Init(bool logToFile, const std::string &file)
 {
+    if (s_Initialized)
+        return;
+    s_Initialized = true;
+
+    TermCaps caps = DetectTerminal();
+    PrintBanner(caps);
+
     s_CoreLogger = std::make_unique<CustomizableLogger>(logToFile, "Core_" + file);
     s_ClientLogger = std::make_unique<CustomizableLogger>(logToFile, "Client_" + file);
 

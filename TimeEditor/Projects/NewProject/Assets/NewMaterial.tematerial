@@ -1,0 +1,7 @@
+Material: NewMaterial
+Color: 1 1 1 1
+PassStackCount: 4
+Node: Base Surface Slab|0|1|E:\TimeEngine\Resources\Editor\SaveIcon.png|1 1 1 1|0.73|0.47|1|1|1|0|Queue 1
+Node: Coat / Normal Slab|1|1|E:\TimeEngine\Resources\Editor\PlayButtonIcon.png|1 1 1 1|1.03|0.61|1|1|1|0|Queue 1
+Node: Emissive Glow Slab|2|1||1 1 1 1|11.5|0|1|1|1|0|Queue 1
+Node: UV Scroller Modifier|3|1||1 1 1 1|1|0|6.38|5.39|1|0|Queue 1
