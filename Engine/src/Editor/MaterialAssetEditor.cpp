@@ -8,10 +8,10 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include <imgui.h>
 #include <filesystem>
-#include <vector>
+#include <imgui.h>
 #include <string>
+#include <vector>
 
 namespace TE
 {
@@ -19,14 +19,16 @@ namespace TE
 void MaterialAssetEditor::DrawEditor(EditorTab &tab)
 {
     auto mat = std::dynamic_pointer_cast<Material>(tab.LoadedAsset);
-    if (!mat) return;
+    if (!mat)
+        return;
 
     static float s_MatZoom = 1.0f;
-    static TEVector2 s_LightPos2D = { 150.0f, 150.0f };
+    static TEVector2 s_LightPos2D = {150.0f, 150.0f};
     static bool s_EnableLightTester = true;
     static float s_LightIntensity = 1.5f;
     static int s_TargetQueueIdx = 0;
-    static std::vector<std::string> s_CustomQueues = { "Queue 1: Surface Slabs", "Queue 2: Lighting & Normal Coats", "Queue 3: FX & Modifiers", "Queue 4: Blending & Output" };
+    static std::vector<std::string> s_CustomQueues = {"Queue 1: Surface Slabs", "Queue 2: Lighting & Normal Coats",
+                                                      "Queue 3: FX & Modifiers", "Queue 4: Blending & Output"};
     static bool s_ExpandAllNodes = false;
     static bool s_CollapseAllNodes = false;
 
@@ -52,15 +54,16 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
     std::shared_ptr<Texture> albedoTex = nullptr;
     std::shared_ptr<Texture> normalTex = nullptr;
     std::shared_ptr<Texture> emissiveTex = nullptr;
-    TEVector4 baseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-    TEVector4 glowColor = { 1.0f, 1.0f, 0.5f, 1.0f };
+    TEVector4 baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    TEVector4 glowColor = {1.0f, 1.0f, 0.5f, 1.0f};
     float bumpDepth = 1.0f;
     float glowMult = 1.0f;
     float uTiling = 1.0f, vTiling = 1.0f;
 
     for (auto &node : stack)
     {
-        if (!node.Enabled) continue;
+        if (!node.Enabled)
+            continue;
         if (node.Type == MaterialPassNodeType::BaseSurfaceSlab)
         {
             albedoTex = node.TextureRef;
@@ -90,14 +93,16 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
 
     if (albedoTex)
     {
-        TimeGUI::Image((void *)(uintptr_t)albedoTex->GetRendererID(), TEVector2(previewW, previewH),
-                       TEVector2(0, 0), TEVector2(uTiling, vTiling), baseColor);
+        TimeGUI::Image((void *)(uintptr_t)albedoTex->GetRendererID(), TEVector2(previewW, previewH), TEVector2(0, 0),
+                       TEVector2(uTiling, vTiling), baseColor);
     }
     else
     {
         auto drawList = TimeGUI::GetWindowDrawList();
-        drawList->AddRectFilled(ImVec2(canvasPos.x, canvasPos.y), ImVec2(canvasPos.x + previewW, canvasPos.y + previewH),
-                                IM_COL32((int)(baseColor.x * 255), (int)(baseColor.y * 255), (int)(baseColor.z * 255), (int)(baseColor.w * 255)));
+        drawList->AddRectFilled(ImVec2(canvasPos.x, canvasPos.y),
+                                ImVec2(canvasPos.x + previewW, canvasPos.y + previewH),
+                                IM_COL32((int)(baseColor.x * 255), (int)(baseColor.y * 255), (int)(baseColor.z * 255),
+                                         (int)(baseColor.w * 255)));
         drawList->AddRect(ImVec2(canvasPos.x, canvasPos.y), ImVec2(canvasPos.x + previewW, canvasPos.y + previewH),
                           IM_COL32(255, 255, 255, 120), 0.0f, 0, 1.5f);
         TimeGUI::Dummy(TEVector2(previewW, previewH));
@@ -109,7 +114,7 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
 
     if (s_EnableLightTester && isCanvasHovered && isMouseDown)
     {
-        s_LightPos2D = { mousePos.x - canvasPos.x, mousePos.y - canvasPos.y };
+        s_LightPos2D = {mousePos.x - canvasPos.x, mousePos.y - canvasPos.y};
     }
 
     auto drawList = TimeGUI::GetWindowDrawList();
@@ -125,13 +130,16 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
 
         if (normalTex)
         {
-            drawList->AddCircleFilled(ImVec2(lx, ly), 30.0f * bumpDepth, IM_COL32(255, 255, 255, (int)(80 * s_LightIntensity)));
+            drawList->AddCircleFilled(ImVec2(lx, ly), 30.0f * bumpDepth,
+                                      IM_COL32(255, 255, 255, (int)(80 * s_LightIntensity)));
         }
 
         if (glowMult > 0.0f)
         {
             drawList->AddRect(ImVec2(canvasPos.x, canvasPos.y), ImVec2(canvasPos.x + previewW, canvasPos.y + previewH),
-                              IM_COL32((int)(glowColor.x * 255), (int)(glowColor.y * 255), (int)(glowColor.z * 255), (int)(40 * glowMult)), 0.0f, 0, 2.0f);
+                              IM_COL32((int)(glowColor.x * 255), (int)(glowColor.y * 255), (int)(glowColor.z * 255),
+                                       (int)(40 * glowMult)),
+                              0.0f, 0, 2.0f);
         }
     }
 
@@ -156,8 +164,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::Separator();
 
-    auto resolveAnyTextureAsset = [](const std::string &filepath) -> std::shared_ptr<Texture> {
-        if (filepath.empty() || !std::filesystem::exists(filepath)) return nullptr;
+    auto resolveAnyTextureAsset = [](const std::string &filepath) -> std::shared_ptr<Texture>
+    {
+        if (filepath.empty() || !std::filesystem::exists(filepath))
+            return nullptr;
         std::string ext = std::filesystem::path(filepath).extension().string();
         if (ext == ".tesprite")
         {
@@ -179,8 +189,9 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::Text("Target Queue:");
     TimeGUI::SameLine();
 
-    std::vector<const char*> queueItemPtrs;
-    for (auto &qName : s_CustomQueues) queueItemPtrs.push_back(qName.c_str());
+    std::vector<const char *> queueItemPtrs;
+    for (auto &qName : s_CustomQueues)
+        queueItemPtrs.push_back(qName.c_str());
     queueItemPtrs.push_back("+ Create New Queue...");
 
     int currentQIdx = s_TargetQueueIdx;
@@ -201,24 +212,22 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
 
     static int s_SelectedFuncIdx = 0;
-    const char *catalogItems[] = {
-        "+ Add Function...",
-        "Base Surface Slab",
-        "Coat / Normal Slab",
-        "Emissive Glow Slab",
-        "PBR Metallic & Roughness Slab",
-        "Fresnel Rim Light Modifier",
-        "Color Grading Modifier",
-        "Subsurface Scattering Slab",
-        "Dissolve Mask Modifier",
-        "Triplanar World Mapping Slab",
-        "Parallax Occlusion Depth Slab",
-        "Gradient Ramp Colorizer Modifier",
-        "Chromatic Aberration & UV Distortion",
-        "Sprite / SpriteSheet Frame Sampler",
-        "UV Scroller Modifier",
-        "Blend Output State"
-    };
+    const char *catalogItems[] = {"+ Add Function...",
+                                  "Base Surface Slab",
+                                  "Coat / Normal Slab",
+                                  "Emissive Glow Slab",
+                                  "PBR Metallic & Roughness Slab",
+                                  "Fresnel Rim Light Modifier",
+                                  "Color Grading Modifier",
+                                  "Subsurface Scattering Slab",
+                                  "Dissolve Mask Modifier",
+                                  "Triplanar World Mapping Slab",
+                                  "Parallax Occlusion Depth Slab",
+                                  "Gradient Ramp Colorizer Modifier",
+                                  "Chromatic Aberration & UV Distortion",
+                                  "Sprite / SpriteSheet Frame Sampler",
+                                  "UV Scroller Modifier",
+                                  "Blend Output State"};
 
     if (TimeGUI::Combo("##AddFuncCombo", &s_SelectedFuncIdx, catalogItems, 16) && s_SelectedFuncIdx > 0)
     {
@@ -300,9 +309,11 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::Separator();
 
-    if (TimeGUI::Button("Expand All")) s_ExpandAllNodes = true;
+    if (TimeGUI::Button("Expand All"))
+        s_ExpandAllNodes = true;
     TimeGUI::SameLine();
-    if (TimeGUI::Button("Collapse All")) s_CollapseAllNodes = true;
+    if (TimeGUI::Button("Collapse All"))
+        s_CollapseAllNodes = true;
 
     TimeGUI::Separator();
 
@@ -321,10 +332,13 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                 nodeIndicesInQueue.push_back(i);
         }
 
-        std::string qHeaderLabel = "[Q" + std::to_string(q + 1) + "] " + s_CustomQueues[q] + " (" + std::to_string(nodeIndicesInQueue.size()) + ")###QHeader_" + std::to_string(q);
+        std::string qHeaderLabel = "[Q" + std::to_string(q + 1) + "] " + s_CustomQueues[q] + " (" +
+                                   std::to_string(nodeIndicesInQueue.size()) + ")###QHeader_" + std::to_string(q);
 
-        if (s_ExpandAllNodes) TimeGUI::SetNextItemOpen(true);
-        if (s_CollapseAllNodes) TimeGUI::SetNextItemOpen(false);
+        if (s_ExpandAllNodes)
+            TimeGUI::SetNextItemOpen(true);
+        if (s_CollapseAllNodes)
+            TimeGUI::SetNextItemOpen(false);
 
         if (TimeGUI::CollapsingHeader(qHeaderLabel.c_str()))
         {
@@ -339,8 +353,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                 auto &node = stack[idx];
                 bool nodeChanged = false;
 
-                if (s_ExpandAllNodes) TimeGUI::SetNextItemOpen(true);
-                if (s_CollapseAllNodes) TimeGUI::SetNextItemOpen(false);
+                if (s_ExpandAllNodes)
+                    TimeGUI::SetNextItemOpen(true);
+                if (s_CollapseAllNodes)
+                    TimeGUI::SetNextItemOpen(false);
 
                 // RED DELETE BUTTON (Centered X with zero frame padding)
                 TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(0.0f, 0.0f));
@@ -361,7 +377,8 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                 }
 
                 TimeGUI::SameLine();
-                if (TimeGUI::Checkbox("##Enable", &node.Enabled)) nodeChanged = true;
+                if (TimeGUI::Checkbox("##Enable", &node.Enabled))
+                    nodeChanged = true;
                 TimeGUI::SameLine();
 
                 std::string nodeHeaderLabel = node.Name + "###NodeTree_" + std::to_string(idx);
@@ -386,7 +403,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -395,15 +415,17 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                 }
                             }
 
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Color Tint", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
 
-                            if (TimeGUI::SliderFloat("Roughness", &node.FloatVal1, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Metallic", &node.FloatVal2, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Roughness", &node.FloatVal1, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Metallic", &node.FloatVal2, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::CoatNormalSlab:
@@ -419,7 +441,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -428,8 +453,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                 }
                             }
 
-                            if (TimeGUI::SliderFloat("Bump Depth", &node.FloatVal1, 0.0f, 5.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Clear Coat", &node.FloatVal2, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Bump Depth", &node.FloatVal1, 0.0f, 5.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Clear Coat", &node.FloatVal2, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::EmissiveGlowSlab:
@@ -445,7 +472,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -454,57 +484,67 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                 }
                             }
 
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Glow Tint", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
 
-                            if (TimeGUI::SliderFloat("Intensity", &node.FloatVal1, 0.0f, 20.0f, "%.1fx")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Intensity", &node.FloatVal1, 0.0f, 20.0f, "%.1fx"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::PBRMetallicRoughnessSlab:
                         {
-                            if (TimeGUI::SliderFloat("Metallic", &node.FloatVal1, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Roughness", &node.FloatVal2, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("AO Strength", &node.FloatVal3, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            if (TimeGUI::SliderFloat("Metallic", &node.FloatVal1, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Roughness", &node.FloatVal2, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("AO Strength", &node.FloatVal3, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Specular Tint", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
                             break;
                         }
                         case MaterialPassNodeType::FresnelRimLightModifier:
                         {
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Rim Color", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
-                            if (TimeGUI::SliderFloat("Rim Exponent", &node.FloatVal1, 0.5f, 10.0f, "%.1f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Rim Multiplier", &node.FloatVal2, 0.0f, 5.0f, "%.1f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Rim Exponent", &node.FloatVal1, 0.5f, 10.0f, "%.1f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Rim Multiplier", &node.FloatVal2, 0.0f, 5.0f, "%.1f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::ColorGradingModifier:
                         {
-                            if (TimeGUI::SliderFloat("Saturation", &node.FloatVal1, 0.0f, 2.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Contrast", &node.FloatVal2, 0.5f, 2.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Brightness", &node.FloatVal3, -1.0f, 1.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Saturation", &node.FloatVal1, 0.0f, 2.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Contrast", &node.FloatVal2, 0.5f, 2.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Brightness", &node.FloatVal3, -1.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::SubsurfaceScatteringSlab:
                         {
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Scattering Tint", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
-                            if (TimeGUI::SliderFloat("Translucency Depth", &node.FloatVal1, 0.0f, 5.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Translucency Depth", &node.FloatVal1, 0.0f, 5.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::DissolveMaskModifier:
@@ -520,7 +560,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -528,11 +571,12 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                     nodeChanged = true;
                                 }
                             }
-                            if (TimeGUI::SliderFloat("Dissolve Amount", &node.FloatVal1, 0.0f, 1.0f, "%.2f")) nodeChanged = true;
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            if (TimeGUI::SliderFloat("Dissolve Amount", &node.FloatVal1, 0.0f, 1.0f, "%.2f"))
+                                nodeChanged = true;
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Edge Burn Color", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
                             break;
@@ -550,7 +594,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -558,8 +605,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                     nodeChanged = true;
                                 }
                             }
-                            if (TimeGUI::SliderFloat("Blend Sharpness", &node.FloatVal1, 1.0f, 10.0f, "%.1f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("World Tile Scale", &node.FloatVal2, 0.1f, 10.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Blend Sharpness", &node.FloatVal1, 1.0f, 10.0f, "%.1f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("World Tile Scale", &node.FloatVal2, 0.1f, 10.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::ParallaxOcclusionSlab:
@@ -575,7 +624,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -583,25 +635,30 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                     nodeChanged = true;
                                 }
                             }
-                            if (TimeGUI::SliderFloat("Parallax Scale", &node.FloatVal1, 0.0f, 0.2f, "%.3f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Min/Max Steps", &node.FloatVal2, 8.0f, 64.0f, "%.0f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Parallax Scale", &node.FloatVal1, 0.0f, 0.2f, "%.3f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Min/Max Steps", &node.FloatVal2, 8.0f, 64.0f, "%.0f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::GradientRampColorizerModifier:
                         {
-                            float colArr[4] = { node.Color.x, node.Color.y, node.Color.z, node.Color.w };
+                            float colArr[4] = {node.Color.x, node.Color.y, node.Color.z, node.Color.w};
                             if (TimeGUI::ColorEdit4("Ramp Color A", colArr))
                             {
-                                node.Color = { colArr[0], colArr[1], colArr[2], colArr[3] };
+                                node.Color = {colArr[0], colArr[1], colArr[2], colArr[3]};
                                 nodeChanged = true;
                             }
-                            if (TimeGUI::SliderFloat("Blend Exponent", &node.FloatVal1, 0.1f, 5.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Blend Exponent", &node.FloatVal1, 0.1f, 5.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::ChromaticAberrationModifier:
                         {
-                            if (TimeGUI::SliderFloat("RGB Shift Offset", &node.FloatVal1, 0.0f, 0.1f, "%.3f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Ripple Frequency", &node.FloatVal2, 0.0f, 20.0f, "%.1f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("RGB Shift Offset", &node.FloatVal1, 0.0f, 0.1f, "%.3f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Ripple Frequency", &node.FloatVal2, 0.0f, 20.0f, "%.1f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::SpriteSheetFrameSamplerSlab:
@@ -617,7 +674,10 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                             TimeGUI::SameLine();
                             if (TimeGUI::Button("..."))
                             {
-                                std::string filepath = PlatformUtils::OpenFile("Supported Assets (*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
+                                std::string filepath = PlatformUtils::OpenFile(
+                                    "Supported Assets "
+                                    "(*.png;*.jpg;*.tetexture;*.tespritesheet;*.tesprite)\0*.png;*.jpg;*.tetexture;*."
+                                    "tespritesheet;*.tesprite\0All Files (*.*)\0*.*\0");
                                 if (!filepath.empty())
                                 {
                                     node.TexturePath = filepath;
@@ -625,21 +685,27 @@ void MaterialAssetEditor::DrawEditor(EditorTab &tab)
                                     nodeChanged = true;
                                 }
                             }
-                            if (TimeGUI::SliderFloat("Frame Index", &node.FloatVal1, 0.0f, 64.0f, "%.0f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Frame Index", &node.FloatVal1, 0.0f, 64.0f, "%.0f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::UVScrollerModifier:
                         {
-                            if (TimeGUI::SliderFloat("Speed U", &node.FloatVal1, -5.0f, 5.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Speed V", &node.FloatVal2, -5.0f, 5.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Tiling U", &node.FloatVal3, 0.1f, 10.0f, "%.2f")) nodeChanged = true;
-                            if (TimeGUI::SliderFloat("Tiling V", &node.FloatVal4, 0.1f, 10.0f, "%.2f")) nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Speed U", &node.FloatVal1, -5.0f, 5.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Speed V", &node.FloatVal2, -5.0f, 5.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Tiling U", &node.FloatVal3, 0.1f, 10.0f, "%.2f"))
+                                nodeChanged = true;
+                            if (TimeGUI::SliderFloat("Tiling V", &node.FloatVal4, 0.1f, 10.0f, "%.2f"))
+                                nodeChanged = true;
                             break;
                         }
                         case MaterialPassNodeType::BlendOutputState:
                         {
-                            const char *blendItems[] = { "Opaque", "Alpha Blend", "Additive", "Multiply" };
-                            if (TimeGUI::Combo("Blend Mode", &node.BlendMode, blendItems, 4)) nodeChanged = true;
+                            const char *blendItems[] = {"Opaque", "Alpha Blend", "Additive", "Multiply"};
+                            if (TimeGUI::Combo("Blend Mode", &node.BlendMode, blendItems, 4))
+                                nodeChanged = true;
                             break;
                         }
                         default:

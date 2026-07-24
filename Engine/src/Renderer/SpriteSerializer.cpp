@@ -111,7 +111,7 @@ bool SpriteSerializer::Deserialize(const std::filesystem::path &filepath)
                     float x, y;
                     if (ss >> x >> y)
                     {
-                        pts.push_back({ x, y });
+                        pts.push_back({x, y});
                     }
                 }
                 m_Sprite->SetCustomColliderPoints(pts);

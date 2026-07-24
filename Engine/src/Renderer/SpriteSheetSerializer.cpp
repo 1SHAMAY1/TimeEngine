@@ -99,14 +99,22 @@ bool SpriteSheetSerializer::Deserialize(const std::filesystem::path &filepath)
             if (std::getline(ss, f.Name, ',') && std::getline(ss, item, ','))
             {
                 f.Index = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ',')) f.X = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ',')) f.Y = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ',')) f.Width = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ',')) f.Height = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ',')) f.U0 = std::stof(item);
-                if (std::getline(ss, item, ',')) f.V0 = std::stof(item);
-                if (std::getline(ss, item, ',')) f.U1 = std::stof(item);
-                if (std::getline(ss, item, ',')) f.V1 = std::stof(item);
+                if (std::getline(ss, item, ','))
+                    f.X = (uint32_t)std::stoul(item);
+                if (std::getline(ss, item, ','))
+                    f.Y = (uint32_t)std::stoul(item);
+                if (std::getline(ss, item, ','))
+                    f.Width = (uint32_t)std::stoul(item);
+                if (std::getline(ss, item, ','))
+                    f.Height = (uint32_t)std::stoul(item);
+                if (std::getline(ss, item, ','))
+                    f.U0 = std::stof(item);
+                if (std::getline(ss, item, ','))
+                    f.V0 = std::stof(item);
+                if (std::getline(ss, item, ','))
+                    f.U1 = std::stof(item);
+                if (std::getline(ss, item, ','))
+                    f.V1 = std::stof(item);
                 subFrames.push_back(f);
             }
         }
@@ -118,7 +126,8 @@ bool SpriteSheetSerializer::Deserialize(const std::filesystem::path &filepath)
             if (std::getline(ss, a.Name, ',') && std::getline(ss, item, ','))
             {
                 a.FPS = std::stof(item);
-                if (std::getline(ss, item, ',')) a.Loop = (item == "1" || item == "true");
+                if (std::getline(ss, item, ','))
+                    a.Loop = (item == "1" || item == "true");
                 if (std::getline(ss, item, ','))
                 {
                     std::stringstream framesSS(item);

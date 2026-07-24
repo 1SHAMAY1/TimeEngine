@@ -1,15 +1,15 @@
 #include "Log.h"
 #include "Core/EngineSettings.hpp"
 #include <chrono>
-#include <iomanip>
-#include <mutex>
-#include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <iomanip>
+#include <iostream>
+#include <mutex>
 
 #ifdef _WIN32
-#include <windows.h>
 #include <io.h>
+#include <windows.h>
 #else
 #include <unistd.h>
 #endif
@@ -55,8 +55,8 @@ static TermCaps DetectTerminal()
     const char *term = std::getenv("TERM");
     const char *colorterm = std::getenv("COLORTERM");
     caps.ansi = caps.isTTY && term && std::string(term) != "dumb";
-    caps.truecolor = caps.ansi && colorterm &&
-                     (std::string(colorterm) == "truecolor" || std::string(colorterm) == "24bit");
+    caps.truecolor =
+        caps.ansi && colorterm && (std::string(colorterm) == "truecolor" || std::string(colorterm) == "24bit");
 #endif
     if (std::getenv("NO_COLOR"))
     {
@@ -94,21 +94,13 @@ static void PrintBanner(const TermCaps &caps)
     RGB _{0, 0, 0, true};        // Empty / transparent
 
     std::vector<std::vector<RGB>> bitmap = {
-        {_, _, C, C, C, C, C, C, C, C, C, _, _, _},
-        {_, C, _, _, _, _, _, _, _, _, _, C, _, _},
-        {C, _, _, c, c, c, c, c, c, _, _, C, _, _},
-        {C, _, c, _, _, _, _, _, _, c, _, C, _, _},
-        {C, _, c, _, _, _, _, _, _, c, _, C, _, _},
-        {C, c, _, W, W, _, R, R, R, R, c, C, _, _},
-        {C, _, c, _, _, W, _, _, _, c, _, C, _, _},
-        {C, _, _, c, _, W, _, c, c, _, _, C, _, _},
-        {C, _, _, _, c, W, c, _, _, _, _, C, _, _},
-        {_, C, _, _, _, W, _, _, _, _, C, _, _, _},
-        {_, _, C, C, C, W, C, C, C, C, _, _, _, _},
-        {_, _, _, _, _, W, _, _, _, _, _, _, _, _},
-        {_, _, _, _, _, W, _, _, _, _, _, _, _, _},
-        {_, _, _, _, _, _, _, _, _, _, _, _, _, _}
-    };
+        {_, _, C, C, C, C, C, C, C, C, C, _, _, _}, {_, C, _, _, _, _, _, _, _, _, _, C, _, _},
+        {C, _, _, c, c, c, c, c, c, _, _, C, _, _}, {C, _, c, _, _, _, _, _, _, c, _, C, _, _},
+        {C, _, c, _, _, _, _, _, _, c, _, C, _, _}, {C, c, _, W, W, _, R, R, R, R, c, C, _, _},
+        {C, _, c, _, _, W, _, _, _, c, _, C, _, _}, {C, _, _, c, _, W, _, c, c, _, _, C, _, _},
+        {C, _, _, _, c, W, c, _, _, _, _, C, _, _}, {_, C, _, _, _, W, _, _, _, _, C, _, _, _},
+        {_, _, C, C, C, W, C, C, C, C, _, _, _, _}, {_, _, _, _, _, W, _, _, _, _, _, _, _, _},
+        {_, _, _, _, _, W, _, _, _, _, _, _, _, _}, {_, _, _, _, _, _, _, _, _, _, _, _, _, _}};
 
     // Title lines paired alongside the 7 half-block pixel rows
     const char *magenta = "\033[95m";
@@ -116,15 +108,20 @@ static void PrintBanner(const TermCaps &caps)
     const char *yellow = "\033[93m";
     const char *reset = "\033[0m";
 
-    std::vector<std::string> titleLines = {
-        std::string(magenta) + "████████╗██╗███╗   ███╗███████╗ " + brightCyan + "███████╗███╗   ██╗██████╗ ██╗███╗   ██╗███████╗" + reset,
-        std::string(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan + "██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝" + reset,
-        std::string(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan + "█████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗  " + reset,
-        std::string(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan + "██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝  " + reset,
-        std::string(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan + "███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗" + reset,
-        std::string(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan + "╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝" + reset,
-        std::string(yellow)  + "                                 Welcome to TimeEngine" + reset
-    };
+    std::vector<std::string> titleLines = {std::string(magenta) + "████████╗██╗███╗   ███╗███████╗ " + brightCyan +
+                                               "███████╗███╗   ██╗██████╗ ██╗███╗   ██╗███████╗" + reset,
+                                           std::string(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan +
+                                               "██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝" + reset,
+                                           std::string(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan +
+                                               "█████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗  " + reset,
+                                           std::string(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan +
+                                               "██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝  " + reset,
+                                           std::string(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan +
+                                               "███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗" + reset,
+                                           std::string(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan +
+                                               "╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝" + reset,
+                                           std::string(yellow) +
+                                               "                                 Welcome to TimeEngine" + reset};
 
     std::printf("\n");
     for (size_t y = 0; y < 14; y += 2)
@@ -164,7 +161,9 @@ static void PrintBanner(const TermCaps &caps)
         std::printf("\n");
     }
 
-    std::printf("\033[36m-------------------------------------------------------------------------------------------------------------------%s\n\n", reset);
+    std::printf("\033[36m----------------------------------------------------------------------------------------------"
+                "---------------------%s\n\n",
+                reset);
     std::fflush(stdout);
 }
 

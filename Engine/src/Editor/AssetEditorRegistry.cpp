@@ -2,5 +2,5 @@
 
 namespace TE
 {
-    // AssetEditorRegistry uses inline static auto-registration template system.
+// AssetEditorRegistry uses inline static auto-registration template system.
 }

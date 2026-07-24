@@ -1,7 +1,5 @@
 #include "Layers/EditorLayer.hpp"
 #include "Core/Application.h"
-#include "Editor/AssetEditorRegistry.hpp"
-#include <imgui.h>
 #include "Core/Collision/PolygonColliderComponent.hpp"
 #include "Core/EngineSettings.hpp"
 #include "Core/KeyCodes.hpp"
@@ -18,6 +16,7 @@
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "Core/Scene/TriangleComponent.hpp"
+#include "Editor/AssetEditorRegistry.hpp"
 #include "Editor/DefaultModes.hpp"
 #include "Editor/EditorToolbar.hpp"
 #include "Editor/SpriteMode.hpp"
@@ -26,22 +25,21 @@
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/MaterialSerializer.hpp"
-#include "Renderer/Sprite.hpp"
-#include "Renderer/SpriteSerializer.hpp"
-#include "Renderer/SpriteSheet.hpp"
-#include "Renderer/SpriteSheetSerializer.hpp"
-#include "Renderer/Texture.hpp"
-#include "Renderer/TextureSerializer.hpp"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Renderer/ShaderLibrary.hpp"
+#include "Renderer/Sprite.hpp"
+#include "Renderer/SpriteSerializer.hpp"
+#include "Renderer/SpriteSheet.hpp"
+#include "Renderer/SpriteSheetSerializer.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
+#include <imgui.h>
 
 #include <cstring>
 #include <filesystem>
@@ -2326,9 +2324,12 @@ void EditorLayer::UI_DrawConsolePanel()
             auto drawList = TimeGUI::GetWindowDrawList();
             drawList->AddCircle(ImVec2(cx, cy), 18.0f, IM_COL32(0, 235, 255, 255), 0, 2.0f); // Cyan outer ring
             drawList->AddCircle(ImVec2(cx, cy), 14.0f, IM_COL32(0, 200, 235, 180), 0, 1.2f); // Inner cyan ring
-            drawList->AddLine(ImVec2(cx - 14.0f, cy), ImVec2(cx, cy), IM_COL32(200, 200, 200, 255), 1.5f); // Left gray bar
-            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx + 14.0f, cy), IM_COL32(255, 50, 50, 255), 2.5f); // Red 3 o'clock hand
-            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx, cy + 14.0f), IM_COL32(200, 200, 200, 255), 1.8f); // Vertical stem
+            drawList->AddLine(ImVec2(cx - 14.0f, cy), ImVec2(cx, cy), IM_COL32(200, 200, 200, 255),
+                              1.5f); // Left gray bar
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx + 14.0f, cy), IM_COL32(255, 50, 50, 255),
+                              2.5f); // Red 3 o'clock hand
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx, cy + 14.0f), IM_COL32(200, 200, 200, 255),
+                              1.8f);                                                       // Vertical stem
             drawList->AddCircleFilled(ImVec2(cx, cy), 3.0f, IM_COL32(255, 255, 255, 255)); // Center dot
 
             TimeGUI::SetCursorScreenPos(TEVector2(headerPos.x + 50.0f, headerPos.y + 4.0f));
@@ -2451,9 +2452,12 @@ void EditorLayer::UI_DrawConsolePanel()
             auto drawList = TimeGUI::GetWindowDrawList();
             drawList->AddCircle(ImVec2(cx, cy), 18.0f, IM_COL32(0, 235, 255, 255), 0, 2.0f); // Cyan outer ring
             drawList->AddCircle(ImVec2(cx, cy), 14.0f, IM_COL32(0, 200, 235, 180), 0, 1.2f); // Inner cyan ring
-            drawList->AddLine(ImVec2(cx - 14.0f, cy), ImVec2(cx, cy), IM_COL32(200, 200, 200, 255), 1.5f); // Left gray bar
-            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx + 14.0f, cy), IM_COL32(255, 50, 50, 255), 2.5f); // Red 3 o'clock hand
-            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx, cy + 14.0f), IM_COL32(200, 200, 200, 255), 1.8f); // Vertical stem
+            drawList->AddLine(ImVec2(cx - 14.0f, cy), ImVec2(cx, cy), IM_COL32(200, 200, 200, 255),
+                              1.5f); // Left gray bar
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx + 14.0f, cy), IM_COL32(255, 50, 50, 255),
+                              2.5f); // Red 3 o'clock hand
+            drawList->AddLine(ImVec2(cx, cy), ImVec2(cx, cy + 14.0f), IM_COL32(200, 200, 200, 255),
+                              1.8f);                                                       // Vertical stem
             drawList->AddCircleFilled(ImVec2(cx, cy), 3.0f, IM_COL32(255, 255, 255, 255)); // Center dot
 
             TimeGUI::SetCursorScreenPos(TEVector2(headerPos.x + 50.0f, headerPos.y + 4.0f));

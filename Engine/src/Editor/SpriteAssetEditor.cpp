@@ -5,8 +5,8 @@
 #include "Renderer/Texture.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include <imgui.h>
 #include <filesystem>
+#include <imgui.h>
 #include <string>
 
 namespace TE
@@ -15,7 +15,8 @@ namespace TE
 void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 {
     auto sprite = std::dynamic_pointer_cast<Sprite>(tab.LoadedAsset);
-    if (!sprite) return;
+    if (!sprite)
+        return;
 
     static float s_SpriteZoom = 1.0f;
     static int s_SpriteViewMode = 0; // 0 = Preview, 1 = Pivot Tool, 2 = Collider Editor
@@ -40,9 +41,9 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     if (TimeGUI::Button("Browse..."))
     {
-        std::string filepath = PlatformUtils::OpenFile(
-            "Texture Files (*.png;*.jpg;*.tetexture)\0*.png;*.jpg;*.tetexture\0All Files "
-            "(*.*)\0*.*\0");
+        std::string filepath =
+            PlatformUtils::OpenFile("Texture Files (*.png;*.jpg;*.tetexture)\0*.png;*.jpg;*.tetexture\0All Files "
+                                    "(*.*)\0*.*\0");
         if (!filepath.empty())
         {
             strcpy_s(spriteTexBuf, filepath.c_str());
@@ -58,10 +59,14 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     float u0, v0, u1, v1;
     sprite->GetUVs(u0, v0, u1, v1);
     bool uvChanged = false;
-    if (TimeGUI::SliderFloat("U0 (Left)", &u0, 0.0f, 1.0f, "%.3f")) uvChanged = true;
-    if (TimeGUI::SliderFloat("V0 (Top)", &v0, 0.0f, 1.0f, "%.3f")) uvChanged = true;
-    if (TimeGUI::SliderFloat("U1 (Right)", &u1, 0.0f, 1.0f, "%.3f")) uvChanged = true;
-    if (TimeGUI::SliderFloat("V1 (Bottom)", &v1, 0.0f, 1.0f, "%.3f")) uvChanged = true;
+    if (TimeGUI::SliderFloat("U0 (Left)", &u0, 0.0f, 1.0f, "%.3f"))
+        uvChanged = true;
+    if (TimeGUI::SliderFloat("V0 (Top)", &v0, 0.0f, 1.0f, "%.3f"))
+        uvChanged = true;
+    if (TimeGUI::SliderFloat("U1 (Right)", &u1, 0.0f, 1.0f, "%.3f"))
+        uvChanged = true;
+    if (TimeGUI::SliderFloat("V1 (Bottom)", &v1, 0.0f, 1.0f, "%.3f"))
+        uvChanged = true;
 
     if (uvChanged)
     {
@@ -83,8 +88,10 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     float px, py;
     sprite->GetPivot(px, py);
     bool pivotChanged = false;
-    if (TimeGUI::SliderFloat("Pivot X", &px, 0.0f, 1.0f, "%.2f")) pivotChanged = true;
-    if (TimeGUI::SliderFloat("Pivot Y", &py, 0.0f, 1.0f, "%.2f")) pivotChanged = true;
+    if (TimeGUI::SliderFloat("Pivot X", &px, 0.0f, 1.0f, "%.2f"))
+        pivotChanged = true;
+    if (TimeGUI::SliderFloat("Pivot Y", &py, 0.0f, 1.0f, "%.2f"))
+        pivotChanged = true;
 
     if (pivotChanged)
     {
@@ -142,7 +149,7 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 
     if (TimeGUI::Button("Add Vertex Point"))
     {
-        sprite->GetCustomColliderPoints().push_back({ 0.0f, 0.0f });
+        sprite->GetCustomColliderPoints().push_back({0.0f, 0.0f});
         SpriteSerializer serializer(sprite);
         serializer.Serialize(tab.AssetPath);
     }
@@ -154,8 +161,10 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
         bool ptChanged = false;
         std::string labelX = "Pt #" + std::to_string(ptIdx) + " X";
         std::string labelY = "Pt #" + std::to_string(ptIdx) + " Y";
-        if (TimeGUI::SliderFloat(labelX.c_str(), &pts[ptIdx].x, -1.0f, 1.0f, "%.2f")) ptChanged = true;
-        if (TimeGUI::SliderFloat(labelY.c_str(), &pts[ptIdx].y, -1.0f, 1.0f, "%.2f")) ptChanged = true;
+        if (TimeGUI::SliderFloat(labelX.c_str(), &pts[ptIdx].x, -1.0f, 1.0f, "%.2f"))
+            ptChanged = true;
+        if (TimeGUI::SliderFloat(labelY.c_str(), &pts[ptIdx].y, -1.0f, 1.0f, "%.2f"))
+            ptChanged = true;
         if (ptChanged)
         {
             SpriteSerializer serializer(sprite);
@@ -171,11 +180,14 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     // --- RIGHT PANEL: Interactive Viewport Canvas ---
     TimeGUI::BeginChild("SpriteRightPanel", TEVector2(0.0f, 0.0f), false);
 
-    if (TimeGUI::RadioButton("Preview", s_SpriteViewMode == 0)) s_SpriteViewMode = 0;
+    if (TimeGUI::RadioButton("Preview", s_SpriteViewMode == 0))
+        s_SpriteViewMode = 0;
     TimeGUI::SameLine();
-    if (TimeGUI::RadioButton("Pivot Tool", s_SpriteViewMode == 1)) s_SpriteViewMode = 1;
+    if (TimeGUI::RadioButton("Pivot Tool", s_SpriteViewMode == 1))
+        s_SpriteViewMode = 1;
     TimeGUI::SameLine();
-    if (TimeGUI::RadioButton("Collider Editor", s_SpriteViewMode == 2)) s_SpriteViewMode = 2;
+    if (TimeGUI::RadioButton("Collider Editor", s_SpriteViewMode == 2))
+        s_SpriteViewMode = 2;
 
     TimeGUI::SameLine();
     TimeGUI::SliderFloat("Zoom", &s_SpriteZoom, 0.2f, 5.0f, "%.0f%%");
@@ -194,8 +206,8 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
         TEVector2 canvasPos = TimeGUI::GetCursorScreenPos();
 
         // Draw cropped sprite image
-        TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), TEVector2(fullW, fullH),
-                       TEVector2(su0, sv0), TEVector2(su1, sv1));
+        TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), TEVector2(fullW, fullH), TEVector2(su0, sv0),
+                       TEVector2(su1, sv1));
 
         bool isCanvasHovered = TimeGUI::IsItemHovered();
         bool isMouseDown = TimeGUI::IsMouseDown(0);
@@ -227,8 +239,10 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
             float pivotScreenX = canvasPos.x + spx * fullW;
             float pivotScreenY = canvasPos.y + (1.0f - spy) * fullH; // top-down Y
 
-            drawList->AddLine(ImVec2(pivotScreenX - 15.0f, pivotScreenY), ImVec2(pivotScreenX + 15.0f, pivotScreenY), IM_COL32(255, 230, 0, 255), 2.5f);
-            drawList->AddLine(ImVec2(pivotScreenX, pivotScreenY - 15.0f), ImVec2(pivotScreenX, pivotScreenY + 15.0f), IM_COL32(255, 230, 0, 255), 2.5f);
+            drawList->AddLine(ImVec2(pivotScreenX - 15.0f, pivotScreenY), ImVec2(pivotScreenX + 15.0f, pivotScreenY),
+                              IM_COL32(255, 230, 0, 255), 2.5f);
+            drawList->AddLine(ImVec2(pivotScreenX, pivotScreenY - 15.0f), ImVec2(pivotScreenX, pivotScreenY + 15.0f),
+                              IM_COL32(255, 230, 0, 255), 2.5f);
             drawList->AddCircleFilled(ImVec2(pivotScreenX, pivotScreenY), 6.0f, IM_COL32(255, 230, 0, 255));
             drawList->AddCircle(ImVec2(pivotScreenX, pivotScreenY), 12.0f, IM_COL32(255, 230, 0, 255), 0, 1.5f);
         }
@@ -264,7 +278,7 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
             {
                 float newX = (mousePos.x - canvasPos.x) / fullW - 0.5f;
                 float newY = 0.5f - ((mousePos.y - canvasPos.y) / fullH);
-                cPoints[s_DraggedVertexIdx] = { newX, newY };
+                cPoints[s_DraggedVertexIdx] = {newX, newY};
                 SpriteSerializer serializer(sprite);
                 serializer.Serialize(tab.AssetPath);
             }
@@ -285,7 +299,8 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 
                     drawList->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(255, 60, 60, 255), 2.5f);
 
-                    uint32_t handleColor = (s_DraggedVertexIdx == (int)i) ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 60, 60, 255);
+                    uint32_t handleColor =
+                        (s_DraggedVertexIdx == (int)i) ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 60, 60, 255);
                     drawList->AddCircleFilled(ImVec2(x1, y1), 6.0f, handleColor);
                     drawList->AddCircle(ImVec2(x1, y1), 10.0f, handleColor, 0, 1.5f);
                 }

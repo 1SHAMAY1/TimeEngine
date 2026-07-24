@@ -13,7 +13,7 @@ Material::Material() : m_Shader(nullptr), m_Color(TEColor::White())
     baseNode.Name = "Base Surface Slab";
     baseNode.Type = MaterialPassNodeType::BaseSurfaceSlab;
     baseNode.Enabled = true;
-    baseNode.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    baseNode.Color = {1.0f, 1.0f, 1.0f, 1.0f};
     baseNode.FloatVal1 = 0.5f; // Roughness
     baseNode.FloatVal2 = 0.0f; // Metallic
     m_PassStack.push_back(baseNode);
@@ -33,7 +33,7 @@ Material::Material(const std::shared_ptr<Shader> &shader) : m_Shader(shader), m_
     baseNode.Name = "Base Surface Slab";
     baseNode.Type = MaterialPassNodeType::BaseSurfaceSlab;
     baseNode.Enabled = true;
-    baseNode.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    baseNode.Color = {1.0f, 1.0f, 1.0f, 1.0f};
     baseNode.FloatVal1 = 0.5f;
     baseNode.FloatVal2 = 0.0f;
     m_PassStack.push_back(baseNode);

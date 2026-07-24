@@ -1,9 +1,9 @@
 #pragma once
-#include "Core/Core.h"
 #include "Core/Asset/Asset.hpp"
-#include <string>
+#include "Core/Core.h"
 #include <filesystem>
 #include <memory>
+#include <string>
 
 namespace TE
 {

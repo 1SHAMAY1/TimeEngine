@@ -40,7 +40,7 @@ struct MaterialPassNode
 
     std::string TexturePath;
     std::shared_ptr<class Texture> TextureRef;
-    TEVector4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    TEVector4 Color = {1.0f, 1.0f, 1.0f, 1.0f};
     float FloatVal1 = 1.0f; // e.g. Roughness / Bump Depth / Intensity / Speed X
     float FloatVal2 = 0.0f; // e.g. Metallic / Speed Y
     float FloatVal3 = 1.0f; // e.g. Tiling X

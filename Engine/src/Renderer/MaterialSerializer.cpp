@@ -26,18 +26,11 @@ bool MaterialSerializer::Serialize(const std::filesystem::path &filepath)
     hout << "PassStackCount: " << stack.size() << "\n";
     for (const auto &node : stack)
     {
-        hout << "Node: " << node.Name << "|"
-             << (int)node.Type << "|"
-             << (node.Enabled ? 1 : 0) << "|"
-             << node.TexturePath << "|"
-             << node.Color.x << " " << node.Color.y << " " << node.Color.z << " " << node.Color.w << "|"
-             << node.FloatVal1 << "|"
-             << node.FloatVal2 << "|"
-             << node.FloatVal3 << "|"
-             << node.FloatVal4 << "|"
-             << node.BlendMode << "|"
-             << node.TargetQueueIndex << "|"
-             << node.QueueName << "\n";
+        hout << "Node: " << node.Name << "|" << (int)node.Type << "|" << (node.Enabled ? 1 : 0) << "|"
+             << node.TexturePath << "|" << node.Color.x << " " << node.Color.y << " " << node.Color.z << " "
+             << node.Color.w << "|" << node.FloatVal1 << "|" << node.FloatVal2 << "|" << node.FloatVal3 << "|"
+             << node.FloatVal4 << "|" << node.BlendMode << "|" << node.TargetQueueIndex << "|" << node.QueueName
+             << "\n";
     }
 
     hout.close();

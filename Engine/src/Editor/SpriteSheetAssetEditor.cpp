@@ -5,8 +5,8 @@
 #include "Renderer/Texture.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include <imgui.h>
 #include <filesystem>
+#include <imgui.h>
 #include <string>
 
 namespace TE
@@ -15,7 +15,8 @@ namespace TE
 void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
 {
     auto sheet = std::dynamic_pointer_cast<SpriteSheet>(tab.LoadedAsset);
-    if (!sheet) return;
+    if (!sheet)
+        return;
 
     static float s_SheetZoom = 1.0f;
     static int s_ActiveViewMode = 0; // 0 = Slices Overlay, 1 = Animation Player
@@ -44,9 +45,9 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     if (TimeGUI::Button("Browse..."))
     {
-        std::string filepath = PlatformUtils::OpenFile(
-            "Texture Files (*.png;*.jpg;*.tetexture)\0*.png;*.jpg;*.tetexture\0All Files "
-            "(*.*)\0*.*\0");
+        std::string filepath =
+            PlatformUtils::OpenFile("Texture Files (*.png;*.jpg;*.tetexture)\0*.png;*.jpg;*.tetexture\0All Files "
+                                    "(*.*)\0*.*\0");
         if (!filepath.empty())
         {
             strcpy_s(texPathBuf, filepath.c_str());
@@ -82,8 +83,8 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
 
     if (gridChanged)
     {
-        sheet->SetGridSettings((uint32_t)cellW, (uint32_t)cellH, (uint32_t)padX, (uint32_t)padY,
-                               (uint32_t)offX, (uint32_t)offY);
+        sheet->SetGridSettings((uint32_t)cellW, (uint32_t)cellH, (uint32_t)padX, (uint32_t)padY, (uint32_t)offX,
+                               (uint32_t)offY);
         sheet->SliceGrid();
         SpriteSheetSerializer serializer(sheet);
         serializer.Serialize(tab.AssetPath);
@@ -224,8 +225,8 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
             float previewW = (float)tex->GetWidth() * s_SheetZoom;
             float previewH = (float)tex->GetHeight() * s_SheetZoom;
             TEVector2 canvasPos = TimeGUI::GetCursorScreenPos();
-            TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), TEVector2(previewW, previewH),
-                           TEVector2(0, 0), TEVector2(1, 1));
+            TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), TEVector2(previewW, previewH), TEVector2(0, 0),
+                           TEVector2(1, 1));
 
             auto drawList = TimeGUI::GetWindowDrawList();
             const auto &subFrames = sheet->GetSubFrames();
@@ -244,7 +245,8 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
             if (!anims.empty() && s_SelectedAnimIdx >= 0 && s_SelectedAnimIdx < (int)anims.size())
             {
                 auto &seq = anims[s_SelectedAnimIdx];
-                TimeGUI::Text("Playing: %s | FPS: %.0f | Frames: %zu", seq.Name.c_str(), seq.FPS, seq.FrameIndices.size());
+                TimeGUI::Text("Playing: %s | FPS: %.0f | Frames: %zu", seq.Name.c_str(), seq.FPS,
+                              seq.FrameIndices.size());
                 TimeGUI::SameLine();
                 if (TimeGUI::Button(s_AnimPlaying ? "Pause" : "Play"))
                 {

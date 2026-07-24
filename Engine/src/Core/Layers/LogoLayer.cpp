@@ -61,23 +61,27 @@ void LogoLayer::OnTimeGUIRender()
 
     // Smooth breathing cycles for circle & clock hands
     float blueRingGlowPulse = 0.5f + 0.5f * sinf(animTime * 2.5f);
-    float redHandFade       = 0.5f + 0.5f * sinf(animTime * 3.2f);
-    float whiteHandFade     = 0.5f + 0.5f * sinf(animTime * 2.8f + 1.0f);
-    float grayHandFade      = 0.5f + 0.5f * sinf(animTime * 2.2f + 2.0f);
+    float redHandFade = 0.5f + 0.5f * sinf(animTime * 3.2f);
+    float whiteHandFade = 0.5f + 0.5f * sinf(animTime * 2.8f + 1.0f);
+    float grayHandFade = 0.5f + 0.5f * sinf(animTime * 2.2f + 2.0f);
 
     float radius = 70.0f;
 
     // 1. Outer Blue Ring & Soft Neon Glow
-    TimeGUIColor32 softBlueGlow = TimeGUI::GetColorU32(TEColor(0.0f, 0.65f, 1.0f, alpha * (0.25f + 0.35f * blueRingGlowPulse)));
-    TimeGUIColor32 brightCyanRing = TimeGUI::GetColorU32(TEColor(0.0f, 0.9f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
+    TimeGUIColor32 softBlueGlow =
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.65f, 1.0f, alpha * (0.25f + 0.35f * blueRingGlowPulse)));
+    TimeGUIColor32 brightCyanRing =
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.9f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
 
     drawList.AddCircle(center, radius + 4.0f, softBlueGlow, 64, 8.0f);
     drawList.AddCircle(center, radius, brightCyanRing, 64, 2.5f);
 
     // 2. Minimalist Clock Hands (Red, White, Gray fade-in/out animation)
-    TimeGUIColor32 redHandColor   = TimeGUI::GetColorU32(TEColor(0.95f, 0.2f, 0.2f, alpha * (0.4f + 0.6f * redHandFade)));
-    TimeGUIColor32 whiteHandColor = TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha * (0.4f + 0.6f * whiteHandFade)));
-    TimeGUIColor32 grayHandColor  = TimeGUI::GetColorU32(TEColor(0.6f, 0.65f, 0.7f, alpha * (0.4f + 0.6f * grayHandFade)));
+    TimeGUIColor32 redHandColor = TimeGUI::GetColorU32(TEColor(0.95f, 0.2f, 0.2f, alpha * (0.4f + 0.6f * redHandFade)));
+    TimeGUIColor32 whiteHandColor =
+        TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha * (0.4f + 0.6f * whiteHandFade)));
+    TimeGUIColor32 grayHandColor =
+        TimeGUI::GetColorU32(TEColor(0.6f, 0.65f, 0.7f, alpha * (0.4f + 0.6f * grayHandFade)));
     TimeGUIColor32 centerPinColor = TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha));
 
     // Right horizontal hand (Red)

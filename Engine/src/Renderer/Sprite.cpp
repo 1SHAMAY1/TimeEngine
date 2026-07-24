@@ -19,10 +19,10 @@ void Sprite::GenerateAutoContourCollider(float alphaThreshold)
 {
     // Generate default box contour points if no custom outline algorithm provided
     m_CustomColliderPoints.clear();
-    m_CustomColliderPoints.push_back({ -0.5f, -0.5f });
-    m_CustomColliderPoints.push_back({  0.5f, -0.5f });
-    m_CustomColliderPoints.push_back({  0.5f,  0.5f });
-    m_CustomColliderPoints.push_back({ -0.5f,  0.5f });
+    m_CustomColliderPoints.push_back({-0.5f, -0.5f});
+    m_CustomColliderPoints.push_back({0.5f, -0.5f});
+    m_CustomColliderPoints.push_back({0.5f, 0.5f});
+    m_CustomColliderPoints.push_back({-0.5f, 0.5f});
 }
 
 void Sprite::OnContentBrowserCreate(const std::filesystem::path &path)

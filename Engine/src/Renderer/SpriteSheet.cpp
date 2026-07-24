@@ -15,7 +15,8 @@ void SpriteSheet::SetTexturePath(const std::string &path)
     }
 }
 
-void SpriteSheet::SetGridSettings(uint32_t cellW, uint32_t cellH, uint32_t padX, uint32_t padY, uint32_t offX, uint32_t offY)
+void SpriteSheet::SetGridSettings(uint32_t cellW, uint32_t cellH, uint32_t padX, uint32_t padY, uint32_t offX,
+                                  uint32_t offY)
 {
     m_CellWidth = (cellW > 0) ? cellW : 32;
     m_CellHeight = (cellH > 0) ? cellH : 32;

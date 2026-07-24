@@ -15,7 +15,8 @@ namespace TE
 void TextureAssetEditor::DrawEditor(EditorTab &tab)
 {
     auto tex = std::dynamic_pointer_cast<Texture>(tab.LoadedAsset);
-    if (!tex) return;
+    if (!tex)
+        return;
 
     static bool s_ChannelR = true;
     static bool s_ChannelG = true;
@@ -89,9 +90,9 @@ void TextureAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     if (TimeGUI::Button("Browse..."))
     {
-        std::string filepath = PlatformUtils::OpenFile(
-            "Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files "
-            "(*.*)\0*.*\0");
+        std::string filepath =
+            PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga)\0*.png;*.jpg;*.jpeg;*.tga\0All Files "
+                                    "(*.*)\0*.*\0");
         if (!filepath.empty())
         {
             strcpy_s(importPathBuffer, filepath.c_str());
@@ -110,8 +111,7 @@ void TextureAssetEditor::DrawEditor(EditorTab &tab)
                         std::filesystem::remove(oldPng);
                 }
 
-                std::filesystem::copy_file(importSrc, destPng,
-                                           std::filesystem::copy_options::overwrite_existing);
+                std::filesystem::copy_file(importSrc, destPng, std::filesystem::copy_options::overwrite_existing);
 
                 auto newTex = std::make_shared<Texture>(destPng.string());
                 newTex->SetName(tab.AssetPath.stem().string());
@@ -163,12 +163,12 @@ void TextureAssetEditor::DrawEditor(EditorTab &tab)
     float previewH = (tex->GetHeight() > 0) ? (float)tex->GetHeight() : 256.0f;
     TEVector2 displaySize = TEVector2(previewW * s_CanvasZoom, previewH * s_CanvasZoom);
 
-    TEVector4 tintCol = TEVector4(s_ChannelR ? 1.0f : 0.0f, s_ChannelG ? 1.0f : 0.0f,
-                                  s_ChannelB ? 1.0f : 0.0f, s_ChannelA ? 1.0f : 0.0f);
+    TEVector4 tintCol = TEVector4(s_ChannelR ? 1.0f : 0.0f, s_ChannelG ? 1.0f : 0.0f, s_ChannelB ? 1.0f : 0.0f,
+                                  s_ChannelA ? 1.0f : 0.0f);
 
     // Render preview image with dynamic tiling UVs and channel tint mask
-    TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), displaySize,
-                   TEVector2(0.0f, 0.0f), TEVector2(s_UVTiling, s_UVTiling), tintCol);
+    TimeGUI::Image((void *)(uintptr_t)tex->GetRendererID(), displaySize, TEVector2(0.0f, 0.0f),
+                   TEVector2(s_UVTiling, s_UVTiling), tintCol);
 
     TimeGUI::EndChild();
     TimeGUI::Columns(1);
