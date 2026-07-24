@@ -6,7 +6,45 @@
 namespace TE
 {
 
-Material::Material(const std::shared_ptr<Shader> &shader) : m_Shader(shader), m_Color(TEColor::White()) {}
+Material::Material() : m_Shader(nullptr), m_Color(TEColor::White())
+{
+    // Add default Base Surface Slab
+    MaterialPassNode baseNode;
+    baseNode.Name = "Base Surface Slab";
+    baseNode.Type = MaterialPassNodeType::BaseSurfaceSlab;
+    baseNode.Enabled = true;
+    baseNode.Color = {1.0f, 1.0f, 1.0f, 1.0f};
+    baseNode.FloatVal1 = 0.5f; // Roughness
+    baseNode.FloatVal2 = 0.0f; // Metallic
+    m_PassStack.push_back(baseNode);
+
+    // Add default Blend Output State
+    MaterialPassNode blendNode;
+    blendNode.Name = "Blend Output State";
+    blendNode.Type = MaterialPassNodeType::BlendOutputState;
+    blendNode.Enabled = true;
+    blendNode.BlendMode = 1; // AlphaBlend
+    m_PassStack.push_back(blendNode);
+}
+
+Material::Material(const std::shared_ptr<Shader> &shader) : m_Shader(shader), m_Color(TEColor::White())
+{
+    MaterialPassNode baseNode;
+    baseNode.Name = "Base Surface Slab";
+    baseNode.Type = MaterialPassNodeType::BaseSurfaceSlab;
+    baseNode.Enabled = true;
+    baseNode.Color = {1.0f, 1.0f, 1.0f, 1.0f};
+    baseNode.FloatVal1 = 0.5f;
+    baseNode.FloatVal2 = 0.0f;
+    m_PassStack.push_back(baseNode);
+
+    MaterialPassNode blendNode;
+    blendNode.Name = "Blend Output State";
+    blendNode.Type = MaterialPassNodeType::BlendOutputState;
+    blendNode.Enabled = true;
+    blendNode.BlendMode = 1;
+    m_PassStack.push_back(blendNode);
+}
 
 Material::~Material() {}
 

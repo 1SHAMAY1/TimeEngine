@@ -1,0 +1,6 @@
+Sprite: New Sprite
+TexturePath: E:\TimeEngine\Resources\Editor\SpriteIcon.png
+UVs: 0 0 1 1
+Pivot: 0.5 0.5
+PixelsPerUnit: 16
+ColliderPoints: 4 -0.5 -0.5 0.5 -0.5 0.5 0.5 -0.5 0.5

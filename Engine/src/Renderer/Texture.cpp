@@ -19,7 +19,31 @@ Texture::Texture(const std::string &path)
     : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
 {
     m_Handle = AssetRegistry::RegisterPath(path);
-    m_Name = std::filesystem::path(path).filename().string();
+    m_Name = std::filesystem::path(path).stem().string();
+
+    std::filesystem::path p(path);
+    if (p.extension() == ".tetexture")
+    {
+        // Deserialization will load image source and GPU params via TextureSerializer
+    }
+    else
+    {
+        LoadImageSource(path);
+    }
+}
+
+bool Texture::LoadImageSource(const std::string &path)
+{
+    if (path.empty())
+        return false;
+
+    if (m_RendererID != 0)
+    {
+        glDeleteTextures(1, &m_RendererID);
+        m_RendererID = 0;
+    }
+
+    m_FilePath = path;
 
     bool isDX11 = false;
 #ifdef TE_SUPPORT_DIRECTX11
@@ -29,6 +53,9 @@ Texture::Texture(const std::string &path)
 
     if (img.Data)
     {
+        m_Width = img.Width;
+        m_Height = img.Height;
+        m_Channels = img.Channels;
 #ifdef TE_SUPPORT_DIRECTX11
         if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
         {
@@ -101,21 +128,82 @@ Texture::Texture(const std::string &path)
             glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
             glTextureStorage2D(m_RendererID, 1, internalFormat, img.Width, img.Height);
 
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glTextureSubImage2D(m_RendererID, 0, 0, 0, img.Width, img.Height, dataFormat, GL_UNSIGNED_BYTE, img.Data);
 
             AssetManager::FreeImage(img.Data);
         }
+
+        UpdateGPUParameters();
+        return true;
     }
     else
     {
         TE_CORE_ERROR("Failed to load texture: {0}", path);
+        return false;
+    }
+}
+
+void Texture::SetFilterMode(TextureFilterMode mode)
+{
+    m_FilterMode = mode;
+    UpdateGPUParameters();
+}
+
+void Texture::SetWrapMode(TextureWrapMode mode)
+{
+    m_WrapMode = mode;
+    UpdateGPUParameters();
+}
+
+void Texture::SetGenerateMipmaps(bool generate)
+{
+    m_GenerateMipmaps = generate;
+    UpdateGPUParameters();
+}
+
+void Texture::UpdateGPUParameters()
+{
+    if (m_RendererID == 0)
+        return;
+
+#ifdef TE_SUPPORT_DIRECTX11
+    if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
+    {
+        // DirectX11 sampler state updates handled via DX11 context
+        return;
+    }
+#endif
+
+    GLenum minFilter = GL_LINEAR;
+    GLenum magFilter = GL_LINEAR;
+
+    if (m_FilterMode == TextureFilterMode::Nearest)
+    {
+        minFilter = m_GenerateMipmaps ? GL_NEAREST_MIPMAP_NEAREST : GL_NEAREST;
+        magFilter = GL_NEAREST;
+    }
+    else
+    {
+        minFilter = m_GenerateMipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+        magFilter = GL_LINEAR;
+    }
+
+    glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, minFilter);
+    glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, magFilter);
+
+    GLenum wrap = GL_REPEAT;
+    if (m_WrapMode == TextureWrapMode::ClampToEdge)
+        wrap = GL_CLAMP_TO_EDGE;
+    else if (m_WrapMode == TextureWrapMode::MirroredRepeat)
+        wrap = GL_MIRRORED_REPEAT;
+
+    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, wrap);
+    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, wrap);
+
+    if (m_GenerateMipmaps)
+    {
+        glGenerateTextureMipmap(m_RendererID);
     }
 }
 

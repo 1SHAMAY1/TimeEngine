@@ -32,8 +32,6 @@ void LogoLayer::OnTimeGUIRender()
     {
         m_AnimationStarted = true;
         m_AnimationStartTime = m_Time;
-        m_CharIndex = 0;
-        m_DisplayText.clear();
     }
 
     // Exit if not animating or finished
@@ -44,18 +42,62 @@ void LogoLayer::OnTimeGUIRender()
         return;
     }
 
-    // Setup screen geometry and center
+    // Setup screen geometry and exact center
     TimeGUI::TimeGUIViewport viewport = TimeGUI::GetMainViewport();
     TEVector2 screenPos = viewport.Pos;
     TEVector2 screenSize = viewport.Size;
     TEVector2 center = screenPos + screenSize * 0.5f;
-    center.y -= screenSize.y * 0.1f;
 
     TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetBackgroundDrawList();
 
     // === Background Fill ===
-    drawList.AddRectFilled(screenPos, screenPos + screenSize, IM_COL32(0, 0, 0, 255));
+    drawList.AddRectFilled(screenPos, screenPos + screenSize, TimeGUI::GetColorU32(TEColor(0.0f, 0.0f, 0.0f, 1.0f)));
 
+    // === Minimalistic Procedural Animated Logo (TimeGUI API) ===
+    float animTime = m_Time - m_AnimationStartTime;
+
+    // Smooth overall fade-in
+    float alpha = std::min(1.0f, animTime / 0.5f);
+
+    // Smooth breathing cycles for circle & clock hands
+    float blueRingGlowPulse = 0.5f + 0.5f * sinf(animTime * 2.5f);
+    float redHandFade = 0.5f + 0.5f * sinf(animTime * 3.2f);
+    float whiteHandFade = 0.5f + 0.5f * sinf(animTime * 2.8f + 1.0f);
+    float grayHandFade = 0.5f + 0.5f * sinf(animTime * 2.2f + 2.0f);
+
+    float radius = 70.0f;
+
+    // 1. Outer Blue Ring & Soft Neon Glow
+    TimeGUIColor32 softBlueGlow =
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.65f, 1.0f, alpha * (0.25f + 0.35f * blueRingGlowPulse)));
+    TimeGUIColor32 brightCyanRing =
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.9f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
+
+    drawList.AddCircle(center, radius + 4.0f, softBlueGlow, 64, 8.0f);
+    drawList.AddCircle(center, radius, brightCyanRing, 64, 2.5f);
+
+    // 2. Minimalist Clock Hands (Red, White, Gray fade-in/out animation)
+    TimeGUIColor32 redHandColor = TimeGUI::GetColorU32(TEColor(0.95f, 0.2f, 0.2f, alpha * (0.4f + 0.6f * redHandFade)));
+    TimeGUIColor32 whiteHandColor =
+        TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha * (0.4f + 0.6f * whiteHandFade)));
+    TimeGUIColor32 grayHandColor =
+        TimeGUI::GetColorU32(TEColor(0.6f, 0.65f, 0.7f, alpha * (0.4f + 0.6f * grayHandFade)));
+    TimeGUIColor32 centerPinColor = TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha));
+
+    // Right horizontal hand (Red)
+    drawList.AddLine(center, center + TEVector2(radius * 0.75f, 0.0f), redHandColor, 2.5f);
+
+    // Left horizontal hand (White)
+    drawList.AddLine(center, center + TEVector2(-radius * 0.75f, 0.0f), whiteHandColor, 2.5f);
+
+    // Bottom vertical hand (Gray)
+    drawList.AddLine(center, center + TEVector2(0.0f, radius * 0.6f), grayHandColor, 3.0f);
+
+    // Minimalist Center Pin
+    drawList.AddCircleFilled(center, 3.5f, centerPinColor, 32);
+
+    // LEGACY ANIMATION PROCEDURAL TESTING - COMMENTED OUT
+    /*
     // === Animate Text Reveal ===
     size_t targetCount = static_cast<size_t>((m_Time - m_AnimationStartTime) / m_LetterInterval);
     if (targetCount > m_CharIndex && m_CharIndex < m_FullText.length())
@@ -73,13 +115,12 @@ void LogoLayer::OnTimeGUIRender()
     TEVector2 textSize = font.CalcTextSizeA(fontSize, FLT_MAX, -1.0f, m_DisplayText.c_str());
     TEVector2 textPos = center + TEVector2(-textSize.x * 0.5f, 55.0f);
     drawList.AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), m_DisplayText.c_str());
+    */
 
-    // === Animation Completion Check ===
-    if (m_CharIndex == m_FullText.length() &&
-        (m_Time - m_AnimationStartTime) >= (m_FullText.length() * m_LetterInterval + m_TextClearDelay))
+    // === Animation Completion Check (Maintained timing duration without displaying text) ===
+    if ((m_Time - m_AnimationStartTime) >= (m_FullText.length() * m_LetterInterval + m_TextClearDelay))
     {
         m_AnimationFinished = true;
-        m_DisplayText.clear();
         OnWelcomeAnimationComplete();
     }
 
@@ -104,8 +145,11 @@ void LogoLayer::OnDetach()
 {
     m_Time = 0.0f;
     m_AnimationStartTime = 0.0f;
+    // LEGACY ANIMATION PROCEDURAL TESTING - COMMENTED OUT UNUSED STATE RESET
+    /*
     m_CharIndex = 0;
     m_DisplayText.clear();
+    */
     m_AnimationStarted = false;
     m_AnimationFinished = false;
     m_ShouldClose = false;
@@ -113,7 +157,8 @@ void LogoLayer::OnDetach()
     m_IsBeingRemoved = false;
 }
 
-// === Draw the animated TimeEngine Logo ===
+// === Draw the animated TimeEngine Logo (LEGACY ANIMATION PROCEDURAL TESTING - COMMENTED OUT) ===
+/*
 void LogoLayer::DrawTimeEngineLogo(const TEVector2 &center, float radius, TimeGUI::TimeGUIDrawList drawList, float time)
 {
     const float pi = 3.1415926f;
@@ -183,5 +228,6 @@ void LogoLayer::DrawTimeEngineLogo(const TEVector2 &center, float radius, TimeGU
     // === Clock Center Pin ===
     drawList.AddCircleFilled(center, 3.0f, color);
 }
+*/
 
 } // namespace TE

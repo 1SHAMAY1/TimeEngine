@@ -149,6 +149,16 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
             return sheet->GetHandle();
         }
     }
+    else if (finalPath.extension() == ".tesprite")
+    {
+        auto sprite = std::make_shared<Sprite>();
+        SpriteSerializer serializer(sprite);
+        if (serializer.Deserialize(finalPath))
+        {
+            AddAsset(sprite->GetHandle(), sprite);
+            return sprite->GetHandle();
+        }
+    }
     else if (finalPath.extension() == ".tetexture")
     {
         auto tex = std::make_shared<Texture>(finalPath.string());
@@ -218,6 +228,7 @@ TEVector2 AssetManager::GetDefaultIconSize(const std::string &type)
 ImageData AssetManager::ImportImage(const std::string &filepath, int desiredChannels)
 {
     ImageData img;
+    stbi_set_flip_vertically_on_load(0);
     img.Data = stbi_load(filepath.c_str(), &img.Width, &img.Height, &img.Channels, desiredChannels);
     if (desiredChannels > 0)
     {
