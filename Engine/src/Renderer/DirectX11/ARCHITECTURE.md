@@ -100,6 +100,7 @@ dx11API->InitWithWindow(nativeHwnd, 1920, 1080);
 
 ## Related Architectural Documentation
 
-- [Renderer Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
-- [Window Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Window/ARCHITECTURE.md) — Win32 `HWND` creation and event dispatch.
-- [Windows Platform Utilities Architecture](file:///e:/TimeEngine/Engine/src/Utils/Platform/Windows/ARCHITECTURE.md) — Win32 system dialogs and COM initialization.
+- [Renderer Subsystem Architecture](../ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
+- [Window Subsystem Architecture](../../Window/ARCHITECTURE.md) — Win32 `HWND` creation and event dispatch.
+- [Windows Platform Utilities Architecture](../../Utils/Platform/Windows/ARCHITECTURE.md) — Win32 system dialogs and COM initialization.
+

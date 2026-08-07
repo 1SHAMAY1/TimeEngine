@@ -11,13 +11,14 @@ The `Utils` module in TimeEngine provides foundational, vendor-decoupled utility
 
 ## Platform Utilities Link Reference
 
-- [Platform Utilities Architecture](file:///e:/TimeEngine/Engine/src/Utils/Platform/ARCHITECTURE.md) — Architectural documentation for OS-specific platform utilities.
+- [Platform Utilities Architecture](Platform/ARCHITECTURE.md) — Architectural documentation for OS-specific platform utilities.
 
 ---
 
 ## 1. Math Utilities (`MathUtils`)
 
-[`TE::MathUtils`](file:///e:/TimeEngine/Engine/Include/Utils/MathUtils.hpp) defines engine math primitives, avoiding hard vendor dependencies in engine header files.
+`TE::MathUtils` (`Engine/Include/Utils/MathUtils.hpp`) defines engine math primitives, avoiding hard vendor dependencies in engine header files.
+
 
 ### Key Types & Conversion Overloads
 - **`TEVector2` / `TEVector` / `TEVector4`**: 2D, 3D, and 4D float vectors (with primary 2D focus for engine transforms, UI alignment, and sprite positioning) equipped with magnitude, normalization, dot/cross products, linear interpolation (`Lerp`), and seamless conversion to/from UI types (`ImVec2`, `ImVec4`).

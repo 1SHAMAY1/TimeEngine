@@ -96,6 +96,7 @@ RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction
 
 ## Related Architectural Documentation
 
-- [Renderer Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/ARCHITECTURE.md) — Multi-backend 2D batching architecture.
-- [DirectX 11 Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
-- [Window Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Window/ARCHITECTURE.md) — GLFW window creation and OpenGL context initialization.
+- [Renderer Subsystem Architecture](../ARCHITECTURE.md) — Multi-backend 2D batching architecture.
+- [DirectX 11 Graphics Backend Architecture](../DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
+- [Window Subsystem Architecture](../../Window/ARCHITECTURE.md) — GLFW window creation and OpenGL context initialization.
+

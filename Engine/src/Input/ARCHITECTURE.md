@@ -26,16 +26,16 @@ The Input subsystem in TimeEngine handles raw device polling (keyboard, mouse), 
 
 ## Subsystem Components
 
-1. **Low-Level Device Polling ([`Input`](file:///e:/TimeEngine/Engine/Include/Input/Input.hpp))**:
+1. **Low-Level Device Polling (`Input` — `Engine/Include/Input/Input.hpp`)**:
    - Static class maintaining hardware states (`s_KeyStates`, `s_MouseStates`, scroll deltas).
    - Serves immediate polling queries from anywhere in the codebase.
 
 2. **High-Level Action Mapping System**:
-   - **[`InputAction`](file:///e:/TimeEngine/Engine/Include/Input/InputAction.hpp)**: Represents abstract actions (`Jump`, `Fire`, `Move2D`) with value types (`Digital` (bool), `Axis1D` (float), `Axis2D` (`TEVector2`)).
-   - **[`InputMappingContext`](file:///e:/TimeEngine/Engine/Include/Input/InputMappingContext.hpp)**: Map of keys to `InputAction` objects for specific gameplay states (e.g. `InGameContext`, `VehicleContext`).
-   - **[`InputRemapper`](file:///e:/TimeEngine/Engine/Include/Input/InputRemapper.hpp)**: Handles runtime key-rebinding overrides.
-   - **[`InputSystem`](file:///e:/TimeEngine/Engine/Include/Input/InputSystem.hpp)**: Singleton manager processing priority-sorted contexts each frame and executing bindings.
-   - **[`InputComponent`](file:///e:/TimeEngine/Engine/Include/Input/InputComponent.hpp)**: ECS component attached to game entities to register callback functions (`BindAction`).
+   - **`InputAction` (`Engine/Include/Input/InputAction.hpp`)**: Represents abstract actions (`Jump`, `Fire`, `Move2D`) with value types (`Digital` (bool), `Axis1D` (float), `Axis2D` (`TEVector2`)).
+   - **`InputMappingContext` (`Engine/Include/Input/InputMappingContext.hpp`)**: Map of keys to `InputAction` objects for specific gameplay states (e.g. `InGameContext`, `VehicleContext`).
+   - **`InputRemapper` (`Engine/Include/Input/InputRemapper.hpp`)**: Handles runtime key-rebinding overrides.
+   - **`InputSystem` (`Engine/Include/Input/InputSystem.hpp`)**: Singleton manager processing priority-sorted contexts each frame and executing bindings.
+   - **`InputComponent` (`Engine/Include/Input/InputComponent.hpp`)**: ECS component attached to game entities to register callback functions (`BindAction`).
 
 ---
 
@@ -95,7 +95,8 @@ inputComp->BindAction(jumpAction, [](const TE::InputActionValue& val) {
 
 ## Related Architectural Documentation
 
-- [Window Architecture](file:///e:/TimeEngine/Engine/src/Window/ARCHITECTURE.md) — OS window creation, GLFW callbacks, and input event hooks.
-- [Scene & ECS Architecture](file:///e:/TimeEngine/Engine/src/Core/Scene/ARCHITECTURE.md) — Entity-Component-System (ECS) architecture for attaching `InputComponent` to entities.
-- [Layers Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/Layers/ARCHITECTURE.md) — Top-to-bottom event propagation and input consumption.
+- [Window Architecture](../Window/ARCHITECTURE.md) — OS window creation, GLFW callbacks, and input event hooks.
+- [Scene & ECS Architecture](../Core/Scene/ARCHITECTURE.md) — Entity-Component-System (ECS) architecture for attaching `InputComponent` to entities.
+- [Layers Subsystem Architecture](../Core/Layers/ARCHITECTURE.md) — Top-to-bottom event propagation and input consumption.
+
 

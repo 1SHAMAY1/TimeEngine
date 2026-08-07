@@ -83,6 +83,7 @@ SUBMIT_AI([npcEntity]() {
 
 ## Related Architectural Documentation
 
-- [Core Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/ARCHITECTURE.md) — Main engine application loop.
-- [2D Physics Architecture](file:///e:/TimeEngine/Engine/src/Core/Physics/ARCHITECTURE.md) — Asynchronous physics integration.
-- [Root Architecture Index](file:///e:/TimeEngine/ARCHITECTURE.md) — Master TimeEngine architecture hub.
+- [Core Subsystem Architecture](../../../src/Core/ARCHITECTURE.md) — Main engine application loop.
+- [2D Physics Architecture](../../../src/Core/Physics/ARCHITECTURE.md) — Asynchronous physics integration.
+- [Root Architecture Index](../../../../ARCHITECTURE.md) — Master TimeEngine architecture hub.
+

@@ -84,7 +84,8 @@ settings.ResetToDefaults();
 
 ## Related Architectural Documentation
 
-- [Core Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/ARCHITECTURE.md) — Main engine application execution loop.
-- [Multi-Threading & Task System Architecture](file:///e:/TimeEngine/Engine/Include/Core/Threading/ARCHITECTURE.md) — Worker thread pools and task queues.
-- [Layers Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/Layers/ARCHITECTURE.md) — `EngineSettingsLayer` and overlay rendering.
-- [Root Architecture Index](file:///e:/TimeEngine/ARCHITECTURE.md) — Master TimeEngine architecture index.
+- [Core Subsystem Architecture](../../src/Core/ARCHITECTURE.md) — Main engine application execution loop.
+- [Multi-Threading & Task System Architecture](Threading/ARCHITECTURE.md) — Worker thread pools and task queues.
+- [Layers Subsystem Architecture](../../src/Core/Layers/ARCHITECTURE.md) — `EngineSettingsLayer` and overlay rendering.
+- [Root Architecture Index](../../../ARCHITECTURE.md) — Master TimeEngine architecture index.
+

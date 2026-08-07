@@ -10,9 +10,10 @@ The Window subsystem in TimeEngine provides platform-agnostic OS window creation
 
 ## Component Overview
 
-- **Interface**: [`IWindow`](file:///e:/TimeEngine/Engine/Include/Window/IWindow.hpp) — Pure virtual abstract base class defining window operations.
-- **Platform Implementation**: [`WindowsWindow`](file:///e:/TimeEngine/Engine/Include/Window/WindowsWindow.hpp) (`WindowsWindow.cpp`) — GLFW-backed desktop window implementation for Windows platforms.
+- **Interface**: `IWindow` (`Engine/Include/Window/IWindow.hpp`) — Pure virtual abstract base class defining window operations.
+- **Platform Implementation**: `WindowsWindow` (`Engine/Include/Window/WindowsWindow.hpp`) (`WindowsWindow.cpp`) — GLFW-backed desktop window implementation for Windows platforms.
 - **Properties Struct**: `WindowProps` — Holds initial title, width, and height configuration.
+
 
 ## Architecture & Responsibilities
 

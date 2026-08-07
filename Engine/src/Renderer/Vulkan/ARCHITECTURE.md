@@ -22,5 +22,6 @@ The Vulkan graphics backend in TimeEngine provides explicit low-level Vulkan 1.3
 
 ## Related Architectural Documentation
 
-- [Renderer Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
-- [DirectX 11 Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
+- [Renderer Subsystem Architecture](../ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
+- [DirectX 11 Graphics Backend Architecture](../DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
+

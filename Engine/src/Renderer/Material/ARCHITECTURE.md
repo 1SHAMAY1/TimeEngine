@@ -109,6 +109,7 @@ instance->ApplyUniforms();
 
 ## Related Architectural Documentation
 
-- [Renderer Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/ARCHITECTURE.md) — View-projection matrix binding in batch rendering.
-- [Editor & Asset Editors Architecture](file:///e:/TimeEngine/Engine/src/Editor/ARCHITECTURE.md) — Documentation for `MaterialAssetEditor` tab.
-- [Asset Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/Asset/ARCHITECTURE.md) — Asset handle and `.tematerial` path registration.
+- [Renderer Subsystem Architecture](../ARCHITECTURE.md) — View-projection matrix binding in batch rendering.
+- [Editor & Asset Editors Architecture](../../Editor/ARCHITECTURE.md) — Documentation for `MaterialAssetEditor` tab.
+- [Asset Subsystem Architecture](../../Core/Asset/ARCHITECTURE.md) — Asset handle and `.tematerial` path registration.
+

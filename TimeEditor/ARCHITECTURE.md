@@ -10,9 +10,10 @@ The `TimeEditor` directory contains the Integrated Game Development Environment 
 ## 📂 Subsystem Breakdown & Architecture Links
 
 * 🚀 **[Editor Application Entry & Lifecycle](src/ARCHITECTURE.md)** (`TimeEditor/src/`) — Client entry point (`TimeEditorApplication.cpp`), high-performance discrete GPU exports, `.teproj` Win32 file extension registration, and `LogoLayer` $\rightarrow$ `ProjectHubLayer` $\rightarrow$ `EditorLayer` startup sequence.
-* 🛠️ **[Engine Editor Subsystem](file:///e:/TimeEngine/Engine/src/Editor/ARCHITECTURE.md)** — Workspace modes (`EditorModeRegistry`), modal asset drawers (`AssetEditorRegistry`), and toolbar controls (`EditorToolbar`).
-* 🥞 **[Layers Architecture](file:///e:/TimeEngine/Engine/src/Core/Layers/ARCHITECTURE.md)** — `ProjectHubLayer` launcher, `EditorLayer` workspace, `ProfilingLayer`, `EngineSettingsLayer`, and `TimeGUILayer`.
-* 🏠 **[Root Architecture Index](file:///e:/TimeEngine/ARCHITECTURE.md)** — Master TimeEngine architecture index.
+* 🛠️ **[Engine Editor Subsystem](../Engine/src/Editor/ARCHITECTURE.md)** — Workspace modes (`EditorModeRegistry`), modal asset drawers (`AssetEditorRegistry`), and toolbar controls (`EditorToolbar`).
+* 🥞 **[Layers Architecture](../Engine/src/Core/Layers/ARCHITECTURE.md)** — `ProjectHubLayer` launcher, `EditorLayer` workspace, `ProfilingLayer`, `EngineSettingsLayer`, and `TimeGUILayer`.
+* 🏠 **[Root Architecture Index](../ARCHITECTURE.md)** — Master TimeEngine architecture index.
+
 
 ---
 
