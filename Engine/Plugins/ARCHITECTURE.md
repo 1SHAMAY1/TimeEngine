@@ -43,5 +43,6 @@ void MCPPlugin::OnUnload() {
 
 ## Registered Plugins & Architectures
 
-- [MCPPlugin](file:///e:/TimeEngine/Engine/Plugins/MCPPlugin/ARCHITECTURE.md) — Model Context Protocol (MCP) HTTP/SSE Server Plugin architecture documentation.
+- [MCPPlugin Architecture](MCPPlugin/ARCHITECTURE.md) — Model Context Protocol (MCP) HTTP/SSE Server Plugin architecture documentation.
+
 

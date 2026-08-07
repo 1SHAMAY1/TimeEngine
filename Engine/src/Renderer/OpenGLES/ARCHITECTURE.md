@@ -20,5 +20,6 @@ The OpenGL ES (GLES) graphics backend in TimeEngine provides embedded and mobile
 
 ## Related Architectural Documentation
 
-- [Renderer Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
-- [OpenGL Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/OpenGL/ARCHITECTURE.md) — Desktop OpenGL backend implementation.
+- [Renderer Subsystem Architecture](../ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
+- [OpenGL Graphics Backend Architecture](../OpenGL/ARCHITECTURE.md) — Desktop OpenGL backend implementation.
+

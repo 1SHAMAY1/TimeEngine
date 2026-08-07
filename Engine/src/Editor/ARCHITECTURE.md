@@ -23,17 +23,18 @@ The Editor subsystem in TimeEngine powers the visual development workspace, mana
 
 ### Core Subsystems
 
-1. **Workspace Modes ([`EditorMode`](file:///e:/TimeEngine/Engine/Include/Editor/EditorMode.hpp))**:
+1. **Workspace Modes (`EditorMode` — `Engine/Include/Editor/EditorMode.hpp`)**:
    - Manages active editing state, viewport drawing, and toolbar icons.
    - Global registration macro: `T_REGISTER_EDITOR_MODE(MyModeClass)`.
 
-2. **Asset Inspection & Editing ([`AssetEditor`](file:///e:/TimeEngine/Engine/Include/Editor/AssetEditor.hpp) & [`AssetEditorRegistry`](file:///e:/TimeEngine/Engine/Include/Editor/AssetEditorRegistry.hpp))**:
+2. **Asset Inspection & Editing (`AssetEditor` & `AssetEditorRegistry` — `Engine/Include/Editor/AssetEditorRegistry.hpp`)**:
    - Handles specialized editor tabs opened inside the editor (`EditorTab`).
    - Maps file asset types (`.png`, `.tesprite`, `.temat`) to specialized editor drawers.
    - Global registration macro: `TE_REGISTER_ASSET_EDITOR(MyAssetEditor)`.
 
-3. **Editor Toolbar ([`EditorToolbar`](file:///e:/TimeEngine/Engine/Include/Editor/EditorToolbar.hpp))**:
+3. **Editor Toolbar (`EditorToolbar` — `Engine/Include/Editor/EditorToolbar.hpp`)**:
    - Renders top workspace controls, play/pause state toggles, and mode buttons using `TimeGUI`.
+
 
 ---
 

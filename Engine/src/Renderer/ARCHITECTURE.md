@@ -61,14 +61,15 @@ m_Renderer2D->EndFrame();
 
 ## Related Architectural Documentation
 
-- [OpenGL Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/OpenGL/ARCHITECTURE.md) — Cross-platform OpenGL hardware backend implementation.
-- [OpenGL ES Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/OpenGLES/ARCHITECTURE.md) — Embedded & mobile OpenGL ES hardware backend.
-- [DirectX 11 Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
-- [Vulkan Graphics Backend Architecture](file:///e:/TimeEngine/Engine/src/Renderer/Vulkan/ARCHITECTURE.md) — Explicit Vulkan 1.3 low-overhead hardware backend.
-- [Material Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/Material/ARCHITECTURE.md) — Node-based material pass stack and uniform caching.
-- [Camera Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Camera/ARCHITECTURE.md) — View and projection matrix math.
-- [Window Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Window/ARCHITECTURE.md) — OpenGL, DirectX & Vulkan graphics context creation.
-- [Utils & TimeGUI Architecture](file:///e:/TimeEngine/Engine/src/Utils/ARCHITECTURE.md) — Color utilities (`TEColor`) and UI rendering wrappers.
+- [OpenGL Graphics Backend Architecture](OpenGL/ARCHITECTURE.md) — Cross-platform OpenGL hardware backend implementation.
+- [OpenGL ES Graphics Backend Architecture](OpenGLES/ARCHITECTURE.md) — Embedded & mobile OpenGL ES hardware backend.
+- [DirectX 11 Graphics Backend Architecture](DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
+- [Vulkan Graphics Backend Architecture](Vulkan/ARCHITECTURE.md) — Explicit Vulkan 1.3 low-overhead hardware backend.
+- [Material Subsystem Architecture](Material/ARCHITECTURE.md) — Node-based material pass stack and uniform caching.
+- [Camera Subsystem Architecture](../Camera/ARCHITECTURE.md) — View and projection matrix math.
+- [Window Subsystem Architecture](../Window/ARCHITECTURE.md) — OpenGL, DirectX & Vulkan graphics context creation.
+- [Utils & TimeGUI Architecture](../Utils/ARCHITECTURE.md) — Color utilities (`TEColor`) and UI rendering wrappers.
+
 
 
 

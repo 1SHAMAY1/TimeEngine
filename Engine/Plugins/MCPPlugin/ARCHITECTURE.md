@@ -55,12 +55,13 @@ The `MCPPlugin` module provides a Model Context Protocol (MCP) HTTP/SSE server (
 
 Tools exposed by `MCPPlugin` can be called either directly via HTTP POST requests to `http://127.0.0.1:3000/message` carrying JSON-RPC 2.0 payloads or through the provided CLI wrapper script:
 
-- **Shell Wrapper**: [`Scripts/MCP_Tools.sh`](file:///e:/TimeEngine/Scripts/MCP_Tools.sh)
+- **Shell Wrapper**: [`Scripts/MCP_Tools.sh`](../../../Scripts/MCP_Tools.sh)
   - Usage: `./Scripts/MCP_Tools.sh <command_name> [args...]`
   - Maps simplified CLI commands to JSON-RPC 2.0 tool requests via `curl`.
   - Commands include `info`, `get_scene`, `create_entity <name>`, `destroy_entity <id>`, `create_sprite <name> <path>`, `mkdir <path>`, `rm <path>`, `get_modes`, `set_mode <name>`, `screenshot`, `delete_screenshot`, `send_key <code>`, `send_click <code>`, `select <id>`, `set_properties <id> <json>`, and `add_component <id> <type>`.
 
-- **JSON Helper**: Uses [`Scripts/parse_json.py`](file:///e:/TimeEngine/Scripts/parse_json.py) for constructing structured JSON property payloads for complex entity modifications.
+- **JSON Helper**: Uses [`Scripts/parse_json.py`](../../../Scripts/parse_json.py) for constructing structured JSON property payloads for complex entity modifications.
+
 
 ## Provided MCP Tools & Function Handlers
 

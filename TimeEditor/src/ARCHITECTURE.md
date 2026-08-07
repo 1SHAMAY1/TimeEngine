@@ -71,7 +71,8 @@ Before loading the editor workspace, `TimeEditorApplication.cpp` checks `<Projec
 
 ## Related Architectural Documentation
 
-- [TimeEditor Architecture](file:///e:/TimeEngine/TimeEditor/ARCHITECTURE.md) — Top-level TimeEditor suite overview.
-- [Editor Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Editor/ARCHITECTURE.md) — Workspace modes, asset tabs, and toolbars.
-- [Layers Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/Layers/ARCHITECTURE.md) — `LogoLayer`, `ProjectHubLayer`, and `EditorLayer`.
-- [Root Architecture Index](file:///e:/TimeEngine/ARCHITECTURE.md) — Master TimeEngine architecture hub.
+- [TimeEditor Architecture](../ARCHITECTURE.md) — Top-level TimeEditor suite overview.
+- [Editor Subsystem Architecture](../../Engine/src/Editor/ARCHITECTURE.md) — Workspace modes, asset tabs, and toolbars.
+- [Layers Subsystem Architecture](../../Engine/src/Core/Layers/ARCHITECTURE.md) — `LogoLayer`, `ProjectHubLayer`, and `EditorLayer`.
+- [Root Architecture Index](../../ARCHITECTURE.md) — Master TimeEngine architecture hub.
+
