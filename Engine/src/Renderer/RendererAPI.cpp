@@ -17,6 +17,9 @@
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #endif
 
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalRendererAPI.hpp"
+#endif
 namespace TE
 {
 GraphicsAPI RendererAPI::GetAPI() { return RendererContext::GetAPI(); }
@@ -48,6 +51,12 @@ std::unique_ptr<RendererAPI> RendererAPI::Create()
     case GraphicsAPI::DirectX11:
 #ifdef TE_SUPPORT_DIRECTX11
         return std::make_unique<DirectX11RendererAPI>();
+#else
+        return nullptr;
+#endif
+    case GraphicsAPI::Metal:
+#ifdef TE_SUPPORT_METAL
+        return std::make_unique<MetalRendererAPI>();
 #else
         return nullptr;
 #endif

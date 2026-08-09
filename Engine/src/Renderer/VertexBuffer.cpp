@@ -13,6 +13,9 @@
 #ifdef TE_SUPPORT_VULKAN
 #include "Renderer/Vulkan/VulkanVertexBuffer.hpp"
 #endif
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalVertexBuffer.hpp"
+#endif
 
 namespace TE
 {
@@ -40,6 +43,10 @@ VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
         return new DirectX11VertexBuffer(vertices, size);
+#endif
+#ifdef TE_SUPPORT_METAL
+    case GraphicsAPI::Metal:
+        return new MetalVertexBuffer(vertices, size);
 #endif
     }
     return nullptr;

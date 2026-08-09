@@ -13,6 +13,9 @@
 #ifdef TE_SUPPORT_VULKAN
 #include "Renderer/Vulkan/VulkanIndexBuffer.hpp"
 #endif
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalIndexBuffer.hpp"
+#endif
 
 namespace TE
 {
@@ -38,6 +41,10 @@ IndexBuffer *IndexBuffer::Create(uint32_t *indices, uint32_t Count)
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
         return new DirectX11IndexBuffer(indices, Count);
+#endif
+#ifdef TE_SUPPORT_METAL
+    case GraphicsAPI::Metal:
+        return new MetalIndexBuffer(indices, Count);
 #endif
     default:
         return nullptr;

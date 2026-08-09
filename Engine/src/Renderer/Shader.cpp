@@ -13,6 +13,9 @@
 #ifdef TE_SUPPORT_VULKAN
 #include "Renderer/Vulkan/VulkanShader.hpp"
 #endif
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalShader.hpp"
+#endif
 
 namespace TE
 {
@@ -38,6 +41,10 @@ Shader *Shader::Create(const std::string &vertexSrc, const std::string &fragment
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
         return new DirectX11Shader(vertexSrc, fragmentSrc);
+#endif
+#ifdef TE_SUPPORT_METAL
+    case GraphicsAPI::Metal:
+        return new MetalShader(vertexSrc, fragmentSrc);
 #endif
     default:
         return nullptr;

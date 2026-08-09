@@ -13,6 +13,9 @@
 #ifdef TE_SUPPORT_VULKAN
 #include "Renderer/Vulkan/VulkanVertexArray.hpp"
 #endif
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalVertexArray.hpp"
+#endif
 
 namespace TE
 {
@@ -38,6 +41,10 @@ VertexArray *VertexArray::Create()
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
         return new DirectX11VertexArray();
+#endif
+#ifdef TE_SUPPORT_METAL
+    case GraphicsAPI::Metal:
+        return new MetalVertexArray();
 #endif
     default:
         return nullptr;

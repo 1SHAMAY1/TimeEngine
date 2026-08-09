@@ -14,7 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get changed files
         id: changed-files
@@ -46,7 +48,19 @@ jobs:
           }
 
       - name: Commit changes
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_changed == 'true' && github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Fix CI: Automated Clang-Format"
+
+      - name: Verify Clang-Format on Pull Requests
+        if: steps.changed-files.outputs.any_changed == 'true' && github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          $status = git status --porcelain
+          if ($status) {
+            Write-Error "Clang-Format check failed! Code formatting issues detected. Please run clang-format locally."
+            git diff
+            exit 1
+          }
+

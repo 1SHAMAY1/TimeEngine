@@ -1,10 +1,10 @@
 #!/bin/bash
-# GenerateProjectFiles.sh (Mac)
+# GenerateProjectFiles.sh (Mac Xcode)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
+ROOT_DIR="$( cd "$SCRIPT_DIR/../../.." && pwd )"
 
-echo "[≡ Generating TimeEngine Workspace: Clean + CMake + Premake]"
+echo "[≡ Generating TimeEngine Xcode Workspace: Clean + CMake + Premake]"
 
 # Inline Clean
 echo "[🧹 Cleaning previous build artifacts, CMake, and project files...]"

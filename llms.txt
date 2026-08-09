@@ -7,13 +7,13 @@
 
 ## Core Architecture
 - **Language**: C++20
-- **Graphics API**: OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES
+- **Graphics API**: OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES, Metal
 - **Architecture**: Entity-Component System (ECS)
 - **Build System**: Premake5 / MSBuild
 - **UI**: TimeGUI (Strict ImGui Abstraction Wrapper)
 
 ## Key APIs & Systems
-- **Renderer**: `Renderer2D` and `Renderer3D` (optimized batching for quads/sprites). Supports Vulkan, OpenGL ES, DirectX 11, and OpenGL core profile.
+- **Renderer**: `Renderer2D` and `Renderer3D` (optimized batching for quads/sprites). Supports Vulkan, OpenGL ES, DirectX 11, Metal, and OpenGL core profile.
 - **Physics**: `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
 - **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
 - **Scene System**: `Scene` class manages entities and components via ECS.
