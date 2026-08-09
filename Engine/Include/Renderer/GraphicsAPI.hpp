@@ -8,6 +8,7 @@ enum class GraphicsAPI
     OpenGL,
     OpenGLES,
     Vulkan,
-    DirectX11
+    DirectX11,
+    Metal
 };
 }

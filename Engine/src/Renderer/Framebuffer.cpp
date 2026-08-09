@@ -8,6 +8,10 @@
 #include "Renderer/OpenGLES/OpenGLESFramebuffer.hpp"
 #endif
 
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalFramebuffer.hpp"
+#endif
+
 namespace TE
 {
 
@@ -24,6 +28,10 @@ std::shared_ptr<Framebuffer> Framebuffer::Create(const FramebufferSpecification 
 #if defined(TE_PLATFORM_MOBILE)
     case GraphicsAPI::OpenGLES:
         return std::make_shared<OpenGLESFramebuffer>(spec);
+#endif
+#ifdef TE_SUPPORT_METAL
+    case GraphicsAPI::Metal:
+        return std::make_shared<MetalFramebuffer>(spec);
 #endif
     default:
         break;

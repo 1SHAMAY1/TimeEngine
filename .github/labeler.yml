@@ -1,7 +1,7 @@
 # Labeler Configuration
 # Labels PRs based on changed files using actions/labeler@v5 syntax
 
-CI/CD:
+'CI/CD':
   - changed-files:
     - any-glob-to-any-file: '.github/workflows/**/*'
 
@@ -17,7 +17,7 @@ Vendor:
       - 'Vendor/**/*'
       - '.gitmodules'
 
-AI Agents:
+'AI Agents':
   - changed-files:
     - any-glob-to-any-file:
       - '.agents/**/*'

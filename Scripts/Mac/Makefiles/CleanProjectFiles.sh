@@ -1,8 +1,8 @@
 #!/bin/bash
-# CleanProjectFiles.sh (Mac)
+# CleanProjectFiles.sh (Mac Makefiles)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
+ROOT_DIR="$( cd "$SCRIPT_DIR/../../.." && pwd )"
 
 echo "[🧹 Cleaning TimeEngine build artifacts, CMake, and project files...]"
 
@@ -32,6 +32,7 @@ find "$ROOT_DIR" -type f \( -name "*.sln" -o -name "*.vcxproj" -o -name "*.vcxpr
 rm -rf "$ROOT_DIR/.vs"
 rm -rf "$ROOT_DIR"/*.xcodeproj
 rm -rf "$ROOT_DIR"/*.xcworkspace
+rm -f "$ROOT_DIR/TimeEditor/Info.plist"
 
 echo "[✅ Cleanup complete. All build, CMake, and project artifacts removed.]"
 read -p "Press Enter to continue..."

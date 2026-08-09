@@ -40,6 +40,12 @@ group "Vendor"
         targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
         objdir ("Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
 
+        filter "system:macosx"
+            xcodebuildsettings {
+                ["LD_DYLIB_INSTALL_NAME"] = "@rpath/libVelox.dylib"
+            }
+        filter {}
+
         files {
             "Vendor/Velox/include/velox/**.h",
             "Vendor/Velox/src/core/**.cpp",
@@ -52,7 +58,7 @@ group "Vendor"
             "Vendor/Velox/src/api/**.h"
         }
 
-        includedirs {
+        externalincludedirs {
             "Vendor/Velox/include",
             "Vendor/Velox/src",
             "Vendor/Velox/src/core",
@@ -155,6 +161,13 @@ project "Engine"
     targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
     objdir ("Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
 
+    filter "system:macosx"
+        xcodebuildsettings {
+            ["LD_DYLIB_INSTALL_NAME"] = "@rpath/libEngine.dylib"
+        }
+        files { "Engine/src/**.mm" }
+    filter {}
+
     files {
         -- Core Engine
         "Engine/src/**.h",
@@ -196,6 +209,14 @@ project "Engine"
         }
     filter {}
 
+    -- Exclude Metal specific source files on non-macOS platforms
+    filter "system:not macosx"
+        removefiles {
+            "Engine/src/Renderer/Metal/**",
+            "Engine/Include/Renderer/Metal/**",
+            "Engine/src/**.mm"
+        }
+    filter {}
     -- Exclude non-Metal renderers on macOS (OpenGL, OpenGLES, Vulkan) since Metal is not yet present
     filter "system:macosx"
         removefiles {
@@ -241,6 +262,21 @@ project "Engine"
         "%{IncludeDir.OpenGLES}"
     }
 
+    externalincludedirs {
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.Engine}",
+        "%{IncludeDir.Engine_Include}",
+        "%{IncludeDir.Logger}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.GLAD}",
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.stb_image}",
+        "%{IncludeDir.Velox}",
+        "%{IncludeDir.Vulkan}",
+        "%{IncludeDir.volk}",
+        "%{IncludeDir.OpenGLES}"
+    }
+
     filter "action:vs*"
         libdirs {
             "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
@@ -269,7 +305,8 @@ project "Engine"
             "IOKit.framework",
             "CoreFoundation.framework",
             "CoreVideo.framework",
-            "QuartzCore.framework"
+            "QuartzCore.framework",
+            "Metal.framework"
         }
     filter {}
 
@@ -325,7 +362,55 @@ project "Engine"
     filter "system:windows"
         icon "Resources/Branding/Icon.ico"
 
--- ========== TimeEditor Project ==========
+-- Auto-generate TimeEditor/Info.plist on macOS if missing
+if os.target() == "macosx" and not os.isfile("TimeEditor/Info.plist") then
+    local plistFile = io.open("TimeEditor/Info.plist", "w")
+    if plistFile then
+        plistFile:write([[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>TimeEditor</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.timeengine.timeeditor</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>TimeEditor</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.14</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>teproj</string>
+            </array>
+            <key>CFBundleTypeName</key>
+            <string>TimeEngine Project</string>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+        </dict>
+    </array>
+</dict>
+</plist>
+]])
+        plistFile:close()
+    end
+end
 
 project "TimeEditor"
     location "TimeEditor"
@@ -333,6 +418,21 @@ project "TimeEditor"
     language "C++"
     cppdialect "C++17"
     staticruntime "off"
+
+    filter "system:macosx"
+        kind "WindowedApp"
+        files { "Info.plist" }
+        xcodebuildsettings {
+            ["INFOPLIST_FILE"] = "Info.plist",
+            ["LD_RUNPATH_SEARCH_PATHS"] = "@executable_path"
+        }
+        postbuildcommands {
+            'mkdir -p "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/"',
+            'cp -f "../Bin/' .. outputdir .. '/Engine/libEngine.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/"',
+            'cp -f "../Bin/' .. outputdir .. '/Velox/libVelox.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/"',
+            'codesign --force --deep --sign - "%{cfg.targetdir}/TimeEditor.app" 2>/dev/null || true'
+        }
+    filter {}
 
     targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
     objdir ("Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
@@ -366,6 +466,18 @@ project "TimeEditor"
         "%{IncludeDir.volk}"
     }
 
+    externalincludedirs {
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.Engine}",
+        "%{IncludeDir.Engine_Include}",
+        "%{IncludeDir.Logger}",
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Velox}",
+        "%{IncludeDir.Vulkan}",
+        "%{IncludeDir.volk}"
+    }
+
     filter "action:vs*"
         libdirs {
             "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
@@ -378,25 +490,32 @@ project "TimeEditor"
         }
     filter {}
 
-    links {
-        "Engine",
-        "Customizable_Logger",
-        "Velox",
-        "glfw3"
-    }
+    filter "system:windows or linux"
+        links {
+            "Engine",
+            "Customizable_Logger",
+            "Velox",
+            "glfw3"
+        }
+
+    filter "system:macosx"
+        links {
+            "Engine",
+            "Customizable_Logger",
+            "Velox",
+            "glfw3",
+            "Cocoa.framework",
+            "IOKit.framework",
+            "CoreFoundation.framework",
+            "CoreVideo.framework",
+            "QuartzCore.framework",
+            "Metal.framework"
+        }
 
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
         links { "GL" }
-    filter "system:macosx"
-        links {
-            "Cocoa.framework",
-            "IOKit.framework",
-            "CoreFoundation.framework",
-            "CoreVideo.framework",
-            "QuartzCore.framework"
-        }
     filter {}
 
     dependson { "Engine", "Logger", "Velox" }
@@ -480,6 +599,18 @@ for _, pluginPath in ipairs(enginePlugins) do
             "Vendor/volk"
         }
 
+        externalincludedirs {
+            "Engine/src",
+            "Engine/Include",
+            "Vendor/IMGUI/ImGui",
+            "Vendor/Customizable_Logger/Include",
+            "Vendor/GLM",
+            "Vendor/GLFW/glfw/include",
+            "Vendor/Velox/include",
+            "Vendor/Vulkan/include",
+            "Vendor/volk"
+        }
+
         filter "action:vs*"
             libdirs {
                 "Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
@@ -552,6 +683,18 @@ for _, pluginPath in ipairs(projectPlugins) do
         }
 
         includedirs {
+            "Engine/src",
+            "Engine/Include",
+            "Vendor/IMGUI/ImGui",
+            "Vendor/Customizable_Logger/Include",
+            "Vendor/GLM",
+            "Vendor/GLFW/glfw/include",
+            "Vendor/Velox/include",
+            "Vendor/Vulkan/include",
+            "Vendor/volk"
+        }
+
+        externalincludedirs {
             "Engine/src",
             "Engine/Include",
             "Vendor/IMGUI/ImGui",
