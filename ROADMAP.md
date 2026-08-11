@@ -91,6 +91,155 @@ This document outlines the current state and missing features of TimeEngine, map
 
 ---
 
+### 3. Editor Play-In-Editor (PIE) & Standalone Runtime Architecture (Phase 1)
+- [ ] **Play/Pause/Stop PIE Loop (`Engine/src/Core/Layers/EditorLayer.hpp` & `.cpp`)**:
+  - **In-Memory Scene Copying**: When hitting **Play**, deep-copy `m_EditorScene` via `Scene::Copy()` into `m_RuntimeScene` (in `Engine/src/Core/Scene/Scene.cpp`). Runtime mutations (physics, script variables, entity destructions) occur exclusively on `m_RuntimeScene`, leaving `m_EditorScene` pristine.
+  - **State Machine Integration**: Manage `SceneState m_SceneState` (`Edit`, `Play`, `Pause`). `OnPlay()` executes `m_RuntimeScene->OnRuntimeStart()`; `OnPause()` freezes `OnUpdateRuntime(dt)` and physics steps while maintaining the active viewport for step debugging; `OnStop()` calls `OnRuntimeStop()`, clears `m_RuntimeScene`, and restores `m_EditorScene`.
+  - **3-State Toolbar UI (`Engine/src/Editor/EditorToolbar.cpp`)**: Add Play ▶, Pause ⏸, Resume ▶, and Stop ⏹ GUI buttons with visual state toggles using `TimeGUI::ImageButton`.
+  ```cpp
+  // Editor state machine snippet
+  void EditorLayer::OnPlay() {
+      m_RuntimeScene = Scene::Copy(m_EditorScene);
+      m_RuntimeScene->OnRuntimeStart();
+      m_SceneState = SceneState::Play;
+  }
+  ```
+- [ ] **Standalone Process Launching (`Engine/src/Core/Layers/GameLayer.hpp` & `.cpp`)**:
+  - **Game-Only CLI Launch**: Add `▶ Standalone` toolbar launcher that executes `PlatformUtils::LaunchProcess()` targeting `TimeEditor.exe` with CLI arguments: `--standalone --project=<path> --scene=<path>` (`Engine/src/Core/EntryPoint.h`).
+  - **GameLayer Execution**: Implement a lightweight `GameLayer` that skips editor ImGui dockspaces and tool panels, rendering active `.tescene` files full-screen for production-accurate GPU performance, raw input capture, and window resolution testing.
+
+---
+
+### 4. TScript Language Engine (C/Python Hybrid, Zero External Compiler) (Phase 2)
+- [ ] **Parser & AST Architecture (Zero Binary Dependencies)**:
+  - **Lexer & Pratt Parser (`Engine/Include/Core/Scripting/TScriptLexer.hpp` & `TScriptParser.hpp`)**: Hand-crafted single-pass lexer tokenizing identifiers, literals, operators, and keywords into a recursive-descent Pratt parser building a typed AST (`TScriptAST.hpp`).
+  - **AST Caching Engine (`Engine/Include/Core/Scripting/TScriptAsset.hpp`)**: Parse `.tscript` source text **once** on save/edit and cache the resulting AST (`TScriptProgram`) inside `TScriptAsset`. The tree-walk interpreter (`TScriptInterpreter.hpp`) walks the cached AST per frame — eliminating string re-parsing and avoiding raw binary disk files that can corrupt.
+- [ ] **Hybrid Language Features & Engine Bindings**:
+  - **C/Python Syntax & Region Access**: C-style block braces `{}` without mandatory semicolons, optional type annotations (`float`, `int`, `string`, `var`), dual comment styles (`//` and `#`), and C++ region-based access modifiers (`public:`, `private:`, `protected:`).
+  - **Colon Class & Interface Inheritance**: C++ colon syntax without semicolons for inheritance and multiple interfaces (`class DragonBoss : EnemyScript, IDamageable, IPatroller`). A new `class` keyword implicitly concludes the preceding class scope.
+  - **Unified `T_REGISTER_PROPERTY` Macro**: TScript uses the identical C++ `T_REGISTER_PROPERTY(float, speed, 300.0)` macro, inheriting property drawers, inspector controls, and future clamping bounds (`Min=`, `Max=`).
+  - **Pre-Compiled Reflection Bridge**: Core macros (`TE_CORE_INFO`, `TE_CLIENT_LOG`, `TE_CORE_WARN`, `TE_CORE_ERROR`) and public/protected C++ object methods are pre-compiled into `TScriptInterpreter`'s C++ function binding table — guaranteeing zero external compiler dependencies (no MSVC, Clang, GCC, or Xcode required).
+- [ ] **Event-Driven Execution Engine**:
+  - Event dispatchers: `on_ready()`, `on_update(float dt)`, `on_collision(other)`, `on_input(InputActionBinding[] bindings)`, `on_timer(string name)`, and `on_destroy()`.
+  ```tscript
+  // TScript class & event snippet
+  class PlayerScript : TComponent, IDamageable
+      T_REGISTER_PROPERTY(float, speed, 300.0)
+      public:
+          float health = 100.0
+      private:
+          int m_ammo = 10
+      on_ready() {
+          TE_CORE_INFO("Entity spawned: " + self.name)
+          start_timer("Regen", 2.0, true)
+      }
+      on_update(float dt) {
+          transform.position.x += speed * dt
+      }
+      on_input(InputActionBinding[] bindings) {
+          for (var b : bindings) {
+              if (b.action == "Jump" && b.triggered) {
+                  transform.position.y += 150.0
+              }
+          }
+      }
+  ```
+
+---
+
+### 5. Intrinsic Multi-Script Component Architecture & Extensible Event Routing (Phase 3)
+- [ ] **Multi-Script Component Storage (`Engine/Include/GameFrameWork/TComponent.hpp`)**:
+  - Upgrade `TComponent` to store `std::vector<TScriptInstance>`, allowing entities to hold multiple attached `.tscript` assets simultaneously.
+  - Implement TScript Slots in `Engine/Include/Core/Scene/PropertyDrawers.cpp` featuring Add, Remove, Enable Checkbox, and Open-In-Editor actions, serializing handles to `.tescene` YAML via `SceneSerializer.cpp`.
+- [ ] **`T_EVENT_VISIBLE` Macro System**:
+  - Implement `T_EVENT_VISIBLE(EventType)` macro (`CollisionEvent`, `InputEvent`, `TimerEvent`, `AreaEvent`). Built-in colliders and custom user components declare `T_EVENT_VISIBLE(CollisionEvent)` to participate in event routing automatically.
+  - Add an Event Visibility section in component inspector drawers showing active event hook badges (`on_ready ✓`, `on_update ✓`, `on_collision ✓`).
+  ```cpp
+  // Event visibility macro snippet
+  class BoxColliderComponent : public CollisionComponent {
+      T_EVENT_VISIBLE(CollisionEvent)
+      // ...
+  };
+  ```
+
+---
+
+### 6. Shipped-Engine 2D Component Suite (Phase 4)
+- [ ] **Physics & Collision Suite (`Engine/Include/Core/Scene/` & `Collision/`)**:
+  - **`RigidBody2DComponent`** (`RigidBody2DComponent.hpp`): Bi-directional transform sync between `Entity` and `PhysicsWorld` XPBD rigid bodies (`Static`, `Kinematic`, `Dynamic`, `Mass`, `GravityScale`, `LinearDamping`, `ApplyImpulse`).
+  - **`CharacterBody2DComponent`** (`CharacterBody2DComponent.hpp`, extends `MovementComponentBase`): Kinematic character controller supporting `TopDown` and `SideScroller` modes with slope limits, step heights, and `move_and_slide()` physics resolution.
+  - **`Area2DComponent`** (`Area2DComponent.hpp`, extends `CollisionComponent`): Trigger overlap zone firing `on_area_entered` and `on_area_exited` TScript events.
+  - **`RayCast2DComponent`** (`RayCast2DComponent.hpp`): Per-frame ray testing exposing hit entities, hit normals, and intersection points to TScript.
+  - **`CapsuleColliderComponent`** (`CapsuleColliderComponent.hpp`, extends `CollisionComponent`): Rounded-rectangle collision geometry for character bodies.
+- [ ] **Rendering Suite (`Engine/Include/Core/Scene/`)**:
+  - **`AnimatedSpriteComponent`** (`AnimatedSpriteComponent.hpp`): Flipbook animation player with clip maps (`AnimationClip`), dynamic UV calculations, sequence tags, and Play/Pause/Stop API.
+  - **`TilemapComponent` & `TileSetAsset`** (`TilemapComponent.hpp` & `TileSetAsset.hpp`): Batched grid layer renderer integrating with `Renderer2D` and auto-compiling static tile colliders into `PhysicsWorld`. Includes editor viewport paint tool.
+  - **`GPUParticles2DComponent`** (`GPUParticles2DComponent.hpp`): Emitter with lifetime, velocity, direction, cone spread, color gradient, and gravity curve controls.
+  - **`Line2DComponent`** (`Line2DComponent.hpp`): Polyline path renderer for ropes, laser beams, and debug paths.
+- [ ] **Audio & UI/HUD Suite (`Engine/Include/Core/Audio/` & `Scene/`)**:
+  - **`AudioSource2DComponent` & `AudioListenerComponent`** (`AudioSource2DComponent.hpp` & `AudioListenerComponent.hpp`): Spatial 2D audio emitter and listener powered by an embedded MiniAudio backend (`miniaudio.h` via `AudioEngine.hpp`).
+  - **`CanvasLayerComponent`** (`CanvasLayerComponent.hpp`): Fixed screen-space UI viewport layer unaffected by camera movement.
+  - **`TextComponent`**, **`ButtonComponent`**, **`ProgressBarComponent`**, **`NinePatchRectComponent`**: Screen-space HUD widgets with click callbacks and visual state styles.
+  ```tscript
+  // Character movement TScript snippet
+  on_update(float dt) {
+      var vel = character.velocity
+      vel.y += 980.0 * dt
+      if (input_pressed("MoveRight")) { vel.x = 300.0 }
+      if (character.is_on_floor() && input_triggered("Jump")) { vel.y = -500.0 }
+      character.velocity = vel
+      character.move_and_slide(dt)
+  }
+  ```
+
+---
+
+### 7. Core AI, State Trees & Navigation (Phase 5)
+- [ ] **UE5-Style State Trees (Engine Core, `Engine/Include/Core/AI/StateTree.hpp`)**:
+  - **Hierarchical State Engine**: Implement `StateTree`, `StateNode`, `StateTransition`, and `StateTreeEvaluator` for data-oriented state execution (`Patrol`, `Chase`, `Attack`, `Flee`).
+  - **Built-in Tasks & Conditions**: Implement `STMoveToPositionTask`, `STMoveToEntityTask`, `STPlayAnimationTask`, `STExecuteTScriptTask`, `STDistanceCondition`, `STHealthCondition`, `STHasTagCondition`, and `STTScriptCondition`.
+  - **Visual Editor & Debugger (`Engine/src/Editor/StateTreeEditor.cpp`)**: `.testatetree` YAML serializer and dockable node graph editor with real-time green/red state highlighting during PIE.
+  ```yaml
+  # .testatetree YAML snippet
+  InitialState: Patrol
+  States:
+    - Name: Patrol
+      TickTasks:
+        - type: STMoveToPositionTask
+      Transitions:
+        - condition:
+            type: STDistanceCondition
+            target: Player
+            max_distance: 250
+          to: Chase
+  ```
+- [ ] **Navigation & Pathfinding (Engine Core, `Engine/Include/Core/AI/NavigationMesh2D.hpp`)**:
+  - **`NavigationMesh2D` & A\* Solver**: Grid/polygon navigation mesh generator with dynamic obstacle avoidance.
+  - **`NavigationAgent2DComponent`** (`NavigationAgent2DComponent.hpp`): ECS component following A* waypoints with configurable stopping distance and automatic re-pathing timers.
+  - **`TimerComponent`** (`TimerComponent.hpp`): Entity-attached timer manager firing `on_timer(name)` TScript events for single-shot or repeating timers.
+
+---
+
+### 8. Modular Optional Engine Plugins & AI/ML Extension Suite
+- [ ] **`GameplayTagPlugin` (Optional Plugin, `Engine/Plugins/GameplayTagPlugin/`)**:
+  - Standalone opt-in plugin providing hierarchical string tags (`Character.Enemy.Boss.Dragon`), `GameplayTagContainer`, and `GameplayTagManager`.
+  ```tscript
+  // Gameplay tag query snippet
+  on_collision(other) {
+      if (other.has_tag("Character.Enemy")) { health -= 25.0 }
+      if (other.has_tag("Status.Invincible")) { return }
+  }
+  ```
+- [ ] **Optional AI/ML Extension Plugins (`Engine/Plugins/`)**:
+  - **`NeuralNPCPlugin`**: Lightweight neural network inference node for state choice evaluation offloaded via `SUBMIT_AI()`.
+  - **`MotionMatching2DPlugin`**: 2D feature-vector nearest-neighbor search for fluid 2D sprite animation blending.
+  - **`MLLevelGeneratorPlugin`**: ONNX-based procedural level and room layout generation plugin.
+  - **`AdaptiveDifficultyComponent`**: Player performance metrics tracker dynamically scaling difficulty multipliers.
+  - **`TextureUpscalerPlugin`**: ESRGAN offline 4x sprite texture upscaler plugin.
+  - **`LLMDialoguePlugin`**: Async local LLM integration for dynamic NPC dialogue generation.
+
+---
+
 ## 🔴 Long-Term Infrastructure (Missing Systems)
 
 ### 1. Editor UI Logging & Console
@@ -119,15 +268,15 @@ This document outlines the current state and missing features of TimeEngine, map
 
 ### 4. Cross-Platform Build & Runtime Support
 
-> **Current State**: TimeEngine is built exclusively with **MSVC (Visual Studio 2022)** on Windows. Shell scripts for Linux and macOS exist under `Scripts/Linux/` and `Scripts/Mac/` but are untested and incomplete. No MinGW support exists. The source platform layer only contains `Engine/src/Platform/Windows/`.
+> **Current State**: TimeEngine is fully tested and supported for development on **Windows** and **macOS** via Premake5 project generators and build script suites (`Scripts/Windows/` and `Scripts/Mac/`). Linux scripts exist (`Scripts/Linux/`) but are currently untested.
 
 #### Platform Status
 
 | Platform | Compiler | IDE/Build | Status |
 |---|---|---|---|
-| Windows (MSVC) | MSVC | Visual Studio 2022 `.sln` | ✅ Primary / Working |
+| Windows (MSVC/Clang) | MSVC / Clang | Visual Studio 2022 `.sln` | ✅ Fully Tested / Supported |
+| macOS (AppleClang) | AppleClang | Premake → `xcode4` / Makefile | ✅ Fully Tested / Supported |
 | Linux (GCC/Clang) | GCC or Clang | Premake → `gmake2` | ⚠️ Scripts exist, untested |
-| macOS (AppleClang) | AppleClang | Premake → `xcode4` | ⚠️ Scripts exist, untested |
 | Windows (MinGW) | GCC/MinGW | Premake → `gmake2` | ❌ Not set up |
 
 #### Required Changes (Premake5.lua)
