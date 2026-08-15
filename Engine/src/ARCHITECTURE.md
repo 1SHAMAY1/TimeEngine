@@ -22,6 +22,7 @@ Each link below redirects to the detailed, dedicated architecture document for t
 
 - [Plugins Architecture](../Plugins/ARCHITECTURE.md) — Architecture for engine plugins and dynamic runtime extensions.
 - [MCP Plugin Architecture](../Plugins/MCPPlugin/ARCHITECTURE.md) — Remote-control Model Context Protocol HTTP/SSE AI receiver plugin.
+- [GameplayTag Plugin Architecture](../Plugins/GameplayTagPlugin/ARCHITECTURE.md) — Hierarchical Gameplay Tags Plugin architecture documentation.
 - [Windows Platform Utilities Architecture](Utils/Platform/Windows/ARCHITECTURE.md) — Win32 file dialogs and registry helpers.
 - [Unix Platform Utilities Architecture](Utils/Platform/Unix/ARCHITECTURE.md) — POSIX executable resolution and Unix dialogs.
 
