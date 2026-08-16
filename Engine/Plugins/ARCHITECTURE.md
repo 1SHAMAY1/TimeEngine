@@ -44,5 +44,6 @@ void MCPPlugin::OnUnload() {
 ## Registered Plugins & Architectures
 
 - [MCPPlugin Architecture](MCPPlugin/ARCHITECTURE.md) — Model Context Protocol (MCP) HTTP/SSE Server Plugin architecture documentation.
+- [GameplayTagPlugin Architecture](GameplayTagPlugin/ARCHITECTURE.md) — Hierarchical Gameplay Tags Plugin architecture documentation.
 
 
