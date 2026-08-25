@@ -10,9 +10,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Architecture-IGDE-purple.svg" alt="Integrated Game Development Environment">
-  <img src="https://img.shields.io/badge/Language-C%2B%2B20-blue.svg" alt="C++20">
+  <img src="https://img.shields.io/badge/Language-C%2B%2B%20Latest-blue.svg" alt="C++ Latest">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Windows | Linux | macOS">
-  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
+  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20Metal%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT">
 </p>
 
@@ -57,8 +57,11 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 🚀 Getting Started
 
 ### Prerequisites
-* C++20 Compliant Compiler (MSVC, GCC, or Clang)
-* Git
+* **C++ Compiler**: Modern C++ compiler with `C++latest` (`C++20`/`C++23`) support:
+  * **Windows**: MSVC (Visual Studio 2022+), Clang, or MinGW-w64
+  * **macOS**: Xcode (Apple Clang) or Makefiles / LLVM
+  * **Linux**: GCC (`g++` 11+) or Clang
+* **Git** (with submodule support)
 
 ### Setup & Building from Source
 
@@ -68,9 +71,9 @@ Traditional game development forces creators to constantly context-switch betwee
    cd TimeEngine
    ```
 
-2. **Initialize Submodules** (Required for all platforms):
+2. **Initialize Submodules & Build Tools** (Required for all platforms):
    ```bash
-   bash Scripts/SetupSubmodules.sh
+   ./Scripts/SetupSubmodules.sh
    ```
 
 3. **Generate Workspace / Project Files**:
@@ -87,10 +90,10 @@ Traditional game development forces creators to constantly context-switch betwee
 
 ## 📚 Documentation & Developer Guides
 
-* 🏛️ **[ARCHITECTURE.md](ARCHITECTURE.md)** — Core subsystems, ECS components, rendering backends, vendor wrappers, and MCP automation specs.
-* 📄 **[ROADMAP.md](ROADMAP.md)** — Feature milestones and time-manipulation architecture plans.
+* 🏛️ **[Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md)** — Core subsystems, ECS components, rendering backends, vendor wrappers, and MCP automation specs.
+* 📄 **[Docs/ROADMAP.md](Docs/ROADMAP.md)** — Feature milestones and time-manipulation architecture plans.
 * 🤖 **[llms.txt](llms.txt)** / **[llms.md](llms.md)** — LLM architecture summary, coding rules, vendor wrapping guidelines, and MCP server tools.
-* 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** — Guidelines for code style, submodules, and PR submissions.
+* 🤝 **[.github/CONTRIBUTING.md](.github/CONTRIBUTING.md)** — Guidelines for code style, submodules, and PR submissions.
 
 ---
 
