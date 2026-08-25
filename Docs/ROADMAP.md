@@ -230,27 +230,27 @@ This document outlines the current state and missing features of TimeEngine, map
       if (other.has_tag("Status.Invincible")) { return }
   }
   ```
+- [x] **`SpriteEditorPlugin`**: In-editor sprite raster and vector editing suite with pixel paint, vector editor, code editor submodes, and export pipeline.
+- [x] **`DialogueRunnerPlugin`**: Node-based branching dialogue graph system with Ink/Yarn interpreters, localization tables, and quest integration.
+- [x] **`SoundSynthesizerPlugin`**: Procedural procedural audio and waveform synthesis graph with DSP nodes, oscillators, envelopes, and sequencer.
+- [x] **`PCGPlugin`**: 2D Procedural Content Generation toolset and node graph pipeline with point data, noise, structural generators, and ECS processors.
+- [x] **`Skeletal2DPlugin`**: 2D bone hierarchy, inverse kinematics, skinning tables, timeline editor, and Spine JSON import.
+- [x] **`ParticleFXPlugin`**: 2D particle simulation and effects runtime with node graph editor, emitters, spawn/update modules, and rendering.
+- [x] **`MaterialSystemPlugin`**: Custom multi-pass shaders and material asset pipeline with visual shader graphs and uniform blocks.
+- [x] **`RichTextPlugin`**: Tag-based rich formatting, dynamic text effects, layout engine, and animated text styling.
+- [x] **`TextToAudioPlugin`**: Offline text-to-speech and audio cue synthesis with Windows SAPI backend and TTS asset editor.
+- [x] **`IKPlugin`**: 2-bone, CCD, and FABRIK analytical 2D/3D inverse kinematics solver plugin with foot grounding constraints.
 - [ ] **`NeuralAIPlugin`**: Lightweight neural network inference node for state choice evaluation offloaded via `SUBMIT_AI()`.
 - [ ] **`MotionMatchingPlugin`**: 2D feature-vector nearest-neighbor search for fluid 2D sprite animation blending.
 - [ ] **`MLLevelGenPlugin`**: ONNX-based procedural level and room layout generation plugin.
 - [ ] **`AdaptiveDifficultyPlugin`**: Player performance metrics tracker dynamically scaling difficulty multipliers.
 - [ ] **`TextureUpscalerPlugin`**: ESRGAN offline 4x sprite texture upscaler plugin.
 - [ ] **`LLMDialoguePlugin`**: Async local LLM integration for dynamic NPC dialogue generation.
-- [ ] **`PCGPlugin`**: 2D Procedural Content Generation toolset and node graph pipeline.
-- [ ] **`ParticleFXPlugin`**: 2D particle simulation and effects runtime.
 - [ ] **`Lighting2DPlugin`**: 2D dynamic shadows, ambient lights, and normal mapping.
-- [ ] **`MaterialSystemPlugin`**: Custom multi-pass shaders and material asset pipeline.
-- [ ] **`RichTextPlugin`**: Tag-based rich formatting and dynamic text effects.
-- [ ] **`Skeletal2DPlugin`**: 2D bone hierarchy, inverse kinematics, and skinning.
-- [ ] **`SoundSynthesizerPlugin`**: Procedural procedural audio and waveform synthesis.
-- [ ] **`SpriteEditorPlugin`**: In-editor sprite raster and vector editing suite.
-- [ ] **`TextToAudioPlugin`**: Offline text-to-speech and audio cue synthesis.
 - [ ] **`CheatDetectionPlugin`**: Deterministic state integrity and speedhack verification.
 - [ ] **`AnalyticsHeatmapPlugin`**: Player telemetry and spatial heatmap visualization.
-- [ ] **`DialogueRunnerPlugin`**: Node-based branching dialogue system.
 - [ ] **`PhysicsSurrogatePlugin`**: Specialized 2D physics constraints and joints.
 - [ ] **`AdaptiveMusicPlugin`**: Multi-track dynamic stem mixing and transitions.
-- [ ] **`IKPlugin`**: 2-bone and multi-joint analytical 2D inverse kinematics.
 
 ---
 
