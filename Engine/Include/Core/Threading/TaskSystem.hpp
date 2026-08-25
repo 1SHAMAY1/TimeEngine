@@ -1,7 +1,11 @@
-﻿#pragma once
+#pragma once
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "ThreadPool.hpp"
 #include <unordered_map>
 #include <memory>
+#include <functional>
+
 
 enum class TaskType {
     MAIN,
@@ -20,15 +24,20 @@ public:
 
     // Initialization
     static void InitMainThread();
-    static void InitRenderThread();
+    static void InitRenderThread(void *nativeWindow = nullptr);
+    static void ShutdownRenderThread();
+    static void SubmitRenderFrame(const std::function<void()>& renderJob);
+    static void WaitRenderFrame();
     static void InitGameplayThread();
     static void InitAIThread();
     static void InitCalcThread();
     static void InitWidgetThread();
 
 private:
-    inline static std::unordered_map<TaskType, std::unique_ptr<ThreadPool>> threadPools;
-    inline static std::unordered_map<TaskType, bool> threadEnabled;
+    inline static TEMap<TaskType, TEScope<ThreadPool>> threadPools;
+    inline static TEMap<TaskType, bool> threadEnabled;
+    inline static TEScope<class DedicatedRenderThread> s_RenderThread;
 };
 
 #include "TaskSystem.inl"
+
