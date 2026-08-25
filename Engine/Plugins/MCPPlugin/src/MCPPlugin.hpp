@@ -1,15 +1,13 @@
 #pragma once
 
 #include "Core/Plugin/IPlugin.hpp"
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <atomic>
 #include <functional>
 #include <mutex>
-#include <string>
 #include <thread>
-#include <vector>
 
-namespace TE
-{
 
 // Represents a connected SSE client waiting for server-sent events
 struct SSEClient
@@ -24,6 +22,13 @@ public:
     virtual void OnLoad() override;
     virtual void OnUnload() override;
 
+    virtual TEString GetName() const override { return "MCPPlugin"; }
+    virtual TEString GetVersion() const override { return "1.0.0"; }
+    virtual TEString GetAuthor() const override { return "TimeEngine Team"; }
+    virtual TEString GetDescription() const override { return "Model Context Protocol Integration & AI Automation Plugin"; }
+
+    virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;
+
 private:
     // Main server accept loop
     void ServerThreadMain();
@@ -32,40 +37,41 @@ private:
     void HandleConnection(uintptr_t clientSocket);
 
     // HTTP helpers
-    std::string ReadHttpRequest(uintptr_t socket);
-    void SendHttpResponse(uintptr_t socket, int statusCode, const std::string &contentType, const std::string &body,
+    TEString ReadHttpRequest(uintptr_t socket);
+    void SendHttpResponse(uintptr_t socket, int statusCode, const TEString &contentType, const TEString &body,
                           bool keepAlive = false);
-    void SendSSEEvent(uintptr_t socket, const std::string &eventName, const std::string &data);
+    void SendSSEEvent(uintptr_t socket, const TEString &eventName, const TEString &data);
 
     // MCP tool dispatch — returns the JSON result string
-    std::string DispatchToolCall(const std::string &toolName, const std::string &paramsJson);
+    TEString DispatchToolCall(const TEString &toolName, const TEString &paramsJson);
 
     // Individual tool handlers
-    std::string Tool_GetEngineInfo();
-    std::string Tool_GetSceneHierarchy();
-    std::string Tool_CreateEntity(const std::string &paramsJson);
-    std::string Tool_DestroyEntity(const std::string &paramsJson);
-    std::string Tool_CreateSprite(const std::string &paramsJson);
-    std::string Tool_CreateDirectory(const std::string &paramsJson);
-    std::string Tool_DeletePath(const std::string &paramsJson);
+    TEString Tool_GetEngineInfo();
+    TEString Tool_GetSceneHierarchy();
+    TEString Tool_CreateEntity(const TEString &paramsJson);
+    TEString Tool_DestroyEntity(const TEString &paramsJson);
+    TEString Tool_CreateSprite(const TEString &paramsJson);
+    TEString Tool_CreateDirectory(const TEString &paramsJson);
+    TEString Tool_DeletePath(const TEString &paramsJson);
 
     // NEW Tool Handlers
-    std::string Tool_GetEditorModes();
-    std::string Tool_SetEditorMode(const std::string &paramsJson);
-    std::string Tool_GetViewportScreenshot();
-    std::string Tool_SendEditorInput(const std::string &paramsJson);
-    std::string Tool_SelectEntity(const std::string &paramsJson);
-    std::string Tool_SetEntityProperties(const std::string &paramsJson);
-    std::string Tool_AddComponent(const std::string &paramsJson);
-    std::string Tool_DeleteScreenshot();
+    TEString Tool_GetEditorModes();
+    TEString Tool_SetEditorMode(const TEString &paramsJson);
+    TEString Tool_GetViewportScreenshot();
+    TEString Tool_SendEditorInput(const TEString &paramsJson);
+    TEString Tool_SelectEntity(const TEString &paramsJson);
+    TEString Tool_SetEntityProperties(const TEString &paramsJson);
+    TEString Tool_AddComponent(const TEString &paramsJson);
+    TEString Tool_DeleteScreenshot();
+    TEString Tool_OpenAssetEditor(const TEString &paramsJson);
 
     // JSON parsing helpers
-    static std::string ExtractString(const std::string &json, const std::string &key);
-    static int64_t ExtractInt(const std::string &json, const std::string &key);
-    static std::string ExtractObject(const std::string &json, const std::string &key);
+    static TEString ExtractString(const TEString &json, const TEString &key);
+    static int64_t ExtractInt(const TEString &json, const TEString &key);
+    static TEString ExtractObject(const TEString &json, const TEString &key);
 
     // SSE broadcast helpers
-    void BroadcastSSE(const std::string &eventName, const std::string &data);
+    void BroadcastSSE(const TEString &eventName, const TEString &data);
     void CleanupSSEClients();
 
 private:
@@ -74,7 +80,6 @@ private:
     uintptr_t m_ListenSocket = 0; // SOCKET
 
     std::mutex m_SSEMutex;
-    std::vector<SSEClient> m_SSEClients;
+    TEArray<SSEClient> m_SSEClients;
 };
 
-} // namespace TE
