@@ -4,8 +4,6 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
 
-namespace TE
-{
 
 class ProceduralSpriteComponent : public TComponent
 {
@@ -15,13 +13,14 @@ public:
     T_PROPERTY(TEColor, BaseColor, "Base Color", TEColor::White())
     T_PROPERTY(bool, bIsVisible, "Visible", true)
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 };
 
 #ifdef TE_EDITOR
 T_REGISTER_COMPONENT(ProceduralSpriteComponent, "Procedural Sprite Component")
 T_REGISTER_PROPERTY(ProceduralSpriteComponent, TEColor, BaseColor, "Base Color")
 T_REGISTER_PROPERTY(ProceduralSpriteComponent, bool, bIsVisible, "Visible")
+T_REGISTER_PRESET(ProceduralSpriteComponent, "Procedural Sprite", "2D Rendering",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<ProceduralSpriteComponent>(id); })
 #endif
 
-} // namespace TE

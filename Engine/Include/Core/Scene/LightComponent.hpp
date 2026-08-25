@@ -1,11 +1,10 @@
 #pragma once
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
+#include "Renderer/Renderer2D.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
 
-namespace TE
-{
 
 enum class TELightType
 {
@@ -34,11 +33,22 @@ public:
     LightComponent() = default;
     virtual ~LightComponent() = default;
 
-    const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
-    bool ContainsPoint(const TE::TEMatrix4 &worldModel, const TEVector2 &point) const override
+    virtual void OnRender(class Renderer2D *renderer, const TEMatrix4 &worldModel,
+                          const TERef<class Material> &material) const override
     {
-        TE::TEVector2 pos = {worldModel.m[3][0], worldModel.m[3][1]};
+        if (renderer)
+        {
+            TEVector2 pos = {worldModel.m[3][0], worldModel.m[3][1]};
+            float rot = Atan2(worldModel.m[0][1], worldModel.m[0][0]);
+            renderer->SubmitLight(*this, pos, rot);
+        }
+    }
+
+    bool ContainsPoint(const TEMatrix4 &worldModel, const TEVector2 &point) const override
+    {
+        TEVector2 pos = {worldModel.m[3][0], worldModel.m[3][1]};
         float clickRadius = 0.5f;
         float dx = point.x - pos.x, dy = point.y - pos.y;
         return (dx * dx + dy * dy) <= clickRadius * clickRadius;
@@ -76,10 +86,10 @@ T_REGISTER_PROPERTY_COND(LightComponent, float, Width, "Width",
 
 // Entity presets registered here - no need to touch EditorLayer.cpp for new light types
 T_REGISTER_PRESET(PointLight, "Point Light", "Lights",
-                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<LightComponent>(id); }))
+                  ([](EntityID id, EntityManager *em) { em->AddComponent<LightComponent>(id); }))
 T_REGISTER_PRESET(SpotLight, "Spot Light", "Lights",
                   (
-                      [](::TE::EntityID id, ::TE::EntityManager *em)
+                      [](EntityID id, EntityManager *em)
                       {
                           auto *l = em->AddComponent<LightComponent>(id);
                           if (l)
@@ -87,7 +97,7 @@ T_REGISTER_PRESET(SpotLight, "Spot Light", "Lights",
                       }))
 T_REGISTER_PRESET(LineLight, "Line Light", "Lights",
                   (
-                      [](::TE::EntityID id, ::TE::EntityManager *em)
+                      [](EntityID id, EntityManager *em)
                       {
                           auto *l = em->AddComponent<LightComponent>(id);
                           if (l)
@@ -95,4 +105,3 @@ T_REGISTER_PRESET(LineLight, "Line Light", "Lights",
                       }))
 #endif
 
-} // namespace TE

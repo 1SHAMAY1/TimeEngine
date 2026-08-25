@@ -1,10 +1,9 @@
+#include "Core/PreRequisites.h"
 #include "Core/Collision/CollisionSystem.hpp"
 #include "Core/Collision/CollisionTypes.hpp"
 #include <algorithm>
 #include <glm/glm.hpp>
 
-namespace TE
-{
 
 void CollisionSystem::Process()
 {
@@ -12,7 +11,7 @@ void CollisionSystem::Process()
         return;
 
     // Collect all collision components
-    std::vector<CollisionComponent *> allColliders;
+    TEArray<CollisionComponent *> allColliders;
     for (EntityID id : m_EntityManager->GetAliveEntities())
     {
         auto colliders = m_EntityManager->GetComponents<CollisionComponent>(id);
@@ -29,7 +28,7 @@ void CollisionSystem::Process()
 
             // Update the collider shape with world-space data
             col->OnUpdateShape(worldTransform);
-            allColliders.push_back(col);
+            allColliders.Add(col);
         }
     }
 
@@ -52,6 +51,25 @@ void CollisionSystem::Process()
                     compA->collided = compB->collided = true;
                     if (onCollision)
                         onCollision(pair.a, pair.b);
+
+                    // Dispatch to script instances on collision-visible components
+                    auto allCompsA = m_EntityManager->GetAllComponents(pair.a);
+                    for (auto *comp : allCompsA)
+                    {
+                        if (comp && comp->HasEventVisibility(TScriptEventType::CollisionEvent))
+                        {
+                            comp->DispatchScriptCollision(pair.b);
+                        }
+                    }
+
+                    auto allCompsB = m_EntityManager->GetAllComponents(pair.b);
+                    for (auto *comp : allCompsB)
+                    {
+                        if (comp && comp->HasEventVisibility(TScriptEventType::CollisionEvent))
+                        {
+                            comp->DispatchScriptCollision(pair.a);
+                        }
+                    }
                 }
             }
         }
@@ -75,24 +93,38 @@ bool CollisionSystem::CheckCollision(CollisionComponent *a, CollisionComponent *
     }
 
     // Polygon-based SAT (Triangle is a polygon with 3 points)
-    std::vector<TEVector2> pointsA, pointsB;
+    TEArray<TEVector2> pointsA, pointsB;
 
-    auto GetPoints = [](const CollisionShape &s, std::vector<TEVector2> &out)
+    auto GetPoints = [](const CollisionShape &s, TEArray<TEVector2> &out)
     {
+        out.Clear();
         if (s.type == CollisionType::AABB)
         {
-            out = {{s.aabb.min.x, s.aabb.min.y},
-                   {s.aabb.max.x, s.aabb.min.y},
-                   {s.aabb.max.x, s.aabb.max.y},
-                   {s.aabb.min.x, s.aabb.max.y}};
+            out.Add({s.aabb.min.x, s.aabb.min.y});
+            out.Add({s.aabb.max.x, s.aabb.min.y});
+            out.Add({s.aabb.max.x, s.aabb.max.y});
+            out.Add({s.aabb.min.x, s.aabb.max.y});
         }
         else if (s.type == CollisionType::Triangle)
         {
-            out = {s.triangle.points[0], s.triangle.points[1], s.triangle.points[2]};
+            out.Add(s.triangle.points[0]);
+            out.Add(s.triangle.points[1]);
+            out.Add(s.triangle.points[2]);
         }
         else if (s.type == CollisionType::Polygon)
         {
             out = s.polygon.points;
+        }
+        else if (s.type == CollisionType::Capsule)
+        {
+            TEVector2 dir = {s.capsule.point2.x - s.capsule.point1.x, s.capsule.point2.y - s.capsule.point1.y};
+            float len = sqrt(dir.x * dir.x + dir.y * dir.y);
+            TEVector2 norm = (len > 0.0001f) ? TEVector2{-dir.y / len * s.capsule.radius, dir.x / len * s.capsule.radius}
+                                             : TEVector2{s.capsule.radius, 0.0f};
+            out.Add({s.capsule.point1.x - norm.x, s.capsule.point1.y - norm.y});
+            out.Add({s.capsule.point2.x - norm.x, s.capsule.point2.y - norm.y});
+            out.Add({s.capsule.point2.x + norm.x, s.capsule.point2.y + norm.y});
+            out.Add({s.capsule.point1.x + norm.x, s.capsule.point1.y + norm.y});
         }
     };
 
@@ -128,15 +160,12 @@ bool CollisionSystem::CircleVsCircle(const BoundsCircle &a, const BoundsCircle &
     return (dx * dx + dy * dy) <= r * r;
 }
 
-bool CollisionSystem::PolyVsPoly(const std::vector<TEVector2> &a, const std::vector<TEVector2> &b)
+bool CollisionSystem::PolyVsPoly(TESpan<TEVector2> a, TESpan<TEVector2> b)
 {
-    if (a.empty() || b.empty())
-        return false;
+    auto axes1 = GetAxes(a);
+    auto axes2 = GetAxes(b);
 
-    auto axesA = GetAxes(a);
-    auto axesB = GetAxes(b);
-
-    for (const auto &axis : axesA)
+    for (const auto &axis : axes1)
     {
         float minA, maxA, minB, maxB;
         Project(a, axis, minA, maxA);
@@ -145,7 +174,7 @@ bool CollisionSystem::PolyVsPoly(const std::vector<TEVector2> &a, const std::vec
             return false;
     }
 
-    for (const auto &axis : axesB)
+    for (const auto &axis : axes2)
     {
         float minA, maxA, minB, maxB;
         Project(a, axis, minA, maxA);
@@ -157,7 +186,7 @@ bool CollisionSystem::PolyVsPoly(const std::vector<TEVector2> &a, const std::vec
     return true;
 }
 
-bool CollisionSystem::CircleVsPoly(const BoundsCircle &circle, const std::vector<TEVector2> &poly)
+bool CollisionSystem::CircleVsPoly(const BoundsCircle &circle, TESpan<TEVector2> poly)
 {
     if (poly.empty())
         return false;
@@ -204,9 +233,9 @@ bool CollisionSystem::CircleVsPoly(const BoundsCircle &circle, const std::vector
     return inside || (minDistSq <= circle.radius * circle.radius);
 }
 
-std::vector<TEVector2> CollisionSystem::GetAxes(const std::vector<TEVector2> &points)
+TEArray<TEVector2> CollisionSystem::GetAxes(TESpan<TEVector2> points)
 {
-    std::vector<TEVector2> axes;
+    TEArray<TEVector2> axes;
     for (size_t i = 0; i < points.size(); i++)
     {
         TEVector2 p1 = points[i];
@@ -215,12 +244,12 @@ std::vector<TEVector2> CollisionSystem::GetAxes(const std::vector<TEVector2> &po
         TEVector2 normal = {-edge.y, edge.x}; // Perpendicular
         float len = sqrt(normal.x * normal.x + normal.y * normal.y);
         if (len > 0)
-            axes.push_back({normal.x / len, normal.y / len});
+            axes.Add({normal.x / len, normal.y / len});
     }
     return axes;
 }
 
-void CollisionSystem::Project(const std::vector<TEVector2> &points, const TEVector2 &axis, float &min, float &max)
+void CollisionSystem::Project(TESpan<TEVector2> points, const TEVector2 &axis, float &min, float &max)
 {
     if (points.empty())
         return;
@@ -235,4 +264,3 @@ void CollisionSystem::Project(const std::vector<TEVector2> &points, const TEVect
     }
 }
 
-} // namespace TE

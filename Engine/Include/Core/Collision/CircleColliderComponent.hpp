@@ -2,8 +2,6 @@
 #include "CollisionComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 
-namespace TE
-{
 
 class CircleColliderComponent : public CollisionComponent
 {
@@ -15,7 +13,7 @@ public:
 
     CircleColliderComponent() { shape.type = CollisionType::Circle; }
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
     virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
@@ -30,6 +28,7 @@ T_REGISTER_PROPERTY(CircleColliderComponent, TEVector2, Offset, "Offset")
 T_REGISTER_PROPERTY(CircleColliderComponent, float, Radius, "Radius")
 T_REGISTER_PROPERTY(CircleColliderComponent, bool, isStatic, "Is Static")
 T_REGISTER_PROPERTY(CircleColliderComponent, bool, isTrigger, "Is Trigger")
+T_REGISTER_PRESET(CircleColliderComponent, "Circle Collider 2D", "Physics & Collisions",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<CircleColliderComponent>(id); })
 #endif
 
-} // namespace TE

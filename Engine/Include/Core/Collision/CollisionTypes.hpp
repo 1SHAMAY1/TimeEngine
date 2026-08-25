@@ -1,12 +1,10 @@
 #pragma once
 
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 #include <cstdint>
 #include <cstring>
-#include <vector>
 
-namespace TE
-{
 
 // Type of collision shape
 enum class CollisionType : uint8_t
@@ -14,7 +12,8 @@ enum class CollisionType : uint8_t
     AABB = 0,
     Circle = 1,
     Triangle = 2,
-    Polygon = 3
+    Polygon = 3,
+    Capsule = 4
 };
 
 // Axis-Aligned Bounding Box
@@ -37,6 +36,17 @@ struct BoundsCircle
     BoundsCircle(const TEVector2 &center, float radius) : center(center), radius(radius) {}
 };
 
+// Capsule bounds (2D rounded segment / pill shape)
+struct BoundsCapsule
+{
+    TEVector2 point1;
+    TEVector2 point2;
+    float radius = 0.0f;
+
+    BoundsCapsule() = default;
+    BoundsCapsule(const TEVector2 &p1, const TEVector2 &p2, float r) : point1(p1), point2(p2), radius(r) {}
+};
+
 // Triangle bounds
 struct BoundsTriangle
 {
@@ -54,10 +64,10 @@ struct BoundsTriangle
 // Polygon bounds (Dynamic)
 struct BoundsPolygon
 {
-    std::vector<TEVector2> points;
+    TEArray<TEVector2> points;
 
     BoundsPolygon() = default;
-    BoundsPolygon(const std::vector<TEVector2> &p) : points(p) {}
+    BoundsPolygon(const TEArray<TEVector2> &p) : points(p) {}
 };
 
 // Unified collision shape (Removed union for non-POD support)
@@ -67,14 +77,15 @@ struct CollisionShape
 
     BoundsAABB aabb;
     BoundsCircle circle;
+    BoundsCapsule capsule;
     BoundsTriangle triangle;
     BoundsPolygon polygon;
 
     CollisionShape() : type(CollisionType::AABB) {}
     CollisionShape(const BoundsAABB &b) : type(CollisionType::AABB), aabb(b) {}
     CollisionShape(const BoundsCircle &c) : type(CollisionType::Circle), circle(c) {}
+    CollisionShape(const BoundsCapsule &cp) : type(CollisionType::Capsule), capsule(cp) {}
     CollisionShape(const BoundsTriangle &t) : type(CollisionType::Triangle), triangle(t) {}
     CollisionShape(const BoundsPolygon &p) : type(CollisionType::Polygon), polygon(p) {}
 };
 
-} // namespace TE

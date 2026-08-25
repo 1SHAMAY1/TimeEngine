@@ -3,8 +3,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
 
-namespace TE
-{
 
 class TE_API AmbientLightComponent : public TComponent
 {
@@ -21,7 +19,7 @@ public:
     AmbientLightComponent() = default;
     virtual ~AmbientLightComponent() = default;
 
-    const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 };
 
 #ifdef TE_EDITOR
@@ -32,6 +30,7 @@ T_REGISTER_PROPERTY(AmbientLightComponent, TEColor, GroundColor, "Ground Color")
 T_REGISTER_PROPERTY(AmbientLightComponent, float, Intensity, "Intensity")
 T_REGISTER_PROPERTY(AmbientLightComponent, float, HorizonHeight, "Horizon Height")
 T_REGISTER_PROPERTY(AmbientLightComponent, float, HorizonSpread, "Horizon Spread")
+T_REGISTER_PRESET(AmbientLightComponent, "Ambient Light", "Lights",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<AmbientLightComponent>(id); })
 #endif
 
-} // namespace TE

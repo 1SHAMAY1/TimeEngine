@@ -1,26 +1,25 @@
 #pragma once
 #include "GameFrameWork/TComponent.hpp"
-#include <string>
 
-namespace TE
-{
 
 class TagComponent : public TComponent
 {
 public:
-    std::string Tag;
+    TEString Tag;
 
     TagComponent() = default;
-    TagComponent(const std::string &tag) : Tag(tag) {}
+    TagComponent(const TEString &tag) : Tag(tag) {}
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
-    static constexpr const char *StaticClassName = "TagComponent";
+    inline static const TEString StaticClassName = "TagComponent";
 };
 
-} // namespace TE
 
 #ifdef TE_EDITOR
 #include "Core/Scene/ComponentRegistry.hpp"
+T_REGISTER_COMPONENT(TagComponent, "Tag Component")
+T_REGISTER_PROPERTY(TagComponent, TEString, Tag, "Tag")
 T_COMPONENT_INTERNAL(TagComponent)
 #endif
+

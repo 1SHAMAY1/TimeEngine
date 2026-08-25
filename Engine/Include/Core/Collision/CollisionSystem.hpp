@@ -5,8 +5,6 @@
 #include <functional>
 #include <unordered_map>
 
-namespace TE
-{
 
 class CollisionSystem
 {
@@ -25,12 +23,11 @@ private:
 
     bool AABBvsAABB(const BoundsAABB &a, const BoundsAABB &b);
     bool CircleVsCircle(const BoundsCircle &a, const BoundsCircle &b);
-    bool PolyVsPoly(const std::vector<TEVector2> &a, const std::vector<TEVector2> &b);
-    bool CircleVsPoly(const BoundsCircle &circle, const std::vector<TEVector2> &poly);
+    bool PolyVsPoly(TESpan<TEVector2> a, TESpan<TEVector2> b);
+    bool CircleVsPoly(const BoundsCircle &circle, TESpan<TEVector2> poly);
 
     // Helper for SAT
-    std::vector<TEVector2> GetAxes(const std::vector<TEVector2> &points);
-    void Project(const std::vector<TEVector2> &points, const TEVector2 &axis, float &min, float &max);
+    TEArray<TEVector2> GetAxes(TESpan<TEVector2> points);
+    void Project(TESpan<TEVector2> points, const TEVector2 &axis, float &min, float &max);
 };
 
-} // namespace TE

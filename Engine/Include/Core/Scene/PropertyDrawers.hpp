@@ -2,31 +2,31 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include <memory>
-#include <string>
-#include <vector>
+#include "Utils/TEString.hpp"
 
-namespace TE
-{
 
 template <typename T> struct TEPropertyDrawer
 {
-    static void Draw(void *addr, const std::string &displayName) { TimeGUI::Text(displayName + ": [No Drawer]"); }
-    static std::string Serialize(void *addr) { return ""; }
-    static void Deserialize(void *addr, const std::string &data) {}
+    static void Draw(void *addr, const TEString &displayName) { TimeGUI::Text(displayName + ": [No Drawer]"); }
+    static TEString Serialize(void *addr) { return ""; }
+    static void Deserialize(void *addr, const TEString &data) {}
 };
 
 template <> struct TEPropertyDrawer<uint64_t>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
-        TimeGUI::Text(displayName + ": " + std::to_string(*(uint64_t *)addr));
+        TEString cleanName = displayName;
+        size_t hashPos = cleanName.find("###");
+        if (hashPos != TEString::npos)
+            cleanName = cleanName.substr(0, hashPos);
+        TimeGUI::Text(cleanName + ": " + TEString::FromInt64(static_cast<int64_t>(*(uint64_t *)addr)));
     }
-    static std::string Serialize(void *addr) { return std::to_string(*(uint64_t *)addr); }
-    static void Deserialize(void *addr, const std::string &data)
+    static TEString Serialize(void *addr) { return TEString::FromInt64(static_cast<int64_t>(*(uint64_t *)addr)); }
+    static void Deserialize(void *addr, const TEString &data)
     {
         if (!data.empty() && data != "0")
-            *(uint64_t *)addr = std::stoull(data);
+            *(uint64_t *)addr = static_cast<uint64_t>(data.ToInt64());
         else
             *(uint64_t *)addr = 0;
     }
@@ -34,99 +34,125 @@ template <> struct TEPropertyDrawer<uint64_t>
 
 template <> struct TEPropertyDrawer<float>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         TimeGUI::DragFloat(displayName, (float *)addr, 0.1f);
     }
-    static std::string Serialize(void *addr) { return std::to_string(*(float *)addr); }
-    static void Deserialize(void *addr, const std::string &data)
+    static TEString Serialize(void *addr) { return TEString::FromFloat(*(float *)addr); }
+    static void Deserialize(void *addr, const TEString &data)
     {
         if (!data.empty())
-            *(float *)addr = std::stof(data);
+            *(float *)addr = data.ToFloat();
     }
 };
 
 template <> struct TEPropertyDrawer<int>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
-        // Forward to standard drag float or standard draw
+        TimeGUI::DragInt(displayName, (int *)addr, 1.0f);
     }
-    static std::string Serialize(void *addr) { return std::to_string(*(int *)addr); }
-    static void Deserialize(void *addr, const std::string &data)
+    static TEString Serialize(void *addr) { return TEString::FromInt(*(int *)addr); }
+    static void Deserialize(void *addr, const TEString &data)
     {
         if (!data.empty())
-            *(int *)addr = std::stoi(data);
+            *(int *)addr = data.ToInt();
     }
+};
+
+template <> struct TEPropertyDrawer<TEString>
+{
+    static void Draw(void *addr, const TEString &displayName)
+    {
+        TEString *str = (TEString *)addr;
+        TimeGUI::InputText(displayName, *str);
+    }
+    static TEString Serialize(void *addr) { return *(TEString *)addr; }
+    static void Deserialize(void *addr, const TEString &data) { *(TEString *)addr = data; }
 };
 
 template <> struct TEPropertyDrawer<bool>
 {
-    static void Draw(void *addr, const std::string &displayName) { TimeGUI::Checkbox(displayName, (bool *)addr); }
-    static std::string Serialize(void *addr) { return *(bool *)addr ? "true" : "false"; }
-    static void Deserialize(void *addr, const std::string &data) { *(bool *)addr = (data == "true" || data == "1"); }
+    static void Draw(void *addr, const TEString &displayName) { TimeGUI::Checkbox(displayName, (bool *)addr); }
+    static TEString Serialize(void *addr) { return *(bool *)addr ? "true" : "false"; }
+    static void Deserialize(void *addr, const TEString &data) { *(bool *)addr = (data == "true" || data == "1"); }
 };
 
 template <> struct TEPropertyDrawer<TEVector2>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         UIUtils::DrawVec2Control(displayName, *(TEVector2 *)addr);
     }
-    static std::string Serialize(void *addr)
+    static TEString Serialize(void *addr)
     {
         auto v = *(TEVector2 *)addr;
-        return std::to_string(v.x) + " " + std::to_string(v.y);
+        return TEString::FromFloat(v.x) + " " + TEString::FromFloat(v.y);
     }
-    static void Deserialize(void *addr, const std::string &data)
+    static void Deserialize(void *addr, const TEString &data)
     {
-        std::stringstream ss(data);
-        auto *v = (TEVector2 *)addr;
-        ss >> v->x >> v->y;
+        auto parts = data.Split(" ");
+        if (parts.size() >= 2)
+        {
+            auto *v = (TEVector2 *)addr;
+            v->x = parts[0].ToFloat();
+            v->y = parts[1].ToFloat();
+        }
     }
 };
 
 template <> struct TEPropertyDrawer<TEVector>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         UIUtils::DrawVec3Control(displayName, *(TEVector *)addr);
     }
-    static std::string Serialize(void *addr)
+    static TEString Serialize(void *addr)
     {
         auto v = *(TEVector *)addr;
-        return std::to_string(v.x) + " " + std::to_string(v.y) + " " + std::to_string(v.z);
+        return TEString::FromFloat(v.x) + " " + TEString::FromFloat(v.y) + " " + TEString::FromFloat(v.z);
     }
-    static void Deserialize(void *addr, const std::string &data)
+    static void Deserialize(void *addr, const TEString &data)
     {
-        std::stringstream ss(data);
-        auto *v = (TEVector *)addr;
-        ss >> v->x >> v->y >> v->z;
+        auto parts = data.Split(" ");
+        if (parts.size() >= 3)
+        {
+            auto *v = (TEVector *)addr;
+            v->x = parts[0].ToFloat();
+            v->y = parts[1].ToFloat();
+            v->z = parts[2].ToFloat();
+        }
     }
 };
 
 template <> struct TEPropertyDrawer<TEColor>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         UIUtils::DrawColorControl(displayName, ((TEColor *)addr)->GetValue());
     }
-    static std::string Serialize(void *addr)
+    static TEString Serialize(void *addr)
     {
         auto v = ((TEColor *)addr)->GetValue();
-        return std::to_string(v.r) + " " + std::to_string(v.g) + " " + std::to_string(v.b) + " " + std::to_string(v.a);
+        return TEString::FromFloat(v.r) + " " + TEString::FromFloat(v.g) + " " + TEString::FromFloat(v.b) + " " + TEString::FromFloat(v.a);
     }
-    static void Deserialize(void *addr, const std::string &data)
+    static void Deserialize(void *addr, const TEString &data)
     {
-        std::stringstream ss(data);
-        auto *v = &((TEColor *)addr)->GetValue();
-        ss >> v->r >> v->g >> v->b >> v->a;
+        auto parts = data.Split(" ");
+        if (parts.size() >= 4)
+        {
+            auto *v = &((TEColor *)addr)->GetValue();
+            v->r = parts[0].ToFloat();
+            v->g = parts[1].ToFloat();
+            v->b = parts[2].ToFloat();
+            v->a = parts[3].ToFloat();
+        }
     }
 };
 
 template <> struct TEPropertyDrawer<TERotator>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         TERotator *rot = (TERotator *)addr;
         TEVector euler = rot->ToVec3();
@@ -137,57 +163,66 @@ template <> struct TEPropertyDrawer<TERotator>
             rot->Roll = euler.z;
         }
     }
-    static std::string Serialize(void *addr)
+    static TEString Serialize(void *addr)
     {
         TERotator *rot = (TERotator *)addr;
-        return std::to_string(rot->Pitch) + " " + std::to_string(rot->Yaw) + " " + std::to_string(rot->Roll);
+        return TEString::FromFloat(rot->Pitch) + " " + TEString::FromFloat(rot->Yaw) + " " + TEString::FromFloat(rot->Roll);
     }
-    static void Deserialize(void *addr, const std::string &data)
+    static void Deserialize(void *addr, const TEString &data)
     {
-        std::stringstream ss(data);
-        TERotator *rot = (TERotator *)addr;
-        ss >> rot->Pitch >> rot->Yaw >> rot->Roll;
+        auto parts = data.Split(" ");
+        if (parts.size() >= 3)
+        {
+            TERotator *rot = (TERotator *)addr;
+            rot->Pitch = parts[0].ToFloat();
+            rot->Yaw = parts[1].ToFloat();
+            rot->Roll = parts[2].ToFloat();
+        }
     }
 };
 
 template <> struct TEPropertyDrawer<TEScale>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         TEScale *scale = (TEScale *)addr;
         UIUtils::DrawVec3Control(displayName, scale->Scale, 1.0f);
     }
-    static std::string Serialize(void *addr)
+    static TEString Serialize(void *addr)
     {
         TEScale *scale = (TEScale *)addr;
-        return std::to_string(scale->Scale.x) + " " + std::to_string(scale->Scale.y) + " " +
-               std::to_string(scale->Scale.z);
+        return TEString::FromFloat(scale->Scale.x) + " " + TEString::FromFloat(scale->Scale.y) + " " +
+               TEString::FromFloat(scale->Scale.z);
     }
-    static void Deserialize(void *addr, const std::string &data)
+    static void Deserialize(void *addr, const TEString &data)
     {
-        std::stringstream ss(data);
-        TEScale *scale = (TEScale *)addr;
-        ss >> scale->Scale.x >> scale->Scale.y >> scale->Scale.z;
+        auto parts = data.Split(" ");
+        if (parts.size() >= 3)
+        {
+            TEScale *scale = (TEScale *)addr;
+            scale->Scale.x = parts[0].ToFloat();
+            scale->Scale.y = parts[1].ToFloat();
+            scale->Scale.z = parts[2].ToFloat();
+        }
     }
 };
 
 template <> struct TEPropertyDrawer<TETransform>
 {
-    static void Draw(void *addr, const std::string &displayName)
+    static void Draw(void *addr, const TEString &displayName)
     {
         TETransform *transform = (TETransform *)addr;
         TEPropertyDrawer<TEVector>::Draw(&transform->Position, "Position");
         TEPropertyDrawer<TERotator>::Draw(&transform->Rotation, "Rotation");
         TEPropertyDrawer<TEScale>::Draw(&transform->Scale, "Scale");
     }
-    static std::string Serialize(void *addr)
+    static TEString Serialize(void *addr)
     {
         return ""; // Not used directly
     }
-    static void Deserialize(void *addr, const std::string &data)
+    static void Deserialize(void *addr, const TEString &data)
     {
         // Not used directly
     }
 };
 
-} // namespace TE

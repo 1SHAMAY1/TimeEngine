@@ -1,8 +1,7 @@
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
-namespace TE
-{
 
 Entity TComponent::GetOwnerEntity() const { return Entity((EntityID)Owner, Manager); }
 
@@ -52,10 +51,11 @@ void EntityManager::RemoveComponentInstance(EntityID entityID, TComponent *insta
         {
             auto &pool = compIt->second;
             auto it = std::find_if(pool.begin(), pool.end(),
-                                   [&](const std::unique_ptr<TComponent> &ptr) { return ptr.get() == instance; });
+                                   [&](const TEScope<TComponent> &ptr) { return ptr.get() == instance; });
             if (it != pool.end())
             {
-                pool.erase(it);
+                size_t idx = std::distance(pool.begin(), it);
+                pool.RemoveAt(idx);
             }
         }
     }
@@ -63,4 +63,3 @@ void EntityManager::RemoveComponentInstance(EntityID entityID, TComponent *insta
 
 // Template methods are defined in the header.
 
-} // namespace TE

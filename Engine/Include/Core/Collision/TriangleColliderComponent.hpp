@@ -2,8 +2,6 @@
 #include "CollisionComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 
-namespace TE
-{
 
 class TriangleColliderComponent : public CollisionComponent
 {
@@ -17,7 +15,7 @@ public:
 
     TriangleColliderComponent() { shape.type = CollisionType::Triangle; }
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
     virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
@@ -38,6 +36,7 @@ T_REGISTER_PROPERTY(TriangleColliderComponent, TEVector2, Vertices1, "V2")
 T_REGISTER_PROPERTY(TriangleColliderComponent, TEVector2, Vertices2, "V3")
 T_REGISTER_PROPERTY(TriangleColliderComponent, bool, isStatic, "Is Static")
 T_REGISTER_PROPERTY(TriangleColliderComponent, bool, isTrigger, "Is Trigger")
+T_REGISTER_PRESET(TriangleColliderComponent, "Triangle Collider 2D", "Physics & Collisions",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<TriangleColliderComponent>(id); })
 #endif
 
-} // namespace TE

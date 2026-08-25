@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "CollisionComponent.hpp"
-#include <vector>
+#include "GameFrameWork/GameplayUtils.hpp"
 
-namespace TE
-{
 
 using EntityID = uint64_t;
 
@@ -15,7 +13,6 @@ struct CollisionPair
 class BroadPhase
 {
 public:
-    static std::vector<CollisionPair> BruteForce(const std::vector<CollisionComponent *> &colliders);
+    static TEArray<CollisionPair> BruteForce(TESpan<CollisionComponent *> colliders);
 };
 
-} // namespace TE
