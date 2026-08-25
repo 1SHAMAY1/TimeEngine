@@ -1,0 +1,63 @@
+// ==============================================================================
+// TimeEngine Engine Content - WaypointPatrolBehavior.tscript
+// Category: AI & NPC Behaviors
+// Extends: NavigationAgent2DComponent / MovementComponentBase
+// Description: Waypoint patrol coordinator supporting PingPong and Loop modes with dwell timers.
+// ==============================================================================
+
+class WaypointPatrolBehavior : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, patrol_speed, 120.0)
+    T_REGISTER_PROPERTY(float, waypoint_dwell_time, 1.5)
+    T_REGISTER_PROPERTY(float, waypoint_reach_threshold, 15.0)
+    T_REGISTER_PROPERTY(bool, is_looping, true)
+    T_REGISTER_PROPERTY(int, total_waypoints, 4)
+
+    public:
+        int current_waypoint_index = 0
+        int patrol_direction = 1
+        bool is_dwelling = false
+
+    private:
+        float m_dwell_timer = 0.0
+
+    on_ready() {
+        current_waypoint_index = 0
+        patrol_direction = 1
+        is_dwelling = false
+        m_dwell_timer = 0.0
+        TE_CORE_INFO("WaypointPatrolBehavior ready with " + total_waypoints + " waypoints.")
+    }
+
+    on_update(float dt) {
+        if (is_dwelling) {
+            m_dwell_timer -= dt
+            if (m_dwell_timer <= 0.0) {
+                is_dwelling = false
+                m_dwell_timer = 0.0
+                TE_CORE_INFO("Dwell complete. Moving to waypoint: " + current_waypoint_index)
+            }
+        }
+    }
+
+    on_collision(other) {
+        // Trigger waypoint arrival when colliding with waypoint trigger
+        if (!is_dwelling) {
+            is_dwelling = true
+            m_dwell_timer = waypoint_dwell_time
+
+            if (is_looping) {
+                current_waypoint_index = (current_waypoint_index + 1) % total_waypoints
+            } else {
+                current_waypoint_index += patrol_direction
+                if (current_waypoint_index >= total_waypoints - 1) {
+                    current_waypoint_index = total_waypoints - 1
+                    patrol_direction = -1
+                } else if (current_waypoint_index <= 0) {
+                    current_waypoint_index = 0
+                    patrol_direction = 1
+                }
+            }
+        }
+    }

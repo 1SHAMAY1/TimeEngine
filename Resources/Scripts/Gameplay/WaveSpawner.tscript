@@ -1,0 +1,76 @@
+// ==============================================================================
+// TimeEngine Engine Content - WaveSpawner.tscript
+// Category: Gameplay & Combat
+// Extends: GameManager / Scene Spawner
+// Description: Wave and enemy spawn coordinator with intervals, caps, and wave counts.
+// ==============================================================================
+
+class WaveSpawner : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(int, total_waves, 5)
+    T_REGISTER_PROPERTY(int, base_spawns_per_wave, 6)
+    T_REGISTER_PROPERTY(float, spawn_interval, 2.0)
+    T_REGISTER_PROPERTY(float, time_between_waves, 10.0)
+    T_REGISTER_PROPERTY(float, spawn_radius, 300.0)
+
+    public:
+        int current_wave = 1
+        int spawned_in_wave = 0
+        int active_enemies = 0
+        bool is_spawning_active = true
+        bool wave_completed = false
+
+    private:
+        float m_spawn_timer = 0.0
+        float m_wave_break_timer = 0.0
+
+    on_ready() {
+        current_wave = 1
+        spawned_in_wave = 0
+        active_enemies = 0
+        is_spawning_active = true
+        wave_completed = false
+        m_spawn_timer = spawn_interval
+        m_wave_break_timer = 0.0
+        TE_CORE_INFO("WaveSpawner initialized. Total waves: " + total_waves)
+    }
+
+    on_update(float dt) {
+        if (!is_spawning_active) {
+            return
+        }
+
+        // Handle Break Between Waves
+        if (wave_completed) {
+            m_wave_break_timer -= dt
+            if (m_wave_break_timer <= 0.0) {
+                if (current_wave < total_waves) {
+                    current_wave += 1
+                    spawned_in_wave = 0
+                    wave_completed = false
+                    TE_CORE_INFO("Starting Wave " + current_wave + " of " + total_waves)
+                } else {
+                    is_spawning_active = false
+                    TE_CORE_INFO("All Waves Cleared! Spawner completed.")
+                }
+            }
+            return
+        }
+
+        // Handle Periodic Spawning in Active Wave
+        int target_spawns = base_spawns_per_wave + (current_wave - 1) * 2
+        if (spawned_in_wave < target_spawns) {
+            m_spawn_timer -= dt
+            if (m_spawn_timer <= 0.0) {
+                m_spawn_timer = spawn_interval
+                spawned_in_wave += 1
+                active_enemies += 1
+                TE_CORE_INFO("Spawned enemy " + spawned_in_wave + "/" + target_spawns + " for wave " + current_wave)
+            }
+        } else {
+            wave_completed = true
+            m_wave_break_timer = time_between_waves
+            TE_CORE_INFO("Wave " + current_wave + " spawns finished. Entering wave break.")
+        }
+    }

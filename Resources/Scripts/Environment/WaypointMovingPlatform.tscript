@@ -1,0 +1,55 @@
+// ==============================================================================
+// TimeEngine Engine Content - WaypointMovingPlatform.tscript
+// Category: Environment & Props
+// Extends: TransformComponent / RigidBodyComponent
+// Description: Ping-pong moving platform with endpoint dwell pauses and speed control.
+// ==============================================================================
+
+class WaypointMovingPlatform : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, travel_distance, 400.0)
+    T_REGISTER_PROPERTY(float, move_speed, 80.0)
+    T_REGISTER_PROPERTY(float, wait_time_at_ends, 1.0)
+    T_REGISTER_PROPERTY(bool, move_vertically, false)
+
+    public:
+        float current_offset = 0.0
+        int move_direction = 1
+        bool is_waiting = false
+
+    private:
+        float m_wait_timer = 0.0
+
+    on_ready() {
+        current_offset = 0.0
+        move_direction = 1
+        is_waiting = false
+        m_wait_timer = 0.0
+        TE_CORE_INFO("WaypointMovingPlatform ready. Distance: " + travel_distance + ", Speed: " + move_speed)
+    }
+
+    on_update(float dt) {
+        if (is_waiting) {
+            m_wait_timer -= dt
+            if (m_wait_timer <= 0.0) {
+                is_waiting = false
+                m_wait_timer = 0.0
+            }
+            return
+        }
+
+        current_offset += move_direction * move_speed * dt
+
+        if (current_offset >= travel_distance) {
+            current_offset = travel_distance
+            move_direction = -1
+            is_waiting = true
+            m_wait_timer = wait_time_at_ends
+        } else if (current_offset <= 0.0) {
+            current_offset = 0.0
+            move_direction = 1
+            is_waiting = true
+            m_wait_timer = wait_time_at_ends
+        }
+    }

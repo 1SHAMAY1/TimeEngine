@@ -1,0 +1,39 @@
+// ==============================================================================
+// TimeEngine Engine Content - CameraZoomController.tscript
+// Category: Camera Extensions
+// Extends: PlayerCameraComponent (OrthographicSize)
+// Description: Dynamic orthographic size zooming with speed scaling and smooth damping.
+// ==============================================================================
+
+class CameraZoomController : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, default_size, 5.0)
+    T_REGISTER_PROPERTY(float, max_zoom_out_size, 8.5)
+    T_REGISTER_PROPERTY(float, zoom_speed, 3.5)
+    T_REGISTER_PROPERTY(float, velocity_threshold, 200.0)
+
+    public:
+        float target_size = 5.0
+        float current_size = 5.0
+        float current_speed = 0.0
+
+    on_ready() {
+        target_size = default_size
+        current_size = default_size
+        current_speed = 0.0
+        TE_CORE_INFO("CameraZoomController initialized. Default Size: " + default_size)
+    }
+
+    on_update(float dt) {
+        // Adjust target size dynamically based on movement velocity
+        if (current_speed > velocity_threshold) {
+            float factor = min(1.0, (current_speed - velocity_threshold) / 300.0)
+            target_size = lerp(default_size, max_zoom_out_size, factor)
+        } else {
+            target_size = default_size
+        }
+
+        // Smoothly interpolate current camera size
+        current_size = lerp(current_size, target_size, zoom_speed * dt)
+    }

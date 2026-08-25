@@ -1,0 +1,50 @@
+// ==============================================================================
+// TimeEngine Engine Content - DestructiblePropHandler.tscript
+// Category: Environment & Props
+// Extends: CollisionComponent / SpriteComponent
+// Description: Breakable objects (crates, barrels) with durability stages and debris triggers.
+// ==============================================================================
+
+class DestructiblePropHandler : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, durability, 50.0)
+    T_REGISTER_PROPERTY(int, damage_stages, 3)
+    T_REGISTER_PROPERTY(float, min_impact_force, 10.0)
+    T_REGISTER_PROPERTY(bool, spawn_loot_on_break, true)
+
+    public:
+        float current_durability = 50.0
+        int current_stage = 0
+        bool is_broken = false
+
+    on_ready() {
+        current_durability = durability
+        current_stage = 0
+        is_broken = false
+        TE_CORE_INFO("DestructiblePropHandler armed with durability: " + durability)
+    }
+
+    on_collision(other) {
+        if (is_broken) {
+            return
+        }
+
+        // Apply collision impact damage
+        float impact_damage = 20.0
+        current_durability = max(0.0, current_durability - impact_damage)
+
+        // Calculate damage stage
+        float fraction = (durability - current_durability) / durability
+        current_stage = min(damage_stages, max(0, fraction * damage_stages))
+
+        TE_CORE_INFO("Prop damaged! Stage: " + current_stage + ", Durability: " + current_durability)
+
+        if (current_durability <= 0.0) {
+            is_broken = true
+            TE_CORE_WARN("Destructible prop shattered!")
+            if (spawn_loot_on_break) {
+                TE_CORE_INFO("Loot drop triggered from shattered prop.")
+            }
+        }
+    }

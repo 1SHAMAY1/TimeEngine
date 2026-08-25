@@ -1,0 +1,58 @@
+// ==============================================================================
+// TimeEngine Engine Content - CameraTraumaShakeExtension.tscript
+// Category: Camera Extensions
+// Extends: PlayerCameraComponent (TriggerShake / Deflect API)
+// Description: Non-linear trauma-based camera shake coordinator with exponential decay.
+// ==============================================================================
+
+class CameraTraumaShakeExtension : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, trauma_decay_rate, 1.2)
+    T_REGISTER_PROPERTY(float, max_shake_angle, 5.0)
+    T_REGISTER_PROPERTY(float, max_shake_offset, 25.0)
+    T_REGISTER_PROPERTY(float, frequency, 24.0)
+
+    public:
+        float trauma = 0.0
+        float shake_amount = 0.0
+        float offset_x = 0.0
+        float offset_y = 0.0
+
+    private:
+        float m_time_accumulator = 0.0
+
+    on_ready() {
+        trauma = 0.0
+        shake_amount = 0.0
+        offset_x = 0.0
+        offset_y = 0.0
+        m_time_accumulator = 0.0
+        TE_CORE_INFO("CameraTraumaShakeExtension ready. Decay Rate: " + trauma_decay_rate)
+    }
+
+    on_update(float dt) {
+        if (trauma > 0.0) {
+            // Decay trauma over time
+            trauma = max(0.0, trauma - trauma_decay_rate * dt)
+
+            // Non-linear shake power (trauma squared)
+            shake_amount = trauma * trauma
+
+            m_time_accumulator += dt * frequency
+
+            // Calculate directional offsets
+            offset_x = shake_amount * max_shake_offset
+            offset_y = shake_amount * max_shake_offset
+        } else {
+            shake_amount = 0.0
+            offset_x = 0.0
+            offset_y = 0.0
+        }
+    }
+
+    on_collision(other) {
+        // Automatically add trauma on heavy collision impact
+        trauma = min(1.0, trauma + 0.4)
+        TE_CORE_INFO("Impact detected! Trauma increased to: " + trauma)
+    }

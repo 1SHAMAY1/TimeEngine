@@ -1,0 +1,57 @@
+// ==============================================================================
+// TimeEngine Engine Content - DayNightTimeManager.tscript
+// Category: Utilities & Time Flow
+// Extends: AmbientLightComponent / Time Simulation
+// Description: Day-night cycle progression tracker with normalized phase fractions (0.0 - 1.0).
+// ==============================================================================
+
+class DayNightTimeManager : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, day_duration_seconds, 120.0)
+    T_REGISTER_PROPERTY(float, time_scale, 1.0)
+    T_REGISTER_PROPERTY(bool, is_paused, false)
+    T_REGISTER_PROPERTY(float, start_time_fraction, 0.25)
+
+    public:
+        float current_time_fraction = 0.25
+        string current_phase = "Day"
+        int total_days_elapsed = 0
+
+    private:
+        float m_accumulated_seconds = 0.0
+
+    on_ready() {
+        current_time_fraction = start_time_fraction
+        current_phase = "Day"
+        total_days_elapsed = 0
+        m_accumulated_seconds = start_time_fraction * day_duration_seconds
+        TE_CORE_INFO("DayNightTimeManager initialized. Day duration: " + day_duration_seconds + "s")
+    }
+
+    on_update(float dt) {
+        if (is_paused or day_duration_seconds <= 0.0) {
+            return
+        }
+
+        m_accumulated_seconds += dt * time_scale
+        current_time_fraction = (m_accumulated_seconds % day_duration_seconds) / day_duration_seconds
+
+        // Track day transitions
+        int calculated_days = m_accumulated_seconds / day_duration_seconds
+        if (calculated_days > total_days_elapsed) {
+            total_days_elapsed = calculated_days
+            TE_CORE_INFO("A new day has begun! Day: " + (total_days_elapsed + 1))
+        }
+
+        // Determine current phase of day
+        if (current_time_fraction < 0.2) {
+            current_phase = "Dawn"
+        } else if (current_time_fraction < 0.7) {
+            current_phase = "Day"
+        } else if (current_time_fraction < 0.85) {
+            current_phase = "Dusk"
+        } else {
+            current_phase = "Night"
+        }
+    }

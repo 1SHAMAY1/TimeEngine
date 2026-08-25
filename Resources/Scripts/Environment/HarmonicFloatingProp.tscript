@@ -1,0 +1,35 @@
+// ==============================================================================
+// TimeEngine Engine Content - HarmonicFloatingProp.tscript
+// Category: Environment & Props
+// Extends: TransformComponent / SpriteComponent
+// Description: Harmonic floating/bobbing object animation with amplitude and frequency.
+// ==============================================================================
+
+class HarmonicFloatingProp : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, bob_amplitude, 15.0)
+    T_REGISTER_PROPERTY(float, bob_frequency, 2.0)
+    T_REGISTER_PROPERTY(float, phase_offset, 0.0)
+    T_REGISTER_PROPERTY(bool, animate_on_x, false)
+    T_REGISTER_PROPERTY(bool, is_active, true)
+
+    public:
+        float current_displacement = 0.0
+        float accumulated_time = 0.0
+
+    on_ready() {
+        current_displacement = 0.0
+        accumulated_time = phase_offset
+        TE_CORE_INFO("HarmonicFloatingProp ready. Amplitude: " + bob_amplitude + ", Frequency: " + bob_frequency)
+    }
+
+    on_update(float dt) {
+        if (!is_active) {
+            return
+        }
+
+        accumulated_time += dt * bob_frequency
+        // Compute sinusoidal periodic displacement
+        current_displacement = bob_amplitude * lerp(-1.0, 1.0, (accumulated_time % 2.0) / 2.0)
+    }

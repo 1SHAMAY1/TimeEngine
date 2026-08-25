@@ -1,0 +1,60 @@
+// ==============================================================================
+// TimeEngine Engine Content - TimedActionTrigger.tscript
+// Category: Utilities & Time Flow
+// Extends: TimerComponent / EventDispatcher
+// Description: Multi-stage timer trigger with delay, repeat frequency, and max count caps.
+// ==============================================================================
+
+class TimedActionTrigger : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, initial_delay, 0.0)
+    T_REGISTER_PROPERTY(float, repeat_interval, 1.0)
+    T_REGISTER_PROPERTY(int, max_executions, 0)
+    T_REGISTER_PROPERTY(bool, is_active, true)
+    T_REGISTER_PROPERTY(string, timer_name, "PeriodicEvent")
+
+    public:
+        int execution_count = 0
+        bool is_finished = false
+
+    private:
+        float m_current_timer = 0.0
+        bool m_initial_delay_passed = false
+
+    on_ready() {
+        execution_count = 0
+        is_finished = false
+        m_initial_delay_passed = (initial_delay <= 0.0)
+        m_current_timer = m_initial_delay_passed ? repeat_interval : initial_delay
+        TE_CORE_INFO("TimedActionTrigger [" + timer_name + "] armed. Interval: " + repeat_interval)
+    }
+
+    on_update(float dt) {
+        if (!is_active or is_finished) {
+            return
+        }
+
+        m_current_timer -= dt
+        if (m_current_timer <= 0.0) {
+            if (!m_initial_delay_passed) {
+                m_initial_delay_passed = true
+                m_current_timer = repeat_interval
+            } else {
+                m_current_timer = repeat_interval
+                execution_count += 1
+                TE_CORE_INFO("Timer triggered: " + timer_name + " (Execution #" + execution_count + ")")
+
+                if (max_executions > 0 and execution_count >= max_executions) {
+                    is_finished = true
+                    TE_CORE_INFO("Timer [" + timer_name + "] reached max executions.")
+                }
+            }
+        }
+    }
+
+    on_timer(name) {
+        if (name == timer_name) {
+            TE_CORE_INFO("External on_timer received for: " + name)
+        }
+    }

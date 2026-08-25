@@ -1,0 +1,55 @@
+// ==============================================================================
+// TimeEngine Engine Content - ProximityInteractable.tscript
+// Category: Gameplay & Combat
+// Extends: CollisionComponent / UI Prompt
+// Description: Manages proximity interaction prompt, range checks, and toggle activation.
+// ==============================================================================
+
+class ProximityInteractable : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(string, prompt_text, "Press [E] to Interact")
+    T_REGISTER_PROPERTY(float, interaction_range, 120.0)
+    T_REGISTER_PROPERTY(float, interaction_cooldown, 0.5)
+    T_REGISTER_PROPERTY(bool, is_toggleable, true)
+    T_REGISTER_PROPERTY(bool, is_interactable, true)
+
+    public:
+        bool is_player_in_range = false
+        bool is_toggled_on = false
+        int interaction_times = 0
+
+    private:
+        float m_cooldown_timer = 0.0
+
+    on_ready() {
+        is_player_in_range = false
+        is_toggled_on = false
+        interaction_times = 0
+        m_cooldown_timer = 0.0
+        TE_CORE_INFO("ProximityInteractable ready: " + prompt_text)
+    }
+
+    on_update(float dt) {
+        if (m_cooldown_timer > 0.0) {
+            m_cooldown_timer -= dt
+        }
+    }
+
+    on_collision(other) {
+        is_player_in_range = true
+    }
+
+    on_input(bindings) {
+        if (is_interactable and is_player_in_range and m_cooldown_timer <= 0.0) {
+            m_cooldown_timer = interaction_cooldown
+            interaction_times += 1
+
+            if (is_toggleable) {
+                is_toggled_on = !is_toggled_on
+                TE_CORE_INFO("Interactable toggled state: " + is_toggled_on)
+            } else {
+                TE_CORE_INFO("Interactable activated! Count: " + interaction_times)
+            }
+        }
+    }

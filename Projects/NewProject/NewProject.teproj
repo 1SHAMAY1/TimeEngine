@@ -1,5 +1,5 @@
 Project: NewProject
-StartScene: Assets/Default.tescene
+StartScene: Assets/Scenes/MainScene.tescene
 AssetDirectory: Assets
 ScriptModulePath: 
 ThumbnailPath: 

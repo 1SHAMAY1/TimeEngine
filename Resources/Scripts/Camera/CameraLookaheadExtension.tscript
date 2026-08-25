@@ -1,0 +1,45 @@
+// ==============================================================================
+// TimeEngine Engine Content - CameraLookaheadExtension.tscript
+// Category: Camera Extensions
+// Extends: PlayerCameraComponent
+// Description: Dynamic lookahead offset based on player velocity and aim direction.
+// ==============================================================================
+
+class CameraLookaheadExtension : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, lookahead_distance, 150.0)
+    T_REGISTER_PROPERTY(float, return_speed, 4.0)
+    T_REGISTER_PROPERTY(float, lead_speed, 6.0)
+    T_REGISTER_PROPERTY(float, deadzone, 15.0)
+
+    public:
+        float target_offset_x = 0.0
+        float target_offset_y = 0.0
+        float current_offset_x = 0.0
+        float current_offset_y = 0.0
+
+    private:
+        float m_previous_pos_x = 0.0
+        float m_previous_pos_y = 0.0
+
+    on_ready() {
+        target_offset_x = 0.0
+        target_offset_y = 0.0
+        current_offset_x = 0.0
+        current_offset_y = 0.0
+        m_previous_pos_x = 0.0
+        m_previous_pos_y = 0.0
+        TE_CORE_INFO("CameraLookaheadExtension ready. Lookahead Distance: " + lookahead_distance)
+    }
+
+    on_update(float dt) {
+        // Calculate dynamic offset with smooth interpolation
+        float speed = return_speed
+        if (abs(target_offset_x) > deadzone or abs(target_offset_y) > deadzone) {
+            speed = lead_speed
+        }
+
+        current_offset_x = lerp(current_offset_x, target_offset_x, speed * dt)
+        current_offset_y = lerp(current_offset_y, target_offset_y, speed * dt)
+    }

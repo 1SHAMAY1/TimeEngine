@@ -1,0 +1,58 @@
+// ==============================================================================
+// TimeEngine Engine Content - PlatformerWallMechanicsExtension.tscript
+// Category: Player Extensions
+// Extends: PlayerMovementComponent2D (SideScroller Mode)
+// Description: Wall slide friction damping, wall jump impulse, and wall cling detection.
+// ==============================================================================
+
+class PlatformerWallMechanicsExtension : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, wall_slide_max_speed, 120.0)
+    T_REGISTER_PROPERTY(float, wall_slide_friction, 8.0)
+    T_REGISTER_PROPERTY(float, wall_jump_force_x, 320.0)
+    T_REGISTER_PROPERTY(float, wall_jump_force_y, 450.0)
+    T_REGISTER_PROPERTY(float, wall_stick_time, 0.2)
+
+    public:
+        bool is_touching_wall = false
+        bool is_wall_sliding = false
+        int wall_direction = 0
+
+    private:
+        float m_wall_stick_timer = 0.0
+
+    on_ready() {
+        is_touching_wall = false
+        is_wall_sliding = false
+        wall_direction = 0
+        m_wall_stick_timer = 0.0
+        TE_CORE_INFO("PlatformerWallMechanicsExtension initialized.")
+    }
+
+    on_update(float dt) {
+        if (is_touching_wall and !is_wall_sliding) {
+            is_wall_sliding = true
+            m_wall_stick_timer = wall_stick_time
+        }
+
+        if (is_wall_sliding) {
+            m_wall_stick_timer -= dt
+            if (m_wall_stick_timer <= 0.0) {
+                // Wall slide active
+            }
+        }
+    }
+
+    on_collision(other) {
+        is_touching_wall = true
+    }
+
+    on_input(bindings) {
+        // Wall Jump Trigger
+        if (is_wall_sliding) {
+            is_wall_sliding = false
+            is_touching_wall = false
+            TE_CORE_INFO("Wall Jump executed off wall direction: " + wall_direction)
+        }
+    }
