@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Editor/SpriteSheetAssetEditor.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Renderer/SpriteSheet.hpp"
@@ -5,12 +6,7 @@
 #include "Renderer/Texture.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include <filesystem>
-#include <imgui.h>
-#include <string>
 
-namespace TE
-{
 
 void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -32,28 +28,33 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::Text("SpriteSheet Settings & Slicer");
     TimeGUI::TextDisabled("Name: %s", sheet->GetName().c_str());
-
-    std::string curTexPath = sheet->GetTexturePath();
-    static char texPathBuf[512] = "";
-    strcpy_s(texPathBuf, curTexPath.c_str());
-    if (TimeGUI::InputText("Source Texture", texPathBuf, sizeof(texPathBuf)))
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("Save SpriteSheet", TEVector2(120.0f, 22.0f)))
     {
-        sheet->SetTexturePath(texPathBuf);
         SpriteSheetSerializer serializer(sheet);
         serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, false);
+    }
+
+    TEString curTexPath = sheet->GetTexturePath();
+    static TEString texPathBuf;
+    texPathBuf = curTexPath;
+    if (TimeGUI::InputText("Source Texture", texPathBuf))
+    {
+        sheet->SetTexturePath(texPathBuf);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
     TimeGUI::SameLine();
     if (TimeGUI::Button("Browse..."))
     {
-        std::string filepath =
+        TEString filepath =
             PlatformUtils::OpenFile("Texture Files (*.png;*.jpg;*.tetexture)\0*.png;*.jpg;*.tetexture\0All Files "
                                     "(*.*)\0*.*\0");
         if (!filepath.empty())
         {
-            strcpy_s(texPathBuf, filepath.c_str());
+            texPathBuf = filepath;
             sheet->SetTexturePath(filepath);
-            SpriteSheetSerializer serializer(sheet);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
     }
 
@@ -86,22 +87,19 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
         sheet->SetGridSettings((uint32_t)cellW, (uint32_t)cellH, (uint32_t)padX, (uint32_t)padY, (uint32_t)offX,
                                (uint32_t)offY);
         sheet->SliceGrid();
-        SpriteSheetSerializer serializer(sheet);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     if (TimeGUI::Button("Slice Grid", 140.0f, 26.0f))
     {
         sheet->SliceGrid();
-        SpriteSheetSerializer serializer(sheet);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
     TimeGUI::SameLine();
     if (TimeGUI::Button("Auto Contour Slice", 150.0f, 26.0f))
     {
         sheet->SliceAutoAlpha(0.05f);
-        SpriteSheetSerializer serializer(sheet);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     TimeGUI::Separator();
@@ -116,15 +114,14 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
         s_SelectedAnimIdx = (int)sheet->GetAnimations().size() - 1;
         s_AnimFrameIdx = 0;
         s_AnimTimer = 0.0f;
-        SpriteSheetSerializer serializer(sheet);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     auto &anims = sheet->GetAnimations();
     for (size_t a = 0; a < anims.size(); ++a)
     {
         TimeGUI::PushID((int)a);
-        std::string label = anims[a].Name;
+        TEString label = anims[a].Name;
         if (TimeGUI::RadioButton(label.c_str(), s_SelectedAnimIdx == (int)a))
         {
             s_SelectedAnimIdx = (int)a;
@@ -135,8 +132,7 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
         if (TimeGUI::Button("X", 22.0f, 22.0f))
         {
             sheet->RemoveAnimation(a);
-            SpriteSheetSerializer serializer(sheet);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
             if (s_SelectedAnimIdx >= (int)sheet->GetAnimations().size())
                 s_SelectedAnimIdx = (int)sheet->GetAnimations().size() - 1;
             s_AnimFrameIdx = 0;
@@ -154,25 +150,19 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
         TimeGUI::Separator();
         TimeGUI::Text("Seq Properties: %s", selectedAnim.Name.c_str());
 
-        static char animNameBuf[128] = "";
-        strcpy_s(animNameBuf, selectedAnim.Name.c_str());
-        if (TimeGUI::InputText("Seq Name", animNameBuf, sizeof(animNameBuf)))
+        if (TimeGUI::InputText("Seq Name", selectedAnim.Name))
         {
-            selectedAnim.Name = animNameBuf;
-            SpriteSheetSerializer serializer(sheet);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
 
         if (TimeGUI::SliderFloat("Seq FPS", &selectedAnim.FPS, 1.0f, 60.0f, "%.0f FPS"))
         {
-            SpriteSheetSerializer serializer(sheet);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
 
         if (TimeGUI::Checkbox("Loop Sequence", &selectedAnim.Loop))
         {
-            SpriteSheetSerializer serializer(sheet);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
 
         static int startFrame = 0;
@@ -194,8 +184,7 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
             }
             s_AnimFrameIdx = 0;
             s_AnimTimer = 0.0f;
-            SpriteSheetSerializer serializer(sheet);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
     }
 
@@ -237,23 +226,23 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
                 float maxX = canvasPos.x + sf.U1 * previewW;
                 float maxY = canvasPos.y + sf.V1 * previewH;
 
-                drawList->AddRect(ImVec2(minX, minY), ImVec2(maxX, maxY), IM_COL32(0, 255, 200, 255), 0.0f, 0, 1.5f);
+                drawList.AddRect(TEVector2(minX, minY), TEVector2(maxX, maxY), TIMEGUI_COL32(0, 255, 200, 255), 0.0f, 0, 1.5f);
             }
         }
         else
         {
-            if (!anims.empty() && s_SelectedAnimIdx >= 0 && s_SelectedAnimIdx < (int)anims.size())
+            if (!anims.IsEmpty() && s_SelectedAnimIdx >= 0 && s_SelectedAnimIdx < (int)anims.Num())
             {
                 auto &seq = anims[s_SelectedAnimIdx];
                 TimeGUI::Text("Playing: %s | FPS: %.0f | Frames: %zu", seq.Name.c_str(), seq.FPS,
-                              seq.FrameIndices.size());
+                              seq.FrameIndices.Num());
                 TimeGUI::SameLine();
                 if (TimeGUI::Button(s_AnimPlaying ? "Pause" : "Play"))
                 {
                     s_AnimPlaying = !s_AnimPlaying;
                 }
 
-                if (s_AnimPlaying && !seq.FrameIndices.empty())
+                if (s_AnimPlaying && !seq.FrameIndices.IsEmpty())
                 {
                     s_AnimTimer += 0.016f;
                     float frameInterval = 1.0f / (seq.FPS > 0.0f ? seq.FPS : 12.0f);
@@ -262,9 +251,9 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
                         s_AnimTimer = 0.0f;
                         if (seq.Loop)
                         {
-                            s_AnimFrameIdx = (s_AnimFrameIdx + 1) % seq.FrameIndices.size();
+                            s_AnimFrameIdx = (s_AnimFrameIdx + 1) % seq.FrameIndices.Num();
                         }
-                        else if (s_AnimFrameIdx + 1 < seq.FrameIndices.size())
+                        else if (s_AnimFrameIdx + 1 < seq.FrameIndices.Num())
                         {
                             s_AnimFrameIdx++;
                         }
@@ -275,14 +264,14 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
                     }
                 }
 
-                if (!seq.FrameIndices.empty())
+                if (!seq.FrameIndices.IsEmpty())
                 {
-                    if (s_AnimFrameIdx >= seq.FrameIndices.size())
+                    if (s_AnimFrameIdx >= seq.FrameIndices.Num())
                         s_AnimFrameIdx = 0;
 
                     uint32_t frameIdx = seq.FrameIndices[s_AnimFrameIdx];
                     const auto &subFrames = sheet->GetSubFrames();
-                    if (frameIdx < subFrames.size())
+                    if (frameIdx < subFrames.Num())
                     {
                         const auto &sf = subFrames[frameIdx];
                         float frameW = (float)sf.Width * s_SheetZoom * 2.0f;
@@ -306,6 +295,29 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::Columns(1);
 }
 
+void SpriteSheetAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) const
+{
+    TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+    float w = max.x - min.x;
+    float h = max.y - min.y;
+    float pad = w * 0.12f;
+
+    // Background Card
+    dl.AddRectFilled(min, max, IM_COL32(245, 160, 40, 230), 4.0f);
+    // 2x2 Grid of Sprite Cells
+    float cellW = (w - pad * 3.0f) * 0.5f;
+    float cellH = (h - pad * 3.0f) * 0.5f;
+    for (int y = 0; y < 2; ++y)
+    {
+        for (int x = 0; x < 2; ++x)
+        {
+            TEVector2 cMin(min.x + pad + x * (cellW + pad), min.y + pad + y * (cellH + pad));
+            TEVector2 cMax(cMin.x + cellW, cMin.y + cellH);
+            dl.AddRectFilled(cMin, cMax, IM_COL32(35, 35, 42, 255), 1.5f);
+            dl.AddRect(cMin, cMax, IM_COL32(255, 215, 100, 200), 1.5f, 0, 1.0f);
+        }
+    }
+}
+
 TE_REGISTER_ASSET_EDITOR(SpriteSheetAssetEditor);
 
-} // namespace TE
