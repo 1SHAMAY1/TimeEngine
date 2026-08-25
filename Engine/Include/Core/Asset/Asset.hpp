@@ -1,42 +1,62 @@
 #pragma once
 #include "Core/KeyCodes.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/ISavable.hpp"
 #include "Utils/MathUtils.hpp"
-#include <filesystem>
-#include <memory>
-#include <string>
 
-namespace TE
-{
 
 using AssetHandle = uint64_t;
 
-class Asset
+class TE_API Asset : public ISavable
 {
 public:
     virtual ~Asset() = default;
 
     virtual AssetHandle GetHandle() const = 0;
-    virtual const std::string &GetType() const = 0;
-    virtual const std::string &GetName() const = 0;
-    virtual const std::string &GetHoverDescription() const = 0;
+    virtual const TEString &GetType() const = 0;
+    virtual const TEString &GetName() const = 0;
+    virtual const TEString &GetHoverDescription() const = 0;
 
-    virtual std::shared_ptr<class Texture> GetIcon() const { return nullptr; }
-    virtual std::shared_ptr<class Texture> GetThumbnail() const { return GetIcon(); }
+    virtual TERef<class Texture> GetIcon() const { return nullptr; }
+    virtual TERef<class Texture> GetThumbnail() const { return GetIcon(); }
 
     // Metadata Overrides for Modular Registration
-    virtual std::string GetDefaultExtension() const { return ""; }
-    virtual std::string GetDefaultIconPath() const { return "Resources/Editor/FileIcon.png"; }
+    virtual TEString GetDefaultExtension() const { return ""; }
+    virtual TEString GetDefaultIconPath() const { return "Resources/Editor/FileIcon.png"; }
     virtual TEVector2 GetDefaultIconSize() const { return {64.0f, 64.0f}; }
 
-    virtual void SetIcon(const std::string &path, const TEVector2 &size = {64.0f, 64.0f},
-                         const std::string &extension = "")
+    virtual void SetIcon(const TEString &path, const TEVector2 &size = {64.0f, 64.0f},
+                         const TEString &extension = "")
     {
         // This now just acts as an interface helper if needed,
         // but the metadata is primarily retrieved via virtual overrides.
     }
 
-    virtual void OnContentBrowserCreate(const std::filesystem::path &path) {}
+    // Modular Factory & Loading Interface
+    virtual TERef<Asset> Clone() const { return nullptr; }
+    virtual bool LoadFromFile(const TEString &path) { return false; }
+    virtual bool SaveToFile(const TEString &path) { return false; }
+
+    virtual void OnContentBrowserCreate(const TEString &path) {}
+
+    virtual const TEString &GetAssetPath() const { return m_AssetPath; }
+    virtual void SetAssetPath(const TEString &path) { m_AssetPath = path; }
+
+    // ISavable Interface Overrides
+    TEString GetSavableID() const override { return !m_AssetPath.empty() ? m_AssetPath : GetName(); }
+    TEString GetSavableDisplayName() const override { return (!m_AssetPath.empty() ? m_AssetPath : GetName()).GetFilename(); }
+    TEString GetSavableType() const override { return GetType(); }
+    TEString GetSavablePath() const override { return m_AssetPath; }
+    bool Save() override
+    {
+        TEString targetPath = !m_AssetPath.empty() ? m_AssetPath : GetName();
+        bool success = SaveToFile(targetPath);
+        if (success)
+            MarkDirty(false);
+        return success;
+    }
+
+protected:
+    TEString m_AssetPath;
 };
 
-} // namespace TE
