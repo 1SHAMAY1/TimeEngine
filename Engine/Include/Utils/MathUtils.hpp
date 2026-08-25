@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <sstream>
-#include <string>
 
 #include "Core/PreRequisites.h"
 
@@ -10,8 +8,6 @@
 struct ImVec2;
 struct ImVec4;
 
-namespace TE
-{
 
 // ===== TEVector2 =====
 struct TE_API TEVector2
@@ -162,6 +158,8 @@ inline float Distance(const TEVector &a, const TEVector &b)
     return std::sqrt(dx * dx + dy * dy + dz * dz);
 }
 
+using TEVector3 = TEVector;
+
 inline float DistanceSquared(const TEVector &a, const TEVector &b)
 {
     float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
@@ -288,11 +286,10 @@ public:
 
     TEVector ToVec3() const { return {Pitch, Yaw, Roll}; }
 
-    std::string ToString() const
+    TEString ToString() const
     {
-        std::stringstream ss;
-        ss << "Pitch: " << Pitch << ", Yaw: " << Yaw << ", Roll: " << Roll;
-        return ss.str();
+        return TEString("Pitch: ") + TEString::FromFloat(Pitch, 2) + ", Yaw: " +
+               TEString::FromFloat(Yaw, 2) + ", Roll: " + TEString::FromFloat(Roll, 2);
     }
 
     bool operator==(const TERotator &other) const
@@ -383,6 +380,14 @@ template <typename T> inline T Max(T a, T b) { return (a > b) ? a : b; }
 
 template <typename T> inline T Abs(T val) { return (val < 0) ? -val : val; }
 
+inline float Sqrt(float val) { return std::sqrt(val); }
+inline double Sqrt(double val) { return std::sqrt(val); }
+
+inline float Sin(float radians) { return std::sin(radians); }
+inline float Cos(float radians) { return std::cos(radians); }
+inline float Tan(float radians) { return std::tan(radians); }
+inline float Atan2(float y, float x) { return std::atan2(y, x); }
+
 inline float Mod(float x, float y) { return std::fmod(x, y); }
 
 inline double Mod(double x, double y) { return std::fmod(x, y); }
@@ -417,4 +422,3 @@ inline TEVector Lerp(const TEVector &a, const TEVector &b, float t) { return a +
 inline TEVector2 Mod(const TEVector2 &x, const TEVector2 &y) { return {Mod(x.x, y.x), Mod(x.y, y.y)}; }
 inline TEVector Mod(const TEVector &x, const TEVector &y) { return {Mod(x.x, y.x), Mod(x.y, y.y), Mod(x.z, y.z)}; }
 
-} // namespace TE

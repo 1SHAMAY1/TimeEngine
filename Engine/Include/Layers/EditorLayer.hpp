@@ -4,52 +4,16 @@
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Scene/Scene.hpp"
-#include "Editor/AssetEditor.hpp"
+#include "Editor/EditorMenubarRegistry.hpp"
+#include "Editor/EditorToolbarRegistry.hpp"
+#include "Editor/ViewportOverlayRegistry.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Layers/Layer.hpp"
-#include "Renderer/Framebuffer.hpp"
-#include "Renderer/GraphicsAPI.hpp"
-#include <filesystem>
-#include <memory>
-#include <set>
-#include <string>
-#include <vector>
-
-namespace TE
-{
-
-struct EditorSettings
-{
-    bool ShowPhysicsColliders = false;
-    bool AllowNavigation = true;
-    float SpeedMultiplier = 1.0f; // Slider 0.1 to 100
-    float BaseCameraSpeed = 100.0f;
-    float ZoomSpeed = 2.0f;
-    float DefaultZoom = 10.0f;
-    std::map<std::string, KeyCode> Shortcuts;
-};
-
-struct ProjectSettings
-{
-    enum class GameType
-    {
-        TwoD,
-        ThreeD
-    };
-    enum class TwoDMode
-    {
-        TopDown,
-        SideScroller
-    };
-
-    GameType ConfigType = GameType::TwoD;
-    TwoDMode Mode2D = TwoDMode::TopDown;
-    GraphicsAPI TargetAPI = GraphicsAPI::OpenGL;
-};
 
 class TE_API EditorLayer : public Layer
 {
 public:
-    EditorLayer(const std::string &name = "EditorLayer");
+    EditorLayer(const TEString &startScene = "", const TEString &name = "EditorLayer");
     virtual ~EditorLayer();
 
     virtual void OnAttach() override;
@@ -58,173 +22,139 @@ public:
     virtual void OnTimeGUIRender() override;
     virtual void OnEvent(Event &event) override;
 
-    std::shared_ptr<Scene> GetActiveScene() const { return m_ActiveScene; }
+    Ref<EditorLayer> GetShared() { return std::static_pointer_cast<EditorLayer>(shared_from_this()); }
 
-    static const std::vector<std::unique_ptr<class EditorMode>> &GetGlobalModes();
-    static void SetGlobalActiveMode(const std::string &name);
+    enum class SceneState { Edit = 0, Play = 1, Pause = 2 };
+    enum class GizmoType  { None = -1, Translate = 0, Rotate = 1, Scale = 2 };
+
+    // Scene lifecycle
+    void OnScenePlay();
+    void OnScenePause();
+    void OnSceneStop();
+    SceneState GetSceneState() const { return m_SceneState; }
+
+    TERef<Scene> GetActiveScene() const { return m_ActiveScene; }
+    void SetActiveScene(TERef<Scene> scene);
+    TERef<class Framebuffer> GetFramebuffer() const { return m_Framebuffer; }
+    TERef<class Framebuffer> GetLightMapFramebuffer() const { return m_LightMapFramebuffer; }
+    TEVector2 GetViewportPos() const { return m_ViewportPos; }
+    void SetViewportPos(const TEVector2 &pos) { m_ViewportPos = pos; }
+    bool IsViewportFocused() const { return m_ViewportFocused; }
+    void SetViewportFocused(bool focused) { m_ViewportFocused = focused; }
+    bool IsViewportHovered() const { return m_ViewportHovered; }
+    void SetViewportHovered(bool hovered) { m_ViewportHovered = hovered; }
+    void SetViewportSizeChanged(bool changed) { m_ViewportSizeChanged = changed; }
+    Entity GetHoveredEntity() const { return m_HoveredEntity; }
+    void SetHoveredEntity(Entity entity) { m_HoveredEntity = entity; }
+
+    // Camera getters & setters
+    TEVector GetCameraPosition() const { return m_CameraPosition; }
+    void SetCameraPosition(const TEVector &pos) { m_CameraPosition = pos; }
+    float GetCameraZoom() const { return m_CameraZoom; }
+    void SetCameraZoom(float zoom) { m_CameraZoom = zoom; }
+
+    // Editor modes
+    static const TEArray<TEScope<class EditorMode>> &GetGlobalModes();
+    static void SetGlobalActiveMode(const TEString &name);
     static class EditorMode *GetGlobalActiveMode();
 
-    // Selection Helpers
+    // Selection & Actions
     void SelectEntity(Entity entity, bool multiSelect = false, bool toggle = false);
     void ClearSelection();
+    const TESet<Entity> &GetSelectedEntities() const { return m_SelectedEntities; }
+    void TriggerDeleteSelectedEntities() { DeleteSelectedEntities(); }
+    void DuplicateSelectedEntities();
+    void CopySelectedEntities();
+    void PasteSelectedEntities();
+
+    // Universal Shortcut listener
+    bool OnShortcut(const TEString &shortcutId);
+
+    // Gizmo
+    GizmoType GetGizmoType() const { return m_GizmoType; }
+    void SetGizmoType(GizmoType type) { m_GizmoType = type; }
+    bool IsGizmoDragging() const { return m_IsGizmoDragging; }
+    void SetGizmoDragging(bool dragging) { m_IsGizmoDragging = dragging; }
+
+    // Decentralized registration
+    void RegisterToolbarItem(const struct EditorToolbarItem &item);
+    void RegisterToolbarOverlay(TERef<class IEditorToolbarOverlay> overlay);
+    void RegisterViewportOverlayItem(const struct ViewportOverlayItem &item);
+    void RegisterViewportOverlay(TERef<class IViewportOverlay> overlay);
+    void RegisterMenubarItem(const struct EditorMenubarItem &item);
+    void RegisterEditorPanel(TERef<class IEditorPanel> panel);
+    void PopulateOverlaysAndPanels();
+
+    // Queries
+    TEArray<struct EditorToolbarItem> GetToolbarItemsByAlignment(enum class EditorToolbarAlignment align) const;
+    TEArray<struct ViewportOverlayItem> GetViewportItemsByCornerAndAlignment(enum class ViewportOverlayCorner corner, enum class ViewportOverlayAlignment align) const;
+    TEArray<TERef<class IEditorPanel>> GetRegisteredPanels() const;
+    TERef<class IEditorPanel> GetPanelByID(const TEString &id) const;
+
+    template <typename T>
+    TERef<T> GetPanel() const
+    {
+        for (auto &panel : m_Panels)
+        {
+            if (auto casted = std::dynamic_pointer_cast<T>(panel))
+                return casted;
+        }
+        return nullptr;
+    }
 
 private:
-    void LoadSettings();
-    void SaveSettings();
-
+    bool OnWindowClose(class WindowCloseEvent &e);
     bool OnKeyPressed(KeyPressedEvent &e);
     bool OnMouseButtonPressed(MouseButtonPressedEvent &e);
     bool OnMouseScrolled(MouseScrolledEvent &e);
 
-    // Selection Helpers
     bool IsEntitySelected(Entity entity) const;
-    void SelectComponent(class TComponent *component);
     void DeleteSelectedEntities();
-    void PasteClipboard(const std::filesystem::path &targetFolder);
-
-    // Save Helpers
-    void SaveScene();
-    void SaveProject();
-    void LoadScene(const std::filesystem::path &filepath);
-    void UI_DrawSaveScenePopup();
-
-    // Gizmo Helpers
-    void UI_DrawGizmos();
-
-    // UI Helpers
-    void SetDarkThemeColors();
-    void UI_DrawMenubar();
-    void UI_DrawToolbar();
-
-    // Panels
-    void UI_DrawSceneHierarchy();
-    void UI_DrawProperties();
-    void UI_DrawContentBrowser();
-    void UI_DrawAssetEditors();
-    void UI_DrawViewport();
-    void UI_DrawSettingsPanel();
-    void UI_DrawProjectSettingsPanel();
-    void UI_DrawPluginsPanel();
-    void UI_DrawGizmoText();
-    void UI_ViewportContextMenu();
-    void DrawComponentNode(Entity entity, class TComponent *comp);
-    std::string GetKeyName(KeyCode key);
-
-    // Navigation
     void UpdateCamera(float dt);
     void HandleViewportInput();
     void UpdateGizmoHover();
+    void ProcessDeletionQueues();
 
-    // Layout State
-    bool m_ShowSceneHierarchy = true;
-    bool m_ShowProperties = true;
-    bool m_ShowContentBrowser = true;
-    bool m_ShowViewport = true;
-    bool m_ShowSettings = false;
-    bool m_ShowProjectSettings = false;
-    bool m_ShowPluginsSettings = false;
-    bool m_ShowSaveScenePopup = false;
-    bool m_SaveSceneAs = false;
-    char m_SaveSceneNameBuffer[256] = "";
-    char m_SaveScenePathBuffer[256] = "";
-    class ProfilingLayer *m_ProfilingLayer = nullptr;
-    bool m_ShowConsolePanel = true;
+    // Scene
+    SceneState m_SceneState = SceneState::Edit;
+    TEString m_StartScenePath;
+    TERef<Scene> m_ActiveScene;
+    TERef<Scene> m_EditorScene;
+    TERef<Scene> m_RuntimeScene;
+    TESet<Entity> m_SelectedEntities;
 
-    // Terminal/Console State
-    char m_TerminalInputBuffer[256] = "";
-    std::vector<std::string> m_TerminalHistory;
-    std::vector<std::string> m_TerminalCommandHistory;
-    int m_TerminalHistoryScrollPos = -1;
-    bool m_ScrollToConsoleBottom = false;
-    void UI_DrawConsolePanel();
-    void ExecuteTerminalCommand(const std::string &commandLine);
+    // Gizmo
+    GizmoType m_GizmoType = GizmoType::Translate;
+    int m_GizmoOperation = -1;
+    int m_HoveredGizmoAxis = -1;
+    bool m_IsGizmoDragging = false;
 
-    std::filesystem::path m_ContentBrowserCurrentDirectory;
-    char m_ContentBrowserPathBuffer[512] = "";
-    std::filesystem::path m_SelectedBrowserPath;
-    std::filesystem::path m_RenamingBrowserPath;
-    std::filesystem::path m_ClipboardPath;
-    bool m_ClipboardIsCut = false;
-
-    std::vector<EditorTab> m_OpenEditorTabs;
-    int m_ActiveTabRequest = -1;
-
-    std::shared_ptr<class Asset> m_SelectedBrowserAsset;
-
+    // Viewport
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
-
-    // State
-    EditorSettings m_EditorSettings;
-    ProjectSettings m_ProjectSettings;
-
-    // Camera State
-    TEVector m_CameraPosition = {0.0f, 0.0f, 10.0f};
-    float m_CameraZoom = 10.0f; // Ortho size or Z distance
-
-    // Scene State
-    std::shared_ptr<Scene> m_ActiveScene;
-    std::set<Entity> m_SelectedEntities;
-    Entity m_SelectedToAddComponent;
-    bool m_ShouldOpenAddComponentPopup = false;
-    class TComponent *m_ComponentParentForAdd = nullptr; // Parent component for the new component
-    class TComponent *m_SelectedComponent = nullptr;
-
-    // Renaming state
-    EntityID m_RenamingEntityID = 0;
-    class TComponent *m_RenamingComponent = nullptr;
-    bool m_FocusedRenamingInput = false;
-
-    // Gizmo State
-    enum class GizmoType
-    {
-        None = -1,
-        Translate = 0,
-        Rotate = 1,
-        Scale = 2
-    };
-    GizmoType m_GizmoType = GizmoType::Translate;
-    int m_GizmoOperation = -1;   // -1: none, 0: X, 1: Y, 2: Z/Center
-    int m_HoveredGizmoAxis = -1; // Cached for interaction check
-
-    // Resources
-    std::shared_ptr<class Texture> m_FileIcon;
-    std::shared_ptr<class Texture> m_FolderIcon;
-    std::shared_ptr<class Texture> m_LeftArrowIcon;
-    std::shared_ptr<class Texture> m_SaveIcon;
-    std::shared_ptr<class Texture> m_PlayIcon;
-    std::shared_ptr<class Texture> m_BrandingIcon;
-    std::shared_ptr<class Framebuffer> m_Framebuffer;
-    std::shared_ptr<class Framebuffer> m_LightMapFramebuffer;
-    std::shared_ptr<class Renderer2D> m_Renderer2D;
-
-    // Physics
-    std::shared_ptr<class PhysicsWorld> m_PhysicsWorld;
-    std::vector<struct RigidBody *> m_TestBodies;
-    std::shared_ptr<class Material> m_DebugMaterial;
-    std::shared_ptr<class Material> m_LightBlendMaterial;
-    std::shared_ptr<class Material> m_GizmoXMaterial;
-    std::shared_ptr<class Material> m_GizmoYMaterial;
-    std::shared_ptr<class Material> m_GizmoMaterial;
-
-    bool m_ViewportSizeChanged = false; // Tracks if we need resize
-    float m_LastViewportX = 0, m_LastViewportY = 0;
+    bool m_ViewportSizeChanged = false;
     TEVector2 m_ViewportPos = {0, 0};
-    Entity m_HoveredEntity; // For context menu
+    Entity m_HoveredEntity;
 
-    // Gizmo Dragging
-    TEVector2 m_GizmoDragStartMousePos = {0.0f, 0.0f};
-    TEVector m_GizmoDragStartEntityPos = {0.0f, 0.0f, 0.0f};
-    TEVector m_GizmoDragStartEntityScale = {1.0f, 1.0f, 1.0f};
-    float m_GizmoDragStartEntityRotation = 0.0f;
+    // Camera
+    TEVector m_CameraPosition = {0.0f, 0.0f, 10.0f};
+    float m_CameraZoom = 10.0f;
 
-    // Save Display
-    float m_SaveMessageTimer = 0.0f;
+    // Rendering
+    TERef<class Framebuffer> m_Framebuffer;
+    TERef<class Framebuffer> m_LightMapFramebuffer;
+    TERef<class Renderer2D> m_Renderer2D;
 
-    // Deletion Queues
-    std::vector<Entity> m_EntitiesToDelete;
-    std::vector<std::pair<EntityID, class TComponent *>> m_ComponentsToDelete;
-    void ProcessDeletionQueues();
+    // Registries (populated by overlays/panels)
+    TEArray<struct EditorToolbarItem> m_ToolbarItems;
+    TEArray<TERef<class IEditorToolbarOverlay>> m_ToolbarOverlayOwners;
+    TEArray<struct ViewportOverlayItem> m_ViewportItems;
+    TEArray<TERef<class IViewportOverlay>> m_ViewportOverlayOwners;
+    TEArray<struct EditorMenubarItem> m_MenubarItems;
+    TEArray<TERef<class IEditorPanel>> m_Panels;
+
+    // Deletion queues
+    TEArray<Entity> m_EntitiesToDelete;
+    TEArray<std::pair<EntityID, class TComponent *>> m_ComponentsToDelete;
 };
 
-} // namespace TE

@@ -1,8 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include <glm/glm.hpp>
 
-namespace TE {
 
     class Camera
     {
@@ -21,4 +20,3 @@ namespace TE {
         glm::mat4 m_ViewProjectionMatrix = glm::mat4(1.0f);
     };
 
-}

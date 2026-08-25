@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace TE {
 
     class OrthographicCamera : public Camera
     {
@@ -34,4 +33,3 @@ namespace TE {
         float m_Left, m_Right, m_Bottom, m_Top;
     };
 
-}

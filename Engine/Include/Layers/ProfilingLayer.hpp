@@ -1,18 +1,14 @@
 #pragma once
-#include "Layers/Layer.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <chrono>
 #include <deque>
-#include <string>
-#include <unordered_map>
-#include <vector>
 
-namespace TE
-{
+
 
 struct MemoryAllocation
 {
-    std::string className;
+    TEString className;
     size_t count = 0;
     size_t sizeBytes = 0;
     bool isHeap = true;
@@ -20,8 +16,8 @@ struct MemoryAllocation
 
 struct StackProfileScope
 {
-    std::string funcName;
-    StackProfileScope(const std::string &name, size_t size);
+    TEString funcName;
+    StackProfileScope(const TEString &name, size_t size);
     ~StackProfileScope();
 };
 
@@ -47,13 +43,22 @@ struct PerformanceMetrics
     float uiTime = 0.0f;
 };
 
-class ProfilingLayer : public Layer
+class TE_API ProfilingLayer : public IEditorPanel
 {
 public:
     ProfilingLayer();
     virtual ~ProfilingLayer();
 
-    static ProfilingLayer *GetInstance() { return s_Instance; }
+    static ProfilingLayer *GetInstance()
+    {
+        return s_Instance;
+    }
+
+    // IEditorPanel interface overrides
+    TEString GetID() const override { return "ProfilerPanel"; }
+    TEString GetTitle() const override { return "Profiling Tool"; }
+    bool IsWindowMenuExposed() const override { return true; }
+    void OnTimeGUIRender(Ref<EditorLayer> editor) override { (void)editor; OnTimeGUIRender(); }
 
     virtual void OnAttach() override;
     virtual void OnDetach() override;
@@ -94,12 +99,12 @@ public:
     void SetShowDetailedInfo(bool show) { m_ShowDetailedInfo = show; }
     void SetShowGraphs(bool show) { m_ShowGraphs = show; }
     void SetFloating(bool floating) { m_IsFloating = floating; }
-    void SetVisible(bool visible) { m_IsVisible = visible; }
-    void SetWindowTitle(const std::string &title) { m_WindowTitle = title; }
+    void SetVisible(bool visible) override { m_Visible = visible; m_IsVisible = visible; }
+    bool IsVisible() const override { return m_Visible || m_IsVisible; }
+    void ToggleVisibility() { SetVisible(!IsVisible()); }
+    void SetWindowTitle(const TEString &title) { m_WindowTitle = title; }
     void SetWindowPosition(const TEVector2 &pos) { m_WindowPos = pos; }
     void SetWindowSize(const TEVector2 &size) { m_WindowSize = size; }
-    bool IsVisible() const { return m_IsVisible; }
-    void ToggleVisibility() { m_IsVisible = !m_IsVisible; }
 
     // Timing Histories
     std::deque<float> m_GameTimeHistory;
@@ -108,10 +113,10 @@ public:
     std::deque<float> m_UITimeHistory;
 
     // ===== Memory Tracking =====
-    static void TrackClassAllocation(const std::string &className, size_t sizeBytes, bool isHeap = true);
-    static void TrackClassDeallocation(const std::string &className, size_t sizeBytes, bool isHeap = true);
-    static void PushStackFrame(const std::string &functionName, size_t sizeBytes);
-    static void PopStackFrame(const std::string &functionName);
+    static void TrackClassAllocation(const TEString &className, size_t sizeBytes, bool isHeap = true);
+    static void TrackClassDeallocation(const TEString &className, size_t sizeBytes, bool isHeap = true);
+    static void PushStackFrame(const TEString &functionName, size_t sizeBytes);
+    static void PopStackFrame(const TEString &functionName);
 
 private:
     static ProfilingLayer *s_Instance;
@@ -126,8 +131,8 @@ private:
     std::deque<float> m_GPUHistory;
 
     // Memory Allocations Tracking
-    std::unordered_map<std::string, MemoryAllocation> m_ClassAllocations;
-    std::unordered_map<std::string, size_t> m_ActiveStackFrames;
+    TEMap<TEString, MemoryAllocation> m_ClassAllocations;
+    TEMap<TEString, size_t> m_ActiveStackFrames;
     std::deque<float> m_HeapHistory;
     std::deque<float> m_StackHistory;
 
@@ -148,13 +153,13 @@ private:
     bool m_ShowPerformanceGraphs = true;
 
     // ===== Window Settings =====
-    TEVector2 m_WindowSize = TEVector2(300, 200);
+    TEVector2 m_WindowSize = TEVector2(560, 420);
     TEVector2 m_WindowPos = TEVector2(10, 10);
     bool m_WindowCollapsed = false;
     bool m_WindowResizable = true;
     bool m_IsFloating = false;
     bool m_IsVisible = true;
-    std::string m_WindowTitle = "Performance Monitor";
+    TEString m_WindowTitle = "Performance Monitor";
 
     // ===== Colors =====
     TEVector4 m_FPSColor = TEVector4(0.2f, 1.0f, 0.2f, 1.0f);
@@ -165,8 +170,8 @@ private:
     TEVector4 m_CriticalColor = TEVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
     // ===== System Info =====
-    std::string m_CPUName;
-    std::string m_GPUName;
+    TEString m_CPUName;
+    TEString m_GPUName;
     uint32_t m_CPUCores = 0;
     uint32_t m_RAMTotal = 0;
     uint32_t m_VRAMTotal = 0;
@@ -177,7 +182,7 @@ private:
     void RenderRenderingInfo();
     void RenderMemoryInfo();
     void RenderPerformanceGraphs();
-    void RenderGraph(const std::string &title, const std::deque<float> &data, const TEVector4 &color,
+    void RenderGraph(const TEString &title, const std::deque<float> &data, const TEVector4 &color,
                      float minValue = 0.0f, float maxValue = 100.0f);
     void UpdateMetrics();
     void CalculateAverages();
@@ -189,20 +194,19 @@ private:
     // ===== Graph Rendering =====
     void DrawLineGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2 &pos, const TEVector2 &size,
                        const std::deque<float> &data, const TEVector4 &color, float minValue, float maxValue,
-                       const std::string &label);
+                       const TEString &label);
     void DrawBarGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2 &pos, const TEVector2 &size,
                       const std::deque<float> &data, const TEVector4 &color, float minValue, float maxValue,
-                      const std::string &label);
+                      const TEString &label);
 
     void ResetCountersIfNewFrame();
 
     // ===== Utility Functions =====
-    std::string FormatBytes(uint64_t bytes);
-    std::string FormatTime(float seconds);
-    std::string FormatPercentage(float percentage);
+    TEString FormatBytes(uint64_t bytes);
+    TEString FormatTime(float seconds);
+    TEString FormatPercentage(float percentage);
     TEVector4 GetColorForValue(float value, float warningThreshold, float criticalThreshold);
 
     uint32_t m_LastResetFrame = 0;
 };
 
-} // namespace TE

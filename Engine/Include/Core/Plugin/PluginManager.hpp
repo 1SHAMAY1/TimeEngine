@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Core/Plugin/IPlugin.hpp"
-#include <filesystem>
-#include <memory>
-#include <string>
-#include <vector>
+#include "GameFrameWork/GameplayUtils.hpp"
 
 #ifdef TE_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -13,17 +10,24 @@
 #endif
 #endif
 
-namespace TE
-{
 
 struct PluginInfo
 {
-    std::string Name;
-    std::string Version;
-    std::string Description;
+    TEString Name;
+    TEString Version;
+    TEString Author = "TimeEngine Team";
+    TEString Description;
     bool Enabled = true;
-    std::filesystem::path Path;        // Path to the .teplugin file
-    std::filesystem::path LibraryPath; // Path to the compiled .dll
+    TEString Path;        // Path to the .teplugin file
+    TEString LibraryPath; // Path to the compiled .dll
+};
+
+struct PluginProgressMessage
+{
+    TEString PluginName;
+    size_t LoadedCount = 0;
+    size_t TotalCount = 0;
+    bool IsComplete = false;
 };
 
 class TE_API PluginManager
@@ -32,16 +36,25 @@ public:
     static void Initialize();
     static void Shutdown();
 
-    static void LoadPlugin(const std::filesystem::path &pluginDescriptorPath);
-    static void UnloadPlugin(const std::string &name);
-    static void SetPluginEnabled(const std::string &name, bool enabled);
+    static void LoadPlugin(const TEString &pluginDescriptorPath);
+    static void LoadAllDiscoveredPlugins();
+    static bool StepLoadNextPlugin(TEString &outCurrentPluginName, size_t &outLoadedCount, size_t &outTotalCount);
+    static void StartAsyncLoading();
+    static void CancelAsyncLoading();
+    static bool TryGetAsyncProgress(PluginProgressMessage &outMsg);
+    static bool IsAsyncLoadingComplete();
+    static bool IsFullyLoaded();
+    static float GetLoadProgress();
 
-    static const std::vector<PluginInfo> &GetLoadedPlugins() { return s_LoadedPlugins; }
-    static const std::vector<PluginInfo> &GetDiscoveredPlugins() { return s_DiscoveredPlugins; }
+    static void UnloadPlugin(const TEString &name);
+    static void SetPluginEnabled(const TEString &name, bool enabled);
 
-private:
+    static TERef<IPlugin> GetPluginInstance(const TEString &name);
+    static const TEArray<PluginInfo> &GetLoadedPlugins() { return s_LoadedPlugins; }
+    static const TEArray<PluginInfo> &GetDiscoveredPlugins() { return s_DiscoveredPlugins; }
+
     static void DiscoverPlugins();
-    static bool ParsePluginDescriptor(const std::filesystem::path &path, PluginInfo &outInfo);
+    static bool ParsePluginDescriptor(const TEString &path, PluginInfo &outInfo);
 
 private:
     struct LoadedPluginInstance
@@ -52,12 +65,12 @@ private:
 #else
         void *Module = nullptr;
 #endif
-        IPlugin *Instance = nullptr;
+        TERef<IPlugin> Instance = nullptr;
     };
 
-    inline static std::vector<PluginInfo> s_DiscoveredPlugins;
-    inline static std::vector<LoadedPluginInstance> s_LoadedPluginInstances;
-    inline static std::vector<PluginInfo> s_LoadedPlugins; // For public inspection
+    inline static TEArray<PluginInfo> s_DiscoveredPlugins;
+    inline static TEArray<LoadedPluginInstance> s_LoadedPluginInstances;
+    inline static TEArray<PluginInfo> s_LoadedPlugins; // For public inspection
+    inline static size_t s_NextLoadIndex = 0;
+    inline static bool s_FullyLoaded = false;
 };
-
-} // namespace TE

@@ -1,13 +1,9 @@
 #pragma once
-
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Events/Event.h"
 #include "Layers/Layer.hpp"
-#include <filesystem>
-#include <string>
-#include <vector>
 
-namespace TE
-{
 
 class TE_API ProjectHubLayer : public Layer
 {
@@ -31,9 +27,9 @@ private:
     void UI_DrawProjectsList();
     void UI_DrawCreateProjectView();
 
-    void CreateProject(const std::string &name, const std::filesystem::path &path,
-                       const std::string &thumbnailPath = "");
-    void OpenProject(const std::filesystem::path &path);
+    void CreateProject(const TEString &name, const TEString &path,
+                       const TEString &thumbnailPath = "");
+    void OpenProject(const TEString &path);
 
     // Styles
     void SetDarkThemeColors();
@@ -43,17 +39,16 @@ private:
     void SaveRecentProjects();
 
 private:
-    std::vector<std::filesystem::path> m_RecentProjects;
+    TEArray<TEString> m_RecentProjects;
     HubView m_CurrentView = HubView::RecentProjects;
 
-    char m_NewProjectName[256] = "NewProject";
-    char m_NewProjectPath[1024] = "";
+    TEString m_NewProjectName = "NewProject";
+    TEString m_NewProjectPath;
 
     // UI Resources
-    std::shared_ptr<class Texture> m_LogoIcon;
-    std::shared_ptr<class Texture> m_ProjectIcon;
+    TERef<class Texture> m_LogoIcon;
+    TERef<class Texture> m_ProjectIcon;
 
-    std::filesystem::path m_ProjectToOpen;
+    TEString m_ProjectToOpen;
 };
 
-} // namespace TE

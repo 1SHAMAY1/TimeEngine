@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Utils/MathUtils.hpp"
 
-namespace TE
-{
 
 class CameraController
 {
@@ -33,4 +31,3 @@ private:
     TERotator m_Rotation;
 };
 
-} // namespace TE

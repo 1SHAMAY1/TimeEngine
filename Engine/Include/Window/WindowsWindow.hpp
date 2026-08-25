@@ -30,7 +30,7 @@ private:
     GLFWwindow* m_Window;
 
     struct WindowData {
-        std::string Title;
+        TEString Title;
         unsigned int Width, Height;
         bool VSync;
 

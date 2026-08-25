@@ -2,10 +2,13 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
 
-namespace TE {
+#include "Core/Scene/ComponentRegistry.hpp"
+
 
     class RigidBodyComponent : public TComponent {
     public:
+        GENERATED_BODY(RigidBodyComponent)
+
         // Internal Physics Body Data
         RigidBody Body;
 
@@ -31,7 +34,12 @@ namespace TE {
             Body.ApplyForce(force);
         }
 
-        static constexpr const char* StaticClassName = "RigidBodyComponent";
+        virtual TEString GetClassName() const override { return StaticClassName; }
     };
 
-}
+#ifdef TE_EDITOR
+    T_REGISTER_COMPONENT(RigidBodyComponent, "RigidBody 2D Component")
+    T_REGISTER_PRESET(RigidBodyComponent, "RigidBody 2D", "Physics & Collisions",
+                      [](EntityID id, EntityManager *em) { em->AddComponent<RigidBodyComponent>(id); })
+#endif
+

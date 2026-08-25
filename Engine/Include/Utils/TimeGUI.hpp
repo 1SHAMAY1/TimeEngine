@@ -1,29 +1,45 @@
 #pragma once
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
-#include <string>
+#include "Utils/TEString.hpp"
 
 // Forward declaration of raw global ImDrawList and ImFont to keep headers clean and allow operator-> mapping
 struct ImDrawList;
 struct ImFont;
 
-#ifndef IM_COL32
-#define IM_COL32(R, G, B, A)                                                                                           \
+#ifndef TIMEGUI_COL32
+#define TIMEGUI_COL32(R, G, B, A)                                                                                      \
     (((unsigned int)(A) << 24) | ((unsigned int)(B) << 16) | ((unsigned int)(G) << 8) | ((unsigned int)(R)))
+#define TIMEGUI_COL32_WHITE TIMEGUI_COL32(255, 255, 255, 255)
+#define TIMEGUI_COL32_BLACK TIMEGUI_COL32(0, 0, 0, 255)
 #endif
 
-#ifndef IM_COL32_WHITE
-#define IM_COL32_WHITE IM_COL32(255, 255, 255, 255)
+#ifndef IM_COL32
+typedef unsigned int ImU32;
+#ifndef IM_COL32_R_SHIFT
+#ifdef IMGUI_USE_BGRA_PACKED_COLOR
+#define IM_COL32_R_SHIFT    16
+#define IM_COL32_G_SHIFT    8
+#define IM_COL32_B_SHIFT    0
+#define IM_COL32_A_SHIFT    24
+#define IM_COL32_A_MASK     0xFF000000
+#else
+#define IM_COL32_R_SHIFT    0
+#define IM_COL32_G_SHIFT    8
+#define IM_COL32_B_SHIFT    16
+#define IM_COL32_A_SHIFT    24
+#define IM_COL32_A_MASK     0xFF000000
 #endif
-#ifndef IM_COL32_BLACK
-#define IM_COL32_BLACK IM_COL32(0, 0, 0, 255)
+#endif
+#define IM_COL32(R,G,B,A)    (((ImU32)(A)<<IM_COL32_A_SHIFT) | ((ImU32)(B)<<IM_COL32_B_SHIFT) | ((ImU32)(G)<<IM_COL32_G_SHIFT) | ((ImU32)(R)<<IM_COL32_R_SHIFT))
+#define IM_COL32_WHITE       IM_COL32(255,255,255,255)
+#define IM_COL32_BLACK       IM_COL32(0,0,0,255)
+#define IM_COL32_BLACK_TRANS IM_COL32(0,0,0,0)
 #endif
 
 // Convenience alias – matches ImU32 so LogoLayer / draw code can use unsigned int directly
 typedef unsigned int TimeGUIColor32;
 
-namespace TE
-{
 
 namespace TimeGUI
 {
@@ -293,6 +309,18 @@ enum TimeGUIHoveredFlags_
 };
 typedef int TimeGUIHoveredFlags;
 
+enum TimeGUIFocusedFlags_
+{
+    TimeGUIFocusedFlags_None = 0,
+    TimeGUIFocusedFlags_ChildWindows = 1 << 0,
+    TimeGUIFocusedFlags_RootWindow = 1 << 1,
+    TimeGUIFocusedFlags_AnyWindow = 1 << 2,
+    TimeGUIFocusedFlags_NoPopupHierarchy = 1 << 3,
+    TimeGUIFocusedFlags_DockHierarchy = 1 << 4,
+    TimeGUIFocusedFlags_RootAndChildWindows = TimeGUIFocusedFlags_RootWindow | TimeGUIFocusedFlags_ChildWindows,
+};
+typedef int TimeGUIFocusedFlags;
+
 // InputText flags wrapper
 enum TimeGUIInputTextFlags_
 {
@@ -485,8 +513,8 @@ enum TimeGUIDir_
 {
     TimeGUIDir_None = -1,
     TimeGUIDir_Left = 0,
-    TimeGUIDir_Up = 1,
-    TimeGUIDir_Right = 2,
+    TimeGUIDir_Right = 1,
+    TimeGUIDir_Up = 2,
     TimeGUIDir_Down = 3,
 };
 typedef int TimeGUIDir;
@@ -572,6 +600,11 @@ struct TE_API TimeGUIIO
     TEVector2 DisplaySize;
     bool KeyShift = false;
     bool KeyCtrl = false;
+    bool KeyAlt = false;
+    bool KeySuper = false;
+    bool WantTextInput = false;
+    bool WantCaptureKeyboard = false;
+    bool WantCaptureMouse = false;
     int ConfigFlags = 0;
     TimeGUIFont DefaultFont;
 };
@@ -606,9 +639,9 @@ struct TE_API TimeGUIDrawList
 
     void AddLine(const TEVector2 &p1, const TEVector2 &p2, unsigned int color, float thickness = 1.0f);
     void AddRectFilled(const TEVector2 &p1, const TEVector2 &p2, unsigned int color, float rounding = 0.0f);
-    void AddText(const TEVector2 &pos, unsigned int color, const std::string &text);
+    void AddText(const TEVector2 &pos, unsigned int color, const TEString &text);
     void AddText(const TimeGUIFont &font, float fontSize, const TEVector2 &pos, unsigned int color,
-                 const std::string &text);
+                 const TEString &text);
     void AddRect(const TEVector2 &p1, const TEVector2 &p2, unsigned int color, float rounding = 0.0f, int flags = 0,
                  float thickness = 1.0f);
     void AddPolyline(const TEVector2 *points, int num_points, unsigned int color, int flags, float thickness);
@@ -641,6 +674,12 @@ struct TE_API TimeGUIDrawList
     ::ImDrawList *operator->() const { return static_cast<::ImDrawList *>(nativeDrawList); }
 };
 
+// Lifecycle management (Context, Backends, Frame Flow)
+TE_API bool Init(void *nativeWindow);
+TE_API void Shutdown();
+TE_API void BeginFrame();
+TE_API void EndFrame(uint32_t width, uint32_t height);
+
 // Getters for Synced clean wrappers
 TE_API TimeGUIIO &GetIO();
 TE_API TimeGUIStyle &GetStyle();
@@ -648,82 +687,118 @@ TE_API TimeGUIDrawList GetWindowDrawList();
 TE_API void *GetDrawListSharedData(); // For IM_NEW(ImDrawList) uses in grid drawing
 
 // Basic window and widget controls
-TE_API bool Begin(const std::string &name, bool *open = nullptr, TimeGUIWindowFlags flags = 0);
+TE_API bool Begin(const TEString &name, bool *open = nullptr, TimeGUIWindowFlags flags = 0);
 TE_API void End();
-TE_API bool BeginChild(const std::string &strId, const TEVector2 &size = {0, 0}, bool border = false,
+TE_API bool BeginChild(const TEString &strId, const TEVector2 &size = {0, 0}, bool border = false,
                        TimeGUIWindowFlags flags = 0);
 TE_API void EndChild();
 
 TE_API bool BeginMenuBar();
 TE_API void EndMenuBar();
-TE_API bool BeginMenu(const std::string &label, bool enabled = true);
+TE_API bool BeginMenu(const TEString &label, bool enabled = true);
 TE_API void EndMenu();
-TE_API bool MenuItem(const std::string &label, const std::string &shortcut = "", bool selected = false,
+TE_API bool MenuItem(const TEString &label, const TEString &shortcut = "", bool selected = false,
                      bool enabled = true);
-TE_API bool MenuItem(const std::string &label, const std::string &shortcut, bool *p_selected, bool enabled = true);
+TE_API bool MenuItem(const TEString &label, const TEString &shortcut, bool *p_selected, bool enabled = true);
 
 TE_API TEVector2 GetCursorPos();
 TE_API TEVector2 GetWindowContentRegionMin();
 TE_API bool IsItemFocused();
 TE_API TEVector2 GetItemRectMin();
 TE_API TEVector2 GetItemRectSize();
+TE_API TEVector2 GetItemRectMax();
 
-TE_API bool Button(const std::string &label, float width = 0.0f, float height = 0.0f);
-TE_API bool Button(const std::string &label, const TEVector2 &size);
+TE_API bool Button(const TEString &label, float width = 0.0f, float height = 0.0f);
+TE_API bool Button(const TEString &label, const TEVector2 &size);
+TE_API bool InvisibleButton(const TEString &strId, const TEVector2 &size, int flags = 0);
 
-TE_API void Text(const std::string &text);
-TE_API void Text(const char *fmt, ...);
+TE_API void Text(const TEString &text);
+template <typename... Args>
+inline void Text(const TEString &fmt, Args &&...args)
+{
+    Text(TEString::Format(fmt, std::forward<Args>(args)...));
+}
 
-TE_API void TextUnformatted(const std::string &text);
-TE_API void TextUnformatted(const char *text);
+TE_API void TextUnformatted(const TEString &text);
 TE_API void AlignTextToFramePadding();
 
-TE_API void TextDisabled(const std::string &text);
-TE_API void TextDisabled(const char *fmt, ...);
+TE_API void TextDisabled(const TEString &text);
+template <typename... Args>
+inline void TextDisabled(const TEString &fmt, Args &&...args)
+{
+    TextDisabled(TEString::Format(fmt, std::forward<Args>(args)...));
+}
 
-TE_API void TextColored(const TEColor &color, const std::string &text);
-TE_API void TextColored(const TEColor &color, const char *fmt, ...);
-TE_API void TextColored(const TEVector4 &color, const std::string &text);
-TE_API void TextColored(const TEVector4 &color, const char *fmt, ...);
+TE_API void TextColored(const TEColor &color, const TEString &text);
+template <typename... Args>
+inline void TextColored(const TEColor &color, const TEString &fmt, Args &&...args)
+{
+    TextColored(color, TEString::Format(fmt, std::forward<Args>(args)...));
+}
 
-TE_API void TextWrapped(const std::string &text);
-TE_API void TextWrapped(const char *fmt, ...);
+TE_API void TextColored(const TEVector4 &color, const TEString &text);
+template <typename... Args>
+inline void TextColored(const TEVector4 &color, const TEString &fmt, Args &&...args)
+{
+    TextColored(color, TEString::Format(fmt, std::forward<Args>(args)...));
+}
 
-TE_API bool Checkbox(const std::string &label, bool *checked);
-TE_API bool DragFloat(const std::string &label, float *value, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
-                      const std::string &format = "%.3f", int flags = 0);
-TE_API bool DragFloat2(const std::string &label, float *v, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
-                       const std::string &format = "%.3f", int flags = 0);
-TE_API bool DragFloat3(const std::string &label, float *v, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
-                       const std::string &format = "%.3f", int flags = 0);
-TE_API bool DragFloat4(const std::string &label, float *v, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
-                       const std::string &format = "%.3f", int flags = 0);
-TE_API bool DragInt(const std::string &label, int *v, float speed = 1.0f, int min = 0, int max = 0);
-TE_API bool InputInt(const std::string &label, int *v, int step = 1, int step_fast = 100, int flags = 0);
+TE_API void TextWrapped(const TEString &text);
+template <typename... Args>
+inline void TextWrapped(const TEString &fmt, Args &&...args)
+{
+    TextWrapped(TEString::Format(fmt, std::forward<Args>(args)...));
+}
 
-TE_API bool SliderFloat(const std::string &label, float *v, float v_min, float v_max,
-                        const std::string &format = "%.3f", int flags = 0);
-TE_API bool SliderInt(const std::string &label, int *v, int v_min, int v_max, const std::string &format = "%d",
+TE_API bool Checkbox(const TEString &label, bool *checked);
+TE_API bool DragFloat(const TEString &label, float *value, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
+                      const TEString &format = "%.3f", int flags = 0);
+TE_API bool DragFloat2(const TEString &label, float *v, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
+                       const TEString &format = "%.3f", int flags = 0);
+TE_API bool DragFloat3(const TEString &label, float *v, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
+                       const TEString &format = "%.3f", int flags = 0);
+TE_API bool DragFloat4(const TEString &label, float *v, float speed = 1.0f, float min = 0.0f, float max = 0.0f,
+                       const TEString &format = "%.3f", int flags = 0);
+TE_API bool DragInt(const TEString &label, int *v, float speed = 1.0f, int min = 0, int max = 0);
+TE_API bool InputInt(const TEString &label, int *v, int step = 1, int step_fast = 100, int flags = 0);
+
+TE_API bool SliderFloat(const TEString &label, float *v, float v_min, float v_max,
+                        const TEString &format = "%.3f", int flags = 0);
+TE_API bool SliderInt(const TEString &label, int *v, int v_min, int v_max, const TEString &format = "%d",
                       int flags = 0);
 
-TE_API bool ColorEdit3(const std::string &label, float *col);
-TE_API bool ColorEdit4(const std::string &label, float *col, int flags = 0);
-TE_API bool ColorPicker4(const std::string &label, float *col, int flags = 0);
-TE_API bool Combo(const std::string &label, int *currentItem, const char *const items[], int itemsCount,
+TE_API bool ColorEdit3(const TEString &label, float *col);
+TE_API bool ColorEdit4(const TEString &label, float *col, int flags = 0);
+TE_API bool ColorPicker4(const TEString &label, float *col, int flags = 0);
+TE_API bool ColorButton(const TEString &desc_id, const TEVector4 &col, int flags = 0, const TEVector2 &size = {0, 0});
+TE_API bool Combo(const TEString &label, int *currentItem, const char *const items[], int itemsCount,
                   int popupMaxHeightInItems = -1);
-TE_API bool BeginCombo(const std::string &label, const std::string &previewValue, int flags = 0);
+TE_API bool BeginCombo(const TEString &label, const TEString &previewValue, int flags = 0);
 TE_API void EndCombo();
-TE_API bool Selectable(const std::string &label, bool selected = false, int flags = 0, const TEVector2 &size = {0, 0});
-TE_API bool Selectable(const std::string &label, bool *selected, int flags = 0, const TEVector2 &size = {0, 0});
-TE_API bool RadioButton(const std::string &label, bool active);
-TE_API bool RadioButton(const std::string &label, int *v, int v_button);
-TE_API bool SmallButton(const std::string &label);
+TE_API bool Selectable(const TEString &label, bool selected = false, int flags = 0, const TEVector2 &size = {0, 0});
+TE_API bool Selectable(const TEString &label, bool *selected, int flags = 0, const TEVector2 &size = {0, 0});
+TE_API bool RadioButton(const TEString &label, bool active);
+TE_API bool RadioButton(const TEString &label, int *v, int v_button);
+TE_API bool SmallButton(const TEString &label);
 
-TE_API bool InputText(const std::string &label, std::string &value);
-TE_API bool InputText(const std::string &label, char *buf, size_t bufSize);
-TE_API bool InputText(const std::string &label, char *buf, size_t bufSize, TimeGUIInputTextFlags flags);
-TE_API bool InputTextMultiline(const std::string &label, char *buf, size_t bufSize, const TEVector2 &size = {0, 0},
+TE_API bool InputText(const TEString &label, TEString &value, TimeGUIInputTextFlags flags = 0);
+TE_API bool InputText(const TEString &label, char *buf, size_t bufSize);
+TE_API bool InputText(const TEString &label, char *buf, size_t bufSize, TimeGUIInputTextFlags flags);
+TE_API bool InputTextWithHint(const TEString &label, const TEString &hint, TEString &value,
+                              TimeGUIInputTextFlags flags = 0);
+TE_API bool InputTextWithHint(const TEString &label, const char *hint, char *buf, size_t bufSize,
+                              TimeGUIInputTextFlags flags = 0);
+TE_API bool InputTextMultiline(const TEString &label, TEString &value, const TEVector2 &size = {0, 0},
                                int flags = 0);
+TE_API bool InputTextMultiline(const TEString &label, char *buf, size_t bufSize, const TEVector2 &size = {0, 0},
+                               int flags = 0);
+
+TE_API bool IsWindowAppearing();
+TE_API void SetKeyboardFocusHere(int offset = 0);
+TE_API void SetClipboardText(const TEString &text);
+TE_API TEString GetClipboardText();
+TE_API void SetCaretColor(const TEVector4 &color);
+TE_API TEVector4 GetCaretColor();
 
 TE_API void Separator();
 TE_API void SeparatorEx(int flags);
@@ -740,7 +815,7 @@ TE_API void Columns(int count = 1, const char *id = nullptr, bool border = true)
 TE_API void NextColumn();
 TE_API void SetColumnWidth(int columnIndex, float width);
 
-TE_API void PushID(const std::string &strId);
+TE_API void PushID(const TEString &strId);
 TE_API void PushID(int intId);
 TE_API void PopID();
 
@@ -758,13 +833,15 @@ TE_API void PopSuspendedInput();
 // Context / Utility functions
 TE_API void SetNextWindowPos(const TEVector2 &pos, TimeGUICond cond = 0, const TEVector2 &pivot = {0, 0});
 TE_API void SetNextWindowSize(const TEVector2 &size, TimeGUICond cond = 0);
+TE_API void SetNextWindowContentSize(const TEVector2 &size);
+TE_API void SetNextWindowDockID(unsigned int dockId, TimeGUICond cond = 0);
 TE_API void SetNextItemWidth(float itemWidth);
 TE_API void PopItemWidth();
 TE_API void SetNextItemAllowOverlap();
 
 TE_API void Image(TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0 = {0, 0},
                   const TEVector2 &uv1 = {1, 1}, const TEVector4 &tintCol = {1, 1, 1, 1});
-TE_API bool ImageButton(const std::string &strId, TimeGUITextureID userTextureId, const TEVector2 &size,
+TE_API bool ImageButton(const TEString &strId, TimeGUITextureID userTextureId, const TEVector2 &size,
                         const TEVector2 &uv0 = {0, 0}, const TEVector2 &uv1 = {1, 1});
 
 TE_API float GetWindowWidth();
@@ -796,6 +873,7 @@ TE_API bool IsAnyItemHovered();
 TE_API bool IsMouseDoubleClicked(int button);
 TE_API bool IsMouseDragging(int button, float lock_threshold = -1.0f);
 TE_API TEVector2 GetMouseDragDelta(int button = 0, float lock_threshold = -1.0f);
+TE_API void ResetMouseDragDelta(int button = 0);
 TE_API bool IsKeyPressed(int key);
 TE_API double GetTime();
 
@@ -803,34 +881,36 @@ struct TimeGUIViewport
 {
     TEVector2 Pos;
     TEVector2 Size;
-    unsigned int ID;
+    unsigned int ID = 0;
 };
 TE_API TimeGUIViewport GetMainViewport();
 TE_API void SetNextWindowViewport(unsigned int viewportId);
 
 // Table operations
-TE_API bool BeginTable(const std::string &strId, int column, int flags = 0, const TEVector2 &outerSize = {0, 0},
+TE_API bool BeginTable(const TEString &strId, int column, int flags = 0, const TEVector2 &outerSize = {0, 0},
                        float innerWidth = 0.0f);
 TE_API void EndTable();
-TE_API void TableSetupColumn(const std::string &label, int flags = 0, float initWidthOrWeight = 0.0f,
+TE_API void TableSetupColumn(const TEString &label, int flags = 0, float initWidthOrWeight = 0.0f,
                              unsigned int userId = 0);
 TE_API void TableHeadersRow();
 TE_API bool TableNextColumn();
 TE_API void TableNextRow(float rowMinHeight = 0.0f, int rowFlags = 0);
 
-TE_API bool TreeNodeEx(const std::string &label, int flags = 0);
-TE_API bool TreeNodeEx(void *ptrId, int flags, const std::string &text);
+TE_API bool TreeNodeEx(const TEString &label, int flags = 0);
+TE_API bool TreeNodeEx(void *ptrId, int flags, const TEString &text);
 TE_API void TreePop();
-TE_API bool CollapsingHeader(const std::string &label, int flags = 0);
+TE_API bool CollapsingHeader(const TEString &label, int flags = 0);
 TE_API void SetNextItemOpen(bool isOpen);
 
-TE_API void OpenPopup(const std::string &strId);
-TE_API bool BeginPopup(const std::string &strId, int flags = 0);
-TE_API bool BeginPopupContextWindow(const std::string &strId = "", int mouseButton = 1, bool alsoOverItems = true);
-TE_API bool BeginPopupContextItem(const std::string &strId = "", int mouseButton = 1);
-TE_API bool BeginPopupModal(const std::string &name, bool *open = nullptr, TimeGUIWindowFlags flags = 0);
+TE_API void OpenPopup(const TEString &strId);
+TE_API bool BeginPopup(const TEString &strId, int flags = 0);
+TE_API bool BeginPopupContextWindow(const TEString &strId = "", int mouseButton = 1, bool alsoOverItems = true);
+TE_API bool BeginPopupContextItem(const TEString &strId = "", int mouseButton = 1);
+TE_API bool BeginPopupModal(const TEString &name, bool *open = nullptr, TimeGUIWindowFlags flags = 0);
 TE_API void EndPopup();
 TE_API void CloseCurrentPopup();
+TE_API bool IsPopupOpen(const TEString &strId);
+TE_API TEVector2 CalcTextSize(const TEString &text);
 
 TE_API void PushStyleColor(TimeGUICol idx, const TEColor &color);
 TE_API void PopStyleColor(int count = 1);
@@ -841,21 +921,22 @@ TE_API void PopStyleVar(int count = 1);
 TE_API void PushFont(const TimeGUIFont &font);
 TE_API void PopFont();
 
-TE_API unsigned int GetID(const std::string &strId);
-TE_API void SetItemTooltip(const std::string &text);
-TE_API void SetItemTooltip(const char *fmt, ...);
-TE_API void SetTooltip(const std::string &text);
+TE_API unsigned int GetID(const TEString &strId);
+TE_API void BeginTooltip();
+TE_API void EndTooltip();
+TE_API void SetItemTooltip(const TEString &text);
+TE_API void SetTooltip(const TEString &text);
 TE_API void SetItemDefaultFocus();
 TE_API void SetMouseCursor(int cursorType);
 TE_API unsigned int GetColorU32(const TEColor &color);
 TE_API unsigned int GetColorU32(TimeGUICol idx, float alpha_mul = 1.0f);
-TE_API TEVector2 CalcTextSize(const std::string &text);
+TE_API TEVector2 CalcTextSize(const TEString &text);
 
 TE_API TEVector4 ColorConvertU32ToFloat4(unsigned int in);
 TE_API unsigned int ColorConvertFloat4ToU32(const TEVector4 &in);
 
 TE_API bool BeginDragDropSource(int flags = 0);
-TE_API bool SetDragDropPayload(const std::string &type, const void *data, size_t size, int cond = 0);
+TE_API bool SetDragDropPayload(const TEString &type, const void *data, size_t size, int cond = 0);
 TE_API void EndDragDropSource();
 
 TE_API unsigned int DockSpace(unsigned int id, const TEVector2 &size = {0, 0}, int flags = 0);
@@ -864,15 +945,15 @@ TE_API void DockBuilderAddNode(unsigned int nodeId, int flags = 0);
 TE_API void DockBuilderSetNodeSize(unsigned int nodeId, const TEVector2 &size);
 TE_API unsigned int DockBuilderSplitNode(unsigned int nodeId, int splitDir, float sizeRatio, unsigned int *outIdDir1,
                                          unsigned int *outIdDir2);
-TE_API void DockBuilderDockWindow(const std::string &windowName, unsigned int nodeId);
+TE_API void DockBuilderDockWindow(const TEString &windowName, unsigned int nodeId);
 TE_API void DockBuilderFinish(unsigned int nodeId);
 
-TE_API bool BeginTabItem(const std::string &label, bool *open = nullptr, int flags = 0);
+TE_API bool BeginTabItem(const TEString &label, bool *open = nullptr, int flags = 0);
 TE_API void EndTabItem();
-TE_API bool BeginTabBar(const std::string &strId, int flags = 0);
+TE_API bool BeginTabBar(const TEString &strId, int flags = 0);
 TE_API void EndTabBar();
 
-TE_API bool BeginProjectCard(const std::string &id, const TEVector2 &size, bool &hovered);
+TE_API bool BeginProjectCard(const TEString &id, const TEVector2 &size, bool &hovered);
 TE_API void EndProjectCard();
 
 TE_API bool IsItemDeactivatedAfterEdit();
@@ -887,16 +968,19 @@ TE_API TimeGUIFont GetDefaultFont();
 TE_API TimeGUITextureID GetFontAtlasTextureID();
 
 // Common properties drawing controls (consolidated from UIUtils.hpp)
-TE_API std::string CleanLabel(const std::string &label);
-TE_API bool DrawVec3Control(const std::string &label, TEVector &values, float resetValue = 0.0f,
+TE_API TEString CleanLabel(const TEString &label);
+TE_API bool DrawVec3Control(const TEString &label, TEVector &values, float resetValue = 0.0f,
                             float columnWidth = 100.0f);
-TE_API bool DrawVec2Control(const std::string &label, TEVector2 &values, float resetValue = 0.0f,
+TE_API bool DrawVec2Control(const TEString &label, TEVector2 &values, float resetValue = 0.0f,
                             float columnWidth = 100.0f);
-TE_API bool DrawVec4Control(const std::string &label, TEVector4 &values, float resetValue = 0.0f,
+TE_API bool DrawVec4Control(const TEString &label, TEVector4 &values, float resetValue = 0.0f,
                             float columnWidth = 100.0f);
-TE_API bool DrawColorControl(const std::string &label, TEColor &values, float columnWidth = 100.0f);
-TE_API bool DrawDeleteButton(const std::string &id, float size = 0.0f, float fontScale = 1.3f);
-TE_API bool DrawPlusButton(const std::string &id, float size = 0.0f, float fontScale = 1.3f);
+TE_API bool DrawColorControl(const TEString &label, TEColor &values, float columnWidth = 100.0f);
+TE_API bool DrawDeleteButton(const TEString &id, float size = 0.0f, float fontScale = 1.3f);
+TE_API bool DrawPlusButton(const TEString &id, float size = 0.0f, float fontScale = 1.3f);
+
+TE_API void SaveIniSettingsToDisk(const char *ini_filename);
+TE_API void LoadIniSettingsFromDisk(const char *ini_filename);
 } // namespace TimeGUI
 
 // Bring enums and functions into namespace TE so they can be referenced globally within TE layers
@@ -904,4 +988,3 @@ using namespace TimeGUI;
 
 namespace UIUtils = TimeGUI;
 
-} // namespace TE

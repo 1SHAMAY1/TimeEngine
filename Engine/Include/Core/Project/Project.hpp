@@ -1,27 +1,34 @@
 #pragma once
 #include "Core/Log.h"
-#include <filesystem>
+#include "Utils/TEString.hpp"
 
-namespace TE
-{
 
 struct ProjectConfig
 {
-    std::string Name = "Untitled";
-    std::filesystem::path StartScene;
-    std::filesystem::path AssetDirectory;
-    std::filesystem::path ScriptModulePath;
-    std::filesystem::path ThumbnailPath;
+    TEString Name = "Untitled";
+    TEString StartScene;
+    TEString AssetDirectory;
+    TEString ScriptModulePath;
+    TEString ThumbnailPath;
+    TEArray<TEString> EnabledPlugins;
 };
 
 class TE_API Project
 {
 public:
-    static const std::filesystem::path &GetProjectDirectory() { return s_ActiveProject->m_ProjectDirectory; }
-
-    static std::filesystem::path GetAssetDirectory()
+    static const TEString &GetProjectDirectory()
     {
-        if (s_ActiveProject->m_Config.AssetDirectory.is_absolute())
+        static TEString s_Empty = "";
+        if (!s_ActiveProject)
+            return s_Empty;
+        return s_ActiveProject->m_ProjectDirectory;
+    }
+
+    static TEString GetAssetDirectory()
+    {
+        if (!s_ActiveProject)
+            return "Assets";
+        if (s_ActiveProject->m_Config.AssetDirectory.IsAbsolute())
             return s_ActiveProject->m_Config.AssetDirectory;
         return s_ActiveProject->m_ProjectDirectory / s_ActiveProject->m_Config.AssetDirectory;
     }
@@ -34,18 +41,15 @@ public:
         return s_ActiveProject->m_Config;
     }
 
-    static std::shared_ptr<Project> GetActive() { return s_ActiveProject; }
+    static TERef<Project> GetActive() { return s_ActiveProject; }
 
-    static std::shared_ptr<Project> New();
-    static std::shared_ptr<Project> Load(const std::filesystem::path &path);
-
-    static bool SaveActive(const std::filesystem::path &path);
+    static TERef<Project> New();
+    static TERef<Project> Load(const TEString &path);
+    static bool SaveActive(const TEString &path);
 
 private:
     ProjectConfig m_Config;
-    std::filesystem::path m_ProjectDirectory;
+    TEString m_ProjectDirectory;
 
-    inline static std::shared_ptr<Project> s_ActiveProject;
+    inline static TERef<Project> s_ActiveProject;
 };
-
-} // namespace TE

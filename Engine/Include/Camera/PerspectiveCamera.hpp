@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace TE {
 
     class PerspectiveCamera : public Camera
     {
@@ -26,4 +25,3 @@ namespace TE {
         glm::vec3 m_Rotation = { 0.0f, 0.0f, 0.0f }; // Euler angles (pitch, yaw, roll)
     };
 
-}

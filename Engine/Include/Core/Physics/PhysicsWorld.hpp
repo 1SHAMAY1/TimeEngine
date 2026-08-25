@@ -3,8 +3,6 @@
 #include <memory>
 #include <vector>
 
-namespace TE
-{
 
 struct RigidBody
 {
@@ -42,7 +40,7 @@ struct RigidBody
     }
 };
 
-class PhysicsWorld
+class TE_API PhysicsWorld
 {
 public:
     PhysicsWorld();
@@ -90,11 +88,10 @@ public:
                  TEVector2 &hitNormal, float &fraction, uint32_t &hitEntityID);
 
 private:
-    std::vector<RigidBody *> m_Bodies;
+    TEArray<RigidBody *> m_Bodies;
     TEVector2 m_Gravity = {0.0f, -9.81f};
     void *m_VeloxWorld = nullptr;
 
     void ResolveCollisions();
 };
 
-} // namespace TE
