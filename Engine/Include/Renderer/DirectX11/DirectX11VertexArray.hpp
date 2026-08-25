@@ -3,8 +3,6 @@
 
 struct ID3D11InputLayout;
 
-namespace TE
-{
 
 // In D3D11, there is no VAO equivalent. This class groups vertex + index buffers
 // together and manages an ID3D11InputLayout that describes the vertex layout to the IA stage.
@@ -18,17 +16,16 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
-    virtual void AddVertexBuffer(VertexBuffer *vertexBuffer) override;
-    virtual void SetIndexBuffer(IndexBuffer *indexBuffer) override;
+    virtual void AddVertexBuffer(const TERef<VertexBuffer> &vertexBuffer) override;
+    virtual void SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer) override;
 
     // GetRendererID() returns 0 — D3D11 has no VAO IDs.
     // DrawIndexed is driven by the DeviceContext, not an integer handle.
     virtual uint32_t GetRendererID() const override { return 0; }
 
 private:
-    VertexBuffer *m_VertexBuffer = nullptr;
-    IndexBuffer *m_IndexBuffer = nullptr;
+    TERef<VertexBuffer> m_VertexBuffer = nullptr;
+    TERef<IndexBuffer> m_IndexBuffer = nullptr;
     ID3D11InputLayout *m_InputLayout = nullptr;
 };
 
-} // namespace TE

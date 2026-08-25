@@ -1,10 +1,8 @@
-#pragma once
+﻿#pragma once
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <functional>
-#include <memory>
-#include <vector>
 
-namespace TE
-{
 
 class RenderCommand
 {
@@ -19,11 +17,10 @@ public:
     RenderCommandQueue();
     ~RenderCommandQueue();
 
-    void Submit(std::unique_ptr<RenderCommand> &&command);
+    void Submit(TEScope<RenderCommand> &&command);
     void Execute();
 
 private:
-    std::vector<std::unique_ptr<RenderCommand>> m_Queue;
+    TEArray<TEScope<RenderCommand>> m_Queue;
 };
 
-} // namespace TE

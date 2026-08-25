@@ -1,10 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/IndexBuffer.hpp"
 
 struct ID3D11Buffer;
 
-namespace TE
-{
 
 class DirectX11IndexBuffer : public IndexBuffer
 {
@@ -22,4 +20,3 @@ private:
     uint32_t m_Count = 0;
 };
 
-} // namespace TE

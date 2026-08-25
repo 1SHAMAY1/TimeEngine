@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/IndexBuffer.hpp"
 #include <volk.h>
 
-namespace TE
-{
 class VulkanIndexBuffer : public IndexBuffer
 {
 public:
@@ -23,4 +21,4 @@ private:
     VkDeviceMemory m_Memory = VK_NULL_HANDLE;
     uint32_t m_Count;
 };
-} // namespace TE
+

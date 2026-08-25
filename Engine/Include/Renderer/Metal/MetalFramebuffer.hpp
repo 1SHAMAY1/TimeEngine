@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Renderer/Framebuffer.hpp"
 
-namespace TE
-{
 
 class MetalFramebuffer : public Framebuffer
 {
@@ -28,4 +26,3 @@ private:
     FramebufferSpecification m_Specification;
 };
 
-} // namespace TE

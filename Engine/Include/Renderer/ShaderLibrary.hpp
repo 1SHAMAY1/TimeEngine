@@ -1,31 +1,28 @@
 #pragma once
 #include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TEColor.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <memory>
-#include <unordered_map>
 
-namespace TE
-{
 
 class ShaderLibrary
 {
 public:
     // ===== Shader Creation =====
-    static std::shared_ptr<Shader> CreateBasicShader();
-    static std::shared_ptr<Shader> CreateTextureShader();
-    static std::shared_ptr<Shader> CreateColorShader();
-    static std::shared_ptr<Shader> CreateStandardShader();
-    static std::shared_ptr<Shader> CreateLightingShader();
-    static std::shared_ptr<Shader> CreateParticleShader();
-    static std::shared_ptr<Shader> CreatePostProcessShader();
-    static std::shared_ptr<Shader> CreateUIShader();
-    static std::shared_ptr<Shader> CreateLight2DShader();
-    static std::shared_ptr<Shader> CreateAmbientGradientShader();
-    static std::shared_ptr<Shader> CreateLightBlendShader();
+    static TERef<Shader> CreateBasicShader();
+    static TERef<Shader> CreateTextureShader();
+    static TERef<Shader> CreateColorShader();
+    static TERef<Shader> CreateStandardShader();
+    static TERef<Shader> CreateLightingShader();
+    static TERef<Shader> CreateParticleShader();
+    static TERef<Shader> CreatePostProcessShader();
+    static TERef<Shader> CreateUIShader();
+    static TERef<Shader> CreateLight2DShader();
+    static TERef<Shader> CreateAmbientGradientShader();
+    static TERef<Shader> CreateLightBlendShader();
 
     // ===== Common Shader Functions =====
     static void SetMVP(Shader *shader, const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
@@ -71,7 +68,7 @@ public:
     static void SetAOMap(Shader *shader, int slot);
 
     // ===== Animation Support =====
-    static void SetBoneTransforms(Shader *shader, const std::vector<glm::mat4> &boneTransforms);
+    static void SetBoneTransforms(Shader *shader, const TEArray<glm::mat4> &boneTransforms);
     static void SetAnimationTime(Shader *shader, float time);
     static void SetBlendWeights(Shader *shader, const glm::vec4 &weights);
 
@@ -90,29 +87,28 @@ public:
     static void SetParticleColor(Shader *shader, const TEColor &startColor, const TEColor &endColor);
 
 protected:
-    static std::unordered_map<std::string, std::shared_ptr<Shader>> s_ShaderCache;
+    static TEMap<TEString, TERef<Shader>> s_ShaderCache;
 
     // ===== Internal Shader Sources =====
-    static std::string GetBasicVertexShader();
-    static std::string GetBasicFragmentShader();
-    static std::string GetTextureVertexShader();
-    static std::string GetTextureFragmentShader();
-    static std::string GetColorVertexShader();
-    static std::string GetColorFragmentShader();
-    static std::string GetStandardFragmentShader();
-    static std::string GetLightingVertexShader();
-    static std::string GetLightingFragmentShader();
-    static std::string GetParticleVertexShader();
-    static std::string GetParticleFragmentShader();
-    static std::string GetPostProcessVertexShader();
-    static std::string GetPostProcessFragmentShader();
-    static std::string GetUIVertexShader();
-    static std::string GetUIFragmentShader();
-    static std::string GetLight2DVertexShader();
-    static std::string GetLight2DFragmentShader();
-    static std::string GetAmbientGradientFragmentShader();
-    static std::string GetLightBlendVertexShader();
-    static std::string GetLightBlendFragmentShader();
+    static TEString GetBasicVertexShader();
+    static TEString GetBasicFragmentShader();
+    static TEString GetTextureVertexShader();
+    static TEString GetTextureFragmentShader();
+    static TEString GetColorVertexShader();
+    static TEString GetColorFragmentShader();
+    static TEString GetStandardFragmentShader();
+    static TEString GetLightingVertexShader();
+    static TEString GetLightingFragmentShader();
+    static TEString GetParticleVertexShader();
+    static TEString GetParticleFragmentShader();
+    static TEString GetPostProcessVertexShader();
+    static TEString GetPostProcessFragmentShader();
+    static TEString GetUIVertexShader();
+    static TEString GetUIFragmentShader();
+    static TEString GetLight2DVertexShader();
+    static TEString GetLight2DFragmentShader();
+    static TEString GetAmbientGradientFragmentShader();
+    static TEString GetLightBlendVertexShader();
+    static TEString GetLightBlendFragmentShader();
 };
 
-} // namespace TE

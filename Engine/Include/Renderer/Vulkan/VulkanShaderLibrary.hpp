@@ -1,39 +1,34 @@
 #pragma once
 #include "Renderer/ShaderLibrary.hpp"
 #include "Renderer/Vulkan/VulkanShader.hpp"
-#include <memory>
-#include <string>
-#include <vector>
 #include <volk.h>
 
-namespace TE
-{
 
 class VulkanShaderLibrary : public ShaderLibrary
 {
 public:
     // ===== Vulkan-Specific Shader Creation =====
-    static std::shared_ptr<VulkanShader> CreateVulkanBasicShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanTextureShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanColorShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanStandardShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanLightingShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanParticleShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanPostProcessShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanUIShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanLight2DShader();
-    static std::shared_ptr<VulkanShader> CreateVulkanComputeShader(const std::string &computeSource);
+    static TERef<VulkanShader> CreateVulkanBasicShader();
+    static TERef<VulkanShader> CreateVulkanTextureShader();
+    static TERef<VulkanShader> CreateVulkanColorShader();
+    static TERef<VulkanShader> CreateVulkanStandardShader();
+    static TERef<VulkanShader> CreateVulkanLightingShader();
+    static TERef<VulkanShader> CreateVulkanParticleShader();
+    static TERef<VulkanShader> CreateVulkanPostProcessShader();
+    static TERef<VulkanShader> CreateVulkanUIShader();
+    static TERef<VulkanShader> CreateVulkanLight2DShader();
+    static TERef<VulkanShader> CreateVulkanComputeShader(const TEString &computeSource);
 
     // ===== Vulkan-Specific Functions =====
-    static void SetUniform1i(VulkanShader *shader, const std::string &name, int value);
-    static void SetUniform1f(VulkanShader *shader, const std::string &name, float value);
-    static void SetUniform2f(VulkanShader *shader, const std::string &name, const glm::vec2 &value);
-    static void SetUniform3f(VulkanShader *shader, const std::string &name, const glm::vec3 &value);
-    static void SetUniform4f(VulkanShader *shader, const std::string &name, const glm::vec4 &value);
-    static void SetUniformMat3(VulkanShader *shader, const std::string &name, const glm::mat3 &value);
-    static void SetUniformMat4(VulkanShader *shader, const std::string &name, const glm::mat4 &value);
-    static void SetUniformMat4Array(VulkanShader *shader, const std::string &name,
-                                    const std::vector<glm::mat4> &values);
+    static void SetUniform1i(VulkanShader *shader, const TEString &name, int value);
+    static void SetUniform1f(VulkanShader *shader, const TEString &name, float value);
+    static void SetUniform2f(VulkanShader *shader, const TEString &name, const glm::vec2 &value);
+    static void SetUniform3f(VulkanShader *shader, const TEString &name, const glm::vec3 &value);
+    static void SetUniform4f(VulkanShader *shader, const TEString &name, const glm::vec4 &value);
+    static void SetUniformMat3(VulkanShader *shader, const TEString &name, const glm::mat3 &value);
+    static void SetUniformMat4(VulkanShader *shader, const TEString &name, const glm::mat4 &value);
+    static void SetUniformMat4Array(VulkanShader *shader, const TEString &name,
+                                    const TEArray<glm::mat4> &values);
 
     // ===== Vulkan State Management =====
     static void EnableBlending();
@@ -63,7 +58,7 @@ public:
     static void BindFramebuffer(unsigned int framebufferID);
     static void AttachTexture2D(unsigned int framebufferID, unsigned int textureID, uint32_t attachment);
     static void AttachRenderbuffer(unsigned int framebufferID, unsigned int renderbufferID, uint32_t attachment);
-    static void SetDrawBuffers(const std::vector<uint32_t> &attachments);
+    static void SetDrawBuffers(const TEArray<uint32_t> &attachments);
     static bool CheckFramebufferStatus(unsigned int framebufferID);
     static void DeleteFramebuffer(unsigned int framebufferID);
 
@@ -78,7 +73,7 @@ public:
     static unsigned int CreateUniformBuffer(const void *data, size_t size);
     static void BindUniformBuffer(unsigned int uboID, unsigned int bindingPoint);
     static void UpdateUniformBuffer(unsigned int uboID, const void *data, size_t offset, size_t size);
-    static void BindUniformBlock(VulkanShader *shader, const std::string &blockName, unsigned int bindingPoint);
+    static void BindUniformBlock(VulkanShader *shader, const TEString &blockName, unsigned int bindingPoint);
 
     // ===== Vulkan Vertex Array Functions =====
     static void SetVertexAttribPointer(unsigned int index, int size, uint32_t type, bool normalized, int stride,
@@ -90,9 +85,9 @@ public:
     // ===== Vulkan Debug Functions =====
     static void EnableDebugOutput();
     static void SetDebugCallback();
-    static void PushDebugGroup(const std::string &message);
+    static void PushDebugGroup(const TEString &message);
     static void PopDebugGroup();
-    static void ObjectLabel(uint32_t identifier, unsigned int name, const std::string &label);
+    static void ObjectLabel(uint32_t identifier, unsigned int name, const TEString &label);
 
     // ===== Vulkan Performance Functions =====
     static void BeginQuery(uint32_t target, unsigned int id);
@@ -107,4 +102,3 @@ public:
     static void DeleteSync(void *sync);
 };
 
-} // namespace TE

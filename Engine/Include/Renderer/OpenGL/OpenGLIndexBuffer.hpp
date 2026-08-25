@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Renderer/IndexBuffer.hpp"
 
-namespace TE {
     class OpenGLIndexBuffer : public IndexBuffer {
     public:
         OpenGLIndexBuffer(uint32_t* indices, uint32_t Count);
@@ -17,4 +16,4 @@ namespace TE {
         uint32_t m_RendererID;
         uint32_t m_Count;
     };
-}
+

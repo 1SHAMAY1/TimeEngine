@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 #include <volk.h>
 
-namespace TE
-{
 
 class VulkanContext
 {
@@ -32,4 +30,3 @@ private:
     inline static void *s_WindowHandle = nullptr;
 };
 
-} // namespace TE

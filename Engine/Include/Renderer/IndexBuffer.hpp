@@ -1,10 +1,9 @@
 #pragma once
 #include "Core/PreRequisites.h"
 
-namespace TE {
-	class IndexBuffer {
+	class TE_API IndexBuffer {
 	public:
-		static IndexBuffer* Create(uint32_t* indices, uint32_t Count);
+		static TERef<IndexBuffer> Create(uint32_t* indices, uint32_t Count);
 
 		virtual ~IndexBuffer() = default;
 		virtual void Bind() const = 0;
@@ -14,5 +13,4 @@ namespace TE {
 
 		virtual uint32_t GetCount() const = 0;
 	};
-}
 

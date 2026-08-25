@@ -11,8 +11,6 @@ struct ID3D11DepthStencilView;
 struct ID3D11Texture2D;
 struct ID3D11BlendState;
 
-namespace TE
-{
 
 // Central D3D11 device context shared by all DX11 resource classes.
 // Populated by DirectX11RendererAPI::InitWithWindow().
@@ -49,9 +47,9 @@ public:
     virtual void SetBlendMode(int blendMode) override;
 
     virtual bool LoadLoader(void *(*loadProc)(const char *)) override;
-    virtual std::string GetVersionString() override;
-    virtual std::string GetGPUVendor() override;
-    virtual std::string GetGPURenderer() override;
+    virtual TEString GetVersionString() override;
+    virtual TEString GetGPUVendor() override;
+    virtual TEString GetGPURenderer() override;
 
     virtual void GetViewport(int *viewport) override;
     virtual void GetClearColor(float *color) override;
@@ -71,7 +69,6 @@ private:
     int m_ViewportY = 0;
     uint32_t m_ViewportW = 0;
     uint32_t m_ViewportH = 0;
-    std::string m_GPUDescription;
+    TEString m_GPUDescription;
 };
 
-} // namespace TE

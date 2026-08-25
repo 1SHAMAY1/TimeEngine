@@ -2,8 +2,6 @@
 
 #include "Renderer/VertexArray.hpp"
 
-namespace TE
-{
 class MetalVertexArray : public VertexArray
 {
 public:
@@ -13,16 +11,16 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
-    virtual void AddVertexBuffer(VertexBuffer *vertexBuffer) override;
-    virtual void SetIndexBuffer(IndexBuffer *indexBuffer) override;
+    virtual void AddVertexBuffer(const TERef<VertexBuffer> &vertexBuffer) override;
+    virtual void SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer) override;
 
     virtual uint32_t GetRendererID() const override { return 0; }
 
-    VertexBuffer *GetVertexBuffer() const { return m_VertexBuffer; }
-    IndexBuffer *GetIndexBuffer() const { return m_IndexBuffer; }
+    TERef<VertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
+    TERef<IndexBuffer> GetIndexBuffer() const { return m_IndexBuffer; }
 
 private:
-    VertexBuffer *m_VertexBuffer = nullptr;
-    IndexBuffer *m_IndexBuffer = nullptr;
+    TERef<VertexBuffer> m_VertexBuffer = nullptr;
+    TERef<IndexBuffer> m_IndexBuffer = nullptr;
 };
-} // namespace TE
+

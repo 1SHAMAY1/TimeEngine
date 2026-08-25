@@ -1,8 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/VertexBuffer.hpp"
 
-namespace TE
-{
 class OpenGLESVertexBuffer : public VertexBuffer
 {
 public:
@@ -16,4 +14,4 @@ public:
 private:
     uint32_t m_RendererID;
 };
-} // namespace TE
+

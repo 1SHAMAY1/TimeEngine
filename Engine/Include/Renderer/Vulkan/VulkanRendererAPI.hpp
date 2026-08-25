@@ -1,8 +1,6 @@
 #pragma once
 #include "Renderer/RendererAPI.hpp"
 
-namespace TE
-{
 
 class VulkanRendererAPI : public RendererAPI
 {
@@ -17,9 +15,9 @@ public:
     virtual void SetBlendMode(int blendMode) override;
 
     virtual bool LoadLoader(void *(*loadProc)(const char *)) override;
-    virtual std::string GetVersionString() override;
-    virtual std::string GetGPUVendor() override;
-    virtual std::string GetGPURenderer() override;
+    virtual TEString GetVersionString() override;
+    virtual TEString GetGPUVendor() override;
+    virtual TEString GetGPURenderer() override;
 
     virtual void GetViewport(int *viewport) override;
     virtual void GetClearColor(float *color) override;
@@ -29,4 +27,3 @@ public:
                                       BlendFactor dstAlpha) override;
 };
 
-} // namespace TE

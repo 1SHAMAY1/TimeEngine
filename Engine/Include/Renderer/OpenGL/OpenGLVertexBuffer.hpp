@@ -2,7 +2,6 @@
 
 #include "Renderer/VertexBuffer.hpp"
 
-namespace TE {
     class OpenGLVertexBuffer : public VertexBuffer {
     public:
         OpenGLVertexBuffer(float* vertices, uint32_t size);
@@ -16,4 +15,4 @@ namespace TE {
         uint32_t m_RendererID;
    
     };
-}
+

@@ -1,21 +1,14 @@
 #pragma once
 #include "Renderer/Texture.hpp"
-#include <filesystem>
-#include <memory>
-
-namespace TE
-{
-
 class TextureSerializer
 {
 public:
-    TextureSerializer(const std::shared_ptr<Texture> &texture);
+    TextureSerializer(const TERef<Texture> &texture);
 
-    bool Serialize(const std::filesystem::path &filepath);
-    bool Deserialize(const std::filesystem::path &filepath);
+    bool Serialize(const TEString &filepath);
+    bool Deserialize(const TEString &filepath);
 
 private:
-    std::shared_ptr<Texture> m_Texture;
+    TERef<Texture> m_Texture;
 };
 
-} // namespace TE

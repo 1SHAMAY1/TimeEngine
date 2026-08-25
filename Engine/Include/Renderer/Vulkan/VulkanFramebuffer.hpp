@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/Framebuffer.hpp"
 #include <volk.h>
 
-namespace TE
-{
 
 class VulkanFramebuffer : public Framebuffer
 {
@@ -29,4 +27,3 @@ private:
     FramebufferSpecification m_Specification;
 };
 
-} // namespace TE

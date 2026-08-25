@@ -1,7 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/Framebuffer.hpp"
 
-namespace TE {
 
     class OpenGLFramebuffer : public Framebuffer
     {
@@ -25,4 +24,3 @@ namespace TE {
         FramebufferSpecification m_Specification;
     };
 
-}

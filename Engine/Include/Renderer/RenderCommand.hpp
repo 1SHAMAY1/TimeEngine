@@ -2,10 +2,7 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/RendererAPI.hpp"
 #include <glm/glm.hpp>
-#include <memory>
 
-namespace TE
-{
 class TE_API RenderCommand
 {
 public:
@@ -19,10 +16,10 @@ public:
     static void DrawIndexed(uint32_t vao, uint32_t indexCount) { s_RendererAPI->DrawIndexed(vao, indexCount); }
     static void SetBlendMode(int blendMode) { s_RendererAPI->SetBlendMode(blendMode); }
 
-    static bool LoadLoader(void *(*loadProc)(const char *)) { return s_RendererAPI->LoadLoader(loadProc); }
-    static std::string GetVersionString() { return s_RendererAPI->GetVersionString(); }
-    static std::string GetGPUVendor() { return s_RendererAPI->GetGPUVendor(); }
-    static std::string GetGPURenderer() { return s_RendererAPI->GetGPURenderer(); }
+    static bool LoadLoader(void *(*loadProc)(const char *)) { return s_RendererAPI ? s_RendererAPI->LoadLoader(loadProc) : false; }
+    static TEString GetVersionString() { return s_RendererAPI ? s_RendererAPI->GetVersionString() : "Unknown OpenGL Version"; }
+    static TEString GetGPUVendor() { return s_RendererAPI ? s_RendererAPI->GetGPUVendor() : "Unknown Vendor"; }
+    static TEString GetGPURenderer() { return s_RendererAPI ? s_RendererAPI->GetGPURenderer() : "Unknown Renderer"; }
 
     static void GetViewport(int *viewport) { s_RendererAPI->GetViewport(viewport); }
     static void GetClearColor(float *color) { s_RendererAPI->GetClearColor(color); }
@@ -39,6 +36,6 @@ public:
     static RendererAPI *GetAPIInstance() { return s_RendererAPI.get(); }
 
 private:
-    static std::unique_ptr<RendererAPI> s_RendererAPI;
+    static TEScope<RendererAPI> s_RendererAPI;
 };
-} // namespace TE
+

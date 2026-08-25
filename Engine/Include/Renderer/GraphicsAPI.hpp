@@ -1,7 +1,5 @@
 #pragma once
 
-namespace TE
-{
 enum class GraphicsAPI
 {
     None = 0,
@@ -11,4 +9,4 @@ enum class GraphicsAPI
     DirectX11,
     Metal
 };
-}
+

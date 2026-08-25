@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/VertexBuffer.hpp"
 #include <volk.h>
 
-namespace TE
-{
 class VulkanVertexBuffer : public VertexBuffer
 {
 public:
@@ -20,4 +18,4 @@ private:
     VkBuffer m_Buffer = VK_NULL_HANDLE;
     VkDeviceMemory m_Memory = VK_NULL_HANDLE;
 };
-} // namespace TE
+

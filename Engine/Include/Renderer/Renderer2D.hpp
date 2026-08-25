@@ -2,35 +2,31 @@
 #include "Renderer/RenderBatcher.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Utils/MathUtils.hpp"
-#include <memory>
-#include <string>
 
-namespace TE
-{
 class LightComponent;
 
-class Renderer2D : public Renderer
+class TE_API Renderer2D : public Renderer
 {
 public:
-    static std::shared_ptr<Renderer2D> Create();
+    static TERef<Renderer2D> Create();
     Renderer2D();
     virtual ~Renderer2D() override;
 
-    void BeginFrame(const TE::TEMatrix4 &viewProjection) override;
-    void Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
-                const TE::TEMatrix4 &transform, uint32_t indexCount) override;
+    void BeginFrame(const TEMatrix4 &viewProjection) override;
+    void Submit(const TERef<VertexArray> &vao, const TERef<Material> &material,
+                const TEMatrix4 &transform, uint32_t indexCount) override;
     void EndFrame() override;
     void Flush() override;
 
     // 2D-specific API (example: submit a quad)
-    void SubmitQuad(const TEVector2 &position, const TEVector2 &size, const std::shared_ptr<Material> &material);
-    void SubmitQuad(const TE::TEMatrix4 &transform, const std::shared_ptr<Material> &material, int blendMode = 0);
+    void SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TERef<Material> &material);
+    void SubmitQuad(const TEMatrix4 &transform, const TERef<Material> &material, int blendMode = 0);
     void SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3,
-                        const std::shared_ptr<Material> &material);
-    void SubmitCircle(const TEVector2 &center, float radius, const std::shared_ptr<Material> &material);
+                        const TERef<Material> &material);
+    void SubmitCircle(const TEVector2 &center, float radius, const TERef<Material> &material);
     void SubmitLine(const TEVector2 &p1, const TEVector2 &p2, float thickness, const TEColor &color);
     void SubmitLight(const class LightComponent &light, const TEVector2 &position, float rotation = 0.0f);
-    void SubmitShadow(const TEVector2 &lightPos, float lightRadius, const std::vector<TEVector2> &vertices);
+    void SubmitShadow(const TEVector2 &lightPos, float lightRadius, const TEArray<TEVector2> &vertices);
     void SetAmbientLight(const TEColor &color, float intensity);
     void SetAmbientGradient(const TEColor &sky, const TEColor &horizon, const TEColor &ground, float intensity = 1.0f,
                             float horizonHeight = 0.5f, float horizonSpread = 0.2f);
@@ -42,8 +38,8 @@ public:
 private:
     RenderBatcher m_Batcher;
 
-    std::shared_ptr<VertexArray> m_UnitQuadVAO;
-    std::shared_ptr<Material> m_Light2DMaterial;
+    TERef<VertexArray> m_UnitQuadVAO;
+    TERef<Material> m_Light2DMaterial;
 
     // Ambient Gradient State (No default ambient light)
     TEColor m_AmbientSky = TEColor(0.04f, 0.04f, 0.06f, 1.0f);
@@ -54,4 +50,3 @@ private:
     float m_AmbientHorizonSpread = 0.2f;
 };
 
-} // namespace TE

@@ -1,9 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "Core/PreRequisites.h"
 #include <glm/glm.hpp>
 #include <memory>
 
-namespace TE {
 
     struct FramebufferSpecification
     {
@@ -25,7 +24,6 @@ namespace TE {
         virtual uint32_t GetColorAttachmentRendererID() const = 0;
         virtual const FramebufferSpecification& GetSpecification() const = 0;
 
-        static std::shared_ptr<Framebuffer> Create(const FramebufferSpecification& spec);
+        static TERef<Framebuffer> Create(const FramebufferSpecification& spec);
     };
 
-}
