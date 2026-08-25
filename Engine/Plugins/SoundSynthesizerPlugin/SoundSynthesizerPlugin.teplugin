@@ -1,0 +1,5 @@
+Name: SoundSynthesizerPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: Procedural Audio Synthesis, DSP Node Graph, Sound Baking, and Audio Studio Workspace plugin.
+Enabled: true
