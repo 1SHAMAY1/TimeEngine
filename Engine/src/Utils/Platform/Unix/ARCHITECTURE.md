@@ -1,6 +1,6 @@
 # Unix Platform Utilities Architecture
 
-`UnixPlatformUtils.cpp` provides POSIX and Unix platform implementations of the [`TE::PlatformUtils`](file:///e:/TimeEngine/Engine/Include/Utils/PlatformUtils.hpp) interface.
+`UnixPlatformUtils.cpp` provides POSIX and Unix platform implementations of the [`TE::PlatformUtils`](../../../../Include/Utils/PlatformUtils.hpp) interface.
 
 > [!NOTE]
 > In short, this module acts as the Unix-specific diplomat for TimeEngine: it talks directly to Unix/macOS operating systems to resolve executable paths via `/proc/self/exe`, open system dialogs via native desktop utilities, and register file types with Unix MIME databases.

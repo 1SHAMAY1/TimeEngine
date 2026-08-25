@@ -1,10 +1,12 @@
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
+#include "Window/IWindow.hpp"
+#include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include <GLFW/glfw3.h>
 
-namespace TE
-{
 
 namespace TimeGUI
 {
@@ -116,6 +118,22 @@ static ImGuiHoveredFlags TranslateHoveredFlags(TimeGUIHoveredFlags f)
         out |= ImGuiHoveredFlags_AllowWhenDisabled;
     if (f & TimeGUIHoveredFlags_NoNavOverride)
         out |= ImGuiHoveredFlags_NoNavOverride;
+    return out;
+}
+
+static ImGuiFocusedFlags TranslateFocusedFlags(TimeGUIFocusedFlags f)
+{
+    ImGuiFocusedFlags out = 0;
+    if (f & TimeGUIFocusedFlags_ChildWindows)
+        out |= ImGuiFocusedFlags_ChildWindows;
+    if (f & TimeGUIFocusedFlags_RootWindow)
+        out |= ImGuiFocusedFlags_RootWindow;
+    if (f & TimeGUIFocusedFlags_AnyWindow)
+        out |= ImGuiFocusedFlags_AnyWindow;
+    if (f & TimeGUIFocusedFlags_NoPopupHierarchy)
+        out |= ImGuiFocusedFlags_NoPopupHierarchy;
+    if (f & TimeGUIFocusedFlags_DockHierarchy)
+        out |= ImGuiFocusedFlags_DockHierarchy;
     return out;
 }
 
@@ -634,6 +652,11 @@ void SyncFromImGui()
     s_IOInstance.DisplaySize = TEVector2(io.DisplaySize.x, io.DisplaySize.y);
     s_IOInstance.KeyShift = io.KeyShift;
     s_IOInstance.KeyCtrl = io.KeyCtrl;
+    s_IOInstance.KeyAlt = io.KeyAlt;
+    s_IOInstance.KeySuper = io.KeySuper;
+    s_IOInstance.WantTextInput = io.WantTextInput;
+    s_IOInstance.WantCaptureKeyboard = io.WantCaptureKeyboard;
+    s_IOInstance.WantCaptureMouse = io.WantCaptureMouse;
     s_IOInstance.ConfigFlags = io.ConfigFlags;
 
     ImGuiStyle &style = ImGui::GetStyle();
@@ -678,6 +701,77 @@ void SyncToImGui()
         style.Colors[i] = ImVec4(s_StyleInstance.Colors[i].r, s_StyleInstance.Colors[i].g, s_StyleInstance.Colors[i].b,
                                  s_StyleInstance.Colors[i].a);
     }
+
+    if (style.Colors[ImGuiCol_InputTextCursor].w <= 0.0f)
+    {
+        style.Colors[ImGuiCol_InputTextCursor] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        s_StyleInstance.Colors[TimeGUICol_InputTextCursor] = TEColor(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+}
+
+bool Init(void *nativeWindow)
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO &io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigInputTextCursorBlink = true;
+
+    ImGui::StyleColorsDark();
+    ImGuiStyle &style = ImGui::GetStyle();
+    // Default to crisp, clean white text insertion caret (|)
+    style.Colors[ImGuiCol_InputTextCursor] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    GLFWwindow *window = static_cast<GLFWwindow *>(nativeWindow);
+    if (!window)
+        return false;
+
+    if (!ImGui_ImplGlfw_InitForOpenGL(window, true))
+        return false;
+
+    if (!ImGui_ImplOpenGL3_Init("#version 410"))
+        return false;
+
+    return true;
+}
+
+void Shutdown()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
+
+void BeginFrame()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+void EndFrame(uint32_t width, uint32_t height)
+{
+    ImGuiIO &io = ImGui::GetIO();
+    io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        void *backup_current_context = IWindow::GetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        IWindow::MakeContextCurrent(backup_current_context);
+    }
 }
 
 TimeGUIIO &GetIO()
@@ -711,7 +805,7 @@ void TimeGUIDrawList::AddRectFilled(const TEVector2 &p1, const TEVector2 &p2, un
     ((::ImDrawList *)nativeDrawList)->AddRectFilled(p1, p2, color, rounding);
 }
 
-void TimeGUIDrawList::AddText(const TEVector2 &pos, unsigned int color, const std::string &text)
+void TimeGUIDrawList::AddText(const TEVector2 &pos, unsigned int color, const TEString &text)
 {
     ((::ImDrawList *)nativeDrawList)->AddText(pos, color, text.c_str());
 }
@@ -793,7 +887,7 @@ void TimeGUIDrawList::AddImage(TimeGUITextureID user_texture_id, const TEVector2
 }
 
 void TimeGUIDrawList::AddText(const TimeGUIFont &font, float fontSize, const TEVector2 &pos, unsigned int color,
-                              const std::string &text)
+                              const TEString &text)
 {
     ImDrawList *dl = (ImDrawList *)nativeDrawList;
     dl->AddText((ImFont *)font.nativeFont, fontSize, ImVec2(pos.x, pos.y), color, text.c_str());
@@ -803,7 +897,7 @@ int TimeGUIDrawList::GetVertexCount() const { return ((::ImDrawList *)nativeDraw
 
 int TimeGUIDrawList::GetCommandCount() const { return ((::ImDrawList *)nativeDrawList)->CmdBuffer.Size; }
 
-bool Begin(const std::string &name, bool *open, TimeGUIWindowFlags flags)
+bool Begin(const TEString &name, bool *open, TimeGUIWindowFlags flags)
 {
     SyncToImGui();
     return ImGui::Begin(name.c_str(), open, TranslateWindowFlags(flags));
@@ -815,184 +909,243 @@ void End()
     SyncFromImGui();
 }
 
-bool BeginChild(const std::string &strId, const TEVector2 &size, bool border, TimeGUIWindowFlags flags)
+bool BeginChild(const TEString &strId, const TEVector2 &size, bool border, TimeGUIWindowFlags flags)
 {
     return ImGui::BeginChild(strId.c_str(), size, border, TranslateWindowFlags(flags));
 }
 
 void EndChild() { ImGui::EndChild(); }
 
-bool Button(const std::string &label, float width, float height)
+bool IsPopupOpen(const TEString &strId)
+{
+    return ImGui::IsPopupOpen(strId.c_str());
+}
+
+bool Button(const TEString &label, float width, float height)
 {
     return ImGui::Button(label.c_str(), ImVec2(width, height));
 }
 
-bool Button(const std::string &label, const TEVector2 &size) { return ImGui::Button(label.c_str(), size); }
+bool Button(const TEString &label, const TEVector2 &size) { return ImGui::Button(label.c_str(), size); }
+bool InvisibleButton(const TEString &strId, const TEVector2 &size, int flags) { return ImGui::InvisibleButton(strId.c_str(), size, flags); }
 
-void TextUnformatted(const std::string &text) { ImGui::TextUnformatted(text.c_str()); }
-
-void TextUnformatted(const char *text) { ImGui::TextUnformatted(text); }
+void TextUnformatted(const TEString &text) { ImGui::TextUnformatted(text.c_str()); }
 
 void AlignTextToFramePadding() { ImGui::AlignTextToFramePadding(); }
 
-void Text(const std::string &text) { ImGui::TextUnformatted(text.c_str()); }
+void Text(const TEString &text) { ImGui::TextUnformatted(text.c_str()); }
 
-void Text(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextV(fmt, args);
-    va_end(args);
-}
+void TextDisabled(const TEString &text) { ImGui::TextDisabled("%s", text.c_str()); }
 
-void TextDisabled(const std::string &text) { ImGui::TextDisabled("%s", text.c_str()); }
-
-void TextDisabled(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextDisabledV(fmt, args);
-    va_end(args);
-}
-
-void TextColored(const TEColor &color, const std::string &text)
+void TextColored(const TEColor &color, const TEString &text)
 {
     ImGui::TextColored(ImVec4(color.r, color.g, color.b, color.a), "%s", text.c_str());
 }
 
-void TextColored(const TEColor &color, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextColoredV(ImVec4(color.r, color.g, color.b, color.a), fmt, args);
-    va_end(args);
-}
-
-void TextColored(const TEVector4 &color, const std::string &text)
+void TextColored(const TEVector4 &color, const TEString &text)
 {
     ImGui::TextColored(ImVec4(color.x, color.y, color.z, color.w), "%s", text.c_str());
 }
 
-void TextColored(const TEVector4 &color, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextColoredV(ImVec4(color.x, color.y, color.z, color.w), fmt, args);
-    va_end(args);
-}
+void TextWrapped(const TEString &text) { ImGui::TextWrapped("%s", text.c_str()); }
 
-void TextWrapped(const std::string &text) { ImGui::TextWrapped("%s", text.c_str()); }
+bool Checkbox(const TEString &label, bool *checked) { return ImGui::Checkbox(label.c_str(), checked); }
 
-void TextWrapped(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextWrappedV(fmt, args);
-    va_end(args);
-}
-
-bool Checkbox(const std::string &label, bool *checked) { return ImGui::Checkbox(label.c_str(), checked); }
-
-bool DragFloat(const std::string &label, float *value, float speed, float min, float max, const std::string &format,
+bool DragFloat(const TEString &label, float *value, float speed, float min, float max, const TEString &format,
                int flags)
 {
     return ImGui::DragFloat(label.c_str(), value, speed, min, max, format.c_str(), flags);
 }
 
-bool DragFloat2(const std::string &label, float *v, float speed, float min, float max, const std::string &format,
+bool DragFloat2(const TEString &label, float *v, float speed, float min, float max, const TEString &format,
                 int flags)
 {
     return ImGui::DragFloat2(label.c_str(), v, speed, min, max, format.c_str(), flags);
 }
 
-bool DragFloat3(const std::string &label, float *v, float speed, float min, float max, const std::string &format,
+bool DragFloat3(const TEString &label, float *v, float speed, float min, float max, const TEString &format,
                 int flags)
 {
     return ImGui::DragFloat3(label.c_str(), v, speed, min, max, format.c_str(), flags);
 }
 
-bool DragFloat4(const std::string &label, float *v, float speed, float min, float max, const std::string &format,
+bool DragFloat4(const TEString &label, float *v, float speed, float min, float max, const TEString &format,
                 int flags)
 {
     return ImGui::DragFloat4(label.c_str(), v, speed, min, max, format.c_str(), flags);
 }
 
-bool DragInt(const std::string &label, int *v, float speed, int min, int max)
+bool DragInt(const TEString &label, int *v, float speed, int min, int max)
 {
     return ImGui::DragInt(label.c_str(), v, speed, min, max);
 }
 
-bool InputInt(const std::string &label, int *v, int step, int step_fast, int flags)
+bool InputInt(const TEString &label, int *v, int step, int step_fast, int flags)
 {
     return ImGui::InputInt(label.c_str(), v, step, step_fast, flags);
 }
 
-bool SliderFloat(const std::string &label, float *v, float v_min, float v_max, const std::string &format, int flags)
+bool SliderFloat(const TEString &label, float *v, float v_min, float v_max, const TEString &format, int flags)
 {
     return ImGui::SliderFloat(label.c_str(), v, v_min, v_max, format.c_str(), flags);
 }
 
-bool ColorEdit3(const std::string &label, float *col) { return ImGui::ColorEdit3(label.c_str(), col); }
+bool ColorEdit3(const TEString &label, float *col) { return ImGui::ColorEdit3(label.c_str(), col); }
 
-bool ColorEdit4(const std::string &label, float *col) { return ImGui::ColorEdit4(label.c_str(), col); }
+bool ColorEdit4(const TEString &label, float *col) { return ImGui::ColorEdit4(label.c_str(), col); }
 
-bool ColorPicker4(const std::string &label, float *col, int flags)
+bool ColorPicker4(const TEString &label, float *col, int flags)
 {
     return ImGui::ColorPicker4(label.c_str(), col, TranslateColorEditFlags((TimeGUIColorEditFlags)flags));
 }
 
-bool SmallButton(const std::string &label) { return ImGui::SmallButton(label.c_str()); }
+bool SmallButton(const TEString &label) { return ImGui::SmallButton(label.c_str()); }
 
-bool Combo(const std::string &label, int *currentItem, const char *const items[], int itemsCount,
+bool Combo(const TEString &label, int *currentItem, const char *const items[], int itemsCount,
            int popupMaxHeightInItems)
 {
     return ImGui::Combo(label.c_str(), currentItem, items, itemsCount, popupMaxHeightInItems);
 }
 
-bool BeginCombo(const std::string &label, const std::string &previewValue, int flags)
+bool BeginCombo(const TEString &label, const TEString &previewValue, int flags)
 {
     return ImGui::BeginCombo(label.c_str(), previewValue.c_str(), TranslateComboFlags((TimeGUIComboFlags)flags));
 }
 
 void EndCombo() { ImGui::EndCombo(); }
 
-bool Selectable(const std::string &label, bool selected, int flags, const TEVector2 &size)
+bool Selectable(const TEString &label, bool selected, int flags, const TEVector2 &size)
 {
     return ImGui::Selectable(label.c_str(), selected, TranslateSelectableFlags((TimeGUISelectableFlags)flags), size);
 }
 
-bool Selectable(const std::string &label, bool *selected, int flags, const TEVector2 &size)
+bool Selectable(const TEString &label, bool *selected, int flags, const TEVector2 &size)
 {
     return ImGui::Selectable(label.c_str(), selected, TranslateSelectableFlags((TimeGUISelectableFlags)flags), size);
 }
 
-bool InputText(const std::string &label, std::string &value)
+static void DrawInputTextPulseStrip()
 {
-    char buffer[256];
-    memset(buffer, 0, sizeof(buffer));
-    strncpy(buffer, value.c_str(), sizeof(buffer) - 1);
-    if (ImGui::InputText(label.c_str(), buffer, sizeof(buffer)))
+    // Clean standard rendering with pure white native caret (|)
+}
+
+static int TimeGUI_StringResizeCallback(ImGuiInputTextCallbackData *data)
+{
+    if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
     {
-        value = buffer;
-        return true;
+        TEString *my_str = (TEString *)data->UserData;
+        my_str->Reserve(data->BufSize + 64);
+        data->Buf = my_str->Data();
     }
-    return false;
+    return 0;
 }
 
-bool InputText(const std::string &label, char *buf, size_t bufSize)
+bool InputText(const TEString &label, TEString &value, TimeGUIInputTextFlags flags)
 {
-    return ImGui::InputText(label.c_str(), buf, bufSize);
+    if (value.Capacity() < 256)
+    {
+        value.Reserve(256);
+    }
+    flags |= TimeGUIInputTextFlags_CallbackResize;
+    bool res = ImGui::InputText(label.c_str(), value.Data(), value.Capacity(),
+                                TranslateInputTextFlags(flags),
+                                TimeGUI_StringResizeCallback, (void *)&value);
+    value.SyncFromBuffer();
+    DrawInputTextPulseStrip();
+    if (ImGui::IsItemDeactivatedAfterEdit())
+    {
+        value.AutoCompact();
+    }
+    return res;
 }
 
-bool InputText(const std::string &label, char *buf, size_t bufSize, TimeGUIInputTextFlags flags)
+bool InputText(const TEString &label, char *buf, size_t bufSize)
 {
-    return ImGui::InputText(label.c_str(), buf, bufSize, TranslateInputTextFlags(flags));
+    bool res = ImGui::InputText(label.c_str(), buf, bufSize);
+    DrawInputTextPulseStrip();
+    return res;
 }
 
-bool InputTextMultiline(const std::string &label, char *buf, size_t bufSize, const TEVector2 &size, int flags)
+bool InputText(const TEString &label, char *buf, size_t bufSize, TimeGUIInputTextFlags flags)
 {
-    return ImGui::InputTextMultiline(label.c_str(), buf, bufSize, size,
-                                     TranslateInputTextFlags((TimeGUIInputTextFlags)flags));
+    bool res = ImGui::InputText(label.c_str(), buf, bufSize, TranslateInputTextFlags(flags));
+    DrawInputTextPulseStrip();
+    return res;
+}
+
+bool InputTextWithHint(const TEString &label, const TEString &hint, TEString &value, TimeGUIInputTextFlags flags)
+{
+    if (value.Capacity() < 256)
+    {
+        value.Reserve(256);
+    }
+    flags |= TimeGUIInputTextFlags_CallbackResize;
+    bool res = ImGui::InputTextWithHint(label.c_str(), hint.c_str(), value.Data(), value.Capacity(),
+                                        TranslateInputTextFlags(flags),
+                                        TimeGUI_StringResizeCallback, (void *)&value);
+    value.SyncFromBuffer();
+    DrawInputTextPulseStrip();
+    if (ImGui::IsItemDeactivatedAfterEdit())
+    {
+        value.AutoCompact();
+    }
+    return res;
+}
+
+bool InputTextWithHint(const TEString &label, const char *hint, char *buf, size_t bufSize, TimeGUIInputTextFlags flags)
+{
+    bool res = ImGui::InputTextWithHint(label.c_str(), hint, buf, bufSize, TranslateInputTextFlags(flags));
+    DrawInputTextPulseStrip();
+    return res;
+}
+
+bool InputTextMultiline(const TEString &label, TEString &value, const TEVector2 &size, int flags)
+{
+    if (value.Capacity() < 256)
+    {
+        value.Reserve(256);
+    }
+    flags |= TimeGUIInputTextFlags_CallbackResize;
+    bool res = ImGui::InputTextMultiline(label.c_str(), value.Data(), value.Capacity(),
+                                         ImVec2(size.x, size.y),
+                                         TranslateInputTextFlags((TimeGUIInputTextFlags)flags),
+                                         TimeGUI_StringResizeCallback, (void *)&value);
+    value.SyncFromBuffer();
+    DrawInputTextPulseStrip();
+    if (ImGui::IsItemDeactivatedAfterEdit())
+    {
+        value.AutoCompact();
+    }
+    return res;
+}
+
+bool InputTextMultiline(const TEString &label, char *buf, size_t bufSize, const TEVector2 &size, int flags)
+{
+    bool res = ImGui::InputTextMultiline(label.c_str(), buf, bufSize, ImVec2(size.x, size.y),
+                                         TranslateInputTextFlags((TimeGUIInputTextFlags)flags));
+    DrawInputTextPulseStrip();
+    return res;
+}
+
+bool IsWindowAppearing() { return ImGui::IsWindowAppearing(); }
+void SetKeyboardFocusHere(int offset) { ImGui::SetKeyboardFocusHere(offset); }
+void SetClipboardText(const TEString &text) { ImGui::SetClipboardText(text.c_str()); }
+TEString GetClipboardText()
+{
+    const char *text = ImGui::GetClipboardText();
+    return text ? TEString(text) : TEString("");
+}
+void SetCaretColor(const TEVector4 &color)
+{
+    s_StyleInstance.Colors[TimeGUICol_InputTextCursor] = TEColor(color.x, color.y, color.z, color.w);
+    ImGui::GetStyle().Colors[ImGuiCol_InputTextCursor] = ImVec4(color.x, color.y, color.z, color.w);
+}
+TEVector4 GetCaretColor()
+{
+    ImVec4 col = ImGui::GetStyle().Colors[ImGuiCol_InputTextCursor];
+    if (col.w <= 0.0f)
+        return TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
+    return TEVector4(col.x, col.y, col.z, col.w);
 }
 
 void Separator() { ImGui::Separator(); }
@@ -1021,39 +1174,39 @@ void NextColumn() { ImGui::NextColumn(); }
 
 void SetColumnWidth(int columnIndex, float width) { ImGui::SetColumnWidth(columnIndex, width); }
 
-void PushID(const std::string &strId) { ImGui::PushID(strId.c_str()); }
+void PushID(const TEString &strId) { ImGui::PushID(strId.c_str()); }
 
 void PushID(int intId) { ImGui::PushID(intId); }
 
 void PopID() { ImGui::PopID(); }
 
-bool TreeNodeEx(const std::string &label, int flags)
+bool TreeNodeEx(const TEString &label, int flags)
 {
     return ImGui::TreeNodeEx(label.c_str(), TranslateTreeNodeFlags(flags));
 }
 
-bool TreeNodeEx(void *ptrId, int flags, const std::string &text)
+bool TreeNodeEx(void *ptrId, int flags, const TEString &text)
 {
     return ImGui::TreeNodeEx(ptrId, TranslateTreeNodeFlags(flags), "%s", text.c_str());
 }
 
 void TreePop() { ImGui::TreePop(); }
 
-bool CollapsingHeader(const std::string &label, int flags)
+bool CollapsingHeader(const TEString &label, int flags)
 {
     return ImGui::CollapsingHeader(label.c_str(), TranslateTreeNodeFlags(flags));
 }
 
 void SetNextItemOpen(bool isOpen) { ImGui::SetNextItemOpen(isOpen); }
 
-void OpenPopup(const std::string &strId) { ImGui::OpenPopup(strId.c_str()); }
+void OpenPopup(const TEString &strId) { ImGui::OpenPopup(strId.c_str()); }
 
-bool BeginPopup(const std::string &strId, int flags)
+bool BeginPopup(const TEString &strId, int flags)
 {
     return ImGui::BeginPopup(strId.c_str(), TranslateWindowFlags(flags));
 }
 
-bool BeginPopupContextWindow(const std::string &strId, int mouseButton, bool alsoOverItems)
+bool BeginPopupContextWindow(const TEString &strId, int mouseButton, bool alsoOverItems)
 {
     ImGuiPopupFlags flags = mouseButton;
     if (!alsoOverItems)
@@ -1061,12 +1214,12 @@ bool BeginPopupContextWindow(const std::string &strId, int mouseButton, bool als
     return ImGui::BeginPopupContextWindow(strId.empty() ? nullptr : strId.c_str(), flags);
 }
 
-bool BeginPopupContextItem(const std::string &strId, int mouseButton)
+bool BeginPopupContextItem(const TEString &strId, int mouseButton)
 {
     return ImGui::BeginPopupContextItem(strId.empty() ? nullptr : strId.c_str(), mouseButton);
 }
 
-bool BeginPopupModal(const std::string &name, bool *open, TimeGUIWindowFlags flags)
+bool BeginPopupModal(const TEString &name, bool *open, TimeGUIWindowFlags flags)
 {
     return ImGui::BeginPopupModal(name.c_str(), open, TranslateWindowFlags(flags));
 }
@@ -1095,6 +1248,9 @@ void SetNextWindowPos(const TEVector2 &pos, TimeGUICond cond, const TEVector2 &p
 
 void SetNextWindowSize(const TEVector2 &size, TimeGUICond cond) { ImGui::SetNextWindowSize(size, TranslateCond(cond)); }
 
+void SetNextWindowContentSize(const TEVector2 &size) { ImGui::SetNextWindowContentSize(size); }
+void SetNextWindowDockID(unsigned int dockId, TimeGUICond cond) { ImGui::SetNextWindowDockID(dockId, TranslateCond(cond)); }
+
 void SetNextItemWidth(float itemWidth) { ImGui::SetNextItemWidth(itemWidth); }
 
 void PopItemWidth() { ImGui::PopItemWidth(); }
@@ -1109,7 +1265,7 @@ void Image(TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector
                        ImVec4(tintCol.x, tintCol.y, tintCol.z, tintCol.w));
 }
 
-bool ImageButton(const std::string &strId, TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0,
+bool ImageButton(const TEString &strId, TimeGUITextureID userTextureId, const TEVector2 &size, const TEVector2 &uv0,
                  const TEVector2 &uv1)
 {
     return ImGui::ImageButton(strId.c_str(), ImTextureRef((ImTextureID)(uintptr_t)userTextureId),
@@ -1149,7 +1305,7 @@ bool IsItemClicked(int mouseButton) { return ImGui::IsItemClicked(mouseButton); 
 
 bool IsWindowHovered(int flags) { return ImGui::IsWindowHovered(TranslateHoveredFlags((TimeGUIHoveredFlags)flags)); }
 
-bool IsWindowFocused(int flags) { return ImGui::IsWindowFocused(flags); }
+bool IsWindowFocused(int flags) { return ImGui::IsWindowFocused(TranslateFocusedFlags((TimeGUIFocusedFlags)flags)); }
 
 bool IsMouseDown(int button) { return ImGui::IsMouseDown(button); }
 
@@ -1169,6 +1325,11 @@ TEVector2 GetMouseDragDelta(int button, float lock_threshold)
     return TEVector2(d.x, d.y);
 }
 
+void ResetMouseDragDelta(int button)
+{
+    ImGui::ResetMouseDragDelta(button);
+}
+
 double GetTime() { return ImGui::GetTime(); }
 
 TimeGUIViewport GetMainViewport()
@@ -1183,21 +1344,14 @@ TimeGUIViewport GetMainViewport()
 
 void SetNextWindowViewport(unsigned int viewportId) { ImGui::SetNextWindowViewport(viewportId); }
 
-unsigned int GetID(const std::string &strId) { return ImGui::GetID(strId.c_str()); }
+unsigned int GetID(const TEString &strId) { return ImGui::GetID(strId.c_str()); }
 
-void SetItemTooltip(const std::string &text) { ImGui::SetItemTooltip("%s", text.c_str()); }
+void BeginTooltip() { ImGui::BeginTooltip(); }
+void EndTooltip() { ImGui::EndTooltip(); }
 
-void SetItemTooltip(const char *fmt, ...)
-{
-    char buf[1024];
-    va_list args;
-    va_start(args, fmt);
-    vsnprintf(buf, sizeof(buf), fmt, args);
-    va_end(args);
-    ImGui::SetItemTooltip("%s", buf);
-}
+void SetItemTooltip(const TEString &text) { ImGui::SetItemTooltip("%s", text.c_str()); }
 
-void SetTooltip(const std::string &text) { ImGui::SetTooltip("%s", text.c_str()); }
+void SetTooltip(const TEString &text) { ImGui::SetTooltip("%s", text.c_str()); }
 
 void SetItemDefaultFocus() { ImGui::SetItemDefaultFocus(); }
 
@@ -1208,11 +1362,11 @@ unsigned int GetColorU32(const TEColor &color)
     return ImGui::GetColorU32(ImVec4(color.r, color.g, color.b, color.a));
 }
 
-TEVector2 CalcTextSize(const std::string &text) { return ImGui::CalcTextSize(text.c_str()); }
+TEVector2 CalcTextSize(const TEString &text) { return ImGui::CalcTextSize(text.c_str()); }
 
 bool BeginDragDropSource(int flags) { return ImGui::BeginDragDropSource(flags); }
 
-bool SetDragDropPayload(const std::string &type, const void *data, size_t size, int cond)
+bool SetDragDropPayload(const TEString &type, const void *data, size_t size, int cond)
 {
     return ImGui::SetDragDropPayload(type.c_str(), data, size, cond);
 }
@@ -1239,21 +1393,21 @@ unsigned int DockBuilderSplitNode(unsigned int nodeId, int splitDir, float sizeR
     return ImGui::DockBuilderSplitNode(nodeId, (ImGuiDir)splitDir, sizeRatio, outIdDir1, outIdDir2);
 }
 
-void DockBuilderDockWindow(const std::string &windowName, unsigned int nodeId)
+void DockBuilderDockWindow(const TEString &windowName, unsigned int nodeId)
 {
     ImGui::DockBuilderDockWindow(windowName.c_str(), nodeId);
 }
 
 void DockBuilderFinish(unsigned int nodeId) { ImGui::DockBuilderFinish(nodeId); }
 
-bool BeginTabItem(const std::string &label, bool *open, int flags)
+bool BeginTabItem(const TEString &label, bool *open, int flags)
 {
     return ImGui::BeginTabItem(label.c_str(), open, flags);
 }
 
 void EndTabItem() { ImGui::EndTabItem(); }
 
-bool BeginTabBar(const std::string &strId, int flags) { return ImGui::BeginTabBar(strId.c_str(), flags); }
+bool BeginTabBar(const TEString &strId, int flags) { return ImGui::BeginTabBar(strId.c_str(), flags); }
 
 void EndTabBar() { ImGui::EndTabBar(); }
 
@@ -1261,11 +1415,11 @@ bool BeginMenuBar() { return ImGui::BeginMenuBar(); }
 
 void EndMenuBar() { ImGui::EndMenuBar(); }
 
-bool BeginMenu(const std::string &label, bool enabled) { return ImGui::BeginMenu(label.c_str(), enabled); }
+bool BeginMenu(const TEString &label, bool enabled) { return ImGui::BeginMenu(label.c_str(), enabled); }
 
 void EndMenu() { ImGui::EndMenu(); }
 
-bool BeginTable(const std::string &strId, int column, int flags, const TEVector2 &outerSize, float innerWidth)
+bool BeginTable(const TEString &strId, int column, int flags, const TEVector2 &outerSize, float innerWidth)
 {
     return ImGui::BeginTable(strId.c_str(), column, TranslateTableFlags((TimeGUITableFlags)flags), outerSize,
                              innerWidth);
@@ -1273,7 +1427,7 @@ bool BeginTable(const std::string &strId, int column, int flags, const TEVector2
 
 void EndTable() { ImGui::EndTable(); }
 
-void TableSetupColumn(const std::string &label, int flags, float initWidthOrWeight, unsigned int userId)
+void TableSetupColumn(const TEString &label, int flags, float initWidthOrWeight, unsigned int userId)
 {
     ImGui::TableSetupColumn(label.c_str(), TranslateTableColumnFlags((TimeGUITableColumnFlags)flags), initWidthOrWeight,
                             userId);
@@ -1283,17 +1437,17 @@ void TableHeadersRow() { ImGui::TableHeadersRow(); }
 
 bool TableNextColumn() { return ImGui::TableNextColumn(); }
 
-void TableNextRow(float rowMinHeight, int rowFlags) { ImGui::TableNextRow(rowMinHeight, rowFlags); }
+void TableNextRow(float rowMinHeight, int rowFlags) { ImGui::TableNextRow((ImGuiTableRowFlags)rowFlags, rowMinHeight); }
 
-std::string CleanLabel(const std::string &label)
+TEString CleanLabel(const TEString &label)
 {
     size_t pos = label.find("###");
-    if (pos != std::string::npos)
+    if (pos != TEString::npos)
         return label.substr(0, pos);
     return label;
 }
 
-bool DrawVec3Control(const std::string &label, TEVector &values, float resetValue, float columnWidth)
+bool DrawVec3Control(const TEString &label, TEVector &values, float resetValue, float columnWidth)
 {
     bool changed = false;
     PushID(label);
@@ -1358,7 +1512,7 @@ bool DrawVec3Control(const std::string &label, TEVector &values, float resetValu
     return changed;
 }
 
-bool DrawVec2Control(const std::string &label, TEVector2 &values, float resetValue, float columnWidth)
+bool DrawVec2Control(const TEString &label, TEVector2 &values, float resetValue, float columnWidth)
 {
     bool changed = false;
     PushID(label);
@@ -1408,7 +1562,7 @@ bool DrawVec2Control(const std::string &label, TEVector2 &values, float resetVal
     return changed;
 }
 
-bool DrawVec4Control(const std::string &label, TEVector4 &values, float resetValue, float columnWidth)
+bool DrawVec4Control(const TEString &label, TEVector4 &values, float resetValue, float columnWidth)
 {
     bool changed = false;
     PushID(label);
@@ -1442,7 +1596,7 @@ bool DrawVec4Control(const std::string &label, TEVector4 &values, float resetVal
         ImGui::PopStyleColor();
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth);
-        if (ImGui::DragFloat((std::string("##") + labels[i]).c_str(), vals[i], 0.1f, 0.0f, 0.0f, "%.2f"))
+        if (ImGui::DragFloat((TEString("##") + labels[i]).c_str(), vals[i], 0.1f, 0.0f, 0.0f, "%.2f"))
             changed = true;
         if (i < 3)
             ImGui::SameLine();
@@ -1454,7 +1608,7 @@ bool DrawVec4Control(const std::string &label, TEVector4 &values, float resetVal
     return changed;
 }
 
-bool DrawColorControl(const std::string &label, TEColor &values, float columnWidth)
+bool DrawColorControl(const TEString &label, TEColor &values, float columnWidth)
 {
     bool changed = false;
     PushID(label);
@@ -1503,7 +1657,7 @@ bool DrawColorControl(const std::string &label, TEColor &values, float columnWid
     return changed;
 }
 
-bool DrawDeleteButton(const std::string &id, float size, float fontScale)
+bool DrawDeleteButton(const TEString &id, float size, float fontScale)
 {
     if (size == 0.0f)
         size = GetFrameHeight() * 0.8f;
@@ -1519,17 +1673,17 @@ bool DrawDeleteButton(const std::string &id, float size, float fontScale)
     auto *drawList = ImGui::GetWindowDrawList();
     drawList->AddRectFilled(pos, {pos.x + size, pos.y + size}, ImGui::GetColorU32(color), 3.0f);
 
-    const char *text = "x";
+    const TEString text = "x";
     ImGui::SetWindowFontScale(fontScale);
-    ImVec2 textSize = ImGui::CalcTextSize(text);
+    ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
     drawList->AddText({pos.x + (size - textSize.x) * 0.5f, pos.y + (size - textSize.y) * 0.5f + 1.0f},
-                      ImGui::GetColorU32(ImGuiCol_Text), text);
+                      ImGui::GetColorU32(ImGuiCol_Text), text.c_str());
     ImGui::SetWindowFontScale(1.0f);
 
     return pressed;
 }
 
-bool DrawPlusButton(const std::string &id, float size, float fontScale)
+bool DrawPlusButton(const TEString &id, float size, float fontScale)
 {
     if (size == 0.0f)
         size = GetFrameHeight() * 0.8f;
@@ -1545,11 +1699,11 @@ bool DrawPlusButton(const std::string &id, float size, float fontScale)
     auto *drawList = ImGui::GetWindowDrawList();
     drawList->AddRectFilled(pos, {pos.x + size, pos.y + size}, ImGui::GetColorU32(color), 3.0f);
 
-    const char *text = "+";
+    const TEString text = "+";
     ImGui::SetWindowFontScale(fontScale);
-    ImVec2 textSize = ImGui::CalcTextSize(text);
+    ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
     drawList->AddText({pos.x + (size - textSize.x) * 0.5f, pos.y + (size - textSize.y) * 0.5f + 1.0f},
-                      ImGui::GetColorU32(ImGuiCol_Text), text);
+                      ImGui::GetColorU32(ImGuiCol_Text), text.c_str());
     ImGui::SetWindowFontScale(1.0f);
 
     return pressed;
@@ -1561,14 +1715,14 @@ TEVector2 GetContentRegionAvail() { return ImGui::GetContentRegionAvail(); }
 
 bool IsKeyPressed(int key) { return ImGui::IsKeyPressed((ImGuiKey)key); }
 
-bool RadioButton(const std::string &label, bool active) { return ImGui::RadioButton(label.c_str(), active); }
+bool RadioButton(const TEString &label, bool active) { return ImGui::RadioButton(label.c_str(), active); }
 
-bool RadioButton(const std::string &label, int *v, int v_button)
+bool RadioButton(const TEString &label, int *v, int v_button)
 {
     return ImGui::RadioButton(label.c_str(), v, v_button);
 }
 
-bool SliderInt(const std::string &label, int *v, int v_min, int v_max, const std::string &format, int flags)
+bool SliderInt(const TEString &label, int *v, int v_min, int v_max, const TEString &format, int flags)
 {
     return ImGui::SliderInt(label.c_str(), v, v_min, v_max, format.c_str(), flags);
 }
@@ -1583,17 +1737,14 @@ unsigned int ColorConvertFloat4ToU32(const TEVector4 &in) { return ImGui::ColorC
 
 unsigned int GetColorU32(TimeGUICol idx, float alpha_mul) { return ImGui::GetColorU32((ImGuiCol)idx, alpha_mul); }
 
-bool ColorEdit4(const std::string &label, float *col, int flags)
+bool ColorEdit4(const TEString &label, float *col, int flags)
 {
     return ImGui::ColorEdit4(label.c_str(), col, flags);
 }
 
-void TextFormatted(const char *fmt, ...)
+bool ColorButton(const TEString &desc_id, const TEVector4 &col, int flags, const TEVector2 &size)
 {
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextV(fmt, args);
-    va_end(args);
+    return ImGui::ColorButton(desc_id.c_str(), ImVec4(col.x, col.y, col.z, col.w), flags, ImVec2(size.x, size.y));
 }
 
 TimeGUIDrawList CreateDrawList()
@@ -1662,7 +1813,7 @@ TEVector2 TimeGUIFont::CalcTextSizeA(float size, float max_width, float wrap_wid
 
 ::ImFont *TimeGUIFont::operator->() const { return (::ImFont *)nativeFont; }
 
-bool BeginProjectCard(const std::string &id, const TEVector2 &size, bool &hovered)
+bool BeginProjectCard(const TEString &id, const TEVector2 &size, bool &hovered)
 {
     ImGui::PushID(id.c_str());
     ImGuiWindow *window = ImGui::GetCurrentWindow();
@@ -1732,12 +1883,12 @@ void PushMultiItemsWidths(int components, float width_full) { ImGui::PushMultiIt
 
 float CalcItemWidth() { return ImGui::CalcItemWidth(); }
 
-bool MenuItem(const std::string &label, const std::string &shortcut, bool selected, bool enabled)
+bool MenuItem(const TEString &label, const TEString &shortcut, bool selected, bool enabled)
 {
     return ImGui::MenuItem(label.c_str(), shortcut.empty() ? nullptr : shortcut.c_str(), selected, enabled);
 }
 
-bool MenuItem(const std::string &label, const std::string &shortcut, bool *p_selected, bool enabled)
+bool MenuItem(const TEString &label, const TEString &shortcut, bool *p_selected, bool enabled)
 {
     return ImGui::MenuItem(label.c_str(), shortcut.empty() ? nullptr : shortcut.c_str(), p_selected, enabled);
 }
@@ -1767,6 +1918,22 @@ TEVector2 GetItemRectSize()
     ImVec2 p = ImGui::GetItemRectSize();
     return TEVector2(p.x, p.y);
 }
-} // namespace TimeGUI
 
-} // namespace TE
+TEVector2 GetItemRectMax() 
+{ 
+    ImVec2 p = ImGui::GetItemRectMax();
+    return TEVector2(p.x, p.y);
+}
+
+void SaveIniSettingsToDisk(const char *ini_filename)
+{
+    ImGui::SaveIniSettingsToDisk(ini_filename);
+}
+
+void LoadIniSettingsFromDisk(const char *ini_filename)
+{
+    ImGui::LoadIniSettingsFromDisk(ini_filename);
+}
+
+}
+

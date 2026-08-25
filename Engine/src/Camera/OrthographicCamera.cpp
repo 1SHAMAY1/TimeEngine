@@ -1,6 +1,6 @@
-﻿#include "Camera/OrthographicCamera.hpp"
+#include "Core/PreRequisites.h"
+#include "Camera/OrthographicCamera.hpp"
 
-namespace TE {
 
     OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
     {
@@ -69,4 +69,3 @@ namespace TE {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     }
 
-}

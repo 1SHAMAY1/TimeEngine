@@ -9,26 +9,14 @@ The **Core Subsystem** is the central engine hub of TimeEngine. It drives the ma
 
 ## Core Engine Architecture & Main Loop Pipeline
 
-```
-                              [ Application::Run() ]
-                                         │
- ┌───────────────────────────────────────┴───────────────────────────────────────┐
- │                                                                               │
- ▼                                                                               ▼
-[ RenderCommand::Clear() ]                                       [ LayerStack Updates ]
- (Clear Framebuffer to Black)                                     (Iterate Layer::OnUpdate)
- │                                                                               │
- ├───────────────────────────────────────────────────────────────────────────────┤
- │                                                                               │
- ▼                                                                               ▼
-[ Immediate-Mode TimeGUI Pass ]                                 [ Deferred Processing ]
- (TimeGUILayer::Begin/End, OnTimeGUIRender)                      (ProcessDeferredRemovals & Additions)
- │                                                                               │
- └───────────────────────────────────────┬───────────────────────────────────────┘
-                                         │
-                                         ▼
-                              [ m_Window->OnUpdate() ]
-                              (Poll GLFW Events & Swap Buffers)
+```mermaid
+flowchart TD
+    Run["Application::Run()"] --> ClearFB["RenderCommand::Clear()<br/>(Clear Framebuffer)"]
+    Run --> LayerUpdates["LayerStack Updates<br/>(Iterate Layer::OnUpdate)"]
+    ClearFB --> GUIPass["Immediate-Mode TimeGUI Pass<br/>(OnTimeGUIRender)"]
+    LayerUpdates --> DeferredOp["Deferred Processing<br/>(Layer Additions & Removals)"]
+    GUIPass --> WindowUpdate["m_Window->OnUpdate()<br/>(Poll Events & Swap Buffers)"]
+    DeferredOp --> WindowUpdate
 ```
 
 ---
@@ -41,15 +29,16 @@ Click any module link below to open its comprehensive architectural reference:
 * ⚛️ **[2D Physics Architecture](Physics/ARCHITECTURE.md)** — Rigid body dynamics (`RigidBody`), Symplectic Euler integration, raycasting, soft body node blobs, and 2D constraint joints.
 * 💥 **[2D Collision Architecture](Collision/ARCHITECTURE.md)** — Broadphase spatial pair filtering (`BroadPhase`), narrowphase Separating Axis Theorem (SAT) geometry checks (`CollisionSystem`), and collider components.
 * 📦 **[Asset Subsystem Architecture](Asset/ARCHITECTURE.md)** — 64-bit `AssetHandle` mappings, path-handle registry (`AssetRegistry`), prototype metadata registration (`AssetManager`), and `stb_image` I/O.
-* 🎮 **[GameFramework Architecture](GameFrameWork/ARCHITECTURE.md)** — Base reflected game object (`TObject`), 2D spatial component (`TComponent`), hierarchy nesting, mouse picking (`ContainsPoint`), 2D shadow occlusion, and `StandardGameLibrary` object pooling.
+* 🎮 **[GameFramework Architecture](GameFrameWork/ARCHITECTURE.md)** — Base reflected game object (`TObject`), 2D spatial component (`TComponent`), hierarchy nesting, mouse picking (`ContainsPoint`), 2D shadow occlusion, and `GameplayUtils` object pooling.
 * ⚡ **[Events Subsystem Architecture](Events/ARCHITECTURE.md)** — Blocking event classes (`ApplicationEvent`, `KeyEvent`, `MouseEvent`), category bitmasks, and type-safe event dispatching (`EventDispatcher`).
 * 🧵 **[Multi-Threading & Task System Architecture](../../Include/Core/Threading/ARCHITECTURE.md)** — Dedicated thread pools (`ThreadPool`, `TaskSystem`), 6 worker pools (Main, Render, Gameplay, AI, Calc, Widget), and async job macros (`SUBMIT_CALC`, `SUBMIT_AI`).
 * 🥞 **[Layers Subsystem Architecture](Layers/ARCHITECTURE.md)** — Modular execution stack (`LayerStack`), regular game layers vs top-priority GUI overlays, deferred removals/additions, and event propagation pipelines.
 
 * ⏱️ **[Core Time Architecture](Time/ARCHITECTURE.md)** — Frame delta calculation, fixed-rate metronome tickers (`Ticker`), and static delayed/looping timers (`Timer::Set`, `Timer::NextFrame`).
 * 📁 **[Project Subsystem Architecture](Project/ARCHITECTURE.md)** — Active workspace configuration (`ProjectConfig`), root directory resolution, and `.teproj` text file serialization (`ProjectSerializer`).
+* 📜 **[TScript Scripting Subsystem Architecture](Scripting/ARCHITECTURE.md)** — Embedded zero-dependency scripting language (Lexer, Parser, AST, Interpreter, reflection bridge).
 * 📄 **[Core Public Headers & Threading Index](../../Include/Core/ARCHITECTURE.md)** — Public header interface index (`Engine/Include/Core/`).
-* ⚙️ **[Engine Settings Architecture](../../Include/Core/EngineSettings_ARCHITECTURE.md)** — Singleton engine configuration (`EngineSettings`), target framerates, VSync, logging filters, and `EngineSettingsLayer`.
+* ⚙️ **[Engine Settings Architecture](../../Include/Core/Settings/ARCHITECTURE.md)** — Base developer settings (`EngineSettings`), reflection registry (`EngineSettingsRegistry`), and `GeneralEngineSettings`.
 * 🔌 **[Plugin Manager Architecture](Plugin/ARCHITECTURE.md)** — Dynamic OS library loader (`LoadLibraryW` / `dlopen`), `.teplugin` descriptor parser, symbol factory lookups (`CreatePluginInstance`), and reverse-order unloader.
 
 ---
@@ -127,24 +116,7 @@ void Application::Run() {
 
 ---
 
-## Client Entry Point Architecture (`EntryPoint.h`)
-
-TimeEngine applications do not define a traditional `main()` function in user code. Instead, `EntryPoint.h` implements standard cross-platform entry points and delegates creation to the client via `TE::CreateApplication()`:
-
-```cpp
-// Executable entry point defined in Engine/src/Core/EntryPoint.h
-int main(int argc, char** argv) {
-    auto app = TE::CreateApplication(argc, argv);
-    app->Run();
-    delete app;
-    return 0;
-}
-```
-p after `OnTimeGUIRender()` completes.
-
----
-
-## Client Entry Point Architecture ([`EntryPoint.h`](file:///e:/TimeEngine/Engine/src/Core/EntryPoint.h))
+## Client Entry Point Architecture ([`EntryPoint.h`](EntryPoint.h))
 
 TimeEngine applications do not define a traditional `main()` function in user code. Instead, `EntryPoint.h` implements standard cross-platform entry points and delegates creation to the client via `TE::CreateApplication()`:
 

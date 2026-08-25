@@ -4,7 +4,6 @@
 #include "Core/MouseCodes.hpp"
 #include "Core/PreRequisites.h"
 
-namespace TE {
 
 	class TE_API MouseMovedEvent : public Event
 	{
@@ -15,11 +14,9 @@ namespace TE {
 		float GetX() const { return m_MouseX; }
 		float GetY() const { return m_MouseY; }
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
-			return ss.str();
+			return TEString("MouseMovedEvent: ") + TEString::FromFloat(m_MouseX, 2) + ", " + TEString::FromFloat(m_MouseY, 2);
 		}
 
 		EVENT_CLASS_TYPE(MouseMoved)
@@ -38,11 +35,9 @@ namespace TE {
 		float GetXOffset() const { return m_XOffset; }
 		float GetYOffset() const { return m_YOffset; }
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseScrolledEvent: " << m_XOffset << ", " << m_YOffset;
-			return ss.str();
+			return TEString("MouseScrolledEvent: ") + TEString::FromFloat(m_XOffset, 2) + ", " + TEString::FromFloat(m_YOffset, 2);
 		}
 
 		EVENT_CLASS_TYPE(MouseScrolled)
@@ -72,11 +67,9 @@ namespace TE {
 		explicit MouseButtonPressedEvent(MouseCode button)
 			: MouseButtonEvent(button) {}
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseButtonPressedEvent: " << static_cast<int>(m_Button);
-			return ss.str();
+			return TEString("MouseButtonPressedEvent: ") + TEString::FromInt(static_cast<int>(m_Button));
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonPressed)
@@ -88,14 +81,11 @@ namespace TE {
 		explicit MouseButtonReleasedEvent(MouseCode button)
 			: MouseButtonEvent(button) {}
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent: " << static_cast<int>(m_Button);
-			return ss.str();
+			return TEString("MouseButtonReleasedEvent: ") + TEString::FromInt(static_cast<int>(m_Button));
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 
-} // namespace TE

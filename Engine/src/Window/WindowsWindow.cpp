@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #ifdef TE_PLATFORM_WINDOWS
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -23,7 +24,7 @@
 
 // Engine headers (windows.h already in scope — no macro surprise)
 #include "Core/Asset/AssetManager.hpp"
-#include "Core/EngineSettings.hpp"
+#include "Core/Settings/EngineSettings.hpp"
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
@@ -33,7 +34,7 @@
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/RendererContext.hpp"
 #include "Window/WindowsWindow.hpp"
-#include <filesystem>
+#include "Utils/TEFileSystem.hpp"
 
 static bool s_GLFWInitialized = false;
 
@@ -49,7 +50,7 @@ void *WindowsWindow::GetGLLoaderFunction() const { return (void *)glfwGetProcAdd
 
 void WindowsWindow::Init(const WindowProps &props)
 {
-    TE::RendererContext::EnableBestGPU();
+    RendererContext::EnableBestGPU();
     m_Data.Title = props.Title;
     m_Data.Width = props.Width;
     m_Data.Height = props.Height;
@@ -66,9 +67,9 @@ void WindowsWindow::Init(const WindowProps &props)
         s_GLFWInitialized = true;
     }
 
-    switch (TE::RendererContext::GetAPI())
+    switch (RendererContext::GetAPI())
     {
-    case TE::GraphicsAPI::OpenGL:
+    case GraphicsAPI::OpenGL:
 #ifdef __APPLE__
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -76,13 +77,15 @@ void WindowsWindow::Init(const WindowProps &props)
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
         break;
-    case TE::GraphicsAPI::Vulkan:
-    case TE::GraphicsAPI::DirectX11:
+    case GraphicsAPI::Vulkan:
+    case GraphicsAPI::DirectX11:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         break;
     default:
         break;
     }
+
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
     if (!m_Window)
@@ -91,16 +94,67 @@ void WindowsWindow::Init(const WindowProps &props)
         return;
     }
 
-    if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::OpenGL)
+    // Set Window Icon before showing the window
+    {
+#ifdef TE_PLATFORM_WINDOWS
+        HWND hWnd = glfwGetWin32Window(m_Window);
+        if (hWnd)
+        {
+            HICON hIconBig = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 48, 48, LR_SHARED);
+            HICON hIconSmall = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 16, 16, LR_SHARED);
+
+            if (hIconBig || hIconSmall)
+            {
+                SendMessageW(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+                SendMessageW(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
+                SetClassLongPtrW(hWnd, GCLP_HICON, (LONG_PTR)hIconBig);
+                SetClassLongPtrW(hWnd, GCLP_HICONSM, (LONG_PTR)hIconSmall);
+            }
+        }
+#endif
+
+        GLFWimage images[1];
+        TEString iconPath;
+        TEString currDir = TEFileSystem::GetCurrentWorkingDirectory();
+        for (int i = 0; i < 5; ++i)
+        {
+            TEString checkPath = currDir / "Resources/Branding/TimeEngineIcon.png";
+            if (TEFileSystem::Exists(checkPath))
+            {
+                iconPath = checkPath;
+                break;
+            }
+            if (!currDir.HasParentPath() || currDir.GetParentPath() == currDir)
+                break;
+            currDir = currDir.GetParentPath();
+        }
+
+        if (!iconPath.IsEmpty())
+        {
+            ImageData img = AssetManager::ImportImage(iconPath, 4);
+            if (img.IsValid())
+            {
+                images[0].width = img.Width;
+                images[0].height = img.Height;
+                images[0].pixels = img.Pixels.GetData();
+                glfwSetWindowIcon(m_Window, 1, images);
+            }
+        }
+    }
+
+    // Now show the window with icon already attached
+    glfwShowWindow(m_Window);
+
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         glfwMakeContextCurrent(m_Window);
     }
 #ifdef TE_PLATFORM_WINDOWS
-    else if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
+    else if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
     {
         HWND hwnd = glfwGetWin32Window(m_Window);
-        auto *apiInstance = TE::RenderCommand::GetAPIInstance();
-        auto *dx11API = dynamic_cast<TE::DirectX11RendererAPI *>(apiInstance);
+        auto *apiInstance = RenderCommand::GetAPIInstance();
+        auto *dx11API = dynamic_cast<DirectX11RendererAPI *>(apiInstance);
         if (dx11API)
         {
             dx11API->InitWithWindow(hwnd, props.Width, props.Height);
@@ -113,34 +167,9 @@ void WindowsWindow::Init(const WindowProps &props)
 #endif
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
-    TE::Input::Init(m_Window); // Register window with input system
+    Input::Init(m_Window); // Register window with input system
 
     SetVSync(true);
-
-    // Set Window Icon
-    {
-        GLFWimage images[1];
-        std::string iconPath = "Resources/Branding/TimeEngineIcon.png";
-        if (!std::filesystem::exists(iconPath))
-            iconPath = "e:/TimeEngine/Resources/Branding/TimeEngineIcon.png";
-
-        if (std::filesystem::exists(iconPath))
-        {
-            TE::ImageData img = TE::AssetManager::ImportImage(iconPath, 4);
-            if (img.Data)
-            {
-                images[0].width = img.Width;
-                images[0].height = img.Height;
-                images[0].pixels = img.Data;
-                glfwSetWindowIcon(m_Window, 1, images);
-                TE::AssetManager::FreeImage(img.Data);
-            }
-            else
-            {
-                TE_CORE_WARN("Failed to load window icon: {0}", iconPath);
-            }
-        }
-    }
 
     // === EVENT CALLBACKS ===
     glfwSetWindowSizeCallback(m_Window,
@@ -149,22 +178,26 @@ void WindowsWindow::Init(const WindowProps &props)
                                   WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
                                   data.Width = width;
                                   data.Height = height;
-                                  TE::WindowResizeEvent event(width, height);
+                                  WindowResizeEvent event(width, height);
                                   TE_INPUT_DEBUG(event.ToString());
                                   data.EventCallback(event);
                               });
 
     // === FRAMEBUFFER SIZE CALLBACK ===
     glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
-                                   { TE::RenderCommand::SetViewport(0, 0, width, height); });
+                                   { RenderCommand::SetViewport(0, 0, width, height); });
 
     glfwSetWindowCloseCallback(m_Window,
                                [](GLFWwindow *window)
                                {
                                    WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-                                   TE::WindowCloseEvent event;
+                                   WindowCloseEvent event;
                                    TE_INPUT_DEBUG(event.ToString());
                                    data.EventCallback(event);
+                                   if (event.Handled())
+                                   {
+                                       glfwSetWindowShouldClose(window, GLFW_FALSE);
+                                   }
                                });
 
     glfwSetWindowIconifyCallback(m_Window,
@@ -173,13 +206,13 @@ void WindowsWindow::Init(const WindowProps &props)
                                      WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
                                      if (iconified)
                                      {
-                                         TE::WindowLostFocusEvent event;
+                                         WindowLostFocusEvent event;
                                          TE_INPUT_DEBUG(event.ToString());
                                          data.EventCallback(event);
                                      }
                                      else
                                      {
-                                         TE::WindowFocusEvent event;
+                                         WindowFocusEvent event;
                                          TE_INPUT_DEBUG(event.ToString());
                                          data.EventCallback(event);
                                      }
@@ -194,21 +227,21 @@ void WindowsWindow::Init(const WindowProps &props)
                            {
                            case GLFW_PRESS:
                            {
-                               TE::KeyPressedEvent event((TE::KeyCode)key, false);
+                               KeyPressedEvent event((KeyCode)key, false);
                                TE_INPUT_DEBUG(event.ToString());
                                data.EventCallback(event);
                                break;
                            }
                            case GLFW_RELEASE:
                            {
-                               TE::KeyReleasedEvent event((TE::KeyCode)key);
+                               KeyReleasedEvent event((KeyCode)key);
                                TE_INPUT_DEBUG(event.ToString());
                                data.EventCallback(event);
                                break;
                            }
                            case GLFW_REPEAT:
                            {
-                               TE::KeyPressedEvent event((TE::KeyCode)key, true);
+                               KeyPressedEvent event((KeyCode)key, true);
                                TE_INPUT_DEBUG(event.ToString());
                                data.EventCallback(event);
                                break;
@@ -220,7 +253,7 @@ void WindowsWindow::Init(const WindowProps &props)
                         [](GLFWwindow *window, unsigned int codepoint)
                         {
                             WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-                            TE::KeyTypedEvent event((TE::KeyCode)codepoint);
+                            KeyTypedEvent event((KeyCode)codepoint);
                             TE_INPUT_DEBUG(event.ToString());
                             data.EventCallback(event);
                         });
@@ -232,13 +265,13 @@ void WindowsWindow::Init(const WindowProps &props)
 
                                    if (action == GLFW_PRESS)
                                    {
-                                       TE::MouseButtonPressedEvent event((TE::MouseCode)button);
+                                       MouseButtonPressedEvent event((MouseCode)button);
                                        TE_INPUT_DEBUG(event.ToString());
                                        data.EventCallback(event);
                                    }
                                    else if (action == GLFW_RELEASE)
                                    {
-                                       TE::MouseButtonReleasedEvent event((TE::MouseCode)button);
+                                       MouseButtonReleasedEvent event((MouseCode)button);
                                        TE_INPUT_DEBUG(event.ToString());
                                        data.EventCallback(event);
                                    }
@@ -248,8 +281,8 @@ void WindowsWindow::Init(const WindowProps &props)
                           [](GLFWwindow *window, double xOffset, double yOffset)
                           {
                               WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-                              TE::Input::SetMouseScrollDelta((float)xOffset, (float)yOffset);
-                              TE::MouseScrolledEvent event((float)xOffset, (float)yOffset);
+                              Input::SetMouseScrollDelta((float)xOffset, (float)yOffset);
+                              MouseScrolledEvent event((float)xOffset, (float)yOffset);
                               TE_INPUT_DEBUG(event.ToString());
                               data.EventCallback(event);
                           });
@@ -258,7 +291,7 @@ void WindowsWindow::Init(const WindowProps &props)
                              [](GLFWwindow *window, double xpos, double ypos)
                              {
                                  WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-                                 TE::MouseMovedEvent event((float)xpos, (float)ypos);
+                                 MouseMovedEvent event((float)xpos, (float)ypos);
                                  TE_INPUT_DEBUG(event.ToString());
                                  data.EventCallback(event);
                              });
@@ -285,21 +318,6 @@ void WindowsWindow::OnUpdate()
     }
 
     glfwPollEvents();
-
-#ifdef TE_PLATFORM_WINDOWS
-    if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11)
-    {
-        TE::DX11Context &ctx = TE::DX11Context::Get();
-        if (ctx.SwapChain)
-        {
-            ctx.SwapChain->Present(m_Data.VSync ? 1 : 0, 0);
-        }
-    }
-    else
-#endif
-    {
-        glfwSwapBuffers(m_Window);
-    }
 }
 
 void WindowsWindow::SetVSync(bool enabled)
@@ -315,4 +333,14 @@ void IWindow::Terminate() { glfwTerminate(); }
 
 void *IWindow::GetCurrentContext() { return glfwGetCurrentContext(); }
 
-void IWindow::MakeContextCurrent(void *context) { glfwMakeContextCurrent(static_cast<GLFWwindow *>(context)); }
+void IWindow::MakeContextCurrent(void *context)
+{
+    glfwMakeContextCurrent(static_cast<GLFWwindow *>(context));
+}
+
+void IWindow::SwapBuffers(void *nativeWindow)
+{
+    if (nativeWindow)
+        glfwSwapBuffers(static_cast<GLFWwindow *>(nativeWindow));
+}
+

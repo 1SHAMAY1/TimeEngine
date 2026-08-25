@@ -76,5 +76,5 @@ TE::PluginManager::LoadPlugin("Engine/Plugins/MCPPlugin/MCPPlugin.teplugin");
 
 ## Related Architectural Documentation
 
-- [Engine Plugins Architecture](file:///e:/TimeEngine/Engine/Plugins/ARCHITECTURE.md) — Architecture documentation for optional engine plugins and dynamic plugin authoring.
+- [Engine Plugins Architecture](../../../Plugins/ARCHITECTURE.md) — Architecture documentation for optional engine plugins and dynamic plugin authoring.
 

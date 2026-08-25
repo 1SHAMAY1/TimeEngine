@@ -1,5 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Log.h"
-#include "Core/EngineSettings.hpp"
+#include "Core/Settings/GeneralEngineSettings.hpp"
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -14,12 +15,10 @@
 #include <unistd.h>
 #endif
 
-namespace TE
-{
-std::unique_ptr<CustomizableLogger> Log::s_CoreLogger;
-std::unique_ptr<CustomizableLogger> Log::s_ClientLogger;
+TEScope<CustomizableLogger> Log::s_CoreLogger;
+TEScope<CustomizableLogger> Log::s_ClientLogger;
 
-static std::vector<LogMessage> s_MessageBuffer;
+static TEArray<LogMessage> s_MessageBuffer;
 static std::mutex s_LogMutex;
 static constexpr size_t MAX_LOG_MESSAGES = 1000;
 
@@ -50,19 +49,32 @@ static TermCaps DetectTerminal()
         SetConsoleCP(CP_UTF8);
     }
     caps.truecolor = caps.ansi;
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable: 4996)
+#endif
+    const char *noColorEnv = std::getenv("NO_COLOR");
+    if (noColorEnv && noColorEnv[0] != '\0')
+    {
+        caps.ansi = false;
+        caps.truecolor = false;
+    }
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#endif
 #else
     caps.isTTY = (isatty(fileno(stdout)) != 0);
     const char *term = std::getenv("TERM");
     const char *colorterm = std::getenv("COLORTERM");
-    caps.ansi = caps.isTTY && term && std::string(term) != "dumb";
+    caps.ansi = caps.isTTY && term && TEString(term) != "dumb";
     caps.truecolor =
-        caps.ansi && colorterm && (std::string(colorterm) == "truecolor" || std::string(colorterm) == "24bit");
-#endif
+        caps.ansi && colorterm && (TEString(colorterm) == "truecolor" || TEString(colorterm) == "24bit");
     if (std::getenv("NO_COLOR"))
     {
         caps.ansi = false;
         caps.truecolor = false;
     }
+#endif
     return caps;
 }
 
@@ -93,7 +105,7 @@ static void PrintBanner(const TermCaps &caps)
     RGB W{245, 245, 245, false}; // White vertical stem / hub
     RGB _{0, 0, 0, true};        // Empty / transparent
 
-    std::vector<std::vector<RGB>> bitmap = {
+    TEArray<TEArray<RGB>> bitmap = {
         {_, _, C, C, C, C, C, C, C, C, C, _, _, _}, {_, C, _, _, _, _, _, _, _, _, _, C, _, _},
         {C, _, _, c, c, c, c, c, c, _, _, C, _, _}, {C, _, c, _, _, _, _, _, _, c, _, C, _, _},
         {C, _, c, _, _, _, _, _, _, c, _, C, _, _}, {C, c, _, W, W, _, R, R, R, R, c, C, _, _},
@@ -108,19 +120,19 @@ static void PrintBanner(const TermCaps &caps)
     const char *yellow = "\033[93m";
     const char *reset = "\033[0m";
 
-    std::vector<std::string> titleLines = {std::string(magenta) + "████████╗██╗███╗   ███╗███████╗ " + brightCyan +
+    TEArray<TEString> titleLines = {TEString(magenta) + "████████╗██╗███╗   ███╗███████╗ " + brightCyan +
                                                "███████╗███╗   ██╗██████╗ ██╗███╗   ██╗███████╗" + reset,
-                                           std::string(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan +
+                                           TEString(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan +
                                                "██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝" + reset,
-                                           std::string(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan +
+                                           TEString(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan +
                                                "█████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗  " + reset,
-                                           std::string(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan +
+                                           TEString(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan +
                                                "██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝  " + reset,
-                                           std::string(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan +
+                                           TEString(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan +
                                                "███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗" + reset,
-                                           std::string(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan +
+                                           TEString(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan +
                                                "╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝" + reset,
-                                           std::string(yellow) +
+                                           TEString(yellow) +
                                                "                                 Welcome to TimeEngine" + reset};
 
     std::printf("\n");
@@ -167,7 +179,7 @@ static void PrintBanner(const TermCaps &caps)
     std::fflush(stdout);
 }
 
-void Log::Init(bool logToFile, const std::string &file)
+void Log::Init(bool logToFile, const TEString &file)
 {
     if (s_Initialized)
         return;
@@ -176,8 +188,8 @@ void Log::Init(bool logToFile, const std::string &file)
     TermCaps caps = DetectTerminal();
     PrintBanner(caps);
 
-    s_CoreLogger = std::make_unique<CustomizableLogger>(logToFile, "Core_" + file);
-    s_ClientLogger = std::make_unique<CustomizableLogger>(logToFile, "Client_" + file);
+    s_CoreLogger = CreateScope<CustomizableLogger>(logToFile, "Core_" + file);
+    s_ClientLogger = CreateScope<CustomizableLogger>(logToFile, "Client_" + file);
 
     // Core log level colors
     s_CoreLogger->registerLevel("INFO", "\033[32m");     // Green
@@ -194,7 +206,7 @@ void Log::Init(bool logToFile, const std::string &file)
     s_ClientLogger->registerLevel("CRITICAL", "\033[41m");
 }
 
-void Log::AddMessage(const std::string &category, const std::string &message, const std::string &level)
+void Log::AddMessage(const TEString &category, const TEString &message, const TEString &level)
 {
     std::lock_guard<std::mutex> lock(s_LogMutex);
 
@@ -202,17 +214,20 @@ void Log::AddMessage(const std::string &category, const std::string &message, co
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
-    std::stringstream ss;
     struct tm buf;
 #ifdef _WIN32
     localtime_s(&buf, &in_time_t);
 #else
     localtime_r(&in_time_t, &buf);
 #endif
-    ss << std::put_time(&buf, "%Y-%m-%d %H:%M:%S") << '.' << std::setfill('0') << std::setw(3) << ms.count();
+    TEString timeStr;
+    timeStr.Reserve(64);
+    std::strftime(timeStr.Data(), 64, "%Y-%m-%d %H:%M:%S", &buf);
+
+    TEString msStr = "." + TEString::FromInt((int)ms.count());
 
     LogMessage msg;
-    msg.Timestamp = ss.str();
+    msg.Timestamp = timeStr.c_str() + msStr;
     msg.Category = category;
     msg.Message = message;
     msg.Level = level;
@@ -224,7 +239,7 @@ void Log::AddMessage(const std::string &category, const std::string &message, co
     }
 }
 
-std::vector<LogMessage> Log::GetMessageBuffer()
+TEArray<LogMessage> Log::GetMessageBuffer()
 {
     std::lock_guard<std::mutex> lock(s_LogMutex);
     return s_MessageBuffer;
@@ -236,21 +251,21 @@ void Log::ClearMessageBuffer()
     s_MessageBuffer.clear();
 }
 
-bool Log::ShouldLog(const std::string &category, const std::string &level)
+bool Log::ShouldLog(const TEString &category, const TEString &level)
 {
     thread_local bool insideShouldLog = false;
     if (insideShouldLog)
         return true;
 
     insideShouldLog = true;
-    auto &settings = EngineSettings::Get();
+    auto &settings = EngineSettingsRegistry::GetMutable<GeneralEngineSettings>();
     if (!settings.IsLogCategoryEnabled(category))
     {
         insideShouldLog = false;
         return false;
     }
 
-    auto LevelToInt = [](const std::string &lvl) -> int
+    auto LevelToInt = [](const TEString &lvl) -> int
     {
         if (lvl == "DEBUG")
             return 0;
@@ -274,4 +289,34 @@ bool Log::ShouldLog(const std::string &category, const std::string &level)
     insideShouldLog = false;
     return true;
 }
-} // namespace TE
+
+TEVector4 Log::GetLogColor(const TEString &category, const TEString &level)
+{
+    // WARNING (Yellow / Gold)
+    if (level == "WARN" || level == "WARNING")
+    {
+        return TEVector4(1.0f, 0.85f, 0.0f, 1.0f);
+    }
+    // ERROR & CRITICAL & FATAL (Bright Red)
+    if (level == "ERROR" || level == "CRITICAL" || level == "FATAL")
+    {
+        return TEVector4(1.0f, 0.20f, 0.25f, 1.0f);
+    }
+    // DEBUG & TRACE (Light Sky Blue)
+    if (level == "DEBUG" || level == "TRACE")
+    {
+        return TEVector4(0.40f, 0.65f, 1.0f, 1.0f);
+    }
+    // INFO levels: Distinguish Core (Green) vs Client / Plugins (Cyan/Blue)
+    if (level == "INFO")
+    {
+        if (category == "Client" || category.StartsWith("Client"))
+        {
+            return TEVector4(0.0f, 0.70f, 1.0f, 1.0f); // Bright Terminal Cyan (#00B0FF)
+        }
+        return TEVector4(0.0f, 0.90f, 0.15f, 1.0f);     // Bright Terminal Green (#00E676)
+    }
+
+    return TEVector4(0.85f, 0.90f, 0.95f, 1.0f);
+}
+

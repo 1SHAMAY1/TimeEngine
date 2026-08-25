@@ -1,7 +1,11 @@
+#include "Core/PreRequisites.h"
 #include "Application.h"
+#include "Core/Asset/AssetManager.hpp"
+#include "Core/Audio/AudioEngine.hpp"
 #include "Core/Plugin/PluginManager.hpp"
-#include "Core/Threading/ThreadingMacros.hpp"
+#include "Core/Threading/Threading.hpp"
 #include "Events/ApplicationEvent.h"
+#include "Layers/ProfilingLayer.hpp"
 #include "Layers/TimeGUILayer.hpp"
 #include "Log.h"
 #include "Renderer/RenderCommand.hpp"
@@ -9,8 +13,6 @@
 #include "Utils/TimeGUI.hpp"
 #include "Window/IWindow.hpp"
 
-namespace TE
-{
 Application *Application::s_Instance = nullptr;
 
 Application::Application() : m_Running(true)
@@ -18,30 +20,50 @@ Application::Application() : m_Running(true)
     TE_CORE_ASSERT(!s_Instance, "Application already exists!");
     s_Instance = this;
 
-    TE::Log::Init(true, "TimeEngineLog.json");
+    Log::Init(true, "TimeEngineLog.json");
     TE_CORE_INFO("Application Constructor called.");
 
     // Initialize Thread pools
     INIT_MAIN_THREAD();
-    INIT_RENDER_THREAD();
     INIT_CALC_THREAD();
     INIT_AI_THREAD();
     INIT_WIDGET_THREAD();
     INIT_GAMEPLAY_THREAD();
 
-    m_Window = std::unique_ptr<IWindow>(IWindow::Create());
+    m_Window = IWindow::Create();
 
     if (!RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction()))
     {
         TE_CORE_ERROR("Failed to initialize GLAD via RenderCommand!");
+        m_Running = false;
         return;
     }
 
     TE_CORE_INFO("OpenGL Version: {0}", RenderCommand::GetVersionString());
 
+#ifdef TE_EDITOR
+    // === TimeGUI Layer Setup (Initialize while OpenGL context is active) ===
+    m_TimeGUILayer = CreateRef<TimeGUILayer>();
+    PushOverlay(m_TimeGUILayer);
+#endif
+
+    // Release context from Main Thread so Dedicated Render Thread exclusively owns it
+    IWindow::MakeContextCurrent(nullptr);
+    TaskSystem::InitRenderThread(m_Window->GetNativeWindow());
+
     m_Window->SetEventCallback(
         [this](Event &e)
         {
+            for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+            {
+                if (e.Handled())
+                    break;
+                (*--it)->OnEvent(e);
+            }
+
+            if (e.Handled())
+                return;
+
             EventDispatcher dispatcher(e);
 
             dispatcher.Dispatch<WindowCloseEvent>(
@@ -72,20 +94,10 @@ Application::Application() : m_Running(true)
                     TE_CLIENT_INFO("Window lost focus");
                     return false;
                 });
-
-            for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
-            {
-                if (e.Handled())
-                    break;
-                (*--it)->OnEvent(e);
-            }
         });
 
-#ifdef TE_EDITOR
-    // === TimeGUI Layer Setup ===
-    m_TimeGUILayer = new TimeGUILayer();
-    PushOverlay(m_TimeGUILayer);
-#endif
+    // Initialize Audio Subsystem
+    AudioEngine::Initialize();
 
     // Initialize Plugins
     PluginManager::Initialize();
@@ -93,7 +105,6 @@ Application::Application() : m_Running(true)
 
 Application::~Application()
 {
-    PluginManager::Shutdown();
     TE_CORE_INFO("Application Destructor called.");
 }
 
@@ -107,84 +118,112 @@ void Application::Run()
 
     while (m_Running)
     {
-        RenderCommand::SetClearColor(TEColor::Black());
-        RenderCommand::Clear();
+        auto *profiler = ProfilingLayer::GetInstance();
+        if (profiler)
+            profiler->OnUpdate();
 
-        // Application update
+        // 1. Application & Layer Logic update on Main Thread
+        auto gameStartTime = std::chrono::high_resolution_clock::now();
         OnUpdate();
-
-        // Logic update
         for (Layer *layer : m_LayerStack)
         {
             if (layer)
                 layer->OnUpdate();
         }
+        auto gameEndTime = std::chrono::high_resolution_clock::now();
+        if (profiler)
+        {
+            float gameDurationMs = std::chrono::duration<float, std::milli>(gameEndTime - gameStartTime).count();
+            profiler->RecordGameTime(gameDurationMs);
+        }
+
+        // 2. Submit GPU / UI Frame to Dedicated Render Thread
+        TaskSystem::SubmitRenderFrame([this]() {
+            RenderCommand::SetClearColor(TEColor::Black());
+            RenderCommand::Clear();
 
 #ifdef TE_EDITOR
-        // TimeGUI Rendering
-        m_TimeGUILayer->Begin();
-        for (Layer *layer : m_LayerStack)
-        {
-            if (layer)
-                layer->OnTimeGUIRender();
-        }
-        m_TimeGUILayer->End();
+            m_TimeGUILayer->Begin();
+            for (Layer *layer : m_LayerStack)
+            {
+                if (layer)
+                    layer->OnTimeGUIRender();
+            }
+            m_TimeGUILayer->End();
 #endif
+        });
 
-        // Process any deferred layer removals after all layer operations are complete
+        // 3. Process deferred layer modifications
         m_LayerStack.ProcessDeferredRemovals();
-
-        // Process any deferred layer additions
         ProcessDeferredAdditions();
 
+        // 4. Poll OS / Window events on Main Thread
         m_Window->OnUpdate();
+
+        // 5. Sync with Render Thread frame
+        TaskSystem::WaitRenderFrame();
     }
 
-    TE_CORE_INFO("Application Run ended.");
+    TE_CORE_INFO("Application Run ended. Cleaning up subsystems...");
 
+    // 1. Detach & release all active layers
+    m_LayerStack.Clear();
+    m_LayersToAdd.Clear();
+    m_OverlaysToAdd.Clear();
+
+    // 2. Shut down assets, plugins, and audio
+    AssetManager::Shutdown();
+    PluginManager::Shutdown();
+    AudioEngine::Shutdown();
+
+    // 3. Shut down dedicated render thread before destroying window
+    TaskSystem::ShutdownRenderThread();
+
+    // 4. Destroy window and terminate OpenGL/GLFW
+    m_Window.reset();
     IWindow::Terminate();
 }
 
-void Application::PushLayer(Layer *layer) { m_LayerStack.PushLayer(layer); }
+void Application::PushLayer(TERef<Layer> layer) { m_LayerStack.PushLayer(layer); }
 
-void Application::PushOverlay(Layer *overlay) { m_LayerStack.PushOverlay(overlay); }
+void Application::PushOverlay(TERef<Layer> overlay) { m_LayerStack.PushOverlay(overlay); }
 
-void Application::PopLayer(Layer *layer) { m_LayerStack.PopLayer(layer); }
+void Application::PopLayer(TERef<Layer> layer) { m_LayerStack.PopLayer(layer); }
 
-void Application::PopOverlay(Layer *overlay) { m_LayerStack.PopOverlay(overlay); }
+void Application::PopOverlay(TERef<Layer> overlay) { m_LayerStack.PopOverlay(overlay); }
 
-void Application::MarkLayerForRemoval(Layer *layer) { m_LayerStack.MarkLayerForRemoval(layer); }
+void Application::MarkLayerForRemoval(TERef<Layer> layer) { m_LayerStack.MarkLayerForRemoval(layer); }
 
-void Application::MarkOverlayForRemoval(Layer *overlay) { m_LayerStack.MarkOverlayForRemoval(overlay); }
+void Application::MarkOverlayForRemoval(TERef<Layer> overlay) { m_LayerStack.MarkOverlayForRemoval(overlay); }
 
-void Application::MarkLayerForAddition(Layer *layer)
+void Application::MarkLayerForAddition(TERef<Layer> layer)
 {
     if (layer)
-        m_LayersToAdd.push_back(layer);
+        m_LayersToAdd.Add(layer);
 }
 
-void Application::MarkOverlayForAddition(Layer *overlay)
+void Application::MarkOverlayForAddition(TERef<Layer> overlay)
 {
     if (overlay)
-        m_OverlaysToAdd.push_back(overlay);
+        m_OverlaysToAdd.Add(overlay);
 }
 
 void Application::ProcessDeferredAdditions()
 {
     // Process layers to add
-    for (Layer *layer : m_LayersToAdd)
+    for (const auto &layer : m_LayersToAdd)
     {
         if (layer)
             PushLayer(layer);
     }
-    m_LayersToAdd.clear();
+    m_LayersToAdd.Empty();
 
     // Process overlays to add
-    for (Layer *overlay : m_OverlaysToAdd)
+    for (const auto &overlay : m_OverlaysToAdd)
     {
         if (overlay)
             PushOverlay(overlay);
     }
-    m_OverlaysToAdd.clear();
+    m_OverlaysToAdd.Empty();
 }
-} // namespace TE
+

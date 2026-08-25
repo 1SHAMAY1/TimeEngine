@@ -2,7 +2,6 @@
 
 #include <functional>
 
-namespace TE {
 
     class Ticker {
     public:
@@ -26,4 +25,3 @@ namespace TE {
         float m_Total = 0.0f;
     };
 
-}

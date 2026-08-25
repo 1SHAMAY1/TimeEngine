@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Event.h"
-#include <sstream>
 
-namespace TE {
 
 	class TE_API WindowResizeEvent : public Event
 	{
@@ -14,11 +12,9 @@ namespace TE {
 		unsigned int GetWidth() const { return m_Width; }
 		unsigned int GetHeight() const { return m_Height; }
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
-			return ss.str();
+			return "WindowResizeEvent: " + TEString::FromInt(m_Width) + ", " + TEString::FromInt(m_Height);
 		}
 
 		EVENT_CLASS_TYPE(WindowResize)
@@ -79,5 +75,3 @@ namespace TE {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-
-} // namespace TE

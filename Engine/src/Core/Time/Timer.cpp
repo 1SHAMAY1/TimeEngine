@@ -1,15 +1,15 @@
-﻿#include "Core/Time/Timer.hpp"
+#include "Core/PreRequisites.h"
+#include "Core/Time/Timer.hpp"
 
-namespace TE {
 
     Timer::TimerRef Timer::Set(float duration, Callback callback, bool loop) {
-        std::string id = "timer_" + std::to_string(++s_Counter);
+        TEString id = "timer_" + TEString::FromInt(++s_Counter);
         s_Timers[id] = { callback, duration, duration, loop, false, 0 };
         return { id };
     }
 
     Timer::TimerRef Timer::SetFrames(int frameCount, Callback callback, bool loop) {
-        std::string id = "timer_" + std::to_string(++s_Counter);
+        TEString id = "timer_" + TEString::FromInt(++s_Counter);
         s_Timers[id] = { callback, 0.0f, 0.0f, loop, true, frameCount };
         return { id };
     }
@@ -23,9 +23,11 @@ namespace TE {
     }
 
     void Timer::Update(float deltaTime) {
-        std::vector<std::string> toRemove;
+        TEArray<TEString> toRemove;
 
-        for (auto& [id, data] : s_Timers) {
+        for (auto& pair : s_Timers) {
+            auto& id = pair.first;
+            auto& data = pair.second;
             if (data.frameMode) {
                 data.framesRemaining--;
                 if (data.framesRemaining <= 0) {
@@ -33,7 +35,7 @@ namespace TE {
                     if (data.loop)
                         data.framesRemaining = static_cast<int>(data.original);
                     else
-                        toRemove.push_back(id);
+                        toRemove.Add(id);
                 }
             } else {
                 data.remaining -= deltaTime;
@@ -42,17 +44,16 @@ namespace TE {
                     if (data.loop)
                         data.remaining = data.original;
                     else
-                        toRemove.push_back(id);
+                        toRemove.Add(id);
                 }
             }
         }
 
-        for (const auto& id : toRemove)
-            s_Timers.erase(id);
+        for (size_t i = 0; i < toRemove.Num(); ++i)
+            s_Timers.erase(toRemove[i]);
     }
 
     void Timer::Shutdown() {
         s_Timers.clear();
     }
 
-}

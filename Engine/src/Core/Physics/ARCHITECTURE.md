@@ -1,6 +1,6 @@
 # 2D Physics Subsystem Architecture
 
-The 2D Physics subsystem in TimeEngine handles rigid body dynamics ([`RigidBody`](file:///e:/TimeEngine/Engine/Include/Core/Physics/PhysicsWorld.hpp)), symplectic Euler numerical integration, 2D raycasting, joint constraints (Distance, Revolute, Prismatic, Gear, Pulley), soft body simulation, and ECS integration ([`RigidBodyComponent`](file:///e:/TimeEngine/Engine/Include/Core/Physics/RigidBodyComponent.hpp)).
+The 2D Physics subsystem in TimeEngine handles rigid body dynamics ([`RigidBody`](../../../../Include/Core/Physics/PhysicsWorld.hpp)), symplectic Euler numerical integration, 2D raycasting, joint constraints (Distance, Revolute, Prismatic, Gear, Pulley), soft body simulation, and ECS integration ([`RigidBodyComponent`](../../../../Include/Core/Physics/RigidBodyComponent.hpp)).
 
 > [!NOTE]
 > In short, think of the **Physics Subsystem** as the game's gravity and collision simulation engine: `PhysicsWorld` steps simulation time, calculates forces and accelerations, resolves collisions, and applies gravity to all attached `RigidBody` components.
@@ -9,9 +9,9 @@ The 2D Physics subsystem in TimeEngine handles rigid body dynamics ([`RigidBody`
 
 ## Core Component Overview
 
-1. **[`TE::RigidBody`](file:///e:/TimeEngine/Engine/Include/Core/Physics/PhysicsWorld.hpp)**: Structure storing 2D physical properties (`Position`, `Velocity`, `Force`, `Mass`, `Restitution`, `IsStatic`).
-2. **[`TE::PhysicsWorld`](file:///e:/TimeEngine/Engine/Include/Core/Physics/PhysicsWorld.hpp)**: Physics scene simulation container handling raycasts, gravity, collision resolution, joints, and soft bodies.
-3. **[`TE::RigidBodyComponent`](file:///e:/TimeEngine/Engine/Include/Core/Physics/RigidBodyComponent.hpp)**: ECS component wrapping a `RigidBody` instance onto scene entities.
+1. **[`TE::RigidBody`](../../../../Include/Core/Physics/PhysicsWorld.hpp)**: Structure storing 2D physical properties (`Position`, `Velocity`, `Force`, `Mass`, `Restitution`, `IsStatic`).
+2. **[`TE::PhysicsWorld`](../../../../Include/Core/Physics/PhysicsWorld.hpp)**: Physics scene simulation container handling raycasts, gravity, collision resolution, joints, and soft bodies.
+3. **[`TE::RigidBodyComponent`](../../../../Include/Core/Physics/RigidBodyComponent.hpp)**: ECS component wrapping a `RigidBody` instance onto scene entities.
 
 ---
 

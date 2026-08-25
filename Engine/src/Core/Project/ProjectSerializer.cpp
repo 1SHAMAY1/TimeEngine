@@ -1,42 +1,44 @@
+#include "Core/PreRequisites.h"
 #include "Core/Project/ProjectSerializer.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
 
-// Simple YAML-based serialization for now.
-// We will need to ensure yaml-cpp is available or use a simple custom parser if not.
-// Given the user context didn't explicitly show yaml-cpp in vendor,
-// I'll implementation a very basic custom parser to avoid dependency issues for now,
-// or check if I should use JSON since there are json files in the directory.
-// The directory listing showed "Client_TimeEngineLog.json", suggesting JSON support might be present or preferred.
-// Let's use nlohmann/json if available, or just simple text for this first pass to be safe and robust.
+// =============================================================================
+// Project Configuration Serialization (.teproj)
+// Plaintext Key-Value Descriptor Format:
+//   Project: <ProjectName>
+//   StartScene: <RelativePathToScene>
+//   AssetDirectory: <RelativePathToAssets>
+//   ScriptModulePath: <RelativePathToScriptDll>
+//   ThumbnailPath: <RelativePathToThumbnailImage>
+// =============================================================================
 
-// Actually, let's just use a simple robust text format for .teproj for now to guarantee no compilation errors
-// without checking vendor deep dive.
-// Format:
-// Project: Name
-// StartScene: Path/To/Scene
-// AssetDirectory: Path/To/Assets
-// ScriptModulePath: Path/To/dll
+ProjectSerializer::ProjectSerializer(TERef<Project> project) : m_Project(project) {}
 
-namespace TE
-{
-
-ProjectSerializer::ProjectSerializer(std::shared_ptr<Project> project) : m_Project(project) {}
-
-bool ProjectSerializer::Serialize(const std::filesystem::path &filepath)
+bool ProjectSerializer::Serialize(const TEString &filepath)
 {
     auto &config = m_Project->GetConfig();
 
-    std::ofstream hout(filepath);
+    std::ofstream hout(filepath.c_str());
     if (hout.is_open())
     {
-        hout << "Project: " << config.Name << std::endl;
-        hout << "StartScene: " << config.StartScene.string() << std::endl;
-        hout << "AssetDirectory: " << config.AssetDirectory.string() << std::endl;
-        hout << "ScriptModulePath: " << config.ScriptModulePath.string() << std::endl;
-        hout << "ThumbnailPath: " << config.ThumbnailPath.string() << std::endl;
+        hout << "Project: " << config.Name.c_str() << std::endl;
+        hout << "StartScene: " << config.StartScene.c_str() << std::endl;
+        hout << "AssetDirectory: " << config.AssetDirectory.c_str() << std::endl;
+        hout << "ScriptModulePath: " << config.ScriptModulePath.c_str() << std::endl;
+        hout << "ThumbnailPath: " << config.ThumbnailPath.c_str() << std::endl;
+
+        if (!config.EnabledPlugins.empty())
+        {
+            hout << "Plugins: ";
+            for (size_t i = 0; i < config.EnabledPlugins.size(); ++i)
+            {
+                hout << config.EnabledPlugins[i].c_str();
+                if (i + 1 < config.EnabledPlugins.size())
+                    hout << ", ";
+            }
+            hout << std::endl;
+        }
 
         hout.close();
         return true;
@@ -44,32 +46,35 @@ bool ProjectSerializer::Serialize(const std::filesystem::path &filepath)
     return false;
 }
 
-bool ProjectSerializer::Deserialize(const std::filesystem::path &filepath)
+bool ProjectSerializer::Deserialize(const TEString &filepath)
 {
     auto &config = m_Project->GetConfig();
+    config.EnabledPlugins.Clear();
 
-    std::ifstream hin(filepath);
-    if (hin.is_open())
-    {
-        std::string line;
-        while (std::getline(hin, line))
+    return TEFileSystem::ForEachLine(filepath, [&config](const TEString &line) {
+        if (line.StartsWith("Project: "))
+            config.Name = line.Mid(9).Trim();
+        else if (line.StartsWith("StartScene: "))
+            config.StartScene = line.Mid(12).Trim();
+        else if (line.StartsWith("AssetDirectory: "))
+            config.AssetDirectory = line.Mid(16).Trim();
+        else if (line.StartsWith("ScriptModulePath: "))
+            config.ScriptModulePath = line.Mid(18).Trim();
+        else if (line.StartsWith("ThumbnailPath: "))
+            config.ThumbnailPath = line.Mid(15).Trim();
+        else if (line.StartsWith("Plugins: "))
         {
-            if (line.find("Project: ") == 0)
-                config.Name = line.substr(9);
-            else if (line.find("StartScene: ") == 0)
-                config.StartScene = line.substr(12);
-            else if (line.find("AssetDirectory: ") == 0)
-                config.AssetDirectory = line.substr(16);
-            else if (line.find("ScriptModulePath: ") == 0)
-                config.ScriptModulePath = line.substr(18);
-            else if (line.find("ThumbnailPath: ") == 0)
-                config.ThumbnailPath = line.substr(15);
+            TEString pluginsList = line.Mid(9).Trim();
+            auto tokens = pluginsList.Split(',');
+            for (auto &tok : tokens)
+            {
+                TEString trimmed = tok.Trim();
+                if (!trimmed.empty() && !config.EnabledPlugins.Contains(trimmed))
+                {
+                    config.EnabledPlugins.Add(trimmed);
+                }
+            }
         }
-        hin.close();
         return true;
-    }
-
-    return false;
+    });
 }
-
-} // namespace TE

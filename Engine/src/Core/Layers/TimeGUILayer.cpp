@@ -1,20 +1,11 @@
-#ifndef IMGUI_IMPL_OPENGL_LOADER_GLAD
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#endif
-#define IMGUI_ENABLE_VIEWPORTS
-#define IMGUI_ENABLE_DOCKING
-
+#include "Core/PreRequisites.h"
 #include "Layers/TimeGUILayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "imgui.h"
+#include "Utils/TimeGUI.hpp"
 
-namespace TE
-{
 
-TimeGUILayer::TimeGUILayer(const std::string &name) : Layer(name) {}
+TimeGUILayer::TimeGUILayer(const TEString &name) : Layer(name) {}
 
 TimeGUILayer::~TimeGUILayer() {}
 
@@ -27,85 +18,40 @@ void TimeGUILayer::OnAttach()
     }
     m_Initialized = true;
 
-    TE_CORE_INFO("Creating TimeGUI context...");
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-
-    ImGuiIO &io = ImGui::GetIO();
-
-    TE_CORE_INFO("Initializing ImGuiIO...");
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-    ImGui::StyleColorsDark();
-    ImGuiStyle &style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
-
-    TE_CORE_INFO("Fetching application window...");
+    TE_CORE_INFO("Initializing TimeGUI Layer...");
     Application &app = Application::Get();
-    GLFWwindow *window = static_cast<GLFWwindow *>(app.GetWindow().GetNativeWindow());
+    void *window = app.GetWindow().GetNativeWindow();
     if (!window)
     {
-        TE_CORE_CRITICAL("GLFW window is null!");
+        TE_CORE_CRITICAL("Native window handle is null!");
         return;
     }
 
-    TE_CORE_INFO("Initializing ImGui platform/renderer backends...");
-    if (!ImGui_ImplGlfw_InitForOpenGL(window, true))
+    if (!TimeGUI::Init(window))
     {
-        TE_CORE_CRITICAL("ImGui_ImplGlfw_InitForOpenGL failed!");
+        TE_CORE_CRITICAL("TimeGUI::Init failed!");
         return;
     }
 
-    if (!ImGui_ImplOpenGL3_Init("#version 410"))
-    {
-        TE_CORE_CRITICAL("ImGui_ImplOpenGL3_Init failed!");
-        return;
-    }
-
-    TE_CORE_INFO("TimeGUI context initialized successfully.");
+    TE_CORE_INFO("TimeGUI Layer initialized successfully.");
 }
 
 void TimeGUILayer::OnDetach()
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    TimeGUI::Shutdown();
+    m_Initialized = false;
 }
 
 void TimeGUILayer::Begin()
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    TimeGUI::BeginFrame();
 }
 
 void TimeGUILayer::End()
 {
-    ImGuiIO &io = ImGui::GetIO();
     Application &app = Application::Get();
-
-    io.DisplaySize =
-        ImVec2(static_cast<float>(app.GetWindow().GetWidth()), static_cast<float>(app.GetWindow().GetHeight()));
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    // Handle multi-viewport rendering
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        void *backup_current_context = IWindow::GetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        IWindow::MakeContextCurrent(backup_current_context);
-    }
+    TimeGUI::EndFrame(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 }
 
 void TimeGUILayer::OnTimeGUIRender() {}
 
-} // namespace TE

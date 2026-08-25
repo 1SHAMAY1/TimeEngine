@@ -2,41 +2,41 @@
 
 #include "CustomizableLogger.hpp"
 #include "PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/TEString.hpp"
 #include <sstream>
-#include <string>
-#include <vector>
 
-namespace TE
-{
 struct LogMessage
 {
-    std::string Timestamp;
-    std::string Category;
-    std::string Message;
-    std::string Level;
+    TEString Timestamp;
+    TEString Category;
+    TEString Message;
+    TEString Level;
 };
 
 class TE_API Log
 {
 public:
-    static void Init(bool logToFile = true, const std::string &file = "TimeEngineLog.json");
+    static void Init(bool logToFile = true, const TEString &file = "TimeEngineLog.json");
 
     inline static CustomizableLogger &GetCoreLogger() { return *s_CoreLogger; }
     inline static CustomizableLogger &GetClientLogger() { return *s_ClientLogger; }
+    inline static bool HasCoreLogger() { return s_CoreLogger != nullptr; }
+    inline static bool HasClientLogger() { return s_ClientLogger != nullptr; }
 
-    static void AddMessage(const std::string &category, const std::string &message, const std::string &level);
-    static std::vector<LogMessage> GetMessageBuffer();
+    static void AddMessage(const TEString &category, const TEString &message, const TEString &level);
+    static TEArray<LogMessage> GetMessageBuffer();
     static void ClearMessageBuffer();
-    static bool ShouldLog(const std::string &category, const std::string &level);
+    static bool ShouldLog(const TEString &category, const TEString &level);
+    static TEVector4 GetLogColor(const TEString &category, const TEString &level);
 
 private:
-    static std::unique_ptr<CustomizableLogger> s_CoreLogger;
-    static std::unique_ptr<CustomizableLogger> s_ClientLogger;
+    static TEScope<CustomizableLogger> s_CoreLogger;
+    static TEScope<CustomizableLogger> s_ClientLogger;
 };
-} // namespace TE
 
 // Simple variadic string joiner for logs to avoid fmt dependency issues
-template <typename... Args> std::string LogFormat(Args &&...args)
+template <typename... Args> TEString LogFormat(Args &&...args)
 {
     std::ostringstream ss;
     (ss << ... << args);
@@ -48,37 +48,41 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CORE_INFO_1(msg)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "INFO"))                                                                      \
+        if (Log::ShouldLog("Core", "INFO"))                                                                      \
         {                                                                                                              \
-            ::TE::Log::AddMessage("Core", msg, "INFO");                                                                \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "INFO");                                                       \
+            Log::AddMessage("Core", msg, "INFO");                                                                \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "INFO");                                                   \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_WARN_1(msg)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "WARNING"))                                                                   \
+        if (Log::ShouldLog("Core", "WARNING"))                                                                   \
         {                                                                                                              \
-            ::TE::Log::AddMessage("Core", msg, "WARNING");                                                             \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "WARNING");                                                    \
+            Log::AddMessage("Core", msg, "WARNING");                                                             \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "WARNING");                                                \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_ERROR_1(msg)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
         {                                                                                                              \
-            ::TE::Log::AddMessage("Core", msg, "ERROR");                                                               \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
+            Log::AddMessage("Core", msg, "ERROR");                                                               \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "ERROR");                                                  \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_CRITICAL_1(msg)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
         {                                                                                                              \
-            ::TE::Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                               \
         }                                                                                                              \
     } while (0)
 
@@ -86,61 +90,67 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CORE_INFO(...)                                                                                              \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "INFO"))                                                                      \
+        if (Log::ShouldLog("Core", "INFO"))                                                                      \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "INFO");                                                                \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "INFO");                                                       \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "INFO");                                                                \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "INFO");                                                   \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_WARN(...)                                                                                              \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "WARNING"))                                                                   \
+        if (Log::ShouldLog("Core", "WARNING"))                                                                   \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "WARNING");                                                             \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "WARNING");                                                    \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "WARNING");                                                             \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "WARNING");                                                \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_ERROR(...)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "ERROR");                                                               \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "ERROR");                                                               \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "ERROR");                                                  \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_DEBUG(...)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "DEBUG"))                                                                     \
+        if (Log::ShouldLog("Core", "DEBUG"))                                                                     \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "DEBUG");                                                               \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "DEBUG");                                                      \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "DEBUG");                                                               \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "DEBUG");                                                  \
         }                                                                                                              \
     } while (0)
 #define TE_INPUT_DEBUG(...)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Input", "DEBUG"))                                                                    \
+        if (Log::ShouldLog("Input", "DEBUG"))                                                                    \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Input", msg, "DEBUG");                                                              \
-            ::TE::Log::GetCoreLogger().log("Input", msg, "DEBUG");                                                     \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Input", msg, "DEBUG");                                                              \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Input", msg, "DEBUG");                                                 \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_CRITICAL(...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
+            if (Log::HasCoreLogger())                                                                            \
+                Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                               \
         }                                                                                                              \
     } while (0)
 
@@ -154,51 +164,56 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CLIENT_INFO(...)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "INFO"))                                                                    \
+        if (Log::ShouldLog("Client", "INFO"))                                                                    \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "INFO");                                                              \
-            ::TE::Log::GetClientLogger().log("Client", msg, "INFO");                                                   \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "INFO");                                                              \
+            if (Log::HasClientLogger())                                                                          \
+                Log::GetClientLogger().log("Client", msg, "INFO");                                               \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_WARN(...)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "WARNING"))                                                                 \
+        if (Log::ShouldLog("Client", "WARNING"))                                                                 \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "WARNING");                                                           \
-            ::TE::Log::GetClientLogger().log("Client", msg, "WARNING");                                                \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "WARNING");                                                           \
+            if (Log::HasClientLogger())                                                                          \
+                Log::GetClientLogger().log("Client", msg, "WARNING");                                            \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_ERROR(...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "ERROR"))                                                                   \
+        if (Log::ShouldLog("Client", "ERROR"))                                                                   \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "ERROR");                                                             \
-            ::TE::Log::GetClientLogger().log("Client", msg, "ERROR");                                                  \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "ERROR");                                                             \
+            if (Log::HasClientLogger())                                                                          \
+                Log::GetClientLogger().log("Client", msg, "ERROR");                                              \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_DEBUG(...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "DEBUG"))                                                                   \
+        if (Log::ShouldLog("Client", "DEBUG"))                                                                   \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "DEBUG");                                                             \
-            ::TE::Log::GetClientLogger().log("Client", msg, "DEBUG");                                                  \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "DEBUG");                                                             \
+            if (Log::HasClientLogger())                                                                          \
+                Log::GetClientLogger().log("Client", msg, "DEBUG");                                              \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_CRITICAL(...)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "CRITICAL"))                                                                \
+        if (Log::ShouldLog("Client", "CRITICAL"))                                                                \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "CRITICAL");                                                          \
-            ::TE::Log::GetClientLogger().log("Client", msg, "CRITICAL");                                               \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "CRITICAL");                                                          \
+            if (Log::HasClientLogger())                                                                          \
+                Log::GetClientLogger().log("Client", msg, "CRITICAL");                                           \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_ASSERT(x, msg)                                                                                       \
@@ -214,19 +229,19 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CORE_ERROR_1(msg)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
         {                                                                                                              \
-            ::TE::Log::AddMessage("Core", msg, "ERROR");                                                               \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
+            Log::AddMessage("Core", msg, "ERROR");                                                               \
+            Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_CRITICAL_1(msg)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
         {                                                                                                              \
-            ::TE::Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
+            Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
         }                                                                                                              \
     } while (0)
 
@@ -235,11 +250,11 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CORE_ERROR(...)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "ERROR");                                                               \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "ERROR");                                                               \
+            Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_DEBUG(...)
@@ -247,11 +262,11 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CORE_CRITICAL(...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            ::TE::Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
+            Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
         }                                                                                                              \
     } while (0)
 
@@ -267,22 +282,22 @@ template <typename... Args> std::string LogFormat(Args &&...args)
 #define TE_CLIENT_ERROR(...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "ERROR"))                                                                   \
+        if (Log::ShouldLog("Client", "ERROR"))                                                                   \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "ERROR");                                                             \
-            ::TE::Log::GetClientLogger().log("Client", msg, "ERROR");                                                  \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "ERROR");                                                             \
+            Log::GetClientLogger().log("Client", msg, "ERROR");                                                  \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_DEBUG(...)
 #define TE_CLIENT_CRITICAL(...)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (::TE::Log::ShouldLog("Client", "CRITICAL"))                                                                \
+        if (Log::ShouldLog("Client", "CRITICAL"))                                                                \
         {                                                                                                              \
-            std::string msg = LogFormat(__VA_ARGS__);                                                                  \
-            ::TE::Log::AddMessage("Client", msg, "CRITICAL");                                                          \
-            ::TE::Log::GetClientLogger().log("Client", msg, "CRITICAL");                                               \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
+            Log::AddMessage("Client", msg, "CRITICAL");                                                          \
+            Log::GetClientLogger().log("Client", msg, "CRITICAL");                                               \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_ASSERT(x, msg)                                                                                       \
@@ -292,3 +307,4 @@ template <typename... Args> std::string LogFormat(Args &&...args)
         __debugbreak();                                                                                                \
     }
 #endif
+

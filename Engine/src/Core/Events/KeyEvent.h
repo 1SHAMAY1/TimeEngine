@@ -4,7 +4,6 @@
 #include "Core/Events/Event.h"
 #include "Core/PreRequisites.h"
 
-namespace TE {
 
 	class TE_API KeyEvent : public Event
 	{
@@ -28,11 +27,9 @@ namespace TE {
 
 		bool IsRepeat() const { return m_IsRepeat; }
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "KeyPressedEvent: " << static_cast<int>(m_KeyCode) << " (repeat = " << m_IsRepeat << ")";
-			return ss.str();
+			return TEString("KeyPressedEvent: ") + TEString::FromInt(static_cast<int>(m_KeyCode)) + " (repeat = " + (m_IsRepeat ? "1" : "0") + ")";
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
@@ -47,11 +44,9 @@ namespace TE {
 		KeyReleasedEvent(const KeyCode keycode)
 			: KeyEvent(keycode) {}
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "KeyReleasedEvent: " << static_cast<int>(m_KeyCode);
-			return ss.str();
+			return TEString("KeyReleasedEvent: ") + TEString::FromInt(static_cast<int>(m_KeyCode));
 		}
 
 		EVENT_CLASS_TYPE(KeyReleased)
@@ -63,14 +58,10 @@ namespace TE {
 		KeyTypedEvent(const KeyCode keycode)
 			: KeyEvent(keycode) {}
 
-		std::string ToString() const override
+		TEString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "KeyTypedEvent: " << static_cast<int>(m_KeyCode);
-			return ss.str();
+			return TEString("KeyTypedEvent: ") + TEString::FromInt(static_cast<int>(m_KeyCode));
 		}
 
 		EVENT_CLASS_TYPE(KeyTyped)
 	};
-
-} 

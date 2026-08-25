@@ -1,7 +1,5 @@
 #pragma once
 
-namespace TE
-{
 	using MouseCode = uint16_t;
 
 	namespace Mouse
@@ -23,4 +21,4 @@ namespace TE
 			ButtonMiddle           = Button2
 		};
 	}
-}
+

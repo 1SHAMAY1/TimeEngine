@@ -1,6 +1,6 @@
-﻿#include "Core/Time/Ticker.hpp"
+#include "Core/PreRequisites.h"
+#include "Core/Time/Ticker.hpp"
 
-namespace TE {
 
     Ticker::Ticker(Callback callback, float rate)
         : m_Callback(callback), m_Rate(rate) {}
@@ -31,4 +31,3 @@ namespace TE {
     float Ticker::GetRate() const { return m_Rate; }
     float Ticker::GetElapsed() const { return m_Elapsed; }
 
-}

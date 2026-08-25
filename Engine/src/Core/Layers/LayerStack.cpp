@@ -1,98 +1,130 @@
-﻿#include "Layers/LayerStack.hpp"
+#include "Core/PreRequisites.h"
+#include "Layers/LayerStack.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 
-namespace TE {
 
-    LayerStack::LayerStack()
+LayerStack::LayerStack() {}
+
+LayerStack::~LayerStack()
+{
+    for (auto &layer : m_Layers)
     {
-    }
-
-    LayerStack::~LayerStack()
-    {
-        for (Layer* layer : m_Layers)
-            delete layer;
-
-        m_Layers.clear();
-    }
-
-    void LayerStack::PushLayer(Layer* layer)
-    {
-        if (!layer) return;
-        
-        m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
-        m_LayerInsertIndex++;
-        layer->OnAttach();
-    }
-
-    void LayerStack::PushOverlay(Layer* overlay)
-    {
-        if (!overlay) return;
-        
-        m_Layers.emplace_back(overlay);
-        overlay->OnAttach();
-    }
-
-    void LayerStack::PopLayer(Layer* layer)
-    {
-        if (!layer) return;
-        
-        auto it = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, layer);
-        if (it != m_Layers.begin() + m_LayerInsertIndex) {
+        if (layer)
             layer->OnDetach();
-            m_Layers.erase(it);
+    }
+    // TERef handles reference-counted destruction automatically - no manual SafeDelete loops
+    m_Layers.Clear();
+}
+
+void LayerStack::PushLayer(TERef<Layer> layer)
+{
+    if (!layer)
+        return;
+
+    m_Layers.Insert(m_LayerInsertIndex, layer);
+    m_LayerInsertIndex++;
+    layer->OnAttach();
+}
+
+void LayerStack::PushOverlay(TERef<Layer> overlay)
+{
+    if (!overlay)
+        return;
+
+    m_Layers.Add(overlay);
+    overlay->OnAttach();
+}
+
+void LayerStack::PopLayer(TERef<Layer> layer)
+{
+    if (!layer)
+        return;
+
+    for (size_t i = 0; i < m_LayerInsertIndex; ++i)
+    {
+        if (m_Layers[i] == layer)
+        {
+            m_Layers[i]->OnDetach();
+            m_Layers.RemoveAt(i);
             m_LayerInsertIndex--;
+            break;
         }
-    }
-
-    void LayerStack::PopOverlay(Layer* overlay)
-    {
-        if (!overlay) return;
-        
-        auto it = std::find(m_Layers.begin() + m_LayerInsertIndex, m_Layers.end(), overlay);
-        if (it != m_Layers.end()) {
-            overlay->OnDetach();
-            m_Layers.erase(it);
-        }
-    }
-
-    void LayerStack::MarkLayerForRemoval(Layer* layer)
-    {
-        if (!layer) return;
-        
-        // Check if layer is already marked for removal
-        auto it = std::find(m_LayersToRemove.begin(), m_LayersToRemove.end(), layer);
-        if (it == m_LayersToRemove.end()) {
-            m_LayersToRemove.push_back(layer);
-        }
-    }
-
-    void LayerStack::MarkOverlayForRemoval(Layer* overlay)
-    {
-        if (!overlay) return;
-        
-        // Check if overlay is already marked for removal
-        auto it = std::find(m_LayersToRemove.begin(), m_LayersToRemove.end(), overlay);
-        if (it == m_LayersToRemove.end()) {
-            m_LayersToRemove.push_back(overlay);
-        }
-    }
-
-    void LayerStack::ProcessDeferredRemovals()
-    {
-        for (Layer* layer : m_LayersToRemove) {
-            if (!layer) continue;
-            
-            // Determine if it's a layer or overlay based on position
-            auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
-            if (it != m_Layers.end()) {
-                if (it < m_Layers.begin() + m_LayerInsertIndex) {
-                    // It's a layer
-                    PopLayer(layer);
-                } else {
-                    // It's an overlay
-                    PopOverlay(layer);
-                }
-            }
-        }
-        m_LayersToRemove.clear();
     }
 }
+
+void LayerStack::PopOverlay(TERef<Layer> overlay)
+{
+    if (!overlay)
+        return;
+
+    for (size_t i = m_LayerInsertIndex; i < m_Layers.Size(); ++i)
+    {
+        if (m_Layers[i] == overlay)
+        {
+            m_Layers[i]->OnDetach();
+            m_Layers.RemoveAt(i);
+            break;
+        }
+    }
+}
+
+void LayerStack::MarkLayerForRemoval(TERef<Layer> layer)
+{
+    if (!layer)
+        return;
+
+    if (!m_LayersToRemove.Contains(layer))
+    {
+        m_LayersToRemove.Add(layer);
+    }
+}
+
+void LayerStack::MarkOverlayForRemoval(TERef<Layer> overlay)
+{
+    if (!overlay)
+        return;
+
+    if (!m_LayersToRemove.Contains(overlay))
+    {
+        m_LayersToRemove.Add(overlay);
+    }
+}
+
+void LayerStack::ProcessDeferredRemovals()
+{
+    for (const auto &layer : m_LayersToRemove)
+    {
+        if (!layer)
+            continue;
+
+        for (size_t i = 0; i < m_Layers.Size(); ++i)
+        {
+            if (m_Layers[i] == layer)
+            {
+                if (i < m_LayerInsertIndex)
+                {
+                    PopLayer(layer);
+                }
+                else
+                {
+                    PopOverlay(layer);
+                }
+                break;
+            }
+        }
+    }
+    m_LayersToRemove.Clear();
+}
+
+void LayerStack::Clear()
+{
+    for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
+    {
+        if (*it)
+            (*it)->OnDetach();
+    }
+    m_Layers.Clear();
+    m_LayersToRemove.Clear();
+    m_LayerInsertIndex = 0;
+}
+

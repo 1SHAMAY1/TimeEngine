@@ -1,13 +1,12 @@
+#include "Core/PreRequisites.h"
 #include "Layers/ProfilingButtonLayer.hpp"
 #include "Core/Log.h"
 #include "Utils/TimeGUI.hpp"
 
-namespace TE
-{
 
 ProfilingButtonLayer::ProfilingButtonLayer() : Layer("ProfilingButtonLayer")
 {
-    m_ProfilingLayer = std::make_shared<ProfilingLayer>();
+    m_ProfilingLayer = CreateRef<ProfilingLayer>();
 }
 
 ProfilingButtonLayer::~ProfilingButtonLayer() {}
@@ -49,15 +48,23 @@ void ProfilingButtonLayer::RenderProfilingButton()
     if (TimeGUI::Begin("ProfilingButton", nullptr, windowFlags))
     {
         // Button to show/hide profiling window
+        auto *profiler = ProfilingLayer::GetInstance();
         if (TimeGUI::Button("📊 Performance Monitor", TEVector2(180, 40)))
         {
-            if (!m_ProfilingLayer->IsVisible())
+            if (profiler)
             {
-                CreateFloatingProfilingWindow();
+                profiler->SetVisible(!profiler->IsVisible());
             }
-            else
+            else if (m_ProfilingLayer)
             {
-                m_ProfilingLayer->SetVisible(false);
+                if (!m_ProfilingLayer->IsVisible())
+                {
+                    CreateFloatingProfilingWindow();
+                }
+                else
+                {
+                    m_ProfilingLayer->SetVisible(false);
+                }
             }
         }
 
@@ -93,4 +100,3 @@ void ProfilingButtonLayer::CreateFloatingProfilingWindow()
     m_ProfilingLayer->RecordShader(1);
 }
 
-} // namespace TE

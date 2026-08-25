@@ -1,15 +1,13 @@
+#include "Core/PreRequisites.h"
 #include "Input/Input.hpp"
 
-#include "imgui.h"
-
 #include "Utils/TimeGUI.hpp"
+#include <imgui.h>
 #include <GLFW/glfw3.h>
 
-namespace TE
-{
 void *Input::s_Window = nullptr;
-std::unordered_map<KeyCode, InputState> Input::s_KeyStates;
-std::unordered_map<MouseCode, InputState> Input::s_MouseStates;
+TEMap<KeyCode, InputState> Input::s_KeyStates;
+TEMap<MouseCode, InputState> Input::s_MouseStates;
 float Input::s_MouseScrollX = 0.0f;
 float Input::s_MouseScrollY = 0.0f;
 bool Input::s_MouseButtonDown[3] = {false, false, false};
@@ -76,7 +74,7 @@ bool Input::GetMouseButtonUp(int button)
     return s_MouseButtonUp[button];
 }
 
-void Input::OnKeyPressed(KeyCode key, TE::Event *e, bool isRepeat)
+void Input::OnKeyPressed(KeyCode key, Event *e, bool isRepeat)
 {
     auto &state = s_KeyStates[key];
     state.IsPressed = true;
@@ -90,7 +88,7 @@ void Input::OnKeyPressed(KeyCode key, TE::Event *e, bool isRepeat)
     }
 }
 
-void Input::OnKeyReleased(KeyCode key, TE::Event *e)
+void Input::OnKeyReleased(KeyCode key, Event *e)
 {
     auto &state = s_KeyStates[key];
     state.IsPressed = false;
@@ -98,7 +96,7 @@ void Input::OnKeyReleased(KeyCode key, TE::Event *e)
     state.DurationHeld = std::chrono::duration<float>(std::chrono::steady_clock::now() - state.PressedTime).count();
 }
 
-void Input::OnMousePressed(MouseCode button, TE::Event *e)
+void Input::OnMousePressed(MouseCode button, Event *e)
 {
     auto &state = s_MouseStates[button];
     state.IsPressed = true;
@@ -107,7 +105,7 @@ void Input::OnMousePressed(MouseCode button, TE::Event *e)
     state.PressedTime = std::chrono::steady_clock::now();
 }
 
-void Input::OnMouseReleased(MouseCode button, TE::Event *e)
+void Input::OnMouseReleased(MouseCode button, Event *e)
 {
     auto &state = s_MouseStates[button];
     state.IsPressed = false;
@@ -121,16 +119,16 @@ const InputState &Input::GetMouseState(MouseCode button) { return s_MouseStates[
 
 void Input::Update(float deltaTime)
 {
-    for (auto &[key, state] : s_KeyStates)
+    for (auto &pair : s_KeyStates)
     {
-        if (state.IsPressed)
-            state.DurationHeld += deltaTime;
+        if (pair.second.IsPressed)
+            pair.second.DurationHeld += deltaTime;
     }
 
-    for (auto &[btn, state] : s_MouseStates)
+    for (auto &pair : s_MouseStates)
     {
-        if (state.IsPressed)
-            state.DurationHeld += deltaTime;
+        if (pair.second.IsPressed)
+            pair.second.DurationHeld += deltaTime;
     }
 }
 
@@ -255,4 +253,4 @@ int Input::ToImGuiKey(KeyCode key)
     }
     return ImGuiKey_None;
 }
-} // namespace TE
+

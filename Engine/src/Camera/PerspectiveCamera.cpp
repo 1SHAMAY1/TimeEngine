@@ -1,6 +1,6 @@
-﻿#include "Camera/PerspectiveCamera.hpp"
+#include "Core/PreRequisites.h"
+#include "Camera/PerspectiveCamera.hpp"
 
-namespace TE {
 
     PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float nearClip, float farClip)
     {
@@ -38,4 +38,3 @@ namespace TE {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     }
 
-}

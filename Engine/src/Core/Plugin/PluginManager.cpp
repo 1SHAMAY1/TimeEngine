@@ -1,7 +1,10 @@
+#include "Core/PreRequisites.h"
 #include "Core/Plugin/PluginManager.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
+#include "Core/Threading/Threading.hpp"
+#include "Utils/TEFileSystem.hpp"
+#include "Utils/PlatformUtils.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -15,28 +18,95 @@
 #endif
 #endif
 
-namespace TE
-{
 
-static std::string GetSharedLibraryName(const std::string &name)
+static TEString GetSharedLibraryName(const TEString &name)
 {
 #ifdef TE_PLATFORM_WINDOWS
     return name + ".dll";
 #elif defined(__APPLE__)
-    return "lib" + name + ".dylib";
+    return TEString("lib") + name + ".dylib";
 #else
-    return "lib" + name + ".so";
+    return TEString("lib") + name + ".so";
 #endif
 }
 
-typedef IPlugin *(*CreatePluginFn)();
-typedef void (*DestroyPluginFn)(IPlugin *);
+static TEString ResolvePluginLibraryPath(const PluginInfo &info, const TEString &descriptorPath)
+{
+    TEString libName = GetSharedLibraryName(info.Name);
+    TEString exeDir = PlatformUtils::GetExecutablePath().GetParentPath();
+    TEString cwd = TEFileSystem::GetCurrentWorkingDirectory();
+
+    TEArray<TEString> candidates;
+    // 1. In the same directory as the descriptor
+    candidates.Add(descriptorPath.GetParentPath() / libName);
+    // 2. In executable plugins directory structure (e.g. Bin/.../TimeEditor/Plugins/<Name>/<Name>.dll)
+    if (!exeDir.IsEmpty())
+    {
+        candidates.Add(exeDir / "Plugins" / info.Name / libName);
+        candidates.Add(exeDir / "Plugins" / libName);
+        candidates.Add(exeDir / libName);
+        candidates.Add(exeDir / "../../../Engine/Plugins" / info.Name / libName);
+    }
+    // 3. In working directory plugins
+    if (!cwd.IsEmpty())
+    {
+        candidates.Add(cwd / "Plugins" / info.Name / libName);
+        candidates.Add(cwd / "Plugins" / libName);
+        candidates.Add(cwd / "Engine/Plugins" / info.Name / libName);
+        candidates.Add(cwd / "Bin/Debug-windows-x86_64/TimeEditor/Plugins" / info.Name / libName);
+        candidates.Add(cwd / "Bin/Release-windows-x86_64/TimeEditor/Plugins" / info.Name / libName);
+        candidates.Add(cwd / "Bin/Dist-windows-x86_64/TimeEditor/Plugins" / info.Name / libName);
+    }
+    // 4. In active project plugins
+    if (Project::GetActive())
+    {
+        candidates.Add(Project::GetProjectDirectory() / "Plugins" / info.Name / libName);
+        candidates.Add(Project::GetProjectDirectory() / "Plugins" / libName);
+    }
+
+    for (const auto &cand : candidates)
+    {
+        if (TEFileSystem::Exists(cand))
+        {
+            return cand;
+        }
+    }
+
+    // Default fallback to descriptor parent path
+    return descriptorPath.GetParentPath() / libName;
+}
+
+using CreatePluginFn = void (*)(TERef<IPlugin>&);
+
+#include "Core/Asset/AssetManager.hpp"
+#include "Core/Settings/EngineSettingsRegistry.hpp"
+#include "Editor/AssetEditorRegistry.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
+#include "Editor/EditorToolbarRegistry.hpp"
+#include "Editor/EditorMenubarRegistry.hpp"
+#include "Editor/ViewportOverlayRegistry.hpp"
+#include "Editor/EditorSettingsRegistry.hpp"
+#include "Editor/ProjectSettingsRegistry.hpp"
+
+static TEChannel<PluginProgressMessage> s_AsyncProgressChannel;
+static TEScope<ThreadPool> s_AsyncLoadingPool = nullptr;
+static std::atomic<bool> s_AsyncLoadingStarted{false};
+static std::atomic<bool> s_AsyncLoadingComplete{false};
+static std::atomic<bool> s_AsyncLoadingCancelled{false};
 
 void PluginManager::Initialize()
 {
-    TE_CORE_INFO("Initializing Plugin Manager...");
+    TE_CORE_INFO("Initializing Plugin Manager (Discovery)...");
+    s_NextLoadIndex = 0;
+    s_FullyLoaded = false;
+    s_AsyncLoadingStarted = false;
+    s_AsyncLoadingComplete = false;
+    s_AsyncLoadingCancelled = false;
     DiscoverPlugins();
+}
 
+void PluginManager::LoadAllDiscoveredPlugins()
+{
     for (const auto &info : s_DiscoveredPlugins)
     {
         if (info.Enabled)
@@ -44,11 +114,179 @@ void PluginManager::Initialize()
             LoadPlugin(info.Path);
         }
     }
+    s_FullyLoaded = true;
+}
+
+bool PluginManager::StepLoadNextPlugin(TEString &outCurrentPluginName, size_t &outLoadedCount, size_t &outTotalCount)
+{
+    size_t totalEnabled = 0;
+    for (const auto &p : s_DiscoveredPlugins)
+    {
+        if (p.Enabled)
+            totalEnabled++;
+    }
+
+    outTotalCount = totalEnabled;
+    outLoadedCount = s_LoadedPluginInstances.Size();
+
+    while (s_NextLoadIndex < s_DiscoveredPlugins.Size())
+    {
+        const auto &info = s_DiscoveredPlugins[s_NextLoadIndex++];
+        if (info.Enabled)
+        {
+            outCurrentPluginName = info.Name;
+            LoadPlugin(info.Path);
+            outLoadedCount = s_LoadedPluginInstances.Size();
+            return true;
+        }
+    }
+
+    s_FullyLoaded = true;
+    outCurrentPluginName = "Ready";
+    return false;
+}
+
+void PluginManager::StartAsyncLoading()
+{
+    if (s_AsyncLoadingStarted.exchange(true))
+        return;
+
+    s_AsyncLoadingCancelled = false;
+
+    if (s_DiscoveredPlugins.IsEmpty())
+    {
+        DiscoverPlugins();
+    }
+
+    if (!s_AsyncLoadingPool)
+    {
+        s_AsyncLoadingPool = CreateScope<ThreadPool>(1);
+    }
+
+    s_AsyncLoadingPool->Enqueue([]() {
+        size_t totalEnabled = 0;
+        for (const auto &p : s_DiscoveredPlugins)
+        {
+            if (p.Enabled)
+                totalEnabled++;
+        }
+
+        if (totalEnabled == 0 || s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
+        {
+            s_FullyLoaded = true;
+            s_AsyncLoadingComplete = true;
+            PluginProgressMessage msg;
+            msg.PluginName = "Ready";
+            msg.LoadedCount = 0;
+            msg.TotalCount = 0;
+            msg.IsComplete = true;
+            s_AsyncProgressChannel.Send(msg);
+            return;
+        }
+
+        size_t loaded = 0;
+        for (size_t i = 0; i < s_DiscoveredPlugins.Size(); ++i)
+        {
+            if (s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
+                return;
+
+            const auto &info = s_DiscoveredPlugins[i];
+            if (!info.Enabled)
+                continue;
+
+            PluginProgressMessage startMsg;
+            startMsg.PluginName = info.Name;
+            startMsg.LoadedCount = loaded;
+            startMsg.TotalCount = totalEnabled;
+            startMsg.IsComplete = false;
+            s_AsyncProgressChannel.Send(startMsg);
+
+            LoadPlugin(info.Path);
+            loaded = s_LoadedPluginInstances.Size();
+
+            if (s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
+                return;
+
+            PluginProgressMessage loadedMsg;
+            loadedMsg.PluginName = info.Name;
+            loadedMsg.LoadedCount = loaded;
+            loadedMsg.TotalCount = totalEnabled;
+            loadedMsg.IsComplete = false;
+            s_AsyncProgressChannel.Send(loadedMsg);
+        }
+
+        s_FullyLoaded = true;
+        s_AsyncLoadingComplete = true;
+        PluginProgressMessage finalMsg;
+        finalMsg.PluginName = "Ready";
+        finalMsg.LoadedCount = loaded;
+        finalMsg.TotalCount = totalEnabled;
+        finalMsg.IsComplete = true;
+        s_AsyncProgressChannel.Send(finalMsg);
+    });
+}
+
+void PluginManager::CancelAsyncLoading()
+{
+    s_AsyncLoadingCancelled = true;
+    s_AsyncProgressChannel.Close();
+}
+
+bool PluginManager::TryGetAsyncProgress(PluginProgressMessage &outMsg)
+{
+    bool receivedAny = false;
+    while (auto msg = s_AsyncProgressChannel.TryReceive())
+    {
+        outMsg = *msg;
+        receivedAny = true;
+    }
+    return receivedAny;
+}
+
+bool PluginManager::IsAsyncLoadingComplete()
+{
+    return s_AsyncLoadingComplete.load();
+}
+
+bool PluginManager::IsFullyLoaded()
+{
+    return s_FullyLoaded;
+}
+
+float PluginManager::GetLoadProgress()
+{
+    size_t total = 0;
+    for (const auto &p : s_DiscoveredPlugins)
+    {
+        if (p.Enabled)
+            total++;
+    }
+    if (total == 0)
+        return 1.0f;
+    return (float)s_LoadedPluginInstances.Size() / (float)total;
 }
 
 void PluginManager::Shutdown()
 {
     TE_CORE_INFO("Shutting down Plugin Manager...");
+
+    // 1. Signal cancellation to background task and close channel
+    CancelAsyncLoading();
+
+    // 2. Ensure async loading worker has finished and joined immediately
+    s_AsyncLoadingPool = nullptr;
+
+    // 3. Cleanly clear all static registries holding plugin objects before unloading plugin DLLs
+    EditorPanelRegistry::Clear();
+    AssetEditorRegistry::Clear();
+    EditorToolbarRegistry::Clear();
+    EditorMenubarRegistry::Clear();
+    ViewportOverlayRegistry::Clear();
+    ViewportOverlayOwnerRegistry::Clear();
+    EditorSettingsRegistry::Clear();
+    ProjectSettingsRegistry::Clear();
+    EngineSettingsRegistry::ClearAll();
+
     // Unload in reverse order of loading
     for (auto it = s_LoadedPluginInstances.rbegin(); it != s_LoadedPluginInstances.rend(); ++it)
     {
@@ -56,145 +294,164 @@ void PluginManager::Shutdown()
         {
             TE_CORE_INFO("Unloading plugin: ", it->Info.Name);
             it->Instance->OnUnload();
-
-            auto destroyFn = (DestroyPluginFn)GetProcAddress(it->Module, "DestroyPluginInstance");
-            if (destroyFn)
-            {
-                destroyFn(it->Instance);
-            }
+            it->Instance = nullptr;
         }
         if (it->Module)
         {
             FreeLibrary(it->Module);
         }
     }
-    s_LoadedPluginInstances.clear();
-    s_LoadedPlugins.clear();
-    s_DiscoveredPlugins.clear();
+    s_LoadedPluginInstances.Clear();
+    s_LoadedPlugins.Clear();
+    s_DiscoveredPlugins.Clear();
+    s_NextLoadIndex = 0;
+    s_FullyLoaded = false;
 }
 
 void PluginManager::DiscoverPlugins()
 {
-    s_DiscoveredPlugins.clear();
+    s_DiscoveredPlugins.Clear();
 
-    // 1. Discover engine-level plugins (relative to the executable directory)
-    std::filesystem::path exeDir;
-#ifdef TE_PLATFORM_WINDOWS
-    wchar_t exePath[MAX_PATH];
-    GetModuleFileNameW(NULL, exePath, MAX_PATH);
-    exeDir = std::filesystem::path(exePath).parent_path();
-#elif defined(__APPLE__)
-    char path[1024];
-    uint32_t size = sizeof(path);
-    if (_NSGetExecutablePath(path, &size) == 0)
-        exeDir = std::filesystem::path(path).parent_path();
-    else
-        exeDir = std::filesystem::current_path();
-#else
-    char result[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    if (count > 0)
-        exeDir = std::filesystem::path(std::string(result, count)).parent_path();
-    else
-        exeDir = std::filesystem::current_path();
-#endif
-    std::filesystem::path enginePluginsDir = exeDir / "Plugins";
+    TEString exeDir = PlatformUtils::GetExecutablePath().GetParentPath();
+    TEString cwd = TEFileSystem::GetCurrentWorkingDirectory();
 
-    TE_CORE_INFO("Scanning engine plugins at: ", enginePluginsDir.string());
-    if (std::filesystem::exists(enginePluginsDir))
+    TEArray<TEString> searchDirs;
+
+    // 1. Executable-relative plugin directories
+    if (!exeDir.IsEmpty())
     {
-        for (const auto &entry : std::filesystem::recursive_directory_iterator(enginePluginsDir))
+        searchDirs.Add(exeDir / "Plugins");
+        searchDirs.Add(exeDir);
+        searchDirs.Add(exeDir / "../../../Engine/Plugins");
+        searchDirs.Add(exeDir / "../../../../Engine/Plugins");
+    }
+
+    // 2. Working directory plugin directories
+    if (!cwd.IsEmpty())
+    {
+        searchDirs.Add(cwd / "Plugins");
+        searchDirs.Add(cwd / "Engine/Plugins");
+        searchDirs.Add(cwd / "../Engine/Plugins");
+        searchDirs.Add(cwd / "../../Engine/Plugins");
+    }
+
+    // 3. Project-level plugins (if an active project exists)
+    if (Project::GetActive())
+    {
+        searchDirs.Add(Project::GetProjectDirectory() / "Plugins");
+    }
+
+    // Deduplicate valid directories
+    TEArray<TEString> uniqueDirs;
+    for (const auto &dir : searchDirs)
+    {
+        if (dir.IsEmpty() || !TEFileSystem::Exists(dir) || !TEFileSystem::IsDirectory(dir))
+            continue;
+
+        TEString absDir = TEFileSystem::GetAbsolutePath(dir);
+        bool alreadyIncluded = false;
+        for (const auto &u : uniqueDirs)
         {
-            if (entry.path().extension() == ".teplugin")
+            if (u.Equals(absDir, ESearchCase::IgnoreCase))
             {
-                PluginInfo info;
-                if (ParsePluginDescriptor(entry.path(), info))
-                {
-                    // Compute library path relative to the .teplugin file location
-                    info.LibraryPath = entry.path().parent_path() / GetSharedLibraryName(info.Name);
-                    s_DiscoveredPlugins.push_back(info);
-                    TE_CORE_INFO("Discovered engine plugin: ", info.Name, " (", entry.path().string(), ")");
-                }
+                alreadyIncluded = true;
+                break;
             }
+        }
+        if (!alreadyIncluded)
+        {
+            uniqueDirs.Add(absDir);
         }
     }
 
-    // 2. Discover project-level plugins (if an active project exists)
-    if (Project::GetActive())
+    for (const auto &scanDir : uniqueDirs)
     {
-        std::filesystem::path projectPluginsDir = Project::GetProjectDirectory() / "Plugins";
-        TE_CORE_INFO("Scanning project plugins at: ", projectPluginsDir.string());
-        if (std::filesystem::exists(projectPluginsDir))
+        TE_CORE_INFO("Scanning plugins at: ", scanDir);
+        auto files = TEFileSystem::GetFiles(scanDir, ".teplugin", true);
+        for (const auto &filePath : files)
         {
-            for (const auto &entry : std::filesystem::recursive_directory_iterator(projectPluginsDir))
+            PluginInfo info;
+            if (ParsePluginDescriptor(filePath, info))
             {
-                if (entry.path().extension() == ".teplugin")
+                info.LibraryPath = ResolvePluginLibraryPath(info, filePath);
+
+                // Deduplicate by plugin name
+                bool exists = false;
+                for (auto &existing : s_DiscoveredPlugins)
                 {
-                    PluginInfo info;
-                    if (ParsePluginDescriptor(entry.path(), info))
+                    if (existing.Name == info.Name)
                     {
-                        info.LibraryPath = entry.path().parent_path() / GetSharedLibraryName(info.Name);
-                        s_DiscoveredPlugins.push_back(info);
-                        TE_CORE_INFO("Discovered project plugin: ", info.Name, " (", entry.path().string(), ")");
+                        exists = true;
+                        // If existing does not have a valid library on disk, but this one does, update it
+                        if (!TEFileSystem::Exists(existing.LibraryPath) && TEFileSystem::Exists(info.LibraryPath))
+                        {
+                            existing.LibraryPath = info.LibraryPath;
+                            existing.Path = info.Path;
+                        }
+                        break;
                     }
+                }
+
+                if (!exists)
+                {
+                    s_DiscoveredPlugins.Add(info);
+                    TE_CORE_INFO("Discovered plugin: ", info.Name, " (", filePath, ")");
                 }
             }
         }
     }
 }
 
-bool PluginManager::ParsePluginDescriptor(const std::filesystem::path &path, PluginInfo &outInfo)
+bool PluginManager::ParsePluginDescriptor(const TEString &path, PluginInfo &outInfo)
 {
-    std::ifstream hin(path);
-    if (!hin.is_open())
-        return false;
-
     outInfo.Path = path;
     outInfo.Enabled = true; // Default
 
-    std::string line;
-    while (std::getline(hin, line))
-    {
-        // Simple trim whitespace and parse Key: Value
-        size_t colon = line.find(':');
-        if (colon == std::string::npos)
-            continue;
+    bool success = TEFileSystem::ForEachLine(path, [&outInfo](const TEString &line) {
+        int colon = line.Find(":");
+        if (colon < 0)
+            return true;
 
-        std::string key = line.substr(0, colon);
-        std::string val = line.substr(colon + 1);
-
-        // Trim helper
-        auto trim = [](std::string &s)
-        {
-            s.erase(0, s.find_first_not_of(" \t\r\n"));
-            s.erase(s.find_last_not_of(" \t\r\n") + 1);
-        };
-        trim(key);
-        trim(val);
+        TEString key = line.Left(colon).Trim();
+        TEString val = line.Mid(colon + 1).Trim();
 
         if (key == "Name")
             outInfo.Name = val;
         else if (key == "Version")
             outInfo.Version = val;
+        else if (key == "Author")
+            outInfo.Author = val;
         else if (key == "Description")
             outInfo.Description = val;
         else if (key == "Enabled")
             outInfo.Enabled = (val == "true" || val == "1");
-    }
 
-    return !outInfo.Name.empty();
+        return true;
+    });
+
+    return success && !outInfo.Name.IsEmpty();
 }
 
-void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath)
+TERef<IPlugin> PluginManager::GetPluginInstance(const TEString &name)
+{
+    for (const auto &instance : s_LoadedPluginInstances)
+    {
+        if (instance.Info.Name == name)
+            return instance.Instance;
+    }
+    return nullptr;
+}
+
+void PluginManager::LoadPlugin(const TEString &pluginDescriptorPath)
 {
     PluginInfo info;
     if (!ParsePluginDescriptor(pluginDescriptorPath, info))
     {
-        TE_CORE_ERROR("Failed to parse plugin descriptor: ", pluginDescriptorPath.string());
+        TE_CORE_ERROR("Failed to parse plugin descriptor: ", pluginDescriptorPath);
         return;
     }
 
-    info.LibraryPath = pluginDescriptorPath.parent_path() / GetSharedLibraryName(info.Name);
+    info.LibraryPath = ResolvePluginLibraryPath(info, pluginDescriptorPath);
 
     // Check if already loaded
     for (const auto &instance : s_LoadedPluginInstances)
@@ -203,14 +460,18 @@ void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath
             return;
     }
 
-    TE_CORE_INFO("Loading plugin library: ", info.LibraryPath.string());
-    HMODULE module = LoadLibraryW(info.LibraryPath.wstring().c_str());
+    TE_CORE_INFO("Loading plugin library: ", info.LibraryPath);
+#ifdef TE_PLATFORM_WINDOWS
+    HMODULE module = LoadLibraryA(info.LibraryPath.c_str());
+#else
+    void *module = dlopen(info.LibraryPath.c_str(), RTLD_NOW);
+#endif
     if (!module)
     {
 #ifdef TE_PLATFORM_WINDOWS
-        TE_CORE_ERROR("Failed to load plugin DLL: ", info.LibraryPath.string(), ". Error code: ", GetLastError());
+        TE_CORE_ERROR("Failed to load plugin DLL: ", info.LibraryPath, ". Error code: ", GetLastError());
 #else
-        TE_CORE_ERROR("Failed to load plugin: ", info.LibraryPath.string(), ". Error: ", dlerror());
+        TE_CORE_ERROR("Failed to load plugin: ", info.LibraryPath, ". Error: ", dlerror());
 #endif
         return;
     }
@@ -218,12 +479,13 @@ void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath
     auto createFn = (CreatePluginFn)GetProcAddress(module, "CreatePluginInstance");
     if (!createFn)
     {
-        TE_CORE_ERROR("Failed to find CreatePluginInstance symbol in DLL: ", info.LibraryPath.string());
+        TE_CORE_ERROR("Failed to find CreatePluginInstance symbol in DLL: ", info.LibraryPath);
         FreeLibrary(module);
         return;
     }
 
-    IPlugin *instance = createFn();
+    TERef<IPlugin> instance;
+    createFn(instance);
     if (!instance)
     {
         TE_CORE_ERROR("CreatePluginInstance returned nullptr for plugin: ", info.Name);
@@ -236,48 +498,44 @@ void PluginManager::LoadPlugin(const std::filesystem::path &pluginDescriptorPath
     loaded.Module = module;
     loaded.Instance = instance;
 
-    s_LoadedPluginInstances.push_back(loaded);
-    s_LoadedPlugins.push_back(info);
+    s_LoadedPluginInstances.Add(loaded);
+    s_LoadedPlugins.Add(info);
 
     TE_CORE_INFO("Loaded and initializing plugin: ", info.Name);
     instance->OnLoad();
 }
 
-void PluginManager::UnloadPlugin(const std::string &name)
+void PluginManager::UnloadPlugin(const TEString &name)
 {
-    for (auto it = s_LoadedPluginInstances.begin(); it != s_LoadedPluginInstances.end(); ++it)
+    for (size_t i = 0; i < s_LoadedPluginInstances.Size(); ++i)
     {
-        if (it->Info.Name == name)
+        if (s_LoadedPluginInstances[i].Info.Name == name)
         {
-            if (it->Instance)
+            if (s_LoadedPluginInstances[i].Instance)
             {
-                it->Instance->OnUnload();
-                auto destroyFn = (DestroyPluginFn)GetProcAddress(it->Module, "DestroyPluginInstance");
-                if (destroyFn)
-                {
-                    destroyFn(it->Instance);
-                }
+                s_LoadedPluginInstances[i].Instance->OnUnload();
+                s_LoadedPluginInstances[i].Instance.reset();
             }
-            if (it->Module)
+            if (s_LoadedPluginInstances[i].Module)
             {
-                FreeLibrary(it->Module);
+                FreeLibrary(s_LoadedPluginInstances[i].Module);
             }
-            s_LoadedPluginInstances.erase(it);
+            s_LoadedPluginInstances.RemoveAt(i);
             break;
         }
     }
 
-    for (auto it = s_LoadedPlugins.begin(); it != s_LoadedPlugins.end(); ++it)
+    for (size_t i = 0; i < s_LoadedPlugins.Size(); ++i)
     {
-        if (it->Name == name)
+        if (s_LoadedPlugins[i].Name == name)
         {
-            s_LoadedPlugins.erase(it);
+            s_LoadedPlugins.RemoveAt(i);
             break;
         }
     }
 }
 
-void PluginManager::SetPluginEnabled(const std::string &name, bool enabled)
+void PluginManager::SetPluginEnabled(const TEString &name, bool enabled)
 {
     for (auto &info : s_DiscoveredPlugins)
     {
@@ -286,37 +544,32 @@ void PluginManager::SetPluginEnabled(const std::string &name, bool enabled)
             info.Enabled = enabled;
 
             // Rewrite descriptor to persist state across restarts
-            std::vector<std::string> lines;
-            std::ifstream hin(info.Path);
-            if (hin.is_open())
-            {
-                std::string line;
-                bool hasEnabled = false;
-                while (std::getline(hin, line))
+            TEArray<TEString> lines;
+            bool hasEnabled = false;
+            TEFileSystem::ForEachLine(info.Path, [&lines, &hasEnabled, enabled](const TEString &line) {
+                if (line.StartsWith("Enabled:"))
                 {
-                    if (line.rfind("Enabled:", 0) == 0)
-                    {
-                        lines.push_back("Enabled: " + std::string(enabled ? "true" : "false"));
-                        hasEnabled = true;
-                    }
-                    else
-                    {
-                        lines.push_back(line);
-                    }
+                    lines.push_back("Enabled: " + TEString(enabled ? "true" : "false"));
+                    hasEnabled = true;
                 }
-                hin.close();
-                if (!hasEnabled)
+                else
                 {
-                    lines.push_back("Enabled: " + std::string(enabled ? "true" : "false"));
+                    lines.push_back(line);
                 }
+                return true;
+            });
 
-                std::ofstream hout(info.Path);
-                if (hout.is_open())
+            if (!hasEnabled)
+            {
+                lines.push_back("Enabled: " + TEString(enabled ? "true" : "false"));
+            }
+
+            std::ofstream hout(info.Path.c_str());
+            if (hout.is_open())
+            {
+                for (const auto &l : lines)
                 {
-                    for (const auto &l : lines)
-                    {
-                        hout << l << "\n";
-                    }
+                    hout << l.c_str() << "\n";
                 }
             }
 
@@ -333,4 +586,3 @@ void PluginManager::SetPluginEnabled(const std::string &name, bool enabled)
     }
 }
 
-} // namespace TE

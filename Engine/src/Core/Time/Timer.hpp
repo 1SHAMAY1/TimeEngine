@@ -1,17 +1,15 @@
-﻿#pragma once
+#pragma once
 
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <functional>
-#include <unordered_map>
-#include <string>
-
-namespace TE {
 
     class Timer {
     public:
         using Callback = std::function<void()>;
 
         struct TimerRef {
-            std::string id;
+            TEString id;
         };
 
         static TimerRef Set(float duration, Callback callback, bool loop = false);
@@ -32,8 +30,7 @@ namespace TE {
             int framesRemaining = 0;
         };
 
-        inline static std::unordered_map<std::string, TimerData> s_Timers;
+        inline static TEMap<TEString, TimerData> s_Timers;
         inline static int s_Counter = 0;
     };
 
-}
