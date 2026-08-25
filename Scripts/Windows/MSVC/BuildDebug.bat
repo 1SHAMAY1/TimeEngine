@@ -11,14 +11,21 @@ if not exist "TimeEngine.sln" (
     exit /b 1
 )
 
-:: Find MSBuild path using vswhere
-set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-if not exist "%VSWHERE%" (
-    echo [ERROR] vswhere.exe not found at default location.
+:: Locate vswhere dynamically via environment & PATH
+set "VSWHERE="
+if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if "%VSWHERE%"=="" if exist "%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe"
+if "%VSWHERE%"=="" (
+    for /f "tokens=*" %%i in ('where vswhere 2^>nul') do set "VSWHERE=%%i"
+)
+
+if "%VSWHERE%"=="" (
+    echo [ERROR] vswhere.exe not found on any drive or PATH.
     pause
     exit /b 1
 )
 
+set "VS_INSTALL_DIR="
 for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
     set "VS_INSTALL_DIR=%%i"
 )
@@ -29,15 +36,28 @@ if "%VS_INSTALL_DIR%"=="" (
     exit /b 1
 )
 
-:: Set up path to MSBuild.exe
-set "MSBUILD_PATH=%VS_INSTALL_DIR%\MSBuild\Current\Bin\amd64\MSBuild.exe"
-if not exist "%MSBUILD_PATH%" (
-    :: Fallback to standard location
-    set "MSBUILD_PATH=%VS_INSTALL_DIR%\MSBuild\Current\Bin\MSBuild.exe"
+if exist "%VS_INSTALL_DIR%\Common7\Tools\VsDevCmd.bat" (
+    if "%VSCMD_VER%"=="" (
+        echo [INFO] Found Visual Studio at "%VS_INSTALL_DIR%"
+        echo [INFO] Initializing MSVC build environment...
+        call "%VS_INSTALL_DIR%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 -no_logo
+    )
+)
+
+:: Dynamically detect installed MSVC Platform Toolset from VCToolsVersion (e.g. 14.51 -> v145, 14.38 -> v143, 15.01 -> v150)
+set "TOOLSET_ARG="
+if defined VCToolsVersion (
+    for /f "tokens=1,2 delims=." %%a in ("%VCToolsVersion%") do (
+        set "MAJOR_VER=%%a"
+        set "MINOR_VER=%%b"
+    )
+)
+if defined MAJOR_VER if defined MINOR_VER (
+    set "TOOLSET_ARG=/p:PlatformToolset=v%MAJOR_VER%%MINOR_VER:~0,1%"
 )
 
 echo [INFO] Running MSBuild...
-"%MSBUILD_PATH%" TimeEngine.sln /p:Configuration=Debug /p:Platform=x64 /m
+msbuild TimeEngine.sln /p:Configuration=Debug /p:Platform=x64 %TOOLSET_ARG% /m
 if %errorlevel% neq 0 (
     echo [ERROR] Build failed!
     pause

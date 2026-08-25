@@ -12,7 +12,7 @@ if not exist "Makefile" (
 )
 
 echo [INFO] Running mingw32-make...
-mingw32-make SHELL=cmd.exe config=debug -j2
+mingw32-make SHELL=cmd.exe config=debug -j%NUMBER_OF_PROCESSORS%
 if %errorlevel% neq 0 (
     echo [ERROR] Build failed!
     pause

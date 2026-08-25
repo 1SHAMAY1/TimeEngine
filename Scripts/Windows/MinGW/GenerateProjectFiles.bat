@@ -85,7 +85,7 @@ cd "%ROOT_DIR%"
 
 :: ========== Premake ==========
 echo [=== Generating Makefiles with Premake... ===]
-Vendor\Premake\premake5.exe gmake2
+Vendor\Premake\Windows\premake5.exe gmake2
 if %errorlevel% neq 0 (
     echo [ERROR] Premake generation failed.
     pause

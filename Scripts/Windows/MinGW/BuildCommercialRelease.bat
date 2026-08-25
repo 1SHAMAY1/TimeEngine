@@ -16,7 +16,7 @@ if not exist "Makefile" (
 :: Build Solution using mingw32-make
 echo [=== Building Makefile (Dist)... ===]
 echo [Note: This may take a few minutes...]
-mingw32-make SHELL=cmd.exe config=dist -j2
+mingw32-make SHELL=cmd.exe config=dist -j%NUMBER_OF_PROCESSORS%
 if %errorlevel% neq 0 (
     echo [ERROR] Build Failed!
     pause

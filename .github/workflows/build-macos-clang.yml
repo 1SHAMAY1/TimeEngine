@@ -10,6 +10,9 @@ on:
 jobs:
   build-macos-clang:
     runs-on: macos-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -17,6 +20,21 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+
+      - name: Resolve Author Email
+        id: author-info
+        run: |
+          AUTHOR_EMAIL="${{ github.event.pusher.email }}"
+          if [ -z "$AUTHOR_EMAIL" ] || [ "$AUTHOR_EMAIL" = "null" ]; then
+            AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          fi
+          echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+          echo "Resolved author email: $AUTHOR_EMAIL"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Install Premake5
         run: brew install premake
@@ -40,3 +58,45 @@ jobs:
 
       - name: Build Solution (Apple Clang)
         run: make config=debug -j$(sysctl -n hw.ncpu) CC=clang CXX=clang++
+
+      - name: Notify on Pull Request Failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `### ❌ Build Failure Alert: macOS (Apple Clang)\n\nHey @${context.actor}, the macOS Apple Clang build failed on \`${context.ref}\`.\n\n[🔍 View Full CI Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Generate Professional Email
+        if: failure()
+        run: |
+          python .github/scripts/send_notification.py \
+            --workflow "macOS Build (Apple Clang)" \
+            --status "FAILED" \
+            --repo "${{ github.repository }}" \
+            --branch "${{ github.ref_name }}" \
+            --commit "${{ github.sha }}" \
+            --author "${{ github.actor }}" \
+            --email "${{ steps.author-info.outputs.email }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --output ".github/reports/macos_failure.html"
+
+      - name: Send Direct Email Notification to Causer
+        if: failure() && env.MAIL_SERVER != '' && steps.author-info.outputs.email != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT || 465 }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[TimeEngine CI Failure] macOS Apple Clang Build Failed on ${{ github.ref_name }}"
+          to: ${{ steps.author-info.outputs.email }}
+          from: ${{ secrets.MAIL_FROM || 'ci-bot@timeengine.org' }}
+          html_body: file://.github/reports/macos_failure.html

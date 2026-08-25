@@ -1,0 +1,393 @@
+// =============================================================================
+// RuleBreakerTest.cpp - Implementation testing ALL rule combinations & functions
+// =============================================================================
+#include "RuleBreakerTest.h"
+
+// =============================================================================
+// 1. ALL COPYRIGHT & LICENSE PATTERNS
+// =============================================================================
+// Copyright (C) 2024 Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2024 Unity Technologies. All rights reserved.
+// Copyright (c) 2024 Valve Corporation. All rights reserved.
+// Copyright (c) 2024 Crytek GmbH. All rights reserved.
+// Copyright (c) 2024 Electronic Arts Inc. All rights reserved.
+// GNU General Public License v3.0
+// Affero General Public License
+// All Rights Reserved. Unauthorized copying of this file is strictly prohibited.
+
+// =============================================================================
+// 2. ALL VENDOR INCLUDES
+// =============================================================================
+#include <velox/velox.h>
+#include <GLFW/glfw3.h>
+#include <glfw3.h>
+#include <glad/glad.h>
+#include <GL/gl.h>
+#include <GLES/gl.h>
+#include <glad/glad_gles2.h>
+#include <vulkan/vulkan.h>
+#include <volk.h>
+#include <d3d11.h>
+#include <dxgi.h>
+#include <d3dcompiler.h>
+#include <directx/d3dx12.h>
+#include <Metal/Metal.h>
+#include <metal/metal.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <imconfig.h>
+#include <stb_image.h>
+#include <stb_truetype.h>
+#include <stb_image_write.h>
+#include <stb_rect_pack.h>
+#include <stb/stb_image.h>
+#include <Customizable_Logger.hpp>
+#include <string>
+#include <filesystem>
+#include "filesystem"
+
+// =============================================================================
+// 3. ALL AI SLOP & LEAKED MARKDOWN STRINGS / COMMENTS
+// =============================================================================
+// As per user request, here is the implementation file
+// As an AI language model, I cannot provide proprietary code
+// Certainly! Here is the full implementation
+// Here is the revised code for your review
+// Here is the updated code with all requested features
+// Here is the modified code ready to compile
+// I hope this helps! Reach out if you need anything else
+// Let me know if you need any further help
+// Let me know if you have any questions about this logic
+// Key changes made:
+// Given the user context, we will implement all functions
+// I'll implement the memory safety violators below
+// Let's use malloc and free here
+// Actually, let's also allocate raw arrays
+// Without checking vendor documentation, this should work
+// ... existing code ...
+// ... rest of code ...
+// TODO: insert your logic here
+// Insert function implementation here
+// Rest of the code remains unchanged
+```cpp
+### Explanation:
+```cpp
+
+// =============================================================================
+// 4. COMPETITOR METHODS & FUNCTIONS
+// =============================================================================
+AActor* UnrealCompetitorTest::SpawnActorInstance() {
+    // Mentions of Unreal Engine, UE4, UE5, UEFN, and Fortnite
+    // Mentions of Nanite, Lumen, Niagara VFX
+    AActor* actor = nullptr;
+    return actor;
+}
+
+void UnrealCompetitorTest::UnrealFunction() {
+    // Calling Blueprints and Blueprint functions
+    TriggerBlueprintLogic();
+    TriggerBlueprintsLogic();
+}
+
+void GodotCompetitorTest::TestGodotEngine() {
+    // Mentions of Godot Engine, GDScript, and GDExtension
+}
+
+void GodotCompetitorTest::ExecuteGDScript() {}
+void GodotCompetitorTest::LoadGDExtension() {}
+
+void OtherEnginesTest::BenchmarkFrostbiteEngine() {}
+void OtherEnginesTest::BenchmarkCryEngine() {}
+void OtherEnginesTest::BenchmarkSource2Engine() {}
+void OtherEnginesTest::BenchmarkLumberyard() {}
+void OtherEnginesTest::BenchmarkO3DE() {}
+
+// =============================================================================
+// 5. ALL VENDOR CALLS & SYMBOL COMBINATIONS
+// =============================================================================
+void TestVeloxLeakageFunctions() {
+    vxRigidBody body;
+    Velox::Initialize();
+    Velox::StepSimulation(0.016f);
+}
+
+void TestGLFWLeakageFunctions() {
+    glfwInit();
+    GLFWwindow* win = glfwCreateWindow(800, 600, "Window", nullptr, nullptr);
+    glfwDestroyWindow(win);
+    glfwTerminate();
+}
+
+void TestGladOpenGLLeakageFunctions() {
+    glad_glGenBuffers(1, nullptr);
+    glBindTexture(0, 0);
+    glDrawArrays(0, 0, 3);
+    glEnable(0);
+}
+
+void TestVulkanLeakageFunctions() {
+    VkInstance instance;
+    VkApplicationInfo appInfo;
+    vkCreateInstance(nullptr, nullptr, &instance);
+    volkInitialize();
+}
+
+void TestDirectX11LeakageFunctions() {
+    ID3D11Device* dev = nullptr;
+    IDXGISwapChain* swap = nullptr;
+    D3D11_BUFFER_DESC desc;
+}
+
+void TestMetalLeakageFunctions() {
+    MTLDevice mtlDevice;
+    MTLCommandBuffer mtlCmd;
+}
+
+void TestImGuiLeakageFunctions() {
+    ImGui::Begin("Debug Panel");
+    ImGui::Text("Hello");
+    ImVec2 pos = ImGui::GetCursorPos();
+    ImVec4 col = ImVec4(1, 0, 0, 1);
+    ImDrawList* dl = ImGui::GetWindowDrawList();
+    ImFont* font = ImGui::GetFont();
+    ImGui::End();
+}
+
+void TestStbLeakageFunctions() {
+    int w, h, comp;
+    stbi_uc* data = stbi_load("image.png", &w, &h, &comp, 4);
+    stbi_image_free(data);
+    stbtt_fontinfo fontInfo;
+    stbtt_InitFont(&fontInfo, nullptr, 0);
+    stbiw_write_png("out.png", 100, 100, 4, nullptr, 0);
+    stbrp_context rpCtx;
+}
+
+void TestLoggerLeakageFunctions() {
+    Customizable_Logger::Init();
+    Customizable_Logger::LogMessage("Test message");
+}
+
+// =============================================================================
+// 6. ALL MEMORY SAFETY VIOLATIONS (NEW, DELETE, C-ALLOC) COMBINATIONS
+// =============================================================================
+
+// A. Direct new and new[] combinations
+void TestRawNewCombinations() {
+    int* p1 = new int(10);
+    int* p2 = new int[20];
+    auto* p3 = new float(3.14f);
+    auto* p4 = new double[5];
+    char* p5 = new char('a');
+    bool* p6 = new bool(true);
+
+    int** ptrToPtr = &p1;
+    *ptrToPtr = new int(55);
+
+    // B. Direct delete and delete[] combinations
+    delete p1;
+    delete[] p2;
+    delete p3;
+    delete[] p4;
+    delete p5;
+    delete[] p6;
+}
+
+// C. C-Style allocations: malloc, calloc, realloc, free
+void* HeaderAlloc_Malloc(size_t size) {
+    return malloc(size);
+}
+
+void* HeaderAlloc_Calloc(size_t num, size_t size) {
+    return calloc(num, size);
+}
+
+void* HeaderAlloc_Realloc(void* ptr, size_t newSize) {
+    return realloc(ptr, newSize);
+}
+
+void HeaderAlloc_Free(void* ptr) {
+    free(ptr);
+}
+
+void TestCAllocationsCombination() {
+    void* m = malloc(256);
+    void* c = calloc(32, sizeof(int));
+    void* r = realloc(m, 512);
+    free(c);
+    free(r);
+}
+
+// =============================================================================
+// 7. ALL SMART POINTER COMBINATIONS (STD::UNIQUE_PTR, SHARED_PTR, WEAK_PTR)
+// =============================================================================
+std::unique_ptr<int> ReturnStdUniquePtr() {
+    return std::make_unique<int>(1);
+}
+
+unique_ptr<float> ReturnBareUniquePtr() {
+    return make_unique<float>(2.0f);
+}
+
+std::shared_ptr<int> ReturnStdSharedPtr() {
+    return std::make_shared<int>(3);
+}
+
+shared_ptr<double> ReturnBareSharedPtr() {
+    return make_shared<double>(4.0);
+}
+
+std::weak_ptr<int> ReturnStdWeakPtr() {
+    return std::weak_ptr<int>();
+}
+
+weak_ptr<char> ReturnBareWeakPtr() {
+    return weak_ptr<char>();
+}
+
+void PassStdSmartPointers(std::unique_ptr<int> u, std::shared_ptr<float> s, std::weak_ptr<double> w) {}
+void PassBareSmartPointers(unique_ptr<int> u, shared_ptr<float> s, weak_ptr<double> w) {}
+
+void TestSmartPointerCombinations() {
+    std::unique_ptr<int> u1 = std::make_unique<int>(10);
+    unique_ptr<int> u2 = make_unique<int>(20);
+    std::shared_ptr<int> s1 = std::make_shared<int>(30);
+    shared_ptr<int> s2 = make_shared<int>(40);
+    std::weak_ptr<int> w1 = s1;
+    weak_ptr<int> w2 = s2;
+}
+
+// =============================================================================
+// 8. ALL CONTAINER COMBINATIONS (VECTOR, UNORDERED_MAP, UNORDERED_SET)
+// =============================================================================
+std::vector<int> ReturnStdVector() {
+    return std::vector<int>{ 1, 2, 3 };
+}
+
+vector<float> ReturnBareVector() {
+    return vector<float>{ 1.0f, 2.0f };
+}
+
+std::unordered_map<int, std::string> ReturnStdUnorderedMap() {
+    return std::unordered_map<int, std::string>();
+}
+
+unordered_map<int, int> ReturnBareUnorderedMap() {
+    return unordered_map<int, int>();
+}
+
+std::unordered_set<int> ReturnStdUnorderedSet() {
+    return std::unordered_set<int>();
+}
+
+unordered_set<float> ReturnBareUnorderedSet() {
+    return unordered_set<float>();
+}
+
+void PassStdContainers(std::vector<int> v, std::unordered_map<int, int> m, std::unordered_set<int> s) {}
+void PassBareContainers(vector<int> v, unordered_map<int, int> m, unordered_set<int> s) {}
+
+void TestContainerCombinations() {
+    std::vector<int> v1;
+    vector<double> v2;
+    std::unordered_map<int, int> m1;
+    unordered_map<std::string, float> m2;
+    std::unordered_set<int> s1;
+    unordered_set<std::string> s2;
+}
+
+// =============================================================================
+// 9. ALL NAMESPACE QUALIFIER COMBINATIONS (::TE::, ::TimeEngine::, TE::)
+// =============================================================================
+void TestNamespaceCombinations() {
+    ::TE::GlobalFunction();
+    ::TimeEngine::StaticFunction();
+    TimeEngine::ClassMember();
+    Timeengine::OldFunction();
+    TE::Texture2D textureObj;
+    TE::Buffer bufferObj;
+    TE::Shader shaderObj;
+}
+
+// =============================================================================
+// 10. ALL STRING, CHAR, WSTRING, U8STRING COMBINATIONS
+// =============================================================================
+std::string ReturnStdString() { return std::string("test"); }
+std::wstring ReturnStdWString() { return std::wstring(L"test"); }
+std::u8string ReturnStdU8String() { return std::u8string(u8"test"); }
+std::u16string ReturnStdU16String() { return std::u16string(u"test"); }
+std::u32string ReturnStdU32String() { return std::u32string(U"test"); }
+std::basic_string<char> ReturnStdBasicString() { return std::basic_string<char>(); }
+string ReturnBareString() { return string("test"); }
+wstring ReturnBareWString() { return wstring(L"test"); }
+u8string ReturnBareU8String() { return u8string(u8"test"); }
+char32_t ReturnChar32() { return U'X'; }
+char16_t ReturnChar16() { return u'Y'; }
+wchar_t ReturnWChar() { return L'Z'; }
+
+void PassForbiddenStrings(string s1, wstring s2, u8string s3, char32_t c32, char16_t c16, wchar_t wc) {}
+
+void TestStringAndCharCombinations() {
+    std::string s1 = "std::string";
+    std::wstring s2 = L"std::wstring";
+    std::u8string s3 = u8"std::u8string";
+    std::u16string s4 = u"std::u16string";
+    std::u32string s5 = U"std::u32string";
+    string s6 = "string";
+    wstring s7 = L"wstring";
+    u8string s8 = u8"u8string";
+    char32_t c1 = U'A';
+    char16_t c2 = u'B';
+    wchar_t c3 = L'C';
+}
+
+// =============================================================================
+// 11. ALL FILESYSTEM, GETLINE, AND LEGACY PATH METHOD COMBINATIONS
+// =============================================================================
+std::filesystem::path ReturnStdFsPath() {
+    return std::filesystem::path("test/std/path");
+}
+
+filesystem::path ReturnBareFsPath() {
+    return filesystem::path("test/bare/path");
+}
+
+std::experimental::filesystem::path ReturnExpFsPath() {
+    return std::experimental::filesystem::path("test/exp/path");
+}
+
+void PassFsPaths(std::filesystem::path p1, filesystem::path p2) {}
+
+void TestFilesystemAndLegacyPathCombinations() {
+    std::filesystem::path p1 = "folder/file.ext";
+    filesystem::path p2 = "folder2/file2.ext";
+
+    std::string lineInput;
+    getline(std::cin, lineInput);
+
+    TEString teStr = "Engine/Assets/Model.fbx";
+    teStr.stem();
+    teStr.filename();
+    teStr.parent_path();
+    teStr.has_parent_path();
+    teStr.extension();
+    teStr.replace_extension(".obj");
+}
+
+// =============================================================================
+// 12. LAMBDA AND ANONYMOUS FUNCTION COMBINATIONS
+// =============================================================================
+void TestLambdaCombinations() {
+    auto badLambda = []() {
+        int* raw = new int(77);
+        delete raw;
+        void* mem = malloc(64);
+        free(mem);
+        std::vector<int> badVec;
+        std::string badStr = "lambda string";
+        ::TE::GlobalLambdaCall();
+        TimeEngine::StaticLambda();
+        TE::Buffer* b = nullptr;
+    };
+    badLambda();
+}

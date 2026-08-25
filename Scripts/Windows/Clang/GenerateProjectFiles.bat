@@ -85,7 +85,7 @@ cd "%ROOT_DIR%"
 
 :: ========== Premake ==========
 echo [=== Generating Visual Studio solution with Premake... ===]
-Vendor\Premake\premake5.exe vs2022
+Vendor\Premake\Windows\premake5.exe vs2022
 if %errorlevel% neq 0 (
     echo [ERROR] Premake generation failed.
     pause
