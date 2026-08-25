@@ -1,0 +1,5 @@
+Name: PCGPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: 2D/3D Procedural Content Generation (PCG) Toolset Library, Node Graph Evaluator, and Asset Editor Plugin
+Enabled: true
