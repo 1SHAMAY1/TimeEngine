@@ -10,9 +10,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Architecture-IGDE-purple.svg" alt="Integrated Game Development Environment">
-  <img src="https://img.shields.io/badge/Language-C%2B%2B%20Latest-blue.svg" alt="C++ Latest">
+  <img src="https://img.shields.io/badge/Language-C%2B%2B20-blue.svg" alt="C++20">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Windows | Linux | macOS">
-  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20Metal%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
+  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT">
 </p>
 
@@ -35,21 +35,11 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 🖼️ Editor Showcase
 
 <p align="center">
-  <img width="100%" alt="Time Engine Editor Workspace" src="https://github.com/user-attachments/assets/d48599c2-300e-4cfb-9022-af682d60252f" />
+  <img width="100%" alt="Time Engine Editor Workspace" src="https://github.com/user-attachments/assets/3726c10f-d31a-4d97-a73b-795d96537a81" />
 </p>
-
 <p align="center">
-  <img width="49%" alt="Editor Viewport & UI" src="https://github.com/user-attachments/assets/8e2ae8d9-fd04-4680-a0cb-19b1c76fbfdd" />
+  <img width="49%" alt="Editor Viewport & UI" src="https://github.com/user-attachments/assets/a56848f0-e934-466c-be6c-afd66fa84e6c" />
   <img width="49%" alt="Performance Profiler Dashboard" src="https://github.com/user-attachments/assets/e794acb5-7ada-4c5e-a673-c88d68d6be7c" />
-</p>
-
-<p align="center">
-  <img width="49%" alt="Sprite IDE View 1" src="https://github.com/user-attachments/assets/ee8db0e9-4f17-4b33-b2a4-bfd60151338a" />
-  <img width="49%" alt="Sprite IDE View 2" src="https://github.com/user-attachments/assets/0bbb0594-019a-4173-8ade-cfdd333836f4" />
-</p>
-<p align="center">
-  <img width="49%" alt="Sprite IDE View 3" src="https://github.com/user-attachments/assets/73eb1567-28cc-407b-bec5-3bb0841fad17" />
-  <img width="49%" alt="Sprite IDE View 4" src="https://github.com/user-attachments/assets/9d5f8098-c56d-4514-9f8f-f80dec346490" />
 </p>
 
 ---
@@ -57,11 +47,8 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 🚀 Getting Started
 
 ### Prerequisites
-* **C++ Compiler**: Modern C++ compiler with `C++latest` (`C++20`/`C++23`) support:
-  * **Windows**: MSVC (Visual Studio 2022+), Clang, or MinGW-w64
-  * **macOS**: Xcode (Apple Clang) or Makefiles / LLVM
-  * **Linux**: GCC (`g++` 11+) or Clang
-* **Git** (with submodule support)
+* C++20 Compliant Compiler (MSVC, GCC, or Clang)
+* Git
 
 ### Setup & Building from Source
 
@@ -71,9 +58,9 @@ Traditional game development forces creators to constantly context-switch betwee
    cd TimeEngine
    ```
 
-2. **Initialize Submodules & Build Tools** (Required for all platforms):
+2. **Initialize Submodules** (Required for all platforms):
    ```bash
-   ./Scripts/SetupSubmodules.sh
+   bash Scripts/SetupSubmodules.sh
    ```
 
 3. **Generate Workspace / Project Files**:
