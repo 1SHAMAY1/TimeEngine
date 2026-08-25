@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
 #include "Renderer/GraphicsAPI.hpp"
 #include "Renderer/OpenGL/OpenGLShader.hpp"
@@ -6,70 +7,68 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-namespace TE
-{
 
 // ===== OpenGL-Specific Shader Creation =====
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLBasicShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLBasicShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetBasicVertexShader(),
-                                          ShaderLibrary::GetBasicFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetBasicVertexShader(),
+                                  ShaderLibrary::GetBasicFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLTextureShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLTextureShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetTextureVertexShader(),
-                                          ShaderLibrary::GetTextureFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetTextureVertexShader(),
+                                  ShaderLibrary::GetTextureFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLColorShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLColorShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetColorVertexShader(),
-                                          ShaderLibrary::GetColorFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetColorVertexShader(),
+                                  ShaderLibrary::GetColorFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLStandardShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLStandardShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetColorVertexShader(),
-                                          ShaderLibrary::GetStandardFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetColorVertexShader(),
+                                  ShaderLibrary::GetStandardFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLightingShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLightingShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetLightingVertexShader(),
-                                          ShaderLibrary::GetLightingFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetLightingVertexShader(),
+                                  ShaderLibrary::GetLightingFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLParticleShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLParticleShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetParticleVertexShader(),
-                                          ShaderLibrary::GetParticleFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetParticleVertexShader(),
+                                  ShaderLibrary::GetParticleFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLPostProcessShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLPostProcessShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetPostProcessVertexShader(),
-                                          ShaderLibrary::GetPostProcessFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetPostProcessVertexShader(),
+                                  ShaderLibrary::GetPostProcessFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLUIShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLUIShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetUIVertexShader(), ShaderLibrary::GetUIFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetUIVertexShader(), ShaderLibrary::GetUIFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLight2DShader()
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLight2DShader()
 {
-    return std::make_shared<OpenGLShader>(ShaderLibrary::GetLight2DVertexShader(),
-                                          ShaderLibrary::GetLight2DFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetLight2DVertexShader(),
+                                  ShaderLibrary::GetLight2DFragmentShader());
 }
 
-std::shared_ptr<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLComputeShader(const std::string &computeSource)
+TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLComputeShader(const TEString &computeSource)
 {
-    return std::make_shared<OpenGLShader>(computeSource);
+    return CreateRef<OpenGLShader>(computeSource);
 }
 
 // ===== OpenGL-Specific Functions =====
-void OpenGLShaderLibrary::SetUniform1i(OpenGLShader *shader, const std::string &name, int value)
+void OpenGLShaderLibrary::SetUniform1i(OpenGLShader *shader, const TEString &name, int value)
 {
     if (shader)
     {
@@ -81,7 +80,7 @@ void OpenGLShaderLibrary::SetUniform1i(OpenGLShader *shader, const std::string &
     }
 }
 
-void OpenGLShaderLibrary::SetUniform1f(OpenGLShader *shader, const std::string &name, float value)
+void OpenGLShaderLibrary::SetUniform1f(OpenGLShader *shader, const TEString &name, float value)
 {
     if (shader)
     {
@@ -93,7 +92,7 @@ void OpenGLShaderLibrary::SetUniform1f(OpenGLShader *shader, const std::string &
     }
 }
 
-void OpenGLShaderLibrary::SetUniform2f(OpenGLShader *shader, const std::string &name, const glm::vec2 &value)
+void OpenGLShaderLibrary::SetUniform2f(OpenGLShader *shader, const TEString &name, const glm::vec2 &value)
 {
     if (shader)
     {
@@ -105,7 +104,7 @@ void OpenGLShaderLibrary::SetUniform2f(OpenGLShader *shader, const std::string &
     }
 }
 
-void OpenGLShaderLibrary::SetUniform3f(OpenGLShader *shader, const std::string &name, const glm::vec3 &value)
+void OpenGLShaderLibrary::SetUniform3f(OpenGLShader *shader, const TEString &name, const glm::vec3 &value)
 {
     if (shader)
     {
@@ -117,7 +116,7 @@ void OpenGLShaderLibrary::SetUniform3f(OpenGLShader *shader, const std::string &
     }
 }
 
-void OpenGLShaderLibrary::SetUniform4f(OpenGLShader *shader, const std::string &name, const glm::vec4 &value)
+void OpenGLShaderLibrary::SetUniform4f(OpenGLShader *shader, const TEString &name, const glm::vec4 &value)
 {
     if (shader)
     {
@@ -129,7 +128,7 @@ void OpenGLShaderLibrary::SetUniform4f(OpenGLShader *shader, const std::string &
     }
 }
 
-void OpenGLShaderLibrary::SetUniformMat3(OpenGLShader *shader, const std::string &name, const glm::mat3 &value)
+void OpenGLShaderLibrary::SetUniformMat3(OpenGLShader *shader, const TEString &name, const glm::mat3 &value)
 {
     if (shader)
     {
@@ -141,7 +140,7 @@ void OpenGLShaderLibrary::SetUniformMat3(OpenGLShader *shader, const std::string
     }
 }
 
-void OpenGLShaderLibrary::SetUniformMat4(OpenGLShader *shader, const std::string &name, const glm::mat4 &value)
+void OpenGLShaderLibrary::SetUniformMat4(OpenGLShader *shader, const TEString &name, const glm::mat4 &value)
 {
     if (shader)
     {
@@ -153,15 +152,15 @@ void OpenGLShaderLibrary::SetUniformMat4(OpenGLShader *shader, const std::string
     }
 }
 
-void OpenGLShaderLibrary::SetUniformMat4Array(OpenGLShader *shader, const std::string &name,
-                                              const std::vector<glm::mat4> &values)
+void OpenGLShaderLibrary::SetUniformMat4Array(OpenGLShader *shader, const TEString &name,
+                                              const TEArray<glm::mat4> &values)
 {
     if (shader)
     {
         int location = shader->GetUniformLocation(name);
-        if (location != -1 && !values.empty())
+        if (location != -1 && !values.IsEmpty())
         {
-            glUniformMatrix4fv(location, (GLsizei)values.size(), GL_FALSE, glm::value_ptr(values[0]));
+            glUniformMatrix4fv(location, (GLsizei)values.Size(), GL_FALSE, glm::value_ptr(values[0]));
         }
     }
 }
@@ -256,9 +255,9 @@ void OpenGLShaderLibrary::AttachRenderbuffer(unsigned int framebufferID, unsigne
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderbufferID);
 }
 
-void OpenGLShaderLibrary::SetDrawBuffers(const std::vector<GLenum> &attachments)
+void OpenGLShaderLibrary::SetDrawBuffers(const TEArray<GLenum> &attachments)
 {
-    glDrawBuffers((GLsizei)attachments.size(), attachments.data());
+    glDrawBuffers((GLsizei)attachments.Num(), attachments.GetData());
 }
 
 bool OpenGLShaderLibrary::CheckFramebufferStatus(unsigned int framebufferID)
@@ -306,7 +305,7 @@ void OpenGLShaderLibrary::UpdateUniformBuffer(unsigned int uboID, const void *da
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
 }
 
-void OpenGLShaderLibrary::BindUniformBlock(OpenGLShader *shader, const std::string &blockName,
+void OpenGLShaderLibrary::BindUniformBlock(OpenGLShader *shader, const TEString &blockName,
                                            unsigned int bindingPoint)
 {
     unsigned int blockIndex = glGetUniformBlockIndex(shader->GetRendererID(), blockName.c_str());
@@ -341,14 +340,14 @@ void OpenGLShaderLibrary::EnableDebugOutput()
 
 void OpenGLShaderLibrary::SetDebugCallback() { glDebugMessageCallback(DebugCallback, nullptr); }
 
-void OpenGLShaderLibrary::PushDebugGroup(const std::string &message)
+void OpenGLShaderLibrary::PushDebugGroup(const TEString &message)
 {
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, (GLsizei)message.length(), message.c_str());
 }
 
 void OpenGLShaderLibrary::PopDebugGroup() { glPopDebugGroup(); }
 
-void OpenGLShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, const std::string &label)
+void OpenGLShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, const TEString &label)
 {
     glObjectLabel(identifier, name, (GLsizei)label.length(), label.c_str());
 }
@@ -393,7 +392,7 @@ void GLAPIENTRY OpenGLShaderLibrary::DebugCallback(GLenum source, GLenum type, u
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
         return;
 
-    std::string sourceStr;
+    TEString sourceStr;
     switch (source)
     {
     case GL_DEBUG_SOURCE_API:
@@ -416,7 +415,7 @@ void GLAPIENTRY OpenGLShaderLibrary::DebugCallback(GLenum source, GLenum type, u
         break;
     }
 
-    std::string typeStr;
+    TEString typeStr;
     switch (type)
     {
     case GL_DEBUG_TYPE_ERROR:
@@ -448,7 +447,7 @@ void GLAPIENTRY OpenGLShaderLibrary::DebugCallback(GLenum source, GLenum type, u
         break;
     }
 
-    std::string severityStr;
+    TEString severityStr;
     switch (severity)
     {
     case GL_DEBUG_SEVERITY_HIGH:
@@ -469,4 +468,3 @@ void GLAPIENTRY OpenGLShaderLibrary::DebugCallback(GLenum source, GLenum type, u
               << message << std::endl;
 }
 
-} // namespace TE

@@ -1,36 +1,36 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/TextureSerializer.hpp"
 #include "Core/Log.h"
+#include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
-namespace TE
-{
 
-TextureSerializer::TextureSerializer(const std::shared_ptr<Texture> &texture) : m_Texture(texture) {}
+TextureSerializer::TextureSerializer(const TERef<Texture> &texture) : m_Texture(texture) {}
 
-bool TextureSerializer::Serialize(const std::filesystem::path &filepath)
+bool TextureSerializer::Serialize(const TEString &filepath)
 {
-    std::ofstream hout(filepath);
+    std::ofstream hout(filepath.c_str());
     if (!hout.is_open())
     {
-        TE_CORE_ERROR("TextureSerializer: Failed to open file for writing at {0}", filepath.string());
+        TE_CORE_ERROR("TextureSerializer: Failed to open file for writing at {0}", filepath.c_str());
         return false;
     }
 
-    std::string filterStr = (m_Texture->GetFilterMode() == TextureFilterMode::Nearest) ? "Nearest" : "Linear";
-    std::string wrapStr = "Repeat";
+    TEString filterStr = (m_Texture->GetFilterMode() == TextureFilterMode::Nearest) ? "Nearest" : "Linear";
+    TEString wrapStr = "Repeat";
     if (m_Texture->GetWrapMode() == TextureWrapMode::ClampToEdge)
         wrapStr = "ClampToEdge";
     else if (m_Texture->GetWrapMode() == TextureWrapMode::MirroredRepeat)
         wrapStr = "MirroredRepeat";
 
-    hout << "Texture2D: " << m_Texture->GetName() << "\n";
-    hout << "ImagePath: " << m_Texture->GetFilePath() << "\n";
+    hout << "Texture2D: " << m_Texture->GetName().c_str() << "\n";
+    hout << "ImagePath: " << m_Texture->GetFilePath().c_str() << "\n";
     hout << "Width: " << m_Texture->GetWidth() << "\n";
     hout << "Height: " << m_Texture->GetHeight() << "\n";
     hout << "Channels: " << m_Texture->GetChannels() << "\n";
-    hout << "FilterMode: " << filterStr << "\n";
-    hout << "WrapMode: " << wrapStr << "\n";
+    hout << "FilterMode: " << filterStr.c_str() << "\n";
+    hout << "WrapMode: " << wrapStr.c_str() << "\n";
     hout << "GenerateMipmaps: " << (m_Texture->GetGenerateMipmaps() ? "true" : "false") << "\n";
     hout << "PremultipliedAlpha: " << (m_Texture->GetPremultipliedAlpha() ? "true" : "false") << "\n";
 
@@ -38,31 +38,24 @@ bool TextureSerializer::Serialize(const std::filesystem::path &filepath)
     return true;
 }
 
-bool TextureSerializer::Deserialize(const std::filesystem::path &filepath)
+bool TextureSerializer::Deserialize(const TEString &filepath)
 {
-    std::ifstream hin(filepath);
-    if (!hin.is_open())
+    if (!TEFileSystem::Exists(filepath))
         return false;
 
-    std::string line;
-    std::string imagePath = "";
+    TEString imagePath = "";
     TextureFilterMode filter = TextureFilterMode::Linear;
     TextureWrapMode wrap = TextureWrapMode::Repeat;
     bool mipmaps = false;
     bool premultAlpha = false;
 
-    while (std::getline(hin, line))
-    {
-        size_t colon = line.find(':');
-        if (colon == std::string::npos)
-            continue;
+    TEFileSystem::ForEachLine(filepath, [&](const TEString &line) {
+        int colon = line.Find(":");
+        if (colon < 0)
+            return true;
 
-        std::string key = line.substr(0, colon);
-        std::string value = line.substr(colon + 1);
-
-        // Trim leading spaces
-        while (!value.empty() && (value[0] == ' ' || value[0] == '\t'))
-            value.erase(0, 1);
+        TEString key = line.Left(colon).Trim();
+        TEString value = line.Mid(colon + 1).Trim();
 
         if (key == "ImagePath")
         {
@@ -89,21 +82,20 @@ bool TextureSerializer::Deserialize(const std::filesystem::path &filepath)
         {
             premultAlpha = (value == "true" || value == "1");
         }
-    }
+        return true;
+    });
 
-    hin.close();
-
-    if (!imagePath.empty())
+    if (!imagePath.IsEmpty())
     {
-        std::filesystem::path resolvedPath = imagePath;
-        if (!std::filesystem::exists(resolvedPath))
+        TEString resolvedPath = imagePath;
+        if (!TEFileSystem::Exists(resolvedPath))
         {
-            resolvedPath = filepath.parent_path() / imagePath;
+            resolvedPath = filepath.GetParentPath() / imagePath;
         }
 
-        if (std::filesystem::exists(resolvedPath))
+        if (TEFileSystem::Exists(resolvedPath))
         {
-            m_Texture->LoadImageSource(resolvedPath.string());
+            m_Texture->LoadImageSource(resolvedPath);
         }
     }
 
@@ -114,5 +106,3 @@ bool TextureSerializer::Deserialize(const std::filesystem::path &filepath)
 
     return true;
 }
-
-} // namespace TE

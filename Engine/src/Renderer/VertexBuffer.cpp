@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/VertexBuffer.hpp"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
@@ -17,9 +18,7 @@
 #include "Renderer/Metal/MetalVertexBuffer.hpp"
 #endif
 
-namespace TE
-{
-VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
+TERef<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
 {
     switch (RendererContext::GetAPI())
     {
@@ -27,28 +26,28 @@ VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
         return nullptr;
 #ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
-        return new OpenGLVertexBuffer(vertices, size);
+        return CreateRef<OpenGLVertexBuffer>(vertices, size);
 #endif
 #if defined(TE_PLATFORM_MOBILE)
     case GraphicsAPI::OpenGLES:
-        return new OpenGLESVertexBuffer(vertices, size);
+        return CreateRef<OpenGLESVertexBuffer>(vertices, size);
 #else
     case GraphicsAPI::OpenGLES:
         return nullptr;
 #endif
 #ifdef TE_SUPPORT_VULKAN
     case GraphicsAPI::Vulkan:
-        return new VulkanVertexBuffer(vertices, size);
+        return CreateRef<VulkanVertexBuffer>(vertices, size);
 #endif
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
-        return new DirectX11VertexBuffer(vertices, size);
+        return CreateRef<DirectX11VertexBuffer>(vertices, size);
 #endif
 #ifdef TE_SUPPORT_METAL
     case GraphicsAPI::Metal:
-        return new MetalVertexBuffer(vertices, size);
+        return CreateRef<MetalVertexBuffer>(vertices, size);
 #endif
     }
     return nullptr;
 }
-} // namespace TE
+

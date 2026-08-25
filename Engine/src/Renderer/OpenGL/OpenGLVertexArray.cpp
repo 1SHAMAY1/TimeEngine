@@ -1,7 +1,7 @@
-﻿#include "Renderer/OpenGL/OpenGLVertexArray.hpp"
+#include "Core/PreRequisites.h"
+#include "Renderer/OpenGL/OpenGLVertexArray.hpp"
 #include <glad/glad.h>
 
-namespace TE {
 
     OpenGLVertexArray::OpenGLVertexArray() {
         glGenVertexArrays(1, &m_RendererID);
@@ -21,7 +21,7 @@ namespace TE {
         glBindVertexArray(0);
     }
 
-    void OpenGLVertexArray::AddVertexBuffer(VertexBuffer* vertexBuffer)
+    void OpenGLVertexArray::AddVertexBuffer(const TERef<VertexBuffer>& vertexBuffer)
     {
         glBindVertexArray(m_RendererID);
         vertexBuffer->Bind();
@@ -41,10 +41,9 @@ namespace TE {
 
 
 
-    void OpenGLVertexArray::SetIndexBuffer(IndexBuffer* indexBuffer) {
+    void OpenGLVertexArray::SetIndexBuffer(const TERef<IndexBuffer>& indexBuffer) {
         m_IndexBuffer = indexBuffer;
         glBindVertexArray(m_RendererID);
         indexBuffer->Bind();
     }
 
-}

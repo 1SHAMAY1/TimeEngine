@@ -1,7 +1,7 @@
-﻿#include "Renderer/OpenGL/OpenGLIndexBuffer.hpp"
+#include "Core/PreRequisites.h"
+#include "Renderer/OpenGL/OpenGLIndexBuffer.hpp"
 #include <glad/glad.h>
 
-namespace TE {
     OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t Count)
         : m_Count(Count) {
         glGenBuffers(1, &m_RendererID);
@@ -30,4 +30,4 @@ namespace TE {
     uint32_t OpenGLIndexBuffer::GetCount() const {
         return m_Count;
     }
-}
+

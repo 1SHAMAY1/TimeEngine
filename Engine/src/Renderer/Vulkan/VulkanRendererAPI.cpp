@@ -1,9 +1,8 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanRendererAPI.hpp"
 #include <iostream>
 #include <volk.h>
 
-namespace TE
-{
 
 void VulkanRendererAPI::Init() { std::cout << "[Vulkan] Initializing VulkanRendererAPI\n"; }
 
@@ -34,11 +33,11 @@ void VulkanRendererAPI::SetBlendMode(int blendMode)
 
 bool VulkanRendererAPI::LoadLoader(void *(*loadProc)(const char *)) { return true; }
 
-std::string VulkanRendererAPI::GetVersionString() { return "Vulkan 1.3 (Headers Only)"; }
+TEString VulkanRendererAPI::GetVersionString() { return "Vulkan 1.3 (Headers Only)"; }
 
-std::string VulkanRendererAPI::GetGPUVendor() { return "Vulkan Vendor Stub"; }
+TEString VulkanRendererAPI::GetGPUVendor() { return "Vulkan Vendor Stub"; }
 
-std::string VulkanRendererAPI::GetGPURenderer() { return "Vulkan Renderer Stub"; }
+TEString VulkanRendererAPI::GetGPURenderer() { return "Vulkan Renderer Stub"; }
 
 void VulkanRendererAPI::GetViewport(int *viewport)
 {
@@ -78,4 +77,3 @@ void VulkanRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dst
     // Pipeline state
 }
 
-} // namespace TE

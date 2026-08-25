@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/IndexBuffer.hpp"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
@@ -17,37 +18,35 @@
 #include "Renderer/Metal/MetalIndexBuffer.hpp"
 #endif
 
-namespace TE
-{
-IndexBuffer *IndexBuffer::Create(uint32_t *indices, uint32_t Count)
+TERef<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t Count)
 {
     switch (RendererContext::GetAPI())
     {
 #ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
-        return new OpenGLIndexBuffer(indices, Count);
+        return CreateRef<OpenGLIndexBuffer>(indices, Count);
 #endif
 #if defined(TE_PLATFORM_MOBILE)
     case GraphicsAPI::OpenGLES:
-        return new OpenGLESIndexBuffer(indices, Count);
+        return CreateRef<OpenGLESIndexBuffer>(indices, Count);
 #else
     case GraphicsAPI::OpenGLES:
         return nullptr;
 #endif
 #ifdef TE_SUPPORT_VULKAN
     case GraphicsAPI::Vulkan:
-        return new VulkanIndexBuffer(indices, Count);
+        return CreateRef<VulkanIndexBuffer>(indices, Count);
 #endif
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
-        return new DirectX11IndexBuffer(indices, Count);
+        return CreateRef<DirectX11IndexBuffer>(indices, Count);
 #endif
 #ifdef TE_SUPPORT_METAL
     case GraphicsAPI::Metal:
-        return new MetalIndexBuffer(indices, Count);
+        return CreateRef<MetalIndexBuffer>(indices, Count);
 #endif
     default:
         return nullptr;
     }
 }
-} // namespace TE
+

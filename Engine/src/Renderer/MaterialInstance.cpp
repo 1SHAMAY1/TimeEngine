@@ -1,9 +1,9 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/MaterialInstance.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 
-namespace TE {
 
-MaterialInstance::MaterialInstance(const std::shared_ptr<Material>& baseMaterial)
+MaterialInstance::MaterialInstance(const TERef<Material>& baseMaterial)
     : m_BaseMaterial(baseMaterial) {}
 
 MaterialInstance::~MaterialInstance() {}
@@ -19,7 +19,7 @@ const TEColor& MaterialInstance::GetColor() const {
     return m_BaseMaterial->GetColor();
 }
 
-std::shared_ptr<Material> MaterialInstance::GetBaseMaterial() const {
+TERef<Material> MaterialInstance::GetBaseMaterial() const {
     return m_BaseMaterial;
 }
 
@@ -32,4 +32,3 @@ void MaterialInstance::ApplyUniforms() {
     }
 }
 
-} // namespace TE 

@@ -1,9 +1,8 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLFramebuffer.hpp"
 #include "Core/Log.h"
 #include <glad/glad.h>
 
-namespace TE
-{
 
 static const uint32_t s_MaxFramebufferSize = 8192;
 
@@ -70,4 +69,3 @@ void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
     Invalidate();
 }
 
-} // namespace TE

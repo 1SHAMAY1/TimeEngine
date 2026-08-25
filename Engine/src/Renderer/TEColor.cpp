@@ -1,5 +1,5 @@
-#include "Renderer/TEColor.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/TEColor.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/TEOpenGLColor.hpp"
 #endif
@@ -7,10 +7,7 @@
 #include "Utils/MathUtils.hpp"
 #include <glm/glm.hpp>
 #include <iomanip>
-#include <sstream>
 
-namespace TE
-{
 
 TEColor::TEColor() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 
@@ -117,31 +114,27 @@ TEColor TEColor::ToLinear(const TEColor &srgb)
     return TEColor(linear.x, linear.y, linear.z, srgb.a);
 }
 
-TEColor TEColor::FromHex(const std::string &hex)
+TEColor TEColor::FromHex(const TEString &hex)
 {
     unsigned int r = 0, g = 0, b = 0, a = 255;
 
-    if (hex.length() == 7 || hex.length() == 9)
+    if (hex.Length() == 7 || hex.Length() == 9)
     {
-        std::stringstream ss;
-        ss << std::hex << hex.substr(1, 2);
-        ss >> r;
-        ss.clear();
-        ss << std::hex << hex.substr(3, 2);
-        ss >> g;
-        ss.clear();
-        ss << std::hex << hex.substr(5, 2);
-        ss >> b;
-
-        if (hex.length() == 9)
+        try
         {
-            ss.clear();
-            ss << std::hex << hex.substr(7, 2);
-            ss >> a;
+            r = std::stoul(hex.Mid(1, 2).c_str(), nullptr, 16);
+            g = std::stoul(hex.Mid(3, 2).c_str(), nullptr, 16);
+            b = std::stoul(hex.Mid(5, 2).c_str(), nullptr, 16);
+            if (hex.Length() == 9)
+            {
+                a = std::stoul(hex.Mid(7, 2).c_str(), nullptr, 16);
+            }
+        }
+        catch (...)
+        {
         }
     }
 
     return TEColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
 
-} // namespace TE

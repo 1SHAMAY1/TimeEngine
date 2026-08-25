@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 // Windows headers MUST come first to avoid macro pollution when other headers are included
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -26,10 +27,7 @@
 
 #include <cstring>
 #include <iostream>
-#include <string>
 
-namespace TE
-{
 
 // -------------------------------------------------------------------------
 //  File-local helper: BlendFactor -> D3D11_BLEND
@@ -130,9 +128,7 @@ void DirectX11RendererAPI::InitWithWindow(void *hwnd, uint32_t width, uint32_t h
             DXGI_ADAPTER_DESC desc;
             if (SUCCEEDED(dxgiAdapter->GetDesc(&desc)))
             {
-                char buf[256] = {};
-                WideCharToMultiByte(CP_UTF8, 0, desc.Description, -1, buf, 256, nullptr, nullptr);
-                m_GPUDescription = buf;
+                m_GPUDescription = TEString::FromWide(desc.Description);
             }
             dxgiAdapter->Release();
         }
@@ -297,9 +293,9 @@ bool DirectX11RendererAPI::LoadLoader(void *(* /*loadProc*/)(const char *))
     return true; // D3D11 is statically linked, no loader needed.
 }
 
-std::string DirectX11RendererAPI::GetVersionString() { return "Direct3D 11.0"; }
-std::string DirectX11RendererAPI::GetGPUVendor() { return m_GPUDescription.empty() ? "Unknown" : m_GPUDescription; }
-std::string DirectX11RendererAPI::GetGPURenderer()
+TEString DirectX11RendererAPI::GetVersionString() { return "Direct3D 11.0"; }
+TEString DirectX11RendererAPI::GetGPUVendor() { return m_GPUDescription.empty() ? "Unknown" : m_GPUDescription; }
+TEString DirectX11RendererAPI::GetGPURenderer()
 {
     return m_GPUDescription.empty() ? "Direct3D 11 Hardware" : m_GPUDescription;
 }
@@ -356,8 +352,8 @@ void DirectX11RendererAPI::ReadPixelsRGBA(int x, int y, int width, int height, v
     D3D11_MAPPED_SUBRESOURCE mapped;
     if (SUCCEEDED(ctx.DeviceContext->Map(stagingTex, 0, D3D11_MAP_READ, 0, &mapped)))
     {
-        uint8_t *dst = static_cast<uint8_t *>(outPixels);
-        uint8_t *src = static_cast<uint8_t *>(mapped.pData);
+        char *dst = reinterpret_cast<char *>(outPixels);
+        const char *src = reinterpret_cast<const char *>(mapped.pData);
         uint32_t stride = mapped.RowPitch;
         // Flip rows vertically to match OpenGL convention (y=0 is bottom-left)
         for (int row = 0; row < height; ++row)
@@ -409,4 +405,3 @@ void DirectX11RendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor 
     bs->Release();
 }
 
-} // namespace TE

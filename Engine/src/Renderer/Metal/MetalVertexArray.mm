@@ -19,12 +19,12 @@ void MetalVertexArray::Unbind() const
 {
 }
 
-void MetalVertexArray::AddVertexBuffer(VertexBuffer *vertexBuffer)
+void MetalVertexArray::AddVertexBuffer(const TERef<VertexBuffer> &vertexBuffer)
 {
     m_VertexBuffer = vertexBuffer;
 }
 
-void MetalVertexArray::SetIndexBuffer(IndexBuffer *indexBuffer)
+void MetalVertexArray::SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer)
 {
     m_IndexBuffer = indexBuffer;
 }

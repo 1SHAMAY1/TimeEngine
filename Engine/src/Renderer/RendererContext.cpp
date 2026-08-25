@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 #include "Renderer/RenderCommand.hpp"
-#include <string>
 
 #ifdef _WIN32
 // For GPU selection exports
@@ -11,8 +11,6 @@ extern "C"
 }
 #endif
 
-namespace TE
-{
 GraphicsAPI RendererContext::s_API = GraphicsAPI::OpenGL;
 
 void RendererContext::SetAPI(GraphicsAPI api) { s_API = api; }
@@ -25,21 +23,21 @@ void RendererContext::EnableBestGPU()
     // Call before context creation for best effect
 }
 
-std::string RendererContext::GetGPUVendor() { return RenderCommand::GetGPUVendor(); }
+TEString RendererContext::GetGPUVendor() { return RenderCommand::GetGPUVendor(); }
 
-std::string RendererContext::GetGPURenderer() { return RenderCommand::GetGPURenderer(); }
+TEString RendererContext::GetGPURenderer() { return RenderCommand::GetGPURenderer(); }
 
-std::string RendererContext::GetGPUType()
+TEString RendererContext::GetGPUType()
 {
-    std::string vendor = GetGPUVendor();
-    std::string renderer = GetGPURenderer();
+    TEString vendor = GetGPUVendor();
+    TEString renderer = GetGPURenderer();
     // Heuristic: NVIDIA/AMD = Dedicated, Intel = Integrated
-    if (vendor.find("NVIDIA") != std::string::npos || renderer.find("NVIDIA") != std::string::npos)
+    if (vendor.find("NVIDIA") != TEString::npos || renderer.find("NVIDIA") != TEString::npos)
         return "Dedicated";
-    if (vendor.find("AMD") != std::string::npos || renderer.find("AMD") != std::string::npos)
+    if (vendor.find("AMD") != TEString::npos || renderer.find("AMD") != TEString::npos)
         return "Dedicated";
-    if (vendor.find("Intel") != std::string::npos || renderer.find("Intel") != std::string::npos)
+    if (vendor.find("Intel") != TEString::npos || renderer.find("Intel") != TEString::npos)
         return "Integrated";
     return "Unknown";
 }
-} // namespace TE
+

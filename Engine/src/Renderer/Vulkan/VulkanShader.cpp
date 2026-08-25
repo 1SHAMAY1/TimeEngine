@@ -1,10 +1,9 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanShader.hpp"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include <iostream>
 
-namespace TE
-{
-VulkanShader::VulkanShader(const std::string &vertexSrc, const std::string &fragmentSrc)
+VulkanShader::VulkanShader(const TEString &vertexSrc, const TEString &fragmentSrc)
 {
     VkDevice device = VulkanContext::GetDevice();
     if (device == VK_NULL_HANDLE)
@@ -36,7 +35,7 @@ VulkanShader::VulkanShader(const std::string &vertexSrc, const std::string &frag
     }
 }
 
-VulkanShader::VulkanShader(const std::string &computeSrc)
+VulkanShader::VulkanShader(const TEString &computeSrc)
 {
     VkDevice device = VulkanContext::GetDevice();
     if (device == VK_NULL_HANDLE)
@@ -83,16 +82,15 @@ void VulkanShader::Bind() const
 
 void VulkanShader::Unbind() const {}
 
-void VulkanShader::SetUniformMat4(const std::string &name, const glm::mat4 &value) {}
+void VulkanShader::SetUniformMat4(const TEString &name, const glm::mat4 &value) {}
 
-void VulkanShader::SetUniform4f(const std::string &name, const glm::vec4 &value) {}
+void VulkanShader::SetUniform4f(const TEString &name, const glm::vec4 &value) {}
 
-void VulkanShader::SetUniform3f(const std::string &name, const glm::vec3 &value) {}
+void VulkanShader::SetUniform3f(const TEString &name, const glm::vec3 &value) {}
 
-void VulkanShader::SetUniform2f(const std::string &name, const glm::vec2 &value) {}
+void VulkanShader::SetUniform2f(const TEString &name, const glm::vec2 &value) {}
 
-void VulkanShader::SetUniform1f(const std::string &name, float value) {}
+void VulkanShader::SetUniform1f(const TEString &name, float value) {}
 
-void VulkanShader::SetUniform1i(const std::string &name, int value) {}
+void VulkanShader::SetUniform1i(const TEString &name, int value) {}
 
-} // namespace TE

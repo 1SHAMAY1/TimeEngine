@@ -1,6 +1,6 @@
 # OpenGL Graphics Backend Architecture
 
-The OpenGL graphics backend in TimeEngine provides cross-platform OpenGL hardware rendering (`OpenGLRendererAPI`), GLAD function pointer loading (`LoadLoader`), GLSL shader compilation ([`OpenGLShader`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp)), OpenGL Vertex Array Objects ([`OpenGLVertexArray`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLVertexArray.hpp)), Vertex Buffers ([`OpenGLVertexBuffer`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLVertexBuffer.hpp)), Index Buffers ([`OpenGLIndexBuffer`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLIndexBuffer.hpp)), Framebuffers ([`OpenGLFramebuffer`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLFramebuffer.hpp)), and pixel readbacks (`glReadPixels`).
+The OpenGL graphics backend in TimeEngine provides cross-platform OpenGL hardware rendering (`OpenGLRendererAPI`), GLAD function pointer loading (`LoadLoader`), GLSL shader compilation ([`OpenGLShader`](../../../Include/Renderer/OpenGL/OpenGLShader.hpp)), OpenGL Vertex Array Objects ([`OpenGLVertexArray`](../../../Include/Renderer/OpenGL/OpenGLVertexArray.hpp)), Vertex Buffers ([`OpenGLVertexBuffer`](../../../Include/Renderer/OpenGL/OpenGLVertexBuffer.hpp)), Index Buffers ([`OpenGLIndexBuffer`](../../../Include/Renderer/OpenGL/OpenGLIndexBuffer.hpp)), Framebuffers ([`OpenGLFramebuffer`](../../../Include/Renderer/OpenGL/OpenGLFramebuffer.hpp)), and pixel readbacks (`glReadPixels`).
 
 > [!NOTE]
 > In short, think of the **OpenGL Backend** as TimeEngine's cross-platform graphics driver wrapper: `OpenGLRendererAPI` translates standard engine render commands into native OpenGL calls (`glViewport`, `glClear`, `glDrawElements`, `glBlendFunc`), while `gladLoadGLLoader` dynamically binds modern OpenGL function pointers from GLFW context loaders.
@@ -9,38 +9,38 @@ The OpenGL graphics backend in TimeEngine provides cross-platform OpenGL hardwar
 
 ## Architecture & Data Flow
 
-```
-[ Renderer2D / RenderBatcher ]
-             │
-             ▼ (Virtual RendererAPI Interface)
-[ OpenGLRendererAPI ]
-             │
-             ├──► Init: gladLoadGLLoader(loadProc)
-             ├──► Frame Clears: glClearColor + glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-             ├──► Blend States: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-             ├──► Shader Binding: glUseProgram
-             ├──► VAO / Buffer Binding: glBindVertexArray + glBindBuffer
-             └──► Draw Execution: glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr)
-             │
-             ▼ (OpenGL Graphics Driver Execution)
-[ Hardware GPU Framebuffer ]
+```mermaid
+flowchart TD
+    Renderer["Renderer2D / RenderBatcher"] -->|Virtual RendererAPI Interface| OpenGLAPI["OpenGLRendererAPI"]
+    OpenGLAPI --> Init["Init: gladLoadGLLoader"]
+    OpenGLAPI --> Clears["Frame Clears: glClearColor + glClear"]
+    OpenGLAPI --> Blend["Blend States: glBlendFunc"]
+    OpenGLAPI --> Shader["Shader Binding: glUseProgram"]
+    OpenGLAPI --> Buffers["Buffer Binding: glBindVertexArray"]
+    OpenGLAPI --> Draw["Draw Execution: glDrawElements"]
+    Init --> GPU["Hardware GPU Framebuffer"]
+    Clears --> GPU
+    Blend --> GPU
+    Shader --> GPU
+    Buffers --> GPU
+    Draw --> GPU
 ```
 
 ---
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TE::OpenGLRendererAPI`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLRendererAPI.hpp)**:
+1. **[`TE::OpenGLRendererAPI`](../../../Include/Renderer/OpenGL/OpenGLRendererAPI.hpp)**:
    - Inherits from `RendererAPI`.
    - Initializes OpenGL state machine defaults (`glEnable(GL_BLEND)`).
    - Queries hardware information (`glGetString(GL_VERSION)`, `GL_VENDOR`, `GL_RENDERER`).
    - Executes primitive indexed draw calls (`glDrawElements`).
 
-2. **[`TE::OpenGLShader`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLShader.hpp)**:
+2. **[`TE::OpenGLShader`](../../../Include/Renderer/OpenGL/OpenGLShader.hpp)**:
    - Compiles Vertex and Fragment GLSL shader source strings using `glCompileShader()`.
    - Links shader programs via `glLinkProgram()` and caches uniform locations (`glGetUniformLocation()`).
 
-3. **[`TE::OpenGLFramebuffer`](file:///e:/TimeEngine/Engine/Include/Renderer/OpenGL/OpenGLFramebuffer.hpp)**:
+3. **[`TE::OpenGLFramebuffer`](../../../Include/Renderer/OpenGL/OpenGLFramebuffer.hpp)**:
    - Allocates off-screen OpenGL Framebuffer Objects (FBO) with color texture attachments (`GL_COLOR_ATTACHMENT0`) and depth/stencil renderbuffers.
 
 4. **Resource Objects**:
@@ -99,4 +99,3 @@ RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction
 - [Renderer Subsystem Architecture](../ARCHITECTURE.md) — Multi-backend 2D batching architecture.
 - [DirectX 11 Graphics Backend Architecture](../DirectX11/ARCHITECTURE.md) — Direct3D 11 hardware backend implementation.
 - [Window Subsystem Architecture](../../Window/ARCHITECTURE.md) — GLFW window creation and OpenGL context initialization.
-

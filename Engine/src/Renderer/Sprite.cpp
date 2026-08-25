@@ -1,51 +1,62 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Sprite.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include "Core/Log.h"
+#include "Utils/TEFileSystem.hpp"
 #include "Renderer/SpriteSerializer.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include "Renderer/Texture.hpp"
 
-namespace TE
-{
 
-void Sprite::SetTexturePath(const std::string &path)
+#include "Utils/TEFileSystem.hpp"
+TE_REGISTER_ASSET(Sprite)
+
+bool Sprite::LoadFromFile(const TEString &path)
+{
+    auto self = TERef<Sprite>(this, [](Sprite*){});
+    SpriteSerializer serializer(self);
+    return serializer.Deserialize(path);
+}
+
+void Sprite::SetTexturePath(const TEString &path)
 {
     m_TexturePath = path;
-    if (!path.empty() && std::filesystem::exists(path))
+    if (!path.empty() && TEFileSystem::Exists(path))
     {
-        m_Texture = std::make_shared<Texture>(path);
+        m_Texture = CreateRef<Texture>(path);
     }
 }
 
 void Sprite::GenerateAutoContourCollider(float alphaThreshold)
 {
     // Generate default box contour points if no custom outline algorithm provided
-    m_CustomColliderPoints.clear();
-    m_CustomColliderPoints.push_back({-0.5f, -0.5f});
-    m_CustomColliderPoints.push_back({0.5f, -0.5f});
-    m_CustomColliderPoints.push_back({0.5f, 0.5f});
-    m_CustomColliderPoints.push_back({-0.5f, 0.5f});
+    m_CustomColliderPoints.Empty();
+    m_CustomColliderPoints.Add({-0.5f, -0.5f});
+    m_CustomColliderPoints.Add({0.5f, -0.5f});
+    m_CustomColliderPoints.Add({0.5f, 0.5f});
+    m_CustomColliderPoints.Add({-0.5f, 0.5f});
 }
 
-void Sprite::OnContentBrowserCreate(const std::filesystem::path &path)
+void Sprite::OnContentBrowserCreate(const TEString &path)
 {
-    std::filesystem::create_directories(path);
-    std::string baseName = "NewSprite";
-    std::filesystem::path finalPath = path / (baseName + ".tesprite");
+    TEFileSystem::CreateDirectories(path);
+    TEString baseName = "NewSprite";
+    TEString finalPath = path / (baseName + ".tesprite");
     int counter = 1;
-    while (std::filesystem::exists(finalPath))
+    while (TEFileSystem::Exists(finalPath))
     {
-        finalPath = path / (baseName + "_" + std::to_string(counter++) + ".tesprite");
+        finalPath = path / (baseName + "_" + TEString::FromInt(counter++) + ".tesprite");
     }
 
-    auto newSprite = std::make_shared<Sprite>();
+    auto newSprite = CreateRef<Sprite>();
     SpriteSerializer serializer(newSprite);
     if (serializer.Serialize(finalPath))
     {
-        TE_CORE_INFO("Created New Sprite at {0}", finalPath.string());
+        TE_CORE_INFO("Created New Sprite at {0}", finalPath.c_str());
     }
     else
     {
-        TE_CORE_ERROR("Failed to serialize and create Sprite at {0}", finalPath.string());
+        TE_CORE_ERROR("Failed to serialize and create Sprite at {0}", finalPath.c_str());
     }
 }
 
-} // namespace TE

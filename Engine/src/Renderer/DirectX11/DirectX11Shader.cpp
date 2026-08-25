@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 // Windows headers first to prevent macro pollution
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -20,13 +21,11 @@
 // ID3DBlob is typedef'd as ID3D10Blob in d3dcommon.h — use ID3D10Blob throughout
 typedef ID3D10Blob ID3DBlob;
 
-namespace TE
-{
 
 // -------------------------------------------------------------------------
 //  Internal helper: compile HLSL source to bytecode
 // -------------------------------------------------------------------------
-static ID3D10Blob *CompileHLSL(const std::string &src, const char *entryPoint, const char *target)
+static ID3D10Blob *CompileHLSL(const TEString &src, const char *entryPoint, const char *target)
 {
     ID3D10Blob *codeBlob = nullptr;
     ID3D10Blob *errorBlob = nullptr;
@@ -66,7 +65,7 @@ static ID3D10Blob *CompileHLSL(const std::string &src, const char *entryPoint, c
 // -------------------------------------------------------------------------
 //  Constructor
 // -------------------------------------------------------------------------
-DirectX11Shader::DirectX11Shader(const std::string &vertexSrc, const std::string &fragmentSrc)
+DirectX11Shader::DirectX11Shader(const TEString &vertexSrc, const TEString &fragmentSrc)
 {
     DX11Context &ctx = DX11Context::Get();
     if (!ctx.Device)
@@ -193,7 +192,7 @@ static uint32_t AlignOffset(uint32_t floatOffset, uint32_t floatsNeeded)
     return floatOffset;
 }
 
-void DirectX11Shader::SetUniformMat4(const std::string &name, const glm::mat4 &value)
+void DirectX11Shader::SetUniformMat4(const TEString &name, const glm::mat4 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -212,7 +211,7 @@ void DirectX11Shader::SetUniformMat4(const std::string &name, const glm::mat4 &v
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform4f(const std::string &name, const glm::vec4 &value)
+void DirectX11Shader::SetUniform4f(const TEString &name, const glm::vec4 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -231,7 +230,7 @@ void DirectX11Shader::SetUniform4f(const std::string &name, const glm::vec4 &val
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform3f(const std::string &name, const glm::vec3 &value)
+void DirectX11Shader::SetUniform3f(const TEString &name, const glm::vec3 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -250,7 +249,7 @@ void DirectX11Shader::SetUniform3f(const std::string &name, const glm::vec3 &val
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform2f(const std::string &name, const glm::vec2 &value)
+void DirectX11Shader::SetUniform2f(const TEString &name, const glm::vec2 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -269,7 +268,7 @@ void DirectX11Shader::SetUniform2f(const std::string &name, const glm::vec2 &val
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform1f(const std::string &name, float value)
+void DirectX11Shader::SetUniform1f(const TEString &name, float value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -287,7 +286,7 @@ void DirectX11Shader::SetUniform1f(const std::string &name, float value)
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform1i(const std::string &name, int value)
+void DirectX11Shader::SetUniform1i(const TEString &name, int value)
 {
     // Texture slot bindings are handled via PSSetShaderResources in D3D11 (not uniforms).
     // We still record this for interface compatibility.
@@ -307,4 +306,3 @@ void DirectX11Shader::SetUniform1i(const std::string &name, int value)
     m_Dirty = true;
 }
 
-} // namespace TE

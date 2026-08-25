@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -11,8 +12,6 @@
 #include <d3d11.h>
 #include <iostream>
 
-namespace TE
-{
 
 DirectX11VertexBuffer::DirectX11VertexBuffer(float *vertices, uint32_t size) : m_Size(size)
 {
@@ -84,4 +83,3 @@ void DirectX11VertexBuffer::SetData(float *vertices, uint32_t size) const
     }
 }
 
-} // namespace TE

@@ -1,9 +1,8 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanFramebuffer.hpp"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include <iostream>
 
-namespace TE
-{
 
 VulkanFramebuffer::VulkanFramebuffer(const FramebufferSpecification &spec) : m_Specification(spec) { Invalidate(); }
 
@@ -88,4 +87,3 @@ void VulkanFramebuffer::Resize(uint32_t width, uint32_t height)
     Invalidate();
 }
 
-} // namespace TE

@@ -1,6 +1,6 @@
 # DirectX 11 Graphics Backend Architecture
 
-The DirectX 11 graphics backend in TimeEngine provides a high-performance Direct3D 11 rendering pipeline implementation (`DirectX11RendererAPI`), shared COM device contexts ([`DX11Context`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11RendererAPI.hpp)), HLSL shader compilation ([`DirectX11Shader`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11Shader.hpp)), D3D11 vertex buffers ([`DirectX11VertexBuffer`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11VertexBuffer.hpp)), index buffers ([`DirectX11IndexBuffer`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11IndexBuffer.hpp)), vertex input layouts ([`DirectX11VertexArray`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11VertexArray.hpp)), and viewport pixel reading (`ReadPixelsRGBA`).
+The DirectX 11 graphics backend in TimeEngine provides a high-performance Direct3D 11 rendering pipeline implementation (`DirectX11RendererAPI`), shared COM device contexts ([`DX11Context`](../../../Include/Renderer/DirectX11/DirectX11RendererAPI.hpp)), HLSL shader compilation ([`DirectX11Shader`](../../../Include/Renderer/DirectX11/DirectX11Shader.hpp)), D3D11 vertex buffers ([`DirectX11VertexBuffer`](../../../Include/Renderer/DirectX11/DirectX11VertexBuffer.hpp)), index buffers ([`DirectX11IndexBuffer`](../../../Include/Renderer/DirectX11/DirectX11IndexBuffer.hpp)), vertex input layouts ([`DirectX11VertexArray`](../../../Include/Renderer/DirectX11/DirectX11VertexArray.hpp)), and viewport pixel reading (`ReadPixelsRGBA`).
 
 > [!NOTE]
 > In short, think of the **DirectX 11 Backend** as TimeEngine's native Windows hardware driver module: `DX11Context` manages the `ID3D11Device`, `ID3D11DeviceContext`, and `IDXGISwapChain`; `DirectX11RendererAPI` maps vendor-agnostic engine render commands (`SetViewport`, `Clear`, `SetBlendMode`) into D3D11 calls; while HLSL shaders are compiled dynamically using `D3DCompile` at runtime.
@@ -9,28 +9,27 @@ The DirectX 11 graphics backend in TimeEngine provides a high-performance Direct
 
 ## Architecture & Data Flow
 
-```
-[ Application / Renderer2D ]
-             │
-             ▼ (Virtual RendererAPI Calls)
-[ DirectX11RendererAPI ]
-             │
-             ├──► DX11Context::Get() (Fetch ID3D11Device & ID3D11DeviceContext)
-             │
-             ├──► Render Targets & Depth: ClearRenderTargetView / ClearDepthStencilView
-             ├──► Blend States: OMSetBlendState (Normal, Additive, Multiplicative)
-             ├──► Shader Pipeline: VSSetShader / PSSetShader / D3DCompile
-             └──► Index Drawing: DrawIndexed
-             │
-             ▼ (D3D11 / DXGI Hardware Presentation)
-[ IDXGISwapChain::Present ] ──► [ Windows HWND Viewport ]
+```mermaid
+flowchart TD
+    Renderer["Application / Renderer2D"] -->|Virtual RendererAPI Calls| DX11API["DirectX11RendererAPI"]
+    DX11API --> Context["DX11Context::Get()"]
+    DX11API --> Targets["Render Targets & Depth: ClearRenderTargetView"]
+    DX11API --> Blend["Blend States: OMSetBlendState"]
+    DX11API --> Shader["Shader Pipeline: VSSetShader / PSSetShader"]
+    DX11API --> Draw["Index Drawing: DrawIndexed"]
+    Context --> SwapChain["IDXGISwapChain::Present"]
+    Targets --> SwapChain
+    Blend --> SwapChain
+    Shader --> SwapChain
+    Draw --> SwapChain
+    SwapChain --> HWND["Windows HWND Viewport"]
 ```
 
 ---
 
 ## Core Classes & Component Roles
 
-1. **[`TE::DX11Context`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11RendererAPI.hpp)**:
+1. **[`TE::DX11Context`](../../../Include/Renderer/DirectX11/DirectX11RendererAPI.hpp)**:
    - Global singleton struct maintaining COM pointers for all D3D11 resource objects:
      - `ID3D11Device *Device`: Resource allocation factory.
      - `ID3D11DeviceContext *DeviceContext`: Command execution context.
@@ -38,12 +37,12 @@ The DirectX 11 graphics backend in TimeEngine provides a high-performance Direct
      - `ID3D11RenderTargetView *RenderTargetView`: Backbuffer color view.
      - `ID3D11DepthStencilView *DepthStencilView`: Depth-stencil surface view.
 
-2. **[`TE::DirectX11RendererAPI`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11RendererAPI.hpp)**:
+2. **[`TE::DirectX11RendererAPI`](../../../Include/Renderer/DirectX11/DirectX11RendererAPI.hpp)**:
    - Inherits from `RendererAPI`.
    - Binds native Windows handle (`HWND`) via `InitWithWindow(hwnd, width, height)`.
    - Manages viewport scaling, clear colors, hardware GPU queries (`GetGPUVendor`), and blend states.
 
-3. **[`TE::DirectX11Shader`](file:///e:/TimeEngine/Engine/Include/Renderer/DirectX11/DirectX11Shader.hpp)**:
+3. **[`TE::DirectX11Shader`](../../../Include/Renderer/DirectX11/DirectX11Shader.hpp)**:
    - Compiles HLSL source strings dynamically at runtime using `D3DCompile()`.
    - Creates `ID3D11VertexShader`, `ID3D11PixelShader`, and constant buffer bindings.
 
@@ -103,4 +102,3 @@ dx11API->InitWithWindow(nativeHwnd, 1920, 1080);
 - [Renderer Subsystem Architecture](../ARCHITECTURE.md) — Multi-backend 2D batching pipeline.
 - [Window Subsystem Architecture](../../Window/ARCHITECTURE.md) — Win32 `HWND` creation and event dispatch.
 - [Windows Platform Utilities Architecture](../../Utils/Platform/Windows/ARCHITECTURE.md) — Win32 system dialogs and COM initialization.
-

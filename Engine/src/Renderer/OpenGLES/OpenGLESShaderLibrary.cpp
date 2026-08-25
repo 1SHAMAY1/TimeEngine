@@ -1,18 +1,17 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESShaderLibrary.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-namespace TE
-{
 
 // ---------------------------------------------------------------------------
 // Shader Creation
 // ---------------------------------------------------------------------------
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESBasicShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESBasicShader()
 {
     // Minimal GLSL ES 3.0 vertex + fragment shaders
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Transform;
@@ -20,7 +19,7 @@ void main() {
     gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 out vec4 o_Color;
 uniform vec4 u_Color;
@@ -28,12 +27,12 @@ void main() {
     o_Color = u_Color;
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESTextureShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESTextureShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
 out vec2 v_TexCoord;
@@ -44,7 +43,7 @@ void main() {
     gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec2 v_TexCoord;
 out vec4 o_Color;
@@ -54,12 +53,12 @@ void main() {
     o_Color = texture(u_Texture, v_TexCoord) * u_Color;
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESColorShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESColorShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
 out vec4 v_Color;
@@ -69,7 +68,7 @@ void main() {
     gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec4 v_Color;
 out vec4 o_Color;
@@ -77,12 +76,12 @@ void main() {
     o_Color = v_Color;
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESStandardShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESStandardShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec2 a_TexCoord;
@@ -99,7 +98,7 @@ void main() {
     gl_Position   = u_ViewProjection * worldPos;
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec3 v_Normal;
 in  vec3 v_FragPos;
@@ -121,12 +120,12 @@ void main() {
     o_Color = vec4((ambient + diffuse) * texColor.rgb, texColor.a);
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLightingShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLightingShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 out vec3 v_Normal;
@@ -140,7 +139,7 @@ void main() {
     gl_Position   = u_ViewProjection * worldPos;
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec3 v_Normal;
 in  vec3 v_FragPos;
@@ -165,12 +164,12 @@ void main() {
     o_Color = vec4((ambient + diffuse + specular) * u_ObjectColor, 1.0);
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESParticleShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESParticleShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
 layout(location = 2) in float a_Size;
@@ -182,7 +181,7 @@ void main() {
     gl_PointSize = a_Size;
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec4 v_Color;
 out vec4 o_Color;
@@ -194,12 +193,12 @@ void main() {
     o_Color = v_Color;
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESPostProcessShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESPostProcessShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec2 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
 out vec2 v_TexCoord;
@@ -208,7 +207,7 @@ void main() {
     gl_Position = vec4(a_Position, 0.0, 1.0);
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec2 v_TexCoord;
 out vec4 o_Color;
@@ -220,12 +219,12 @@ void main() {
     o_Color = vec4(pow(color.rgb, vec3(1.0 / u_Gamma)), color.a);
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESUIShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESUIShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec2 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
 layout(location = 2) in vec4 a_Color;
@@ -238,7 +237,7 @@ void main() {
     gl_Position = u_Projection * vec4(a_Position, 0.0, 1.0);
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec2 v_TexCoord;
 in  vec4 v_Color;
@@ -248,12 +247,12 @@ void main() {
     o_Color = v_Color * texture(u_Texture, v_TexCoord);
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
-std::shared_ptr<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLight2DShader()
+TERef<OpenGLESShader> OpenGLESShaderLibrary::CreateOpenGLESLight2DShader()
 {
-    const std::string vert = R"(#version 300 es
+    const TEString vert = R"(#version 300 es
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
 out vec2 v_TexCoord;
@@ -267,7 +266,7 @@ void main() {
     gl_Position = u_ViewProjection * world;
 })";
 
-    const std::string frag = R"(#version 300 es
+    const TEString frag = R"(#version 300 es
 precision mediump float;
 in  vec2 v_TexCoord;
 in  vec2 v_WorldPos;
@@ -284,53 +283,53 @@ void main() {
     o_Color        = texColor * u_LightColor * attenuation;
 })";
 
-    return std::make_shared<OpenGLESShader>(vert, frag);
+    return CreateRef<OpenGLESShader>(vert, frag);
 }
 
 // ---------------------------------------------------------------------------
 // Uniform Setters
 // ---------------------------------------------------------------------------
 
-void OpenGLESShaderLibrary::SetUniform1i(OpenGLESShader *shader, const std::string &name, int value)
+void OpenGLESShaderLibrary::SetUniform1i(OpenGLESShader *shader, const TEString &name, int value)
 {
     shader->Bind();
     shader->SetUniform1i(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform1f(OpenGLESShader *shader, const std::string &name, float value)
+void OpenGLESShaderLibrary::SetUniform1f(OpenGLESShader *shader, const TEString &name, float value)
 {
     shader->Bind();
     shader->SetUniform1f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform2f(OpenGLESShader *shader, const std::string &name, const glm::vec2 &value)
+void OpenGLESShaderLibrary::SetUniform2f(OpenGLESShader *shader, const TEString &name, const glm::vec2 &value)
 {
     shader->Bind();
     shader->SetUniform2f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform3f(OpenGLESShader *shader, const std::string &name, const glm::vec3 &value)
+void OpenGLESShaderLibrary::SetUniform3f(OpenGLESShader *shader, const TEString &name, const glm::vec3 &value)
 {
     shader->Bind();
     shader->SetUniform3f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform4f(OpenGLESShader *shader, const std::string &name, const glm::vec4 &value)
+void OpenGLESShaderLibrary::SetUniform4f(OpenGLESShader *shader, const TEString &name, const glm::vec4 &value)
 {
     shader->Bind();
     shader->SetUniform4f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniformMat3(OpenGLESShader *shader, const std::string &name, const glm::mat3 &value)
+void OpenGLESShaderLibrary::SetUniformMat3(OpenGLESShader *shader, const TEString &name, const glm::mat3 &value)
 {
     shader->Bind();
     glUniformMatrix3fv(shader->GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
-void OpenGLESShaderLibrary::SetUniformMat4(OpenGLESShader *shader, const std::string &name, const glm::mat4 &value)
+void OpenGLESShaderLibrary::SetUniformMat4(OpenGLESShader *shader, const TEString &name, const glm::mat4 &value)
 {
     shader->Bind();
     shader->SetUniformMat4(name, value);
 }
-void OpenGLESShaderLibrary::SetUniformMat4Array(OpenGLESShader *shader, const std::string &name,
-                                                const std::vector<glm::mat4> &values)
+void OpenGLESShaderLibrary::SetUniformMat4Array(OpenGLESShader *shader, const TEString &name,
+                                                const TEArray<glm::mat4> &values)
 {
     shader->Bind();
-    glUniformMatrix4fv(shader->GetUniformLocation(name), static_cast<GLsizei>(values.size()), GL_FALSE,
+    glUniformMatrix4fv(shader->GetUniformLocation(name), static_cast<GLsizei>(values.Num()), GL_FALSE,
                        glm::value_ptr(values[0]));
 }
 
@@ -439,7 +438,7 @@ void OpenGLESShaderLibrary::UpdateUniformBuffer(unsigned int ubo, const void *da
     glBufferSubData(GL_UNIFORM_BUFFER, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(size), data);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
-void OpenGLESShaderLibrary::BindUniformBlock(OpenGLESShader *shader, const std::string &blockName,
+void OpenGLESShaderLibrary::BindUniformBlock(OpenGLESShader *shader, const TEString &blockName,
                                              unsigned int bindingPoint)
 {
     unsigned int blockIndex = glGetUniformBlockIndex(shader->GetRendererID(), blockName.c_str());
@@ -479,7 +478,7 @@ void OpenGLESShaderLibrary::SetDebugCallback()
     // glDebugMessageCallback(DebugCallback, nullptr);
     std::cout << "[OpenGL ES] Debug callback set (requires KHR_debug extension)\n";
 }
-void OpenGLESShaderLibrary::PushDebugGroup(const std::string &message)
+void OpenGLESShaderLibrary::PushDebugGroup(const TEString &message)
 {
     // glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0,
     //                  static_cast<GLsizei>(message.size()), message.c_str());
@@ -489,7 +488,7 @@ void OpenGLESShaderLibrary::PopDebugGroup()
 {
     // glPopDebugGroup();
 }
-void OpenGLESShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, const std::string &label)
+void OpenGLESShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, const TEString &label)
 {
     // glObjectLabel(identifier, name, static_cast<GLsizei>(label.size()), label.c_str());
     (void)identifier;
@@ -497,7 +496,7 @@ void OpenGLESShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, co
     (void)label;
 }
 void GLAPIENTRY OpenGLESShaderLibrary::DebugCallback(GLenum source, GLenum type, unsigned int id, GLenum severity,
-                                                     GLsizei /*length*/, const char *message,
+                                                     GLsizei /*length*/, const TEString& message,
                                                      const void * /*userParam*/)
 {
     std::cerr << "[OpenGL ES Debug] source=0x" << std::hex << source << " type=0x" << type << " id=" << std::dec << id
@@ -541,4 +540,3 @@ GLenum OpenGLESShaderLibrary::ClientWaitSync(GLsync sync, GLbitfield flags, GLui
 }
 void OpenGLESShaderLibrary::DeleteSync(GLsync sync) { glDeleteSync(sync); }
 
-} // namespace TE

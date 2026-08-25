@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -11,8 +12,6 @@
 #include <d3d11.h>
 #include <iostream>
 
-namespace TE
-{
 
 DirectX11IndexBuffer::DirectX11IndexBuffer(uint32_t *indices, uint32_t count) : m_Count(count)
 {
@@ -83,4 +82,3 @@ void DirectX11IndexBuffer::SetData(uint32_t *indices, uint32_t count) const
 
 uint32_t DirectX11IndexBuffer::GetCount() const { return m_Count; }
 
-} // namespace TE

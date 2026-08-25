@@ -1,32 +1,31 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanShaderLibrary.hpp"
 #include <iostream>
 
-namespace TE
-{
 
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanBasicShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanTextureShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanColorShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanStandardShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanLightingShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanParticleShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanPostProcessShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanUIShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanLight2DShader() { return nullptr; }
-std::shared_ptr<VulkanShader> VulkanShaderLibrary::CreateVulkanComputeShader(const std::string &computeSource)
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanBasicShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanTextureShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanColorShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanStandardShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanLightingShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanParticleShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanPostProcessShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanUIShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanLight2DShader() { return nullptr; }
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanComputeShader(const TEString &computeSource)
 {
     return nullptr;
 }
 
-void VulkanShaderLibrary::SetUniform1i(VulkanShader *shader, const std::string &name, int value) {}
-void VulkanShaderLibrary::SetUniform1f(VulkanShader *shader, const std::string &name, float value) {}
-void VulkanShaderLibrary::SetUniform2f(VulkanShader *shader, const std::string &name, const glm::vec2 &value) {}
-void VulkanShaderLibrary::SetUniform3f(VulkanShader *shader, const std::string &name, const glm::vec3 &value) {}
-void VulkanShaderLibrary::SetUniform4f(VulkanShader *shader, const std::string &name, const glm::vec4 &value) {}
-void VulkanShaderLibrary::SetUniformMat3(VulkanShader *shader, const std::string &name, const glm::mat3 &value) {}
-void VulkanShaderLibrary::SetUniformMat4(VulkanShader *shader, const std::string &name, const glm::mat4 &value) {}
-void VulkanShaderLibrary::SetUniformMat4Array(VulkanShader *shader, const std::string &name,
-                                              const std::vector<glm::mat4> &values)
+void VulkanShaderLibrary::SetUniform1i(VulkanShader *shader, const TEString &name, int value) {}
+void VulkanShaderLibrary::SetUniform1f(VulkanShader *shader, const TEString &name, float value) {}
+void VulkanShaderLibrary::SetUniform2f(VulkanShader *shader, const TEString &name, const glm::vec2 &value) {}
+void VulkanShaderLibrary::SetUniform3f(VulkanShader *shader, const TEString &name, const glm::vec3 &value) {}
+void VulkanShaderLibrary::SetUniform4f(VulkanShader *shader, const TEString &name, const glm::vec4 &value) {}
+void VulkanShaderLibrary::SetUniformMat3(VulkanShader *shader, const TEString &name, const glm::mat3 &value) {}
+void VulkanShaderLibrary::SetUniformMat4(VulkanShader *shader, const TEString &name, const glm::mat4 &value) {}
+void VulkanShaderLibrary::SetUniformMat4Array(VulkanShader *shader, const TEString &name,
+                                              const TEArray<glm::mat4> &values)
 {
 }
 
@@ -58,7 +57,7 @@ void VulkanShaderLibrary::AttachRenderbuffer(unsigned int framebufferID, unsigne
                                              uint32_t attachment)
 {
 }
-void VulkanShaderLibrary::SetDrawBuffers(const std::vector<uint32_t> &attachments) {}
+void VulkanShaderLibrary::SetDrawBuffers(const TEArray<uint32_t> &attachments) {}
 bool VulkanShaderLibrary::CheckFramebufferStatus(unsigned int framebufferID) { return true; }
 void VulkanShaderLibrary::DeleteFramebuffer(unsigned int framebufferID) {}
 
@@ -75,7 +74,7 @@ void VulkanShaderLibrary::BindImageTexture(unsigned int unit, unsigned int textu
 unsigned int VulkanShaderLibrary::CreateUniformBuffer(const void *data, size_t size) { return 0; }
 void VulkanShaderLibrary::BindUniformBuffer(unsigned int uboID, unsigned int bindingPoint) {}
 void VulkanShaderLibrary::UpdateUniformBuffer(unsigned int uboID, const void *data, size_t offset, size_t size) {}
-void VulkanShaderLibrary::BindUniformBlock(VulkanShader *shader, const std::string &blockName,
+void VulkanShaderLibrary::BindUniformBlock(VulkanShader *shader, const TEString &blockName,
                                            unsigned int bindingPoint)
 {
 }
@@ -90,9 +89,9 @@ void VulkanShaderLibrary::VertexAttribDivisor(unsigned int index, unsigned int d
 
 void VulkanShaderLibrary::EnableDebugOutput() {}
 void VulkanShaderLibrary::SetDebugCallback() {}
-void VulkanShaderLibrary::PushDebugGroup(const std::string &message) {}
+void VulkanShaderLibrary::PushDebugGroup(const TEString &message) {}
 void VulkanShaderLibrary::PopDebugGroup() {}
-void VulkanShaderLibrary::ObjectLabel(uint32_t identifier, unsigned int name, const std::string &label) {}
+void VulkanShaderLibrary::ObjectLabel(uint32_t identifier, unsigned int name, const TEString &label) {}
 
 void VulkanShaderLibrary::BeginQuery(uint32_t target, unsigned int id) {}
 void VulkanShaderLibrary::EndQuery(uint32_t target) {}
@@ -104,4 +103,3 @@ void VulkanShaderLibrary::FenceSync(uint32_t condition, uint32_t flags) {}
 void VulkanShaderLibrary::ClientWaitSync(void *sync, uint32_t flags, uint64_t timeout) {}
 void VulkanShaderLibrary::DeleteSync(void *sync) {}
 
-} // namespace TE

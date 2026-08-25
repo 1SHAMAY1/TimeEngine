@@ -1,27 +1,27 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/SpriteSheetSerializer.hpp"
 #include "Core/Log.h"
+#include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
-namespace TE
-{
 
-SpriteSheetSerializer::SpriteSheetSerializer(const std::shared_ptr<SpriteSheet> &spriteSheet)
+SpriteSheetSerializer::SpriteSheetSerializer(const TERef<SpriteSheet> &spriteSheet)
     : m_SpriteSheet(spriteSheet)
 {
 }
 
-bool SpriteSheetSerializer::Serialize(const std::filesystem::path &filepath)
+bool SpriteSheetSerializer::Serialize(const TEString &filepath)
 {
-    std::ofstream hout(filepath);
+    std::ofstream hout(filepath.c_str());
     if (!hout.is_open())
     {
-        TE_CORE_ERROR("SpriteSheetSerializer: Failed to open file for writing at {0}", filepath.string());
+        TE_CORE_ERROR("SpriteSheetSerializer: Failed to open file for writing at {0}", filepath.c_str());
         return false;
     }
 
-    hout << "SpriteSheet: " << m_SpriteSheet->GetName() << "\n";
-    hout << "TexturePath: " << m_SpriteSheet->GetTexturePath() << "\n";
+    hout << "SpriteSheet: " << m_SpriteSheet->GetName().c_str() << "\n";
+    hout << "TexturePath: " << m_SpriteSheet->GetTexturePath().c_str() << "\n";
     hout << "CellWidth: " << m_SpriteSheet->GetCellWidth() << "\n";
     hout << "CellHeight: " << m_SpriteSheet->GetCellHeight() << "\n";
     hout << "PaddingX: " << m_SpriteSheet->GetPaddingX() << "\n";
@@ -30,21 +30,21 @@ bool SpriteSheetSerializer::Serialize(const std::filesystem::path &filepath)
     hout << "OffsetY: " << m_SpriteSheet->GetOffsetY() << "\n";
 
     const auto &subFrames = m_SpriteSheet->GetSubFrames();
-    hout << "SubFrameCount: " << subFrames.size() << "\n";
+    hout << "SubFrameCount: " << subFrames.Num() << "\n";
     for (const auto &f : subFrames)
     {
-        hout << "SubFrame: " << f.Name << "," << f.Index << "," << f.X << "," << f.Y << "," << f.Width << ","
+        hout << "SubFrame: " << f.Name.c_str() << "," << f.Index << "," << f.X << "," << f.Y << "," << f.Width << ","
              << f.Height << "," << f.U0 << "," << f.V0 << "," << f.U1 << "," << f.V1 << "\n";
     }
 
     const auto &anims = m_SpriteSheet->GetAnimations();
-    hout << "AnimCount: " << anims.size() << "\n";
+    hout << "AnimCount: " << anims.Num() << "\n";
     for (const auto &a : anims)
     {
-        hout << "Anim: " << a.Name << "," << a.FPS << "," << (a.Loop ? "1" : "0") << ",";
-        for (size_t i = 0; i < a.FrameIndices.size(); ++i)
+        hout << "Anim: " << a.Name.c_str() << "," << a.FPS << "," << (a.Loop ? "1" : "0") << ",";
+        for (size_t i = 0; i < a.FrameIndices.Num(); ++i)
         {
-            hout << a.FrameIndices[i] << (i + 1 < a.FrameIndices.size() ? ";" : "");
+            hout << a.FrameIndices[i] << (i + 1 < a.FrameIndices.Num() ? ";" : "");
         }
         hout << "\n";
     }
@@ -53,123 +53,104 @@ bool SpriteSheetSerializer::Serialize(const std::filesystem::path &filepath)
     return true;
 }
 
-bool SpriteSheetSerializer::Deserialize(const std::filesystem::path &filepath)
+bool SpriteSheetSerializer::Deserialize(const TEString &filepath)
 {
-    std::ifstream hin(filepath);
-    if (!hin.is_open())
+    if (!TEFileSystem::Exists(filepath))
         return false;
 
-    std::string line;
-    std::string texPath = "";
+    TEString texPath = "";
     uint32_t cellW = 32, cellH = 32, padX = 0, padY = 0, offX = 0, offY = 0;
-    std::vector<SubFrame> subFrames;
-    std::vector<AnimSequence> anims;
+    TEArray<SubFrame> subFrames;
+    TEArray<AnimSequence> anims;
 
-    while (std::getline(hin, line))
-    {
-        size_t colon = line.find(':');
-        if (colon == std::string::npos)
-            continue;
+    TEFileSystem::ForEachLine(filepath, [&](const TEString &line) {
+        int colon = line.Find(":");
+        if (colon < 0)
+            return true;
 
-        std::string key = line.substr(0, colon);
-        std::string value = line.substr(colon + 1);
-
-        while (!value.empty() && (value[0] == ' ' || value[0] == '\t'))
-            value.erase(0, 1);
+        TEString key = line.Left(colon).Trim();
+        TEString value = line.Mid(colon + 1).Trim();
 
         if (key == "TexturePath")
             texPath = value;
         else if (key == "CellWidth")
-            cellW = (uint32_t)std::stoul(value);
+            cellW = (uint32_t)std::stoul(value.c_str());
         else if (key == "CellHeight")
-            cellH = (uint32_t)std::stoul(value);
+            cellH = (uint32_t)std::stoul(value.c_str());
         else if (key == "PaddingX")
-            padX = (uint32_t)std::stoul(value);
+            padX = (uint32_t)std::stoul(value.c_str());
         else if (key == "PaddingY")
-            padY = (uint32_t)std::stoul(value);
+            padY = (uint32_t)std::stoul(value.c_str());
         else if (key == "OffsetX")
-            offX = (uint32_t)std::stoul(value);
+            offX = (uint32_t)std::stoul(value.c_str());
         else if (key == "OffsetY")
-            offY = (uint32_t)std::stoul(value);
+            offY = (uint32_t)std::stoul(value.c_str());
         else if (key == "SubFrame")
         {
-            std::stringstream ss(value);
-            std::string item;
-            SubFrame f;
-            if (std::getline(ss, f.Name, ',') && std::getline(ss, item, ','))
+            auto parts = value.Split(",");
+            if (parts.Num() >= 10)
             {
-                f.Index = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ','))
-                    f.X = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ','))
-                    f.Y = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ','))
-                    f.Width = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ','))
-                    f.Height = (uint32_t)std::stoul(item);
-                if (std::getline(ss, item, ','))
-                    f.U0 = std::stof(item);
-                if (std::getline(ss, item, ','))
-                    f.V0 = std::stof(item);
-                if (std::getline(ss, item, ','))
-                    f.U1 = std::stof(item);
-                if (std::getline(ss, item, ','))
-                    f.V1 = std::stof(item);
-                subFrames.push_back(f);
+                SubFrame f;
+                f.Name = parts[0];
+                f.Index = (uint32_t)std::stoul(parts[1].c_str());
+                f.X = (uint32_t)std::stoul(parts[2].c_str());
+                f.Y = (uint32_t)std::stoul(parts[3].c_str());
+                f.Width = (uint32_t)std::stoul(parts[4].c_str());
+                f.Height = (uint32_t)std::stoul(parts[5].c_str());
+                f.U0 = std::stof(parts[6].c_str());
+                f.V0 = std::stof(parts[7].c_str());
+                f.U1 = std::stof(parts[8].c_str());
+                f.V1 = std::stof(parts[9].c_str());
+                subFrames.Add(f);
             }
         }
         else if (key == "Anim")
         {
-            std::stringstream ss(value);
-            std::string item;
-            AnimSequence a;
-            if (std::getline(ss, a.Name, ',') && std::getline(ss, item, ','))
+            auto parts = value.Split(",");
+            if (parts.Num() >= 3)
             {
-                a.FPS = std::stof(item);
-                if (std::getline(ss, item, ','))
-                    a.Loop = (item == "1" || item == "true");
-                if (std::getline(ss, item, ','))
+                AnimSequence a;
+                a.Name = parts[0];
+                a.FPS = std::stof(parts[1].c_str());
+                a.Loop = (parts[2] == "1" || parts[2] == "true");
+                if (parts.Num() >= 4)
                 {
-                    std::stringstream framesSS(item);
-                    std::string fIdxStr;
-                    while (std::getline(framesSS, fIdxStr, ';'))
+                    auto frameIndices = parts[3].Split(";");
+                    for (const auto &fIdxStr : frameIndices)
                     {
-                        if (!fIdxStr.empty())
-                            a.FrameIndices.push_back((uint32_t)std::stoul(fIdxStr));
+                        if (!fIdxStr.IsEmpty())
+                            a.FrameIndices.Add((uint32_t)std::stoul(fIdxStr.c_str()));
                     }
                 }
-                anims.push_back(a);
+                anims.Add(a);
             }
         }
-    }
-
-    hin.close();
+        return true;
+    });
 
     m_SpriteSheet->SetGridSettings(cellW, cellH, padX, padY, offX, offY);
 
-    if (!texPath.empty())
+    if (!texPath.IsEmpty())
     {
-        std::filesystem::path resolvedPath = texPath;
-        if (!std::filesystem::exists(resolvedPath))
+        TEString resolvedPath = texPath;
+        if (!TEFileSystem::Exists(resolvedPath))
         {
-            resolvedPath = filepath.parent_path() / texPath;
+            resolvedPath = filepath.GetParentPath() / texPath;
         }
 
-        if (std::filesystem::exists(resolvedPath))
+        if (TEFileSystem::Exists(resolvedPath))
         {
-            m_SpriteSheet->SetTexturePath(resolvedPath.string());
+            m_SpriteSheet->SetTexturePath(resolvedPath);
         }
     }
 
     m_SpriteSheet->SetSubFrames(subFrames);
     m_SpriteSheet->SetAnimations(anims);
 
-    if (m_SpriteSheet->GetSubFrames().empty() && m_SpriteSheet->GetTexture())
+    if (m_SpriteSheet->GetSubFrames().IsEmpty() && m_SpriteSheet->GetTexture())
     {
         m_SpriteSheet->SliceGrid();
     }
 
     return true;
 }
-
-} // namespace TE

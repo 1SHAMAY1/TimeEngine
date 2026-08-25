@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Renderer2D.hpp"
 #include "Core/Scene/LightComponent.hpp"
 #include "Renderer/IndexBuffer.hpp"
@@ -8,18 +9,16 @@
 #include "Utils/MathUtils.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace TE
-{
 
 Renderer2D::Renderer2D()
 {
-    m_Light2DMaterial = std::make_shared<Material>(ShaderLibrary::CreateLight2DShader());
+    m_Light2DMaterial = CreateRef<Material>(ShaderLibrary::CreateLight2DShader());
 
     // Initialize Unit Quad VAO for optimization
     float quadVertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f};
     uint32_t quadIndices[] = {0, 1, 2, 2, 3, 0};
 
-    m_UnitQuadVAO = std::shared_ptr<VertexArray>(VertexArray::Create());
+    m_UnitQuadVAO = VertexArray::Create();
     auto vbo = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
     auto ibo = IndexBuffer::Create(quadIndices, 6);
     m_UnitQuadVAO->Bind();
@@ -29,14 +28,14 @@ Renderer2D::Renderer2D()
 }
 Renderer2D::~Renderer2D() {}
 
-void Renderer2D::BeginFrame(const TE::TEMatrix4 &viewProjection)
+void Renderer2D::BeginFrame(const TEMatrix4 &viewProjection)
 {
     m_Batcher.SetViewProjection(reinterpret_cast<const glm::mat4 &>(viewProjection));
     m_Batcher.Begin();
 }
 
-void Renderer2D::Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
-                        const TE::TEMatrix4 &transform, uint32_t indexCount)
+void Renderer2D::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material,
+                        const TEMatrix4 &transform, uint32_t indexCount)
 {
     m_Batcher.Submit(vao, material, reinterpret_cast<const glm::mat4 &>(transform), indexCount);
 }
@@ -46,9 +45,9 @@ void Renderer2D::EndFrame()
     // Draw Ambient Light (Fullscreen additive quad)
     if (m_AmbientIntensity > 0.0f)
     {
-        static std::shared_ptr<Material> ambientMaterial = nullptr;
+        static TERef<Material> ambientMaterial = nullptr;
         if (!ambientMaterial)
-            ambientMaterial = std::make_shared<Material>(ShaderLibrary::CreateAmbientGradientShader());
+            ambientMaterial = CreateRef<Material>(ShaderLibrary::CreateAmbientGradientShader());
 
         ambientMaterial->SetUniform("u_SkyColor", reinterpret_cast<const glm::vec4 &>(m_AmbientSky.GetValue()));
         ambientMaterial->SetUniform("u_HorizonColor", reinterpret_cast<const glm::vec4 &>(m_AmbientHorizon.GetValue()));
@@ -67,7 +66,7 @@ void Renderer2D::EndFrame()
 
 void Renderer2D::Flush() { m_Batcher.Flush(); }
 
-void Renderer2D::SubmitQuad(const TEVector2 &position, const TEVector2 &size, const std::shared_ptr<Material> &material)
+void Renderer2D::SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TERef<Material> &material)
 {
     TETransform transform;
     transform.Position = TEVector(position.x, position.y, 0.0f);
@@ -75,7 +74,7 @@ void Renderer2D::SubmitQuad(const TEVector2 &position, const TEVector2 &size, co
     SubmitQuad(transform.GetMatrix(), material);
 }
 
-void Renderer2D::SubmitQuad(const TE::TEMatrix4 &transform, const std::shared_ptr<Material> &material, int blendMode)
+void Renderer2D::SubmitQuad(const TEMatrix4 &transform, const TERef<Material> &material, int blendMode)
 {
     if (blendMode == 0)
     {
@@ -87,11 +86,11 @@ void Renderer2D::SubmitQuad(const TE::TEMatrix4 &transform, const std::shared_pt
 }
 
 void Renderer2D::SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3,
-                                const std::shared_ptr<Material> &material)
+                                const TERef<Material> &material)
 {
     float vertices[] = {p1.x, p1.y, 0.0f, p2.x, p2.y, 0.0f, p3.x, p3.y, 0.0f};
     uint32_t indices[] = {0, 1, 2};
-    auto vao = std::shared_ptr<VertexArray>(VertexArray::Create());
+    auto vao = VertexArray::Create();
     auto vbo = VertexBuffer::Create(vertices, sizeof(vertices));
     auto ibo = IndexBuffer::Create(indices, 3);
     vao->Bind();
@@ -104,30 +103,30 @@ void Renderer2D::SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const 
     m_Batcher.Submit(vao, material, glm::mat4(1.0f), 3);
 }
 
-void Renderer2D::SubmitCircle(const TEVector2 &center, float radius, const std::shared_ptr<Material> &material)
+void Renderer2D::SubmitCircle(const TEVector2 &center, float radius, const TERef<Material> &material)
 {
     const int segments = 32;
-    std::vector<float> vertices;
-    vertices.push_back(center.x);
-    vertices.push_back(center.y);
-    vertices.push_back(0.0f);
+    TEArray<float> vertices;
+    vertices.Add(center.x);
+    vertices.Add(center.y);
+    vertices.Add(0.0f);
     for (int i = 0; i <= segments; ++i)
     {
         float angle = 2.0f * 3.14159265f * i / segments;
-        vertices.push_back(center.x + std::cos(angle) * radius);
-        vertices.push_back(center.y + std::sin(angle) * radius);
-        vertices.push_back(0.0f);
+        vertices.Add(center.x + std::cos(angle) * radius);
+        vertices.Add(center.y + std::sin(angle) * radius);
+        vertices.Add(0.0f);
     }
-    std::vector<uint32_t> indices;
+    TEArray<uint32_t> indices;
     for (int i = 1; i <= segments; ++i)
     {
-        indices.push_back(0);
-        indices.push_back(i);
-        indices.push_back(i + 1);
+        indices.Add(0);
+        indices.Add(i);
+        indices.Add(i + 1);
     }
-    auto vao = std::shared_ptr<VertexArray>(VertexArray::Create());
-    auto vbo = VertexBuffer::Create(vertices.data(), (uint32_t)(vertices.size() * sizeof(float)));
-    auto ibo = IndexBuffer::Create(indices.data(), (uint32_t)indices.size());
+    auto vao = VertexArray::Create();
+    auto vbo = VertexBuffer::Create(vertices.GetData(), (uint32_t)(vertices.Num() * sizeof(float)));
+    auto ibo = IndexBuffer::Create(indices.GetData(), (uint32_t)indices.Num());
     vao->Bind();
     vbo->Bind();
     vao->AddVertexBuffer(vbo);
@@ -135,16 +134,16 @@ void Renderer2D::SubmitCircle(const TEVector2 &center, float radius, const std::
     material->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
     material->SetUniform("u_AmbientSky", m_AmbientSky);
     material->SetUniform("u_AmbientGround", m_AmbientGround);
-    m_Batcher.Submit(vao, material, glm::mat4(1.0f), (uint32_t)indices.size());
+    m_Batcher.Submit(vao, material, glm::mat4(1.0f), (uint32_t)indices.Num());
 }
 
 void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &position, float rotationRadians)
 {
-    static std::shared_ptr<Shader> lightShader = nullptr;
+    static TERef<Shader> lightShader = nullptr;
     if (!lightShader)
         lightShader = ShaderLibrary::CreateLight2DShader();
 
-    auto lightMaterial = std::make_shared<Material>(lightShader);
+    auto lightMaterial = CreateRef<Material>(lightShader);
 
     lightMaterial->SetColor(light.Color);
     lightMaterial->SetUniform("u_Intensity", light.Intensity);
@@ -190,29 +189,28 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     }
 }
 
-void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, const std::vector<TEVector2> &vertices)
+void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, const TEArray<TEVector2> &vertices)
 {
-    if (vertices.size() < 2)
+    if (vertices.Num() < 2)
         return;
 
     // Find the two silhouette vertices: the ones that form the widest angle from the light.
     glm::vec2 lp(lightPos.x, lightPos.y);
 
     // Compute angles from light to each vertex
-    std::vector<float> angles;
-    angles.reserve(vertices.size());
+    TEArray<float> angles;
     for (const auto &v : vertices)
     {
         glm::vec2 dir = glm::vec2(v.x, v.y) - lp;
-        angles.push_back(atan2(dir.y, dir.x));
+        angles.Add(atan2(dir.y, dir.x));
     }
 
     // Find the two vertices that form the widest angular spread from the light.
     int bestA = 0, bestB = 1;
     float maxSpread = -1.0f;
-    for (size_t i = 0; i < vertices.size(); i++)
+    for (size_t i = 0; i < vertices.Num(); i++)
     {
-        for (size_t j = i + 1; j < vertices.size(); j++)
+        for (size_t j = i + 1; j < vertices.Num(); j++)
         {
             float diff = angles[j] - angles[i];
             while (diff > 3.14159265f)
@@ -242,11 +240,11 @@ void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, cons
     glm::vec2 farA = cA + dirA * projDist;
     glm::vec2 farB = cB + dirB * projDist;
 
-    static std::shared_ptr<Shader> shadowShader = nullptr;
+    static TERef<Shader> shadowShader = nullptr;
     if (!shadowShader)
         shadowShader = ShaderLibrary::CreateColorShader();
 
-    auto shadowMat = std::make_shared<Material>(shadowShader);
+    auto shadowMat = CreateRef<Material>(shadowShader);
     shadowMat->SetColor(TEColor(0.0f, 0.0f, 0.0f, 1.0f));
 
     SubmitTriangle(TEVector2(cA.x, cA.y), TEVector2(cB.x, cB.y), TEVector2(farB.x, farB.y), shadowMat);
@@ -275,7 +273,7 @@ void Renderer2D::SetAmbientGradient(const TEColor &sky, const TEColor &horizon, 
 void Renderer2D::SubmitRectOutline(const TEVector2 &position, const TEVector2 &size, float thickness,
                                    const TEColor &color)
 {
-    auto debugMaterial = std::make_shared<Material>(ShaderLibrary::CreateColorShader());
+    auto debugMaterial = CreateRef<Material>(ShaderLibrary::CreateColorShader());
     debugMaterial->SetColor(color);
     debugMaterial->SetUniform("u_IsUnlit", 1.0f);
 
@@ -292,10 +290,10 @@ void Renderer2D::SubmitRectOutline(const TEVector2 &position, const TEVector2 &s
 
 void Renderer2D::SubmitLine(const TEVector2 &p1, const TEVector2 &p2, float thickness, const TEColor &color)
 {
-    static std::shared_ptr<Material> lineMaterial = nullptr;
+    static TERef<Material> lineMaterial = nullptr;
     if (!lineMaterial)
     {
-        lineMaterial = std::make_shared<Material>(ShaderLibrary::CreateColorShader());
+        lineMaterial = CreateRef<Material>(ShaderLibrary::CreateColorShader());
         lineMaterial->SetUniform("u_IsUnlit", 1.0f);
     }
 
@@ -331,6 +329,5 @@ void Renderer2D::SubmitCircleOutline(const TEVector2 &center, float radius, floa
     }
 }
 
-std::shared_ptr<Renderer2D> Renderer2D::Create() { return std::make_shared<Renderer2D>(); }
+TERef<Renderer2D> Renderer2D::Create() { return CreateRef<Renderer2D>(); }
 
-} // namespace TE
