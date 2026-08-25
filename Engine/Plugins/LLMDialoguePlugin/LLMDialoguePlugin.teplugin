@@ -1,0 +1,5 @@
+Name: LLMDialoguePlugin
+Version: 1.0.0
+Description: Production-Ready Local LLM Dynamic Dialogue & Constrained NPC Inference Plugin
+Author: TimeEngine Team
+Enabled: true

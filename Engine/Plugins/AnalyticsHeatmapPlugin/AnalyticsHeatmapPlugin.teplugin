@@ -1,0 +1,5 @@
+Name: AnalyticsHeatmapPlugin
+Version: 1.0.0
+Description: Player Telemetry Recording, Kernel Density Estimation & Viewport Heatmap Plugin
+Author: TimeEngine Team
+Enabled: true
