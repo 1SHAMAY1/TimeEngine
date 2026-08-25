@@ -2,9 +2,9 @@ name: Commit Guidelines Validator
 
 on:
   push:
-    branches: [ main, ecs, editor, gameplay, ui, samples ]
+    branches: [ '**' ]
   pull_request:
-    branches: [ main, ecs, editor, gameplay, ui, samples ]
+    branches: [ '**' ]
 
 jobs:
   commit-guidelines-check:

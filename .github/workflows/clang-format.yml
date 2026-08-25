@@ -2,9 +2,9 @@ name: Clang-Format Check
 
 on:
   push:
-    branches: [ main, ecs, editor, gameplay, ui, samples ]
+    branches: [ '**' ]
   pull_request:
-    branches: [ main, ecs, editor, gameplay, ui, samples ]
+    branches: [ '**' ]
 
 jobs:
   clang-format:

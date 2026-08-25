@@ -2,9 +2,9 @@ name: Linux Build (Clang)
 
 on:
   pull_request:
-    branches: [ main, ecs, editor, gameplay, ui, samples ]
+    branches: [ '**' ]
   push:
-    branches: [ main ]
+    branches: [ '**' ]
   workflow_dispatch:
 
 jobs:
