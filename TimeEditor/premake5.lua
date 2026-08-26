@@ -72,19 +72,25 @@ project "TimeEditor"
     cppdialect "C++latest"
     staticruntime "off"
 
-    filter "system:macosx"
+    filter { "system:macosx", "action:xcode*" }
         kind "WindowedApp"
         files { "Info.plist" }
         xcodebuildsettings {
             ["INFOPLIST_FILE"] = "Info.plist",
             ["LD_RUNPATH_SEARCH_PATHS"] = "@executable_path"
         }
+
+    filter { "system:macosx", "action:gmake*" }
+        kind "ConsoleApp"
+        targetname "TimeEditor"
         postbuildcommands {
-            'mkdir -p "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/"',
-            'mkdir -p "%{cfg.targetdir}/TimeEditor.app/Contents/Resources/"',
+            'mkdir -p "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS"',
+            'mkdir -p "%{cfg.targetdir}/TimeEditor.app/Contents/Resources"',
+            'cp -f "%{cfg.targetdir}/TimeEditor" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/TimeEditor"',
+            'cp -f "%{wks.location}/TimeEditor/Info.plist" "%{cfg.targetdir}/TimeEditor.app/Contents/Info.plist" 2>/dev/null || true',
             'cp -f "%{wks.location}/Resources/Branding/TimeEngineIcon.png" "%{cfg.targetdir}/TimeEditor.app/Contents/Resources/" 2>/dev/null || true',
-            'cp -f "%{wks.location}/Bin/' .. outputdir .. '/Engine/libEngine.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/"',
-            'cp -f "%{wks.location}/Bin/' .. outputdir .. '/Velox/libVelox.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/"',
+            'cp -f "%{wks.location}/Bin/' .. outputdir .. '/Engine/libEngine.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/" 2>/dev/null || true',
+            'cp -f "%{wks.location}/Bin/' .. outputdir .. '/Velox/libVelox.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/" 2>/dev/null || true',
             'codesign --force --deep --sign - "%{cfg.targetdir}/TimeEditor.app" 2>/dev/null || true'
         }
     filter {}

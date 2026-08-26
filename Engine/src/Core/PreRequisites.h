@@ -29,7 +29,7 @@
 #include <utility>       // Utilities (move, swap, etc.)
 #include <variant>       // Type-safe algebraic unions
 #include <vector>        // Dynamic array container
-#if __has_include(<expected>)
+#if defined(__cpp_lib_expected) || (__cplusplus >= 202302L && __has_include(<expected>))
 #include <expected> // C++23 Expected error handling
 #endif
 
