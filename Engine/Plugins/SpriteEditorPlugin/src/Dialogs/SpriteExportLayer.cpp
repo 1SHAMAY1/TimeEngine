@@ -2,10 +2,10 @@
 #include "../SpriteMode.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Log.h"
+#include "Core/Project/Project.hpp"
+#include "Utils/MathUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include <algorithm>
-#include <cmath>
 #include <fstream>
 #include <iomanip>
 
@@ -57,6 +57,19 @@ void SpriteExportLayer::Open(SpriteMode *mode)
     if (!m_SpriteMode)
         return;
 
+    if (Project::GetActive())
+    {
+        TEString assetDir = Project::GetAssetDirectory();
+        if (!assetDir.empty())
+            m_ExportPath = assetDir / "SavedSprites" / "Sprite.png";
+        else
+            m_ExportPath = "Resources/SavedSprites/Sprite.png";
+    }
+    else
+    {
+        m_ExportPath = "Resources/SavedSprites/Sprite.png";
+    }
+
     int frameCount = (int)m_SpriteMode->m_PixelFrames.size();
     if (m_SpriteMode->m_ActiveFrameIndex >= 0 && m_SpriteMode->m_ActiveFrameIndex < frameCount)
         m_SingleFrameIndex = m_SpriteMode->m_ActiveFrameIndex;
@@ -67,7 +80,7 @@ void SpriteExportLayer::Open(SpriteMode *mode)
 
     if (frameCount > 0)
     {
-        m_SheetCols = std::clamp((int)std::ceil(std::sqrt((float)frameCount)), 1, frameCount);
+        m_SheetCols = Clamp((int)std::ceil(Sqrt((float)frameCount)), 1, frameCount);
         m_SheetRows = (frameCount + m_SheetCols - 1) / m_SheetCols;
     }
     else
@@ -98,8 +111,8 @@ void SpriteExportLayer::ResetCropToFull()
     {
         m_CropX = 0;
         m_CropY = 0;
-        m_CropW = std::max(1, m_SpriteMode->m_PixelGridWidth);
-        m_CropH = std::max(1, m_SpriteMode->m_PixelGridHeight);
+        m_CropW = Max(1, m_SpriteMode->m_PixelGridWidth);
+        m_CropH = Max(1, m_SpriteMode->m_PixelGridHeight);
     }
     else
     {
@@ -118,50 +131,54 @@ void SpriteExportLayer::OnTimeGUIRender()
     TimeGUI::OpenPopup("Sprite Export Suite##ModalDialog");
     TEVector2 center = TimeGUI::GetMainViewport().Pos;
     TEVector2 size = TimeGUI::GetMainViewport().Size;
-    float modalW = 820.0f;
-    float modalH = 620.0f;
+    float modalW = Min(1080.0f, size.x - 40.0f);
+    float modalH = Min(740.0f, size.y - 40.0f);
     TimeGUI::SetNextWindowPos(TEVector2(center.x + (size.x - modalW) * 0.5f, center.y + (size.y - modalH) * 0.5f));
     TimeGUI::SetNextWindowSize(TEVector2(modalW, modalH));
 
     if (TimeGUI::BeginPopupModal("Sprite Export Suite##ModalDialog", &m_IsOpen, TimeGUIWindowFlags_NoResize))
     {
         TimeGUI::TextColored(TEVector4(0.35f, 0.75f, 1.0f, 1.0f), "ADVANCED SPRITE EXPORT SUITE");
-        TimeGUI::SameLine(modalW - 160.0f);
+        TimeGUI::SameLine(modalW - 170.0f);
         TimeGUI::TextDisabled("v2.0 Dual-Pipeline");
         TimeGUI::Separator();
         TimeGUI::Spacing();
 
-        // Distinct Tab Bar for Dual Pipelines
-        if (TimeGUI::BeginTabBar("##SpriteExportTabs", TimeGUITabBarFlags_None))
+        // Main Content Region inside Child to prevent any footer collision
+        float contentHeight = modalH - 110.0f;
+        if (TimeGUI::BeginChild("##SpriteExportContent", TEVector2(0.0f, contentHeight), false))
         {
-            if (TimeGUI::BeginTabItem("Single Frame Export"))
+            if (TimeGUI::BeginTabBar("##SpriteExportTabs", TimeGUITabBarFlags_None))
             {
-                m_ActiveTab = SpriteExportTab::SingleFrame;
-                DrawSingleFramePipeline();
-                TimeGUI::EndTabItem();
-            }
+                if (TimeGUI::BeginTabItem("Single Frame Export"))
+                {
+                    m_ActiveTab = SpriteExportTab::SingleFrame;
+                    DrawSingleFramePipeline();
+                    TimeGUI::EndTabItem();
+                }
 
-            if (TimeGUI::BeginTabItem("Animation Spritesheet"))
-            {
-                m_ActiveTab = SpriteExportTab::Spritesheet;
-                DrawSpritesheetPipeline();
-                TimeGUI::EndTabItem();
-            }
+                if (TimeGUI::BeginTabItem("Animation Spritesheet"))
+                {
+                    m_ActiveTab = SpriteExportTab::Spritesheet;
+                    DrawSpritesheetPipeline();
+                    TimeGUI::EndTabItem();
+                }
 
-            TimeGUI::EndTabBar();
+                TimeGUI::EndTabBar();
+            }
+            TimeGUI::EndChild();
         }
 
-        // Shared Bottom Modal Action Footer
-        TimeGUI::SetCursorPosY(modalH - 46.0f);
+        // Dedicated Bottom Modal Action Footer
         TimeGUI::Separator();
-        TimeGUI::SetCursorPosY(modalH - 38.0f);
+        TimeGUI::Spacing();
 
         if (TimeGUI::Button("Cancel", TEVector2(110.0f, 28.0f)))
         {
             Close();
         }
 
-        TimeGUI::SameLine(modalW - 170.0f);
+        TimeGUI::SameLine(modalW - 175.0f);
         TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.12f, 0.58f, 0.28f, 1.0f));
         TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(0.18f, 0.72f, 0.35f, 1.0f));
         TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, TEVector4(0.08f, 0.45f, 0.20f, 1.0f));
@@ -199,7 +216,7 @@ void SpriteExportLayer::DrawSingleFramePipeline()
 
     if (TimeGUI::BeginTable("##SingleFrameLayout", 2, TimeGUITableFlags_None))
     {
-        TimeGUI::TableSetupColumn("PreviewCol", TimeGUITableColumnFlags_WidthFixed, 360.0f);
+        TimeGUI::TableSetupColumn("PreviewCol", TimeGUITableColumnFlags_WidthFixed, 480.0f);
         TimeGUI::TableSetupColumn("SettingsCol", TimeGUITableColumnFlags_WidthStretch, 1.0f);
 
         // Column 1: Interactive Crop & Zoom Preview Box
@@ -209,7 +226,7 @@ void SpriteExportLayer::DrawSingleFramePipeline()
 
         // Frame Selector
         TimeGUI::Text("Active Frame: %d / %d", m_SingleFrameIndex + 1, frameCount);
-        TimeGUI::SetNextItemWidth(260.0f);
+        TimeGUI::SetNextItemWidth(340.0f);
         TimeGUI::SliderInt("##SingleFrameSlider", &m_SingleFrameIndex, 0, frameCount - 1, "Frame %d");
 
         TimeGUI::SameLine();
@@ -226,7 +243,7 @@ void SpriteExportLayer::DrawSingleFramePipeline()
         }
 
         // Preview Canvas Viewport
-        TEVector2 previewBoxSize = TEVector2(340.0f, 320.0f);
+        TEVector2 previewBoxSize = TEVector2(460.0f, 400.0f);
         TEVector2 previewScreenPos = TimeGUI::GetCursorScreenPos();
         DrawSingleFramePreview(previewScreenPos, previewBoxSize);
         TimeGUI::Dummy(previewBoxSize);
@@ -235,7 +252,7 @@ void SpriteExportLayer::DrawSingleFramePipeline()
         TimeGUI::Spacing();
         TimeGUI::Text("Zoom: %.2fx", m_SinglePreviewZoom);
         TimeGUI::SameLine();
-        TimeGUI::SetNextItemWidth(140.0f);
+        TimeGUI::SetNextItemWidth(160.0f);
         TimeGUI::SliderFloat("##SingleZoomSlider", &m_SinglePreviewZoom, 0.2f, 8.0f, "%.2fx");
         TimeGUI::SameLine();
         if (TimeGUI::Button("Reset View##SingleReset", TEVector2(85.0f, 22.0f)))
@@ -252,7 +269,7 @@ void SpriteExportLayer::DrawSingleFramePipeline()
 
         // Destination Path
         TimeGUI::Text("Destination Path:");
-        TimeGUI::SetNextItemWidth(300.0f);
+        TimeGUI::SetNextItemWidth(360.0f);
         TimeGUI::InputText("##SingleExportPath", m_ExportPath);
         TimeGUI::SameLine();
         if (TimeGUI::Button("Browse...##SingleBrowse", TEVector2(75.0f, 22.0f)))
@@ -299,21 +316,21 @@ void SpriteExportLayer::DrawSingleFramePipeline()
 
             TimeGUI::SetNextItemWidth(100.0f);
             if (TimeGUI::DragInt("Crop X", &m_CropX, 1.0f, 0, origW - 1))
-                m_CropX = std::clamp(m_CropX, 0, origW - 1);
+                m_CropX = Clamp(m_CropX, 0, origW - 1);
 
             TimeGUI::SameLine(180.0f);
             TimeGUI::SetNextItemWidth(100.0f);
             if (TimeGUI::DragInt("Crop Y", &m_CropY, 1.0f, 0, origH - 1))
-                m_CropY = std::clamp(m_CropY, 0, origH - 1);
+                m_CropY = Clamp(m_CropY, 0, origH - 1);
 
             TimeGUI::SetNextItemWidth(100.0f);
             if (TimeGUI::DragInt("Width##CropW", &m_CropW, 1.0f, 1, origW - m_CropX))
-                m_CropW = std::clamp(m_CropW, 1, origW - m_CropX);
+                m_CropW = Clamp(m_CropW, 1, origW - m_CropX);
 
             TimeGUI::SameLine(180.0f);
             TimeGUI::SetNextItemWidth(100.0f);
             if (TimeGUI::DragInt("Height##CropH", &m_CropH, 1.0f, 1, origH - m_CropY))
-                m_CropH = std::clamp(m_CropH, 1, origH - m_CropY);
+                m_CropH = Clamp(m_CropH, 1, origH - m_CropY);
 
             TimeGUI::Spacing();
             if (TimeGUI::Button("Full Frame (Reset)", TEVector2(130.0f, 24.0f)))
@@ -323,7 +340,7 @@ void SpriteExportLayer::DrawSingleFramePipeline()
             TimeGUI::SameLine();
             if (TimeGUI::Button("Center Square Crop", TEVector2(140.0f, 24.0f)))
             {
-                int side = std::min(origW, origH);
+                int side = Min(origW, origH);
                 m_CropW = side;
                 m_CropH = side;
                 m_CropX = (origW - side) / 2;
@@ -362,15 +379,23 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
 
     int gridW = m_SpriteMode->m_PixelGridWidth;
     int gridH = m_SpriteMode->m_PixelGridHeight;
-    float baseCellDim = std::min((previewSize.x - 30.0f) / gridW, (previewSize.y - 30.0f) / gridH);
+    float baseCellDim = Min((previewSize.x - 30.0f) / gridW, (previewSize.y - 30.0f) / gridH);
     float cellDim = baseCellDim * m_SinglePreviewZoom;
 
     TEVector2 canvasCenter = TEVector2(previewPos.x + previewSize.x * 0.5f + m_SinglePreviewPan.x,
                                        previewPos.y + previewSize.y * 0.5f + m_SinglePreviewPan.y);
     TEVector2 origin = TEVector2(canvasCenter.x - (gridW * cellDim) * 0.5f, canvasCenter.y - (gridH * cellDim) * 0.5f);
 
-    // 2. Checkerboard pattern inside frame bounds
-    RenderCheckerboard(dl, origin, TEVector2(gridW * cellDim, gridH * cellDim), std::max(6.0f, cellDim));
+    // 2. Checkerboard pattern inside frame bounds (or matte background if transparency disabled)
+    if (m_ExportTransparent)
+    {
+        RenderCheckerboard(dl, origin, TEVector2(gridW * cellDim, gridH * cellDim), Max(6.0f, cellDim));
+    }
+    else
+    {
+        dl.AddRectFilled(origin, TEVector2(origin.x + gridW * cellDim, origin.y + gridH * cellDim),
+                         TimeGUI::ColorConvertFloat4ToU32(m_BackgroundColor));
+    }
 
     // 3. Render composited frame pixels
     if (m_SingleFrameIndex >= 0 && m_SingleFrameIndex < (int)m_SpriteMode->m_PixelFrames.size())
@@ -378,7 +403,7 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
         const auto &frame = m_SpriteMode->m_PixelFrames[m_SingleFrameIndex];
         for (const auto &layer : frame.Layers)
         {
-            if (!layer.Visible)
+            if (!layer.Visible || layer.Pixels.size() < (size_t)(gridW * gridH))
                 continue;
 
             for (int y = 0; y < gridH; y++)
@@ -390,7 +415,7 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
                     {
                         col.w *= layer.Opacity;
                         TEVector2 p1 = TEVector2(origin.x + x * cellDim, origin.y + y * cellDim);
-                        TEVector2 p2 = TEVector2(p1.x + cellDim, p1.y + cellDim);
+                        TEVector2 p2 = TEVector2(origin.x + (x + 1) * cellDim, origin.y + (y + 1) * cellDim);
                         dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                     }
                 }
@@ -406,10 +431,10 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
     if (m_EnableCrop)
     {
         // Clamp crop rect to frame dimensions
-        m_CropX = std::clamp(m_CropX, 0, gridW - 1);
-        m_CropY = std::clamp(m_CropY, 0, gridH - 1);
-        m_CropW = std::clamp(m_CropW, 1, gridW - m_CropX);
-        m_CropH = std::clamp(m_CropH, 1, gridH - m_CropY);
+        m_CropX = Clamp(m_CropX, 0, gridW - 1);
+        m_CropY = Clamp(m_CropY, 0, gridH - 1);
+        m_CropW = Clamp(m_CropW, 1, gridW - m_CropX);
+        m_CropH = Clamp(m_CropH, 1, gridH - m_CropY);
 
         TEVector2 cropP1 = TEVector2(origin.x + m_CropX * cellDim, origin.y + m_CropY * cellDim);
         TEVector2 cropP2 = TEVector2(cropP1.x + m_CropW * cellDim, cropP1.y + m_CropH * cellDim);
@@ -480,7 +505,7 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
         float wheel = TimeGUI::GetIO().MouseWheel;
         if (wheel != 0.0f)
         {
-            m_SinglePreviewZoom = std::clamp(m_SinglePreviewZoom + wheel * 0.15f, 0.2f, 10.0f);
+            m_SinglePreviewZoom = Clamp(m_SinglePreviewZoom + wheel * 0.15f, 0.2f, 10.0f);
         }
 
         // Draggable Crop Box Interaction
@@ -491,7 +516,7 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
             float hitRadius = 9.0f;
 
             auto isNear = [&](const TEVector2 &pt)
-            { return std::abs(mousePos.x - pt.x) <= hitRadius && std::abs(mousePos.y - pt.y) <= hitRadius; };
+            { return Abs(mousePos.x - pt.x) <= hitRadius && Abs(mousePos.y - pt.y) <= hitRadius; };
 
             int hoveredHandle = -1;
             if (isNear(cropP1))
@@ -502,13 +527,13 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
                 hoveredHandle = 3; // BL
             else if (isNear(cropP2))
                 hoveredHandle = 4; // BR
-            else if (std::abs(mousePos.x - cropP1.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y)
+            else if (Abs(mousePos.x - cropP1.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y)
                 hoveredHandle = 5; // L
-            else if (std::abs(mousePos.x - cropP2.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y)
+            else if (Abs(mousePos.x - cropP2.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y)
                 hoveredHandle = 6; // R
-            else if (std::abs(mousePos.y - cropP1.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x)
+            else if (Abs(mousePos.y - cropP1.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x)
                 hoveredHandle = 7; // T
-            else if (std::abs(mousePos.y - cropP2.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x)
+            else if (Abs(mousePos.y - cropP2.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x)
                 hoveredHandle = 8; // B
             else if (mousePos.x > cropP1.x && mousePos.x < cropP2.x && mousePos.y > cropP1.y && mousePos.y < cropP2.y)
                 hoveredHandle = 0; // Interior Move
@@ -543,18 +568,18 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
     {
         if (TimeGUI::IsMouseDown(TimeGUIMouseButton_Left))
         {
-            int dx = (int)std::round((mousePos.x - m_CropDragMouseStart.x) / cellDim);
-            int dy = (int)std::round((mousePos.y - m_CropDragMouseStart.y) / cellDim);
+            int dx = (int)(mousePos.x - m_CropDragMouseStart.x >= 0 ? (mousePos.x - m_CropDragMouseStart.x) / cellDim + 0.5f : (mousePos.x - m_CropDragMouseStart.x) / cellDim - 0.5f);
+            int dy = (int)(mousePos.y - m_CropDragMouseStart.y >= 0 ? (mousePos.y - m_CropDragMouseStart.y) / cellDim + 0.5f : (mousePos.y - m_CropDragMouseStart.y) / cellDim - 0.5f);
 
             if (m_ActiveDragHandle == 0) // Center Move
             {
-                m_CropX = std::clamp(m_CropDragInitialX + dx, 0, gridW - m_CropW);
-                m_CropY = std::clamp(m_CropDragInitialY + dy, 0, gridH - m_CropH);
+                m_CropX = Clamp(m_CropDragInitialX + dx, 0, gridW - m_CropW);
+                m_CropY = Clamp(m_CropDragInitialY + dy, 0, gridH - m_CropH);
             }
             else if (m_ActiveDragHandle == 1) // TL
             {
-                int newX = std::clamp(m_CropDragInitialX + dx, 0, m_CropDragInitialX + m_CropDragInitialW - 1);
-                int newY = std::clamp(m_CropDragInitialY + dy, 0, m_CropDragInitialY + m_CropDragInitialH - 1);
+                int newX = Clamp(m_CropDragInitialX + dx, 0, m_CropDragInitialX + m_CropDragInitialW - 1);
+                int newY = Clamp(m_CropDragInitialY + dy, 0, m_CropDragInitialY + m_CropDragInitialH - 1);
                 m_CropW = (m_CropDragInitialX + m_CropDragInitialW) - newX;
                 m_CropH = (m_CropDragInitialY + m_CropDragInitialH) - newY;
                 m_CropX = newX;
@@ -562,42 +587,42 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
             }
             else if (m_ActiveDragHandle == 2) // TR
             {
-                int newY = std::clamp(m_CropDragInitialY + dy, 0, m_CropDragInitialY + m_CropDragInitialH - 1);
-                m_CropW = std::clamp(m_CropDragInitialW + dx, 1, gridW - m_CropX);
+                int newY = Clamp(m_CropDragInitialY + dy, 0, m_CropDragInitialY + m_CropDragInitialH - 1);
+                m_CropW = Clamp(m_CropDragInitialW + dx, 1, gridW - m_CropX);
                 m_CropH = (m_CropDragInitialY + m_CropDragInitialH) - newY;
                 m_CropY = newY;
             }
             else if (m_ActiveDragHandle == 3) // BL
             {
-                int newX = std::clamp(m_CropDragInitialX + dx, 0, m_CropDragInitialX + m_CropDragInitialW - 1);
+                int newX = Clamp(m_CropDragInitialX + dx, 0, m_CropDragInitialX + m_CropDragInitialW - 1);
                 m_CropW = (m_CropDragInitialX + m_CropDragInitialW) - newX;
-                m_CropH = std::clamp(m_CropDragInitialH + dy, 1, gridH - m_CropY);
+                m_CropH = Clamp(m_CropDragInitialH + dy, 1, gridH - m_CropY);
                 m_CropX = newX;
             }
             else if (m_ActiveDragHandle == 4) // BR
             {
-                m_CropW = std::clamp(m_CropDragInitialW + dx, 1, gridW - m_CropX);
-                m_CropH = std::clamp(m_CropDragInitialH + dy, 1, gridH - m_CropY);
+                m_CropW = Clamp(m_CropDragInitialW + dx, 1, gridW - m_CropX);
+                m_CropH = Clamp(m_CropDragInitialH + dy, 1, gridH - m_CropY);
             }
             else if (m_ActiveDragHandle == 5) // L
             {
-                int newX = std::clamp(m_CropDragInitialX + dx, 0, m_CropDragInitialX + m_CropDragInitialW - 1);
+                int newX = Clamp(m_CropDragInitialX + dx, 0, m_CropDragInitialX + m_CropDragInitialW - 1);
                 m_CropW = (m_CropDragInitialX + m_CropDragInitialW) - newX;
                 m_CropX = newX;
             }
             else if (m_ActiveDragHandle == 6) // R
             {
-                m_CropW = std::clamp(m_CropDragInitialW + dx, 1, gridW - m_CropX);
+                m_CropW = Clamp(m_CropDragInitialW + dx, 1, gridW - m_CropX);
             }
             else if (m_ActiveDragHandle == 7) // T
             {
-                int newY = std::clamp(m_CropDragInitialY + dy, 0, m_CropDragInitialY + m_CropDragInitialH - 1);
+                int newY = Clamp(m_CropDragInitialY + dy, 0, m_CropDragInitialY + m_CropDragInitialH - 1);
                 m_CropH = (m_CropDragInitialY + m_CropDragInitialH) - newY;
                 m_CropY = newY;
             }
             else if (m_ActiveDragHandle == 8) // B
             {
-                m_CropH = std::clamp(m_CropDragInitialH + dy, 1, gridH - m_CropY);
+                m_CropH = Clamp(m_CropDragInitialH + dy, 1, gridH - m_CropY);
             }
         }
         else
@@ -621,13 +646,13 @@ void SpriteExportLayer::DrawSpritesheetPipeline()
 
     if (TimeGUI::BeginTable("##SpritesheetLayout", 2, TimeGUITableFlags_None))
     {
-        TimeGUI::TableSetupColumn("SheetPreviewCol", TimeGUITableColumnFlags_WidthFixed, 360.0f);
+        TimeGUI::TableSetupColumn("SheetPreviewCol", TimeGUITableColumnFlags_WidthFixed, 480.0f);
         TimeGUI::TableSetupColumn("SheetSettingsCol", TimeGUITableColumnFlags_WidthStretch, 1.0f);
 
         // Column 1: Live Playback & Spritesheet Preview
         TimeGUI::TableNextColumn();
         TimeGUI::TextColored(TEVector4(0.9f, 0.9f, 0.3f, 1.0f), "Live Preview");
-        TimeGUI::SameLine(180.0f);
+        TimeGUI::SameLine(220.0f);
         TimeGUI::RadioButton("Animated##AnimTab", (int *)&m_ShowFullSheetPreview, 0);
         TimeGUI::SameLine();
         TimeGUI::RadioButton("Sheet Grid##GridTab", (int *)&m_ShowFullSheetPreview, 1);
@@ -637,7 +662,7 @@ void SpriteExportLayer::DrawSpritesheetPipeline()
         if (!m_ShowFullSheetPreview)
         {
             TimeGUI::Text("Playing Frame: %d / %d", m_AnimFrameIndex + 1, frameCount);
-            TimeGUI::SameLine(180.0f);
+            TimeGUI::SameLine(200.0f);
             if (TimeGUI::Button(m_AnimPlaying ? "Pause##PlayPause" : "Play##PlayPause", TEVector2(60.0f, 22.0f)))
             {
                 m_AnimPlaying = !m_AnimPlaying;
@@ -667,7 +692,7 @@ void SpriteExportLayer::DrawSpritesheetPipeline()
         }
 
         // Preview Box Viewport
-        TEVector2 previewBoxSize = TEVector2(340.0f, 300.0f);
+        TEVector2 previewBoxSize = TEVector2(460.0f, 380.0f);
         TEVector2 previewScreenPos = TimeGUI::GetCursorScreenPos();
         DrawSpritesheetPreview(previewScreenPos, previewBoxSize);
         TimeGUI::Dummy(previewBoxSize);
@@ -695,7 +720,7 @@ void SpriteExportLayer::DrawSpritesheetPipeline()
 
         // Destination Path
         TimeGUI::Text("Destination Texture PNG:");
-        TimeGUI::SetNextItemWidth(300.0f);
+        TimeGUI::SetNextItemWidth(360.0f);
         TimeGUI::InputText("##SheetExportPath", m_ExportPath);
         TimeGUI::SameLine();
         if (TimeGUI::Button("Browse...##SheetBrowse", TEVector2(75.0f, 22.0f)))
@@ -797,20 +822,20 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
     if (!m_ShowFullSheetPreview)
     {
         // Live Single-Frame Animation Preview
-        float baseCellDim = std::min((previewSize.x - 30.0f) / gridW, (previewSize.y - 30.0f) / gridH);
+        float baseCellDim = Min((previewSize.x - 30.0f) / gridW, (previewSize.y - 30.0f) / gridH);
         TEVector2 canvasCenter = TEVector2(previewPos.x + previewSize.x * 0.5f, previewPos.y + previewSize.y * 0.5f);
         TEVector2 origin =
             TEVector2(canvasCenter.x - (gridW * baseCellDim) * 0.5f, canvasCenter.y - (gridH * baseCellDim) * 0.5f);
 
         RenderCheckerboard(dl, origin, TEVector2(gridW * baseCellDim, gridH * baseCellDim),
-                           std::max(6.0f, baseCellDim));
+                           Max(6.0f, baseCellDim));
 
         if (m_AnimFrameIndex >= 0 && m_AnimFrameIndex < frameCount)
         {
             const auto &frame = m_SpriteMode->m_PixelFrames[m_AnimFrameIndex];
             for (const auto &layer : frame.Layers)
             {
-                if (!layer.Visible)
+                if (!layer.Visible || layer.Pixels.size() < (size_t)(gridW * gridH))
                     continue;
 
                 for (int y = 0; y < gridH; y++)
@@ -822,7 +847,7 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                         {
                             col.w *= layer.Opacity;
                             TEVector2 p1 = TEVector2(origin.x + x * baseCellDim, origin.y + y * baseCellDim);
-                            TEVector2 p2 = TEVector2(p1.x + baseCellDim, p1.y + baseCellDim);
+                            TEVector2 p2 = TEVector2(origin.x + (x + 1) * baseCellDim, origin.y + (y + 1) * baseCellDim);
                             dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                         }
                     }
@@ -838,13 +863,13 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
         // Full Spritesheet Grid Preview
         int cellW = gridW;
         int cellH = gridH;
-        int cols = std::max(1, m_SheetCols);
-        int rows = std::max(1, m_SheetRows);
+        int cols = Max(1, m_SheetCols);
+        int rows = Max(1, m_SheetRows);
 
         float totalPreviewW = (float)(m_SheetPadding * 2 + cols * cellW + (cols - 1) * m_SheetSpacing);
         float totalPreviewH = (float)(m_SheetPadding * 2 + rows * cellH + (rows - 1) * m_SheetSpacing);
 
-        float baseScale = std::min((previewSize.x - 30.0f) / totalPreviewW, (previewSize.y - 30.0f) / totalPreviewH);
+        float baseScale = Min((previewSize.x - 30.0f) / totalPreviewW, (previewSize.y - 30.0f) / totalPreviewH);
         float finalScale = baseScale * m_SheetPreviewZoom;
 
         TEVector2 canvasCenter = TEVector2(previewPos.x + previewSize.x * 0.5f + m_SheetPreviewPan.x,
@@ -854,7 +879,7 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
 
         // Checkerboard behind the entire sheet
         RenderCheckerboard(dl, origin, TEVector2(totalPreviewW * finalScale, totalPreviewH * finalScale),
-                           std::max(8.0f, 16.0f * finalScale));
+                           Max(8.0f, 16.0f * finalScale));
 
         for (int f = 0; f < frameCount; f++)
         {
@@ -868,7 +893,7 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
             const auto &frame = m_SpriteMode->m_PixelFrames[f];
             for (const auto &layer : frame.Layers)
             {
-                if (!layer.Visible)
+                if (!layer.Visible || layer.Pixels.size() < (size_t)(gridW * gridH))
                     continue;
 
                 for (int y = 0; y < gridH; y++)
@@ -880,7 +905,7 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                         {
                             col.w *= layer.Opacity;
                             TEVector2 p1 = TEVector2(cellOriginX + x * cellPixelDim, cellOriginY + y * cellPixelDim);
-                            TEVector2 p2 = TEVector2(p1.x + cellPixelDim, p1.y + cellPixelDim);
+                            TEVector2 p2 = TEVector2(cellOriginX + (x + 1) * cellPixelDim, cellOriginY + (y + 1) * cellPixelDim);
                             dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                         }
                     }
@@ -919,7 +944,7 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
             float wheel = TimeGUI::GetIO().MouseWheel;
             if (wheel != 0.0f)
             {
-                m_SheetPreviewZoom = std::clamp(m_SheetPreviewZoom + wheel * 0.15f, 0.2f, 8.0f);
+                m_SheetPreviewZoom = Clamp(m_SheetPreviewZoom + wheel * 0.15f, 0.2f, 8.0f);
             }
         }
     }
@@ -940,7 +965,7 @@ void SpriteExportLayer::RenderCheckerboard(TimeGUI::TimeGUIDrawList &dl, const T
             unsigned int col = ((ix + iy) % 2 == 0) ? IM_COL32(28, 28, 34, 255) : IM_COL32(38, 38, 46, 255);
             dl.AddRectFilled(
                 TEVector2(pos.x + x, pos.y + y),
-                TEVector2(pos.x + std::min(x + checkSize, size.x), pos.y + std::min(y + checkSize, size.y)), col);
+                TEVector2(pos.x + Min(x + checkSize, size.x), pos.y + Min(y + checkSize, size.y)), col);
         }
     }
 }
@@ -963,7 +988,7 @@ void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int heig
 
             for (const auto &layer : frame.Layers)
             {
-                if (!layer.Visible)
+                if (!layer.Visible || layer.Pixels.size() < (size_t)(width * height))
                     continue;
 
                 TEVector4 col = layer.Pixels[y * width + x];
@@ -999,18 +1024,18 @@ void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int heig
                 float finalG = accG * accA + bgG * (1.0f - accA);
                 float finalB = accB * accA + bgB * (1.0f - accA);
 
-                outPixels[idx + 0] = (unsigned char)std::clamp((int)(finalR * 255.0f + 0.5f), 0, 255);
-                outPixels[idx + 1] = (unsigned char)std::clamp((int)(finalG * 255.0f + 0.5f), 0, 255);
-                outPixels[idx + 2] = (unsigned char)std::clamp((int)(finalB * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 0] = (unsigned char)Clamp((int)(finalR * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 1] = (unsigned char)Clamp((int)(finalG * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 2] = (unsigned char)Clamp((int)(finalB * 255.0f + 0.5f), 0, 255);
                 outPixels[idx + 3] = 255;
             }
             else
             {
                 // 100% clean alpha channel preservation
-                outPixels[idx + 0] = (unsigned char)std::clamp((int)(accR * 255.0f + 0.5f), 0, 255);
-                outPixels[idx + 1] = (unsigned char)std::clamp((int)(accG * 255.0f + 0.5f), 0, 255);
-                outPixels[idx + 2] = (unsigned char)std::clamp((int)(accB * 255.0f + 0.5f), 0, 255);
-                outPixels[idx + 3] = (unsigned char)std::clamp((int)(accA * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 0] = (unsigned char)Clamp((int)(accR * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 1] = (unsigned char)Clamp((int)(accG * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 2] = (unsigned char)Clamp((int)(accB * 255.0f + 0.5f), 0, 255);
+                outPixels[idx + 3] = (unsigned char)Clamp((int)(accA * 255.0f + 0.5f), 0, 255);
             }
         }
     }
@@ -1030,13 +1055,13 @@ void SpriteExportLayer::ExecuteSingleFrameExport()
     int cropX = 0, cropY = 0, cropW = origW, cropH = origH;
     if (m_EnableCrop)
     {
-        cropX = std::clamp(m_CropX, 0, origW - 1);
-        cropY = std::clamp(m_CropY, 0, origH - 1);
-        cropW = std::clamp(m_CropW, 1, origW - cropX);
-        cropH = std::clamp(m_CropH, 1, origH - cropY);
+        cropX = Clamp(m_CropX, 0, origW - 1);
+        cropY = Clamp(m_CropY, 0, origH - 1);
+        cropW = Clamp(m_CropW, 1, origW - cropX);
+        cropH = Clamp(m_CropH, 1, origH - cropY);
     }
 
-    int scale = std::max(1, m_ScaleMultiplier);
+    int scale = Max(1, m_ScaleMultiplier);
     int finalW = cropW * scale;
     int finalH = cropH * scale;
 
@@ -1067,13 +1092,20 @@ void SpriteExportLayer::ExecuteSingleFrameExport()
         }
     }
 
-    TEString exportDir = m_ExportPath.GetParentPath();
+    TEString finalPath = m_ExportPath;
+    if (!finalPath.IsAbsolute())
+    {
+        if (Project::GetActive())
+            finalPath = Project::GetProjectDirectory() / finalPath;
+    }
+
+    TEString exportDir = finalPath.GetParentPath();
     if (!exportDir.IsEmpty() && !TEFileSystem::Exists(exportDir))
         TEFileSystem::CreateDirectories(exportDir);
 
-    AssetManager::ExportImagePNG(m_ExportPath, finalW, finalH, 4, exportBuffer.GetData());
+    AssetManager::ExportImagePNG(finalPath, finalW, finalH, 4, exportBuffer.GetData());
     TE_CORE_INFO("[SpriteExportLayer] Single Frame exported successfully ({0}x{1} px, Scale: {2}x) to: {3}", finalW,
-                 finalH, scale, m_ExportPath);
+                 finalH, scale, finalPath);
 }
 
 void SpriteExportLayer::ExecuteSpritesheetExport()
@@ -1084,12 +1116,12 @@ void SpriteExportLayer::ExecuteSpritesheetExport()
     int frameCount = (int)m_SpriteMode->m_PixelFrames.size();
     int gridW = m_SpriteMode->m_PixelGridWidth;
     int gridH = m_SpriteMode->m_PixelGridHeight;
-    int scale = std::max(1, m_ScaleMultiplier);
+    int scale = Max(1, m_ScaleMultiplier);
 
     int cellW = gridW * scale;
     int cellH = gridH * scale;
-    int cols = std::max(1, m_SheetCols);
-    int rows = std::max(1, (frameCount + cols - 1) / cols);
+    int cols = Max(1, m_SheetCols);
+    int rows = Max(1, (frameCount + cols - 1) / cols);
 
     int sheetW = m_SheetPadding * 2 + cols * cellW + (cols - 1) * m_SheetSpacing;
     int sheetH = m_SheetPadding * 2 + rows * cellH + (rows - 1) * m_SheetSpacing;
@@ -1135,18 +1167,25 @@ void SpriteExportLayer::ExecuteSpritesheetExport()
         }
     }
 
-    TEString exportDir = m_ExportPath.GetParentPath();
+    TEString finalPath = m_ExportPath;
+    if (!finalPath.IsAbsolute())
+    {
+        if (Project::GetActive())
+            finalPath = Project::GetProjectDirectory() / finalPath;
+    }
+
+    TEString exportDir = finalPath.GetParentPath();
     if (!exportDir.IsEmpty() && !TEFileSystem::Exists(exportDir))
         TEFileSystem::CreateDirectories(exportDir);
 
-    AssetManager::ExportImagePNG(m_ExportPath, sheetW, sheetH, 4, sheetBytes.GetData());
+    AssetManager::ExportImagePNG(finalPath, sheetW, sheetH, 4, sheetBytes.GetData());
     TE_CORE_INFO("[SpriteExportLayer] Animation Spritesheet exported successfully ({0}x{1} px, {2} frames) to: {3}",
-                 sheetW, sheetH, frameCount, m_ExportPath);
+                 sheetW, sheetH, frameCount, finalPath);
 
     // Optional Metadata Export
     if (m_ExportMetadata)
     {
-        TEString basePath = m_ExportPath;
+        TEString basePath = finalPath;
         if (basePath.EndsWith(".png") || basePath.EndsWith(".PNG"))
             basePath = basePath.Left(basePath.Length() - 4);
 
@@ -1157,7 +1196,7 @@ void SpriteExportLayer::ExecuteSpritesheetExport()
 
         if (m_MetadataFormat == SpriteMetadataFormat::TESheet || m_MetadataFormat == SpriteMetadataFormat::Both)
         {
-            ExportMetadataTESheet(basePath + ".tesheet", m_ExportPath, sheetW, sheetH, cellW, cellH, cols, rows,
+            ExportMetadataTESheet(basePath + ".tesheet", finalPath, sheetW, sheetH, cellW, cellH, cols, rows,
                                   frameCount);
         }
     }

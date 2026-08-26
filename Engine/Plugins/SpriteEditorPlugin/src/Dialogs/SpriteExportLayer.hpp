@@ -60,7 +60,7 @@ private:
     SpriteExportTab m_ActiveTab = SpriteExportTab::SingleFrame;
 
     // Destination Path & Common Settings
-    TEString m_ExportPath = "Sandbox/SavedSprites/Sprite.png";
+    TEString m_ExportPath = "Resources/SavedSprites/Sprite.png";
     bool m_ExportTransparent = true;
     TEVector4 m_BackgroundColor = TEVector4(0.0f, 0.0f, 0.0f, 1.0f);
     int m_ScaleMultiplier = 1;

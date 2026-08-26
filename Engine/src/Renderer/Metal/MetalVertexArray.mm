@@ -1,8 +1,5 @@
 #include "Renderer/Metal/MetalVertexArray.hpp"
 
-namespace TE
-{
-
 MetalVertexArray::MetalVertexArray()
 {
 }
@@ -28,5 +25,3 @@ void MetalVertexArray::SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer)
 {
     m_IndexBuffer = indexBuffer;
 }
-
-} // namespace TE

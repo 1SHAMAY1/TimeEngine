@@ -7,9 +7,6 @@
 #import <QuartzCore/CAMetalLayer.h>
 #endif
 
-namespace TE
-{
-
 void MetalRendererAPI::Init()
 {
     TE_CORE_INFO("MetalRendererAPI initialized.");
@@ -40,24 +37,24 @@ bool MetalRendererAPI::LoadLoader(void *(*loadProc)(const char *))
     return true;
 }
 
-std::string MetalRendererAPI::GetVersionString()
+TEString MetalRendererAPI::GetVersionString()
 {
 #ifdef TE_SUPPORT_METAL
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
     if (device)
     {
-        return std::string("Metal ") + [device name].UTF8String;
+        return TEString("Metal ") + [device name].UTF8String;
     }
 #endif
     return "Metal 1.0";
 }
 
-std::string MetalRendererAPI::GetGPUVendor()
+TEString MetalRendererAPI::GetGPUVendor()
 {
     return "Apple";
 }
 
-std::string MetalRendererAPI::GetGPURenderer()
+TEString MetalRendererAPI::GetGPURenderer()
 {
 #ifdef TE_SUPPORT_METAL
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
@@ -86,8 +83,6 @@ void MetalRendererAPI::SetBlendFunc(BlendFactor src, BlendFactor dst)
 }
 
 void MetalRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dstRGB, BlendFactor srcAlpha,
-                                             BlendFactor dstAlpha)
+                                            BlendFactor dstAlpha)
 {
 }
-
-} // namespace TE

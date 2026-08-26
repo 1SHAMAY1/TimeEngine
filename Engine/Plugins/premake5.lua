@@ -90,19 +90,19 @@ for _, pluginPath in ipairs(allPlugins) do
         -- Force-run rule checker before any compilation begins
         filter { "system:windows", "action:vs*" }
             prebuildcommands {
-                '"$(SolutionDir)Vendor\\Premake\\Windows\\premake5.exe" --file="$(SolutionDir)premake5.lua" check-rules'
+                '"$(SolutionDir)Vendor\\Premake\\Windows\\premake5.exe" --file="$(SolutionDir)Premake5.lua" check-rules'
             }
         filter { "system:windows", "action:gmake*" }
             prebuildcommands {
-                '"%{wks.location}/Vendor/Premake/Windows/premake5.exe" --file="%{wks.location}/premake5.lua" check-rules'
+                '"%{wks.location}/Vendor/Premake/Windows/premake5.exe" --file="%{wks.location}/Premake5.lua" check-rules'
             }
         filter { "system:linux" }
             prebuildcommands {
-                '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/premake5.lua" check-rules'
+                '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
             }
         filter { "system:macosx" }
             prebuildcommands {
-                '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/premake5.lua" check-rules'
+                '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
             }
         filter {}
 

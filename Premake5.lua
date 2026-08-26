@@ -46,7 +46,7 @@ project "Docs"
         ".agents/**",
 
         -- Build scripts
-        "premake5.lua",
+        "Premake5.lua",
         "Scripts/**.bat",
         "Scripts/**.sh",
         "Scripts/**.lua",
@@ -57,7 +57,7 @@ project "Docs"
         ["Docs/*"] = { "*.md", "README*", "LICENSE*", "CONTRIBUTING*", "ROADMAP*", "SECURITY*", "llms*" },
         ["Config/*"] = { ".agentsrules", ".clang-format", ".gitattributes", ".gitignore", ".gitmodules" },
         ["Scripts/*"] = { "Scripts/**.bat", "Scripts/**.sh", "Scripts/**.lua", "Scripts/**.py" },
-        ["Build/*"] = { "premake5.lua" },
+        ["Build/*"] = { "Premake5.lua" },
         ["Github/*"] = { ".github/**" },
         ["Agents/*"] = { ".agents/**" }
     }
