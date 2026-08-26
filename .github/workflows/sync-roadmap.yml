@@ -3,10 +3,12 @@ name: Sync Roadmap Milestones
 on:
   push:
     paths:
+      - 'Docs/ROADMAP.md'
       - 'ROADMAP.md'
       - '.github/workflows/sync-roadmap.yml'
   pull_request:
     paths:
+      - 'Docs/ROADMAP.md'
       - 'ROADMAP.md'
       - '.github/workflows/sync-roadmap.yml'
     types:
@@ -66,9 +68,12 @@ jobs:
               }
             };
 
-            const roadmapPath = path.join(process.env.GITHUB_WORKSPACE, 'ROADMAP.md');
+            let roadmapPath = path.join(process.env.GITHUB_WORKSPACE, 'Docs', 'ROADMAP.md');
             if (!fs.existsSync(roadmapPath)) {
-              console.log("ROADMAP.md not found.");
+              roadmapPath = path.join(process.env.GITHUB_WORKSPACE, 'ROADMAP.md');
+            }
+            if (!fs.existsSync(roadmapPath)) {
+              console.log("ROADMAP.md not found in Docs/ or workspace root.");
               return;
             }
             const content = fs.readFileSync(roadmapPath, 'utf8');

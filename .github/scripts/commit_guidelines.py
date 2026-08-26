@@ -40,6 +40,10 @@ def validate_commit_message(commit_hash: str, commit_msg: str, report: ReportGen
 
     header = lines[0].strip()
 
+    # Skip Git/GitHub automated merge and revert commits
+    if header.startswith("Merge ") or header.startswith("Revert "):
+        return
+
     # Rule 1: Header Length strictly < 50 characters
     if len(header) >= 50:
         report.add_issue(
@@ -160,7 +164,7 @@ def validate_pr_metadata(pr_title: str, pr_body: str, report: ReportGenerator):
 
 def get_commits_in_range(base_ref: str, head_ref: str) -> List[Tuple[str, str]]:
     try:
-        cmd = ["git", "log", f"{base_ref}..{head_ref}", "--pretty=format:%H%x00%B%x01"]
+        cmd = ["git", "log", "--no-merges", f"{base_ref}..{head_ref}", "--pretty=format:%H%x00%B%x01"]
         out = subprocess.check_output(cmd, encoding="utf-8", errors="replace")
         commits = []
         raw_items = out.split("\x01")
