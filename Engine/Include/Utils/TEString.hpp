@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef TE_API
 #include "Core/PreRequisites.h"
+#endif
 #include <algorithm>
 #include <cstdarg>
 #include <cstdint>
