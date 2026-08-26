@@ -1,19 +1,14 @@
-#pragma once
+﻿#pragma once
+#include "Core/PreRequisites.h"
 #include "Renderer/Material.hpp"
-#include <unordered_map>
-#include <memory>
-#include <string>
 
-namespace TE {
-
-class MaterialLibrary {
+class TE_API MaterialLibrary
+{
 public:
-    static void Register(const std::string& name, const std::shared_ptr<Material>& material);
-    static std::shared_ptr<Material> Get(const std::string& name);
-    static bool Exists(const std::string& name);
+    static void Register(const TEString &name, const TERef<Material> &material);
+    static TERef<Material> Get(const TEString &name);
+    static bool Exists(const TEString &name);
 
 private:
-    static std::unordered_map<std::string, std::shared_ptr<Material>> s_Materials;
+    static TEMap<TEString, TERef<Material>> s_Materials;
 };
-
-} 

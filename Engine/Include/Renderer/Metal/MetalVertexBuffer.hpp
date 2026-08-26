@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Renderer/VertexBuffer.hpp"
 
-namespace TE
-{
 class MetalVertexBuffer : public VertexBuffer
 {
 public:
@@ -20,4 +18,3 @@ private:
     void *m_Buffer = nullptr;
     uint32_t m_Size = 0;
 };
-} // namespace TE

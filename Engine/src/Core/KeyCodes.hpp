@@ -1,8 +1,6 @@
 #pragma once
 #include <cstdint>
 
-namespace TE
-{
 using KeyCode = uint16_t;
 
 namespace Key
@@ -141,4 +139,3 @@ enum : KeyCode
     Menu = 348
 };
 }
-} // namespace TE

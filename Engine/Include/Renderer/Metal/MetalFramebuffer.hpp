@@ -1,9 +1,6 @@
-#pragma once
+﻿#pragma once
 
 #include "Renderer/Framebuffer.hpp"
-
-namespace TE
-{
 
 class MetalFramebuffer : public Framebuffer
 {
@@ -27,5 +24,3 @@ private:
     void *m_DepthTexture = nullptr;
     FramebufferSpecification m_Specification;
 };
-
-} // namespace TE

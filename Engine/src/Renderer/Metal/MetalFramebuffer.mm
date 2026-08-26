@@ -5,9 +5,6 @@
 #import <Metal/Metal.h>
 #endif
 
-namespace TE
-{
-
 MetalFramebuffer::MetalFramebuffer(const FramebufferSpecification &spec)
     : m_Specification(spec)
 {
@@ -63,5 +60,3 @@ void MetalFramebuffer::Resize(uint32_t width, uint32_t height)
     m_Specification.Height = height;
     Invalidate();
 }
-
-} // namespace TE

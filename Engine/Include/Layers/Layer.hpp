@@ -1,28 +1,25 @@
 #pragma once
 
 #include "Core/PreRequisites.h"
+#include "Utils/TEString.hpp"
 
-namespace TE
-{
-
-class TE_API Layer
+class TE_API Layer : public std::enable_shared_from_this<Layer>
 {
 public:
-    Layer(const std::string &name = "Layer");
+    Layer(const TEString &name = "Layer");
     virtual ~Layer();
 
     virtual void OnAttach();
     virtual void OnDetach();
     virtual void OnUpdate();
+    virtual void OnRender();
     virtual void OnTimeGUIRender();
     virtual void OnEvent(class Event &event);
 
     void DockTo(bool padding = false);
 
-    inline const std::string &GetName() const { return m_DebugName; }
+    inline const TEString &GetName() const { return m_DebugName; }
 
 protected:
-    std::string m_DebugName;
+    TEString m_DebugName;
 };
-
-} // namespace TE

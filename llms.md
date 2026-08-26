@@ -1,25 +1,27 @@
 # TimeEngine — LLM Reference
 
 ## Identity
-- **Type**: Custom C++ game engine (2D primary, 3D secondary)
+- **Type**: Custom C++ game engine and Integrated Game Development Environment (2D primary, 3D secondary)
 - **Core differentiator**: Deterministic simulation + Time Manipulation (rewind, slow-motion, state-branching)
 - **Status**: Active development. Not all systems are complete. Do not assume a feature exists unless listed below.
 
 ## Core Architecture
-- **Language**: C++20
+- **Language**: C++Latest
 - **Graphics API**: OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES, Metal
 - **Architecture**: Entity-Component System (ECS)
-- **Build System**: Premake5 / MSBuild
+- **Build System**: Premake5 / MSBuild / GNU Make
 - **UI**: TimeGUI (Strict ImGui Abstraction Wrapper)
+- **Documentation**: Root portal (`index.html`) & interactive docs reader (`Website/docs.html`)
 
 ## Key APIs & Systems
 - **Renderer**: `Renderer2D` and `Renderer3D` (optimized batching for quads/sprites). Supports Vulkan, OpenGL ES, DirectX 11, Metal, and OpenGL core profile.
+- **Camera Subsystem**: `Camera`, `OrthographicCamera`, `PerspectiveCamera`, `CameraController`, and `PlayerCameraComponent`.
 - **Physics**: `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
 - **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
 - **Scene System**: `Scene` class manages entities and components via ECS.
 - **Serialization**: Scene and Project serialization (YAML).
-- **Events**: Event systems for windowing, user input, and scene lifecycles.
-- **Input**: Action-based input mapping.
+- **Events**: Event systems for windowing, user input (`ApplicationEvent`, `KeyEvent`, `MouseEvent`), and type-safe `EventDispatcher`.
+- **Input**: High-level action-based mapping contexts (`InputSystem`, `InputAction`, `InputMappingContext`).
 - **Plugins Settings Panel**: Built-in GUI panel (toggled via `Edit -> Plugins`) showing discovered plugins and enabling runtime load/unload DLL manipulation.
 - **MCP Automation & SSE Server**: Built-in server providing remote programmatic automation:
   - Port: `3000` (HTTP and SSE streams `/message`).
@@ -41,16 +43,27 @@
     - Record allocation (e.g. in constructor): `ProfilingLayer::TrackClassAllocation("MyNewClass", sizeof(*this));`
     - Record deallocation (e.g. in destructor): `ProfilingLayer::TrackClassDeallocation("MyNewClass", sizeof(*this));`
 
-## Development Patterns
-- Use `TE_CORE_LOG` for engine-side logging.
-- Use `TE_CLIENT_LOG` for sandbox/game logging.
-- Prefer `Ref<T>` (smart pointers) for resource management.
-- All files should include `#pragma once`.
+## Development Patterns & Engine Types
+- Use `TE_CORE_LOG` (`TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR`) for engine-side logging.
+- Use `TE_CLIENT_LOG` (`TE_CLIENT_INFO`, `TE_CLIENT_WARN`, `TE_CLIENT_ERROR`) for sandbox/game logging.
+- **Memory Management (No Raw Owning Pointers)**:
+  - Never use raw owning pointers (`new`/`delete` or unmanaged pointers).
+  - Use `TE::Scope<T>` / `CreateScope<T>(...)` for unique/exclusive ownership (`std::unique_ptr`).
+  - Use `TE::Ref<T>` / `CreateRef<T>(...)` for shared ownership (`std::shared_ptr`).
+  - Use `TE::WeakRef<T>` for non-owning observers (`std::weak_ptr`).
+- **Engine Strings**:
+  - Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` instead of `std::string` or `const char*` across engine APIs, ECS components, and properties.
+- **Gameplay Containers & Utilities**:
+  - Use `TEArray<T>`, `TEOption<T>`, `TESpan<T>`, and `TEResult<T, E>` (from `GameFrameWork/GameplayUtils.hpp`).
+- **Math & Vectors**:
+  - Always use `TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` (from `Utils/MathUtils.hpp`) instead of raw GLM or vendor math structs.
+- All headers MUST include `#pragma once`.
+- Classes: `PascalCase`, variables: `camelCase` (`m_` prefix for private members), macros: `SCREAMING_SNAKE_CASE` (`TE_`).
 - Components live under `Engine/Include/Core/Scene/` and register via macros (e.g. `T_REGISTER_COMPONENT`).
 
 ## Setup
 1. Run the workspace generation script in `Scripts/` (e.g. `Scripts/Windows/GenerateProjectFiles.bat` for Windows).
-2. Build with MSBuild or Visual Studio.
+2. Build with platform build scripts (e.g. `Scripts/Windows/MSVC/BuildDebug.bat`).
 3. Launch TimeEditor to access the Project Hub.
 
 ## NOT yet implemented (do not hallucinate these)
@@ -58,15 +71,18 @@
 - 3D physics
 - Audio system
 - Networking
-- Cross-platform support (Windows only)
+
 
 | Pattern | Rule |
 |---|---|
-| Logging (engine) | `TE_CORE_LOG` |
-| Logging (game/sandbox) | `TE_CLIENT_LOG` |
-| Resource ownership | `Ref<T>` (shared_ptr wrapper) |
+| Logging (engine) | `TE_CORE_LOG` (`TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR`) |
+| Logging (game/sandbox) | `TE_CLIENT_LOG` (`TE_CLIENT_INFO`, `TE_CLIENT_WARN`, `TE_CLIENT_ERROR`) |
+| Memory Management | `Scope<T>` / `CreateScope<T>`, `Ref<T>` / `CreateRef<T>`, `WeakRef<T>` (NO raw owning pointers) |
+| Strings | `TEString`, `TEStringView` (NO raw `std::string` in engine interfaces) |
+| Containers & Views | `TEArray<T>`, `TEOption<T>`, `TESpan<T>`, `TEResult<T, E>` |
+| Math & Vectors | `TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4` (from `MathUtils.hpp`) |
 | Headers | `#pragma once` always |
-| Naming | PascalCase classes, camelCase variables, SCREAMING_SNAKE_CASE macros |
+| Naming | PascalCase classes, camelCase variables (`m_` for privates), SCREAMING_SNAKE_CASE macros |
 | Formatting | `.clang-format` enforced, 4-space indent |
 
 ## Vendor Wrapper Mapping
@@ -130,7 +146,7 @@ If Premake errors: `git submodule update --init --recursive`
 
 ## For LLMs — usage rules
 - **Do not invent components or systems** not listed under "Confirmed Systems."
-- **Do not assume cross-platform** — Windows/MSVC only.
+- **Cross-platform building**: Fully tested for development on **Windows** and **macOS** via script suites in `Scripts/Windows/` and `Scripts/Mac/`. Linux scripts (`Scripts/Linux/`) exist but are untested.
 - **Time Manipulation is a roadmap goal**, not a callable API.
 - When suggesting new components, follow the `Engine/Include/Core/Scene/` pattern and match naming conventions above.
 - When editing renderer code, check `Renderer2D.cpp` for the batch flush — that is where per-frame component reads happen.

@@ -6,9 +6,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Utils/MathUtils.hpp"
 
-namespace TE
-{
-
 class CircleComponent : public ProceduralSpriteComponent
 {
 public:
@@ -25,45 +22,40 @@ public:
         collider->Radius = Radius;
     }
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
-    std::vector<TEVector2> GetWorldVertices(const TE::TEMatrix4 &worldModel) const override
+    TEArray<TEVector2> GetWorldVertices(const TEMatrix4 &worldModel) const override
     {
-        std::vector<TEVector2> v;
+        TEArray<TEVector2> v;
         for (int i = 0; i < 12; i++)
         {
             float angle = (float)i / 12.0f * 2.0f * 3.14159265f;
             TEVector4 p = worldModel * TEVector4(cos(angle) * Radius, sin(angle) * Radius, 0, 1);
-            v.push_back({p.x, p.y});
+            v.Add({p.x, p.y});
         }
         return v;
     }
 
-    bool ContainsPoint(const TE::TEMatrix4 &worldModel, const TEVector2 &point) const override
+    bool ContainsPoint(const TEMatrix4 &worldModel, const TEVector2 &point) const override
     {
-        auto *collider = GetOwnerEntity().GetComponent<CircleColliderComponent>();
-        if (collider)
-        {
-            float dx = point.x - collider->shape.circle.center.x;
-            float dy = point.y - collider->shape.circle.center.y;
-            return (dx * dx + dy * dy) <= collider->shape.circle.radius * collider->shape.circle.radius;
-        }
-        return false;
+        TEVector2 worldCenter(worldModel[3][0], worldModel[3][1]);
+        float scaleX = TEVector3(worldModel[0][0], worldModel[0][1], worldModel[0][2]).Length();
+        float worldRadius = Radius * (scaleX > 0.0001f ? scaleX : 1.0f);
+        float dx = point.x - worldCenter.x;
+        float dy = point.y - worldCenter.y;
+        return (dx * dx + dy * dy) <= (worldRadius * worldRadius);
     }
 
-    void OnRender(class TE::Renderer2D *renderer, const TE::TEMatrix4 &worldModel,
-                  const std::shared_ptr<class TE::Material> &material) const override
+    void OnRender(class Renderer2D *renderer, const TEMatrix4 &worldModel,
+                  const TERef<class Material> &material) const override
     {
-        TE::TEVector2 worldPos = {worldModel.m[3][0], worldModel.m[3][1]};
-        float radius =
-            Radius * std::sqrt(worldModel.m[0][0] * worldModel.m[0][0] + worldModel.m[0][1] * worldModel.m[0][1] +
-                               worldModel.m[0][2] * worldModel.m[0][2]);
+        if (!bIsVisible || !renderer)
+            return;
 
-        if (bIsVisible)
-        {
-            material->SetColor(BaseColor);
-            renderer->SubmitCircle(worldPos, radius, material);
-        }
+        TEVector2 worldPos = {worldModel.m[3][0], worldModel.m[3][1]};
+        float scaleX = worldModel.m[0][0], scaleY = worldModel.m[0][1], scaleZ = worldModel.m[0][2];
+        float radius = Radius * Sqrt(scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ);
+        renderer->SubmitCircle(worldPos, radius, BaseColor, material);
     }
 };
 
@@ -73,7 +65,5 @@ T_REGISTER_PROPERTY(CircleComponent, float, Radius, "Radius")
 T_REGISTER_PROPERTY(CircleComponent, TEColor, BaseColor, "Base Color")
 T_REGISTER_PROPERTY(CircleComponent, bool, bIsVisible, "Visible")
 T_REGISTER_PRESET(Circle, "Circle", "Shapes",
-                  ([](::TE::EntityID id, ::TE::EntityManager *em) { em->AddComponent<CircleComponent>(id); }))
+                  ([](EntityID id, EntityManager *em) { em->AddComponent<CircleComponent>(id); }))
 #endif
-
-} // namespace TE

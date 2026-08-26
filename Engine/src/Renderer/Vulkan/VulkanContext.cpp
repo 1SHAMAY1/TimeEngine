@@ -1,9 +1,8 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanContext.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <iostream>
 #include <vector>
-
-namespace TE
-{
 
 void VulkanContext::Init(void *windowHandle)
 {
@@ -50,9 +49,9 @@ void VulkanContext::CreateInstance()
     createInfo.pApplicationInfo = &appInfo;
 
     // On Windows/GLFW, surface extensions are required
-    std::vector<const char *> extensions = {VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface"};
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-    createInfo.ppEnabledExtensionNames = extensions.data();
+    TEArray<const char *> extensions = {VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface"};
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.Num());
+    createInfo.ppEnabledExtensionNames = extensions.GetData();
 
     // In a real scenario, we call vkCreateInstance.
     // We compile/stub the call so that if the user doesn't link vulkan-1.lib, we don't get link errors.
@@ -75,5 +74,3 @@ void VulkanContext::CreateCommandPool()
 {
     // Create command pool
 }
-
-} // namespace TE

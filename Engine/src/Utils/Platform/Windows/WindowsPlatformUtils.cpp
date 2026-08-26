@@ -1,18 +1,16 @@
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include <commdlg.h>
 #include <shlobj.h>
-#include <string>
 #include <windows.h>
 
-namespace TE
-{
-
-std::string PlatformUtils::OpenFolder(const char *initialPath)
+TEString PlatformUtils::OpenFolder(const char *initialPath)
 {
     // Simple Windows Folder Picker using SHBrowseForFolder (Older but works without complex COM setup for now)
     // Or better, use IFileDialog (Vista+) for a modern look as requested
 
-    std::string result = "";
+    TEString result = "";
 
     IFileDialog *pfd;
     if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
@@ -33,13 +31,7 @@ std::string PlatformUtils::OpenFolder(const char *initialPath)
                 PWSTR pszFilePath;
                 if (SUCCEEDED(psi->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath)))
                 {
-                    // Convert WCHAR to std::string (simple ASCII/UTF8 conversion)
-                    int len = WideCharToMultiByte(CP_UTF8, 0, pszFilePath, -1, NULL, 0, NULL, NULL);
-                    if (len > 0)
-                    {
-                        result.resize(len - 1); // remove null terminator from size
-                        WideCharToMultiByte(CP_UTF8, 0, pszFilePath, -1, &result[0], len, NULL, NULL);
-                    }
+                    result = TEString(pszFilePath);
                     CoTaskMemFree(pszFilePath);
                 }
                 psi->Release();
@@ -51,7 +43,7 @@ std::string PlatformUtils::OpenFolder(const char *initialPath)
     return result;
 }
 
-std::string PlatformUtils::OpenFile(const char *filter)
+TEString PlatformUtils::OpenFile(const char *filter)
 {
     OPENFILENAMEA ofn;
     CHAR szFile[260] = {0};
@@ -66,12 +58,12 @@ std::string PlatformUtils::OpenFile(const char *filter)
 
     if (GetOpenFileNameA(&ofn) == TRUE)
     {
-        return std::string(ofn.lpstrFile);
+        return TEString(ofn.lpstrFile);
     }
-    return std::string();
+    return TEString();
 }
 
-std::string PlatformUtils::SaveFile(const char *filter)
+TEString PlatformUtils::SaveFile(const char *filter)
 {
     OPENFILENAMEA ofn;
     CHAR szFile[260] = {0};
@@ -82,22 +74,22 @@ std::string PlatformUtils::SaveFile(const char *filter)
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = filter;
     ofn.nFilterIndex = 1;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
     if (GetSaveFileNameA(&ofn) == TRUE)
     {
-        return std::string(ofn.lpstrFile);
+        return TEString(ofn.lpstrFile);
     }
-    return std::string();
+    return TEString();
 }
 
-bool PlatformUtils::RegisterFileAssociation(const std::string &extension, const std::string &appName,
-                                            const std::string &appPath, const std::string &description)
+bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TEString &appName, const TEString &appPath,
+                                            const TEString &description)
 {
     HKEY hKey;
 
     // 1. Create the extension key pointing to the app name (HKCU for user-level)
-    std::string extKey = extension;
+    TEString extKey = extension;
     if (RegCreateKeyExA(HKEY_CURRENT_USER, ("Software\\Classes\\" + extKey).c_str(), 0, NULL, REG_OPTION_NON_VOLATILE,
                         KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS)
     {
@@ -117,12 +109,22 @@ bool PlatformUtils::RegisterFileAssociation(const std::string &extension, const 
     else
         return false;
 
-    // 3. Create the command key: appPath "%1"
-    std::string commandKeyPath = "Software\\Classes\\" + appName + "\\shell\\open\\command";
+    // 3. Create the DefaultIcon key: appPath,0
+    TEString iconKeyPath = "Software\\Classes\\" + appName + "\\DefaultIcon";
+    if (RegCreateKeyExA(HKEY_CURRENT_USER, iconKeyPath.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL,
+                        &hKey, NULL) == ERROR_SUCCESS)
+    {
+        TEString iconVal = "\"" + appPath + "\",0";
+        RegSetValueExA(hKey, NULL, 0, REG_SZ, (const BYTE *)iconVal.c_str(), (DWORD)iconVal.size() + 1);
+        RegCloseKey(hKey);
+    }
+
+    // 4. Create the command key: appPath "%1"
+    TEString commandKeyPath = "Software\\Classes\\" + appName + "\\shell\\open\\command";
     if (RegCreateKeyExA(HKEY_CURRENT_USER, commandKeyPath.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL,
                         &hKey, NULL) == ERROR_SUCCESS)
     {
-        std::string command = "\"" + appPath + "\" \"%1\"";
+        TEString command = "\"" + appPath + "\" \"%1\"";
         RegSetValueExA(hKey, NULL, 0, REG_SZ, (const BYTE *)command.c_str(), (DWORD)command.size() + 1);
         RegCloseKey(hKey);
     }
@@ -135,31 +137,32 @@ bool PlatformUtils::RegisterFileAssociation(const std::string &extension, const 
     return true;
 }
 
-bool PlatformUtils::IsFileAssociationRegistered(const std::string &extension, const std::string &appPath)
+bool PlatformUtils::IsFileAssociationRegistered(const TEString &extension, const TEString &appPath)
 {
     HKEY hKey;
-    char buffer[1024];
-    DWORD bufferSize = sizeof(buffer);
+    TEString buffer;
+    buffer.Reserve(1024);
+    DWORD bufferSize = 1024;
 
     // Check which app is associated with the extension
-    std::string extKeyPath = "Software\\Classes\\" + extension;
+    TEString extKeyPath = "Software\\Classes\\" + extension;
     if (RegOpenKeyExA(HKEY_CURRENT_USER, extKeyPath.c_str(), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
     {
-        if (RegQueryValueExA(hKey, NULL, NULL, NULL, (LPBYTE)buffer, &bufferSize) == ERROR_SUCCESS)
+        if (RegQueryValueExA(hKey, NULL, NULL, NULL, (LPBYTE)buffer.Data(), &bufferSize) == ERROR_SUCCESS)
         {
-            std::string appName = buffer;
+            TEString appName = buffer.c_str();
             RegCloseKey(hKey);
 
             // Now check if that app's command matches our appPath
-            std::string commandKeyPath = "Software\\Classes\\" + appName + "\\shell\\open\\command";
+            TEString commandKeyPath = "Software\\Classes\\" + appName + "\\shell\\open\\command";
             if (RegOpenKeyExA(HKEY_CURRENT_USER, commandKeyPath.c_str(), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
             {
-                bufferSize = sizeof(buffer);
-                if (RegQueryValueExA(hKey, NULL, NULL, NULL, (LPBYTE)buffer, &bufferSize) == ERROR_SUCCESS)
+                bufferSize = 1024;
+                if (RegQueryValueExA(hKey, NULL, NULL, NULL, (LPBYTE)buffer.Data(), &bufferSize) == ERROR_SUCCESS)
                 {
-                    std::string command = buffer;
+                    TEString command = buffer.c_str();
                     RegCloseKey(hKey);
-                    return command.find(appPath) != std::string::npos;
+                    return command.find(appPath) != TEString::npos;
                 }
                 RegCloseKey(hKey);
             }
@@ -173,10 +176,68 @@ bool PlatformUtils::IsFileAssociationRegistered(const std::string &extension, co
     return false;
 }
 
-std::string PlatformUtils::GetExecutablePath()
+TEString PlatformUtils::GetExecutablePath()
 {
-    char buffer[MAX_PATH];
-    GetModuleFileNameA(NULL, buffer, MAX_PATH);
-    return std::string(buffer);
+    TEString buffer;
+    buffer.Reserve(MAX_PATH);
+    GetModuleFileNameA(NULL, buffer.Data(), MAX_PATH);
+    return TEString(buffer.c_str());
 }
-} // namespace TE
+
+bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString &commandLineArgs,
+                                  uint32_t *outProcessId)
+{
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    TEString fullCommand = "\"" + executablePath + "\" " + commandLineArgs;
+    TEArray<char> cmdBuffer(fullCommand.c_str(), fullCommand.c_str() + fullCommand.length() + 1);
+
+    BOOL success = CreateProcessA(NULL, cmdBuffer.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+
+    if (success)
+    {
+        if (outProcessId)
+            *outProcessId = (uint32_t)pi.dwProcessId;
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+        return true;
+    }
+    return false;
+}
+
+bool PlatformUtils::IsProcessRunning(uint32_t processId)
+{
+    if (processId == 0)
+        return false;
+
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId);
+    if (!hProcess)
+        return false;
+
+    DWORD exitCode = 0;
+    if (GetExitCodeProcess(hProcess, &exitCode))
+    {
+        CloseHandle(hProcess);
+        return (exitCode == STILL_ACTIVE);
+    }
+    CloseHandle(hProcess);
+    return false;
+}
+
+bool PlatformUtils::KillProcess(uint32_t processId)
+{
+    if (processId == 0)
+        return false;
+
+    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processId);
+    if (!hProcess)
+        return false;
+
+    BOOL result = TerminateProcess(hProcess, 0);
+    CloseHandle(hProcess);
+    return result == TRUE;
+}

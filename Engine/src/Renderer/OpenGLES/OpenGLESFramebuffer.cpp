@@ -1,9 +1,7 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESFramebuffer.hpp"
 #include "Core/Log.h"
 #include <glad/glad.h>
-
-namespace TE
-{
 
 static const uint32_t s_MaxFramebufferSize = 8192;
 
@@ -77,5 +75,3 @@ void OpenGLESFramebuffer::Resize(uint32_t width, uint32_t height)
     m_Specification.Height = height;
     Invalidate();
 }
-
-} // namespace TE

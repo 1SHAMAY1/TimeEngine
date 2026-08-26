@@ -1,83 +1,76 @@
 #pragma once
 
 #include "Event.h"
-#include <sstream>
 
-namespace TE {
+class TE_API WindowResizeEvent : public Event
+{
+public:
+    WindowResizeEvent(unsigned int width, unsigned int height) : m_Width(width), m_Height(height) {}
 
-	class TE_API WindowResizeEvent : public Event
-	{
-	public:
-		WindowResizeEvent(unsigned int width, unsigned int height)
-			: m_Width(width), m_Height(height) {}
+    unsigned int GetWidth() const { return m_Width; }
+    unsigned int GetHeight() const { return m_Height; }
 
-		unsigned int GetWidth() const { return m_Width; }
-		unsigned int GetHeight() const { return m_Height; }
+    TEString ToString() const override
+    {
+        return "WindowResizeEvent: " + TEString::FromInt(m_Width) + ", " + TEString::FromInt(m_Height);
+    }
 
-		std::string ToString() const override
-		{
-			std::stringstream ss;
-			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
-			return ss.str();
-		}
+    EVENT_CLASS_TYPE(WindowResize)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+private:
+    unsigned int m_Width, m_Height;
+};
 
-		EVENT_CLASS_TYPE(WindowResize)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	private:
-		unsigned int m_Width, m_Height;
-	};
+class TE_API WindowCloseEvent : public Event
+{
+public:
+    WindowCloseEvent() = default;
 
-	class TE_API WindowCloseEvent : public Event
-	{
-	public:
-		WindowCloseEvent() = default;
+    EVENT_CLASS_TYPE(WindowClose)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
 
-		EVENT_CLASS_TYPE(WindowClose)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+class TE_API AppTickEvent : public Event
+{
+public:
+    AppTickEvent() = default;
 
-	class TE_API AppTickEvent : public Event
-	{
-	public:
-		AppTickEvent() = default;
+    EVENT_CLASS_TYPE(AppTick)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
 
-		EVENT_CLASS_TYPE(AppTick)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+class TE_API AppUpdateEvent : public Event
+{
+public:
+    AppUpdateEvent() = default;
 
-	class TE_API AppUpdateEvent : public Event
-	{
-	public:
-		AppUpdateEvent() = default;
+    EVENT_CLASS_TYPE(AppUpdate)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
 
-		EVENT_CLASS_TYPE(AppUpdate)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+class TE_API AppRenderEvent : public Event
+{
+public:
+    AppRenderEvent() = default;
 
-	class TE_API AppRenderEvent : public Event
-	{
-	public:
-		AppRenderEvent() = default;
+    EVENT_CLASS_TYPE(AppRender)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
 
-		EVENT_CLASS_TYPE(AppRender)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+class TE_API WindowFocusEvent : public Event
+{
+public:
+    WindowFocusEvent() = default;
 
-	class TE_API WindowFocusEvent : public Event {
-	public:
-		WindowFocusEvent() = default;
+    EVENT_CLASS_TYPE(WindowFocus)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
 
-		EVENT_CLASS_TYPE(WindowFocus)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+class TE_API WindowLostFocusEvent : public Event
+{
+public:
+    WindowLostFocusEvent() = default;
 
-	class TE_API WindowLostFocusEvent : public Event {
-	public:
-		WindowLostFocusEvent() = default;
-
-		EVENT_CLASS_TYPE(WindowLostFocus)
-		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
-
-
-} // namespace TE
+    EVENT_CLASS_TYPE(WindowLostFocus)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};

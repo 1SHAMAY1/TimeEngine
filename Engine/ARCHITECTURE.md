@@ -44,6 +44,7 @@ Each link below opens a detailed, dedicated architectural reference document:
   * ⏱️ **[Core Time Architecture](src/Core/Time/ARCHITECTURE.md)** — Frame delta calculation, fixed metronome tickers (`Ticker`), and static delayed timers (`Timer`).
   * 📁 **[Project Subsystem Architecture](src/Core/Project/ARCHITECTURE.md)** — Active workspace config (`ProjectConfig`), root directory resolution, and `.teproj` serialization.
   * 🔌 **[Plugin Manager Architecture](src/Core/Plugin/ARCHITECTURE.md)** — Dynamic OS library loader (`LoadLibraryW` / `dlopen`), `.teplugin` descriptor parser, and symbol factories.
+  * 📜 **[TScript Scripting Subsystem Architecture](src/Core/Scripting/ARCHITECTURE.md)** — Embedded zero-dependency scripting language (Lexer, Parser, AST, Interpreter, reflection bridge).
 
 ### 2. Graphics & Rendering Subsystems
 * 🎨 **[Renderer Subsystem Architecture](src/Renderer/ARCHITECTURE.md)** — 2D batching pipeline (`Renderer2D`, `RenderBatcher`), 2D lights, shadow volumes, materials, and shaders.

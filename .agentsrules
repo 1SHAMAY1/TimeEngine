@@ -2,14 +2,25 @@
 
 When assisting with the TimeEngine codebase, follow these rules:
 
-## 1. Coding Standards
+## 1. Coding Standards & Engine Types
 - **Always** use `#pragma once` in headers.
 - **Naming Conventions**:
   - Classes/Structs: `PascalCase`
   - Variables/Members: `camelCase` (or `m_camelCase` for private members)
   - Macros: `SCREAMING_SNAKE_CASE` (prefixed with `TE_`)
-- **Logging**: Use `TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR` for engine code.
-- **Resources**: Use existing classes like `Texture2D`, `Shader`, and `VertexArray` instead of raw OpenGL calls where possible.
+- **Logging**: Use `TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR` for engine code, and `TE_CLIENT_*` for sandbox/game code.
+- **Memory Management (No Raw Owning Pointers)**:
+  - Never use raw owning pointers (`new`/`delete` or unmanaged raw pointers).
+  - Use `TE::Scope<T>` / `CreateScope<T>(...)` for unique/exclusive ownership (`std::unique_ptr`).
+  - Use `TE::Ref<T>` / `CreateRef<T>(...)` for shared ownership (`std::shared_ptr`).
+  - Use `TE::WeakRef<T>` for non-owning observers to break reference cycles (`std::weak_ptr`).
+- **Engine Strings**:
+  - Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` for string operations, function signatures, and component properties instead of raw `std::string` or `const char*`.
+- **Gameplay Containers & Utilities**:
+  - Prefer `TEArray<T>`, `TEOption<T>`, `TESpan<T>`, and `TEResult<T, E>` (from `GameFrameWork/GameplayUtils.hpp`).
+- **Math & Vectors**:
+  - Always use engine math types (`TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` from `Utils/MathUtils.hpp`) instead of raw GLM types or raw vendor vectors.
+- **Resources**: Use existing classes like `Texture2D`, `Shader`, and `VertexArray` instead of raw OpenGL/DirectX/Vulkan calls where possible.
 - **GUI Rendering**: Never use raw `ImGui` or include `imgui.h`/`imgui_internal.h` outside of the wrapper layer. All engine layers and systems MUST use the clean non-vendor GUI wrapper namespace (`TE::TimeGUI`) and wrapper classes (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`, etc.). Do not expose or return vendor types (like `ImVec4`, `ImDrawList*`, `ImFont*`) in function signatures or variables outside the wrapper implementation (`TimeGUI.cpp` / `TimeGUILayer.cpp`).
 
 ## 2. Architecture Guidelines
@@ -18,10 +29,11 @@ When assisting with the TimeEngine codebase, follow these rules:
 - Keep the **Editor** logic separate from core engine logic (use `EditorLayer`).
 
 ## 3. Tool Usage
-- **Build**: Use `D:\Installed\VisualStudio\VisualStudioIDE\MSBuild\Current\Bin\amd64\MSBuild.exe Engine\Engine.vcxproj /p:Configuration=Debug /p:Platform=x64` after changes.
+- **Build**: Use project scripts only (e.g. `Scripts/Windows/MSVC/BuildDebug.bat` on Windows, or platform build scripts) after changes. Avoid running direct MSBuild.exe commands.
 - **Search**: Search locally or via backend tools. Do not use Chrome.
 - **Clang Format**: Adhere to the `.clang-format` file in the root.
 
 ## 4. Vision: Time Manipulation
 - When implementing new logic, consider if it is **deterministic**.
 - Avoid storing non-serializable state in components if they need to support time-reversal in the future.
+

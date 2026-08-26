@@ -1,0 +1,287 @@
+// =============================================================================
+// RuleBreakerTest.h - Header testing ALL rule combinations and function patterns
+// =============================================================================
+#pragma once
+
+// =============================================================================
+// 1. ALL COPYRIGHT & LICENSE HEADER COMBINATIONS
+// =============================================================================
+// Copyright (c) 2024 Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2024 Unity Technologies. All rights reserved.
+// Copyright (c) 2024 Valve Corporation. All rights reserved.
+// Copyright (c) 2024 Crytek GmbH. All rights reserved.
+// Copyright (c) 2024 Electronic Arts Inc. All rights reserved.
+// GNU General Public License v3.0 or later
+// Affero General Public License
+// All rights reserved. Unauthorized copying of this file is strictly prohibited.
+
+// =============================================================================
+// 2. ALL VENDOR HEADER INCLUDES
+// =============================================================================
+#include <velox/velox.h>
+#include <GLFW/glfw3.h>
+#include <glfw3.h>
+#include <glad/glad.h>
+#include <GL/gl.h>
+#include <GLES/gl.h>
+#include <glad/glad_gles2.h>
+#include <vulkan/vulkan.h>
+#include <volk.h>
+#include <d3d11.h>
+#include <dxgi.h>
+#include <d3dcompiler.h>
+#include <directx/d3dx12.h>
+#include <Metal/Metal.h>
+#include <metal/metal.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <imconfig.h>
+#include <stb_image.h>
+#include <stb_truetype.h>
+#include <stb_image_write.h>
+#include <stb_rect_pack.h>
+#include <stb/stb_image.h>
+#include <Customizable_Logger.hpp>
+#include <string>
+#include <filesystem>
+#include "filesystem"
+
+// =============================================================================
+// 3. ALL AI SLOP & LEAKED MARKDOWN PATTERNS
+// =============================================================================
+// As per user request, here is the updated code
+// As an AI language model, I cannot provide that
+// Certainly! Here is the header declaration
+// Here is the revised code for your project
+// Here is the updated code with fixes
+// Here is the modified code as requested
+// I hope this helps! Feel free to ask more
+// Let me know if you need any further assistance
+// Let me know if you have any questions about this
+// Key changes made:
+// Given the user context, we will add more fields
+// I'll implement the remaining declarations below
+// Let's use std vector for all lists
+// Actually, let's also add raw pointer members
+// Without checking vendor documentation, this should work
+// ... existing code ...
+// ... rest of code ...
+// TODO: insert your logic here
+// Insert struct implementation here
+// Rest of the code remains unchanged
+```hpp
+### Explanation:
+```h
+
+// =============================================================================
+// 4. COMPETITOR ENGINE & FRAMEWORK CLASSES / STRUCTURES / MACROS
+// =============================================================================
+
+// Unreal Engine mentions and constructs
+// Unreal Engine 5 with UE4 and UE5 support, plus UEFN and Fortnite assets
+// Using Nanite geometry pipeline and Lumen global illumination with Niagara VFX
+class UnrealCompetitorTest : public UObject {
+public:
+    UPROPERTY()
+    int UnrealProperty;
+
+    UFUNCTION()
+    void UnrealFunction();
+
+    AActor* SpawnActorInstance();
+    void TriggerBlueprintsLogic();
+    void TriggerBlueprintLogic();
+};
+
+// Unity Engine mentions and constructs
+// Unity3D component model with Unity Engine
+class UnityCompetitorTest : public MonoBehaviour {
+public:
+    ScriptableObject* ConfigData;
+    GameObject* RootEntity;
+    Prefab* TemplatePrefab;
+};
+
+// Godot Engine mentions and constructs
+// Godot Engine scripting with GDScript and GDExtension
+struct GodotCompetitorTest {
+    void TestGodotEngine();
+    void ExecuteGDScript();
+    void LoadGDExtension();
+};
+
+// Other engines: Frostbite Engine, CryEngine, Source 2 Engine, Lumberyard, O3DE
+struct OtherEnginesTest {
+    void BenchmarkFrostbiteEngine();
+    void BenchmarkCryEngine();
+    void BenchmarkSource2Engine();
+    void BenchmarkLumberyard();
+    void BenchmarkO3DE();
+};
+
+// =============================================================================
+// 5. VENDOR SYMBOLS IN HEADER SIGNATURES
+// =============================================================================
+struct VendorStructHeader {
+    vxRigidBody* VeloxBody;
+    VkInstance VulkanHandle;
+    ID3D11Device* D3DDevice;
+    IDXGISwapChain* DXGISwapChain;
+    D3D11_BUFFER_DESC BufferDesc;
+    MTLDevice MetalDeviceHandle;
+    MTLCommandBuffer MetalBuffer;
+    ImVec2 GuiSize;
+    ImVec4 GuiColor;
+    ImDrawList* DrawList;
+    ImFont* CustomFont;
+
+    void MethodWithVendorParams(stbi_uc* pixels, stbtt_fontinfo* font, stbiw_uint32 w, stbrp_context* rp);
+};
+
+// =============================================================================
+// 6. FUNCTION DECLARATIONS COVERING ALL ILLEGAL PARAMETERS & RETURN TYPES
+// =============================================================================
+
+// Raw C allocation functions
+void* HeaderAlloc_Malloc(size_t size);
+void* HeaderAlloc_Calloc(size_t num, size_t size);
+void* HeaderAlloc_Realloc(void* ptr, size_t newSize);
+void HeaderAlloc_Free(void* ptr);
+
+// Forbidden smart pointer function signatures
+std::unique_ptr<int> ReturnStdUniquePtr();
+unique_ptr<float> ReturnBareUniquePtr();
+std::shared_ptr<int> ReturnStdSharedPtr();
+shared_ptr<double> ReturnBareSharedPtr();
+std::weak_ptr<int> ReturnStdWeakPtr();
+weak_ptr<char> ReturnBareWeakPtr();
+void PassStdSmartPointers(std::unique_ptr<int> u, std::shared_ptr<float> s, std::weak_ptr<double> w);
+void PassBareSmartPointers(unique_ptr<int> u, shared_ptr<float> s, weak_ptr<double> w);
+
+// Forbidden container function signatures
+std::vector<int> ReturnStdVector();
+vector<float> ReturnBareVector();
+std::unordered_map<int, std::string> ReturnStdUnorderedMap();
+unordered_map<int, int> ReturnBareUnorderedMap();
+std::unordered_set<int> ReturnStdUnorderedSet();
+unordered_set<float> ReturnBareUnorderedSet();
+void PassStdContainers(std::vector<int> v, std::unordered_map<int, int> m, std::unordered_set<int> s);
+void PassBareContainers(vector<int> v, unordered_map<int, int> m, unordered_set<int> s);
+
+// Forbidden string & char function signatures
+std::string ReturnStdString();
+std::wstring ReturnStdWString();
+std::u8string ReturnStdU8String();
+std::u16string ReturnStdU16String();
+std::u32string ReturnStdU32String();
+std::basic_string<char> ReturnStdBasicString();
+string ReturnBareString();
+wstring ReturnBareWString();
+u8string ReturnBareU8String();
+char32_t ReturnChar32();
+char16_t ReturnChar16();
+wchar_t ReturnWChar();
+void PassForbiddenStrings(string s1, wstring s2, u8string s3, char32_t c32, char16_t c16, wchar_t wc);
+
+// Forbidden filesystem signatures
+std::filesystem::path ReturnStdFsPath();
+filesystem::path ReturnBareFsPath();
+std::experimental::filesystem::path ReturnExpFsPath();
+void PassFsPaths(std::filesystem::path p1, filesystem::path p2);
+
+// =============================================================================
+// 7. INLINE CLASS METHODS WITH RAW NEW / DELETE / C-ALLOC COMBINATIONS
+// =============================================================================
+class HeaderInlineRuleBreaker {
+public:
+    HeaderInlineRuleBreaker() {
+        // Raw new combinations
+        m_RawInt = new int(10);
+        m_RawArray = new int[50];
+        auto* autoNewPtr = new double(3.14);
+        int* localPtr = new int(99);
+        *m_DerefTarget = new float(1.23f);
+
+        // Raw delete combinations
+        delete m_RawInt;
+        delete[] m_RawArray;
+        delete autoNewPtr;
+        delete localPtr;
+        delete this;
+
+        // C allocation combinations
+        m_CAllocMem = malloc(128);
+        m_CCallocMem = calloc(16, 4);
+        m_CReallocMem = realloc(m_CAllocMem, 256);
+        free(m_CCallocMem);
+        free(m_CReallocMem);
+
+        // Std smart pointer factory functions
+        auto u = std::make_unique<int>(10);
+        auto s = std::make_shared<int>(20);
+        auto bu = make_unique<float>(1.0f);
+        auto bs = make_shared<float>(2.0f);
+
+        // Namespace violations
+        ::TE::GlobalInit();
+        ::TimeEngine::StaticSetup();
+        TimeEngine::DirectCall();
+        Timeengine::LegacyCall();
+        TE::Renderer::Clear();
+
+        // Legacy TEString path methods
+        TEString tePath = "C:/Assets/Texture.png";
+        tePath.stem();
+        tePath.filename();
+        tePath.parent_path();
+        tePath.has_parent_path();
+        tePath.extension();
+        tePath.replace_extension(".dds");
+
+        // std::getline
+        getline(std::cin, m_StringMember);
+    }
+
+    virtual ~HeaderInlineRuleBreaker() {
+        delete m_RawInt;
+        delete[] m_RawArray;
+        free(m_CAllocMem);
+    }
+
+private:
+    int* m_RawInt = new int(0);
+    int* m_RawArray = new int[10];
+    float** m_DerefTarget = nullptr;
+    void* m_CAllocMem = nullptr;
+    void* m_CCallocMem = nullptr;
+    void* m_CReallocMem = nullptr;
+
+    std::unique_ptr<int> m_MemberUnique;
+    unique_ptr<int> m_MemberBareUnique;
+    std::shared_ptr<int> m_MemberShared;
+    shared_ptr<int> m_MemberBareShared;
+    std::weak_ptr<int> m_MemberWeak;
+    weak_ptr<int> m_MemberBareWeak;
+
+    std::vector<int> m_MemberStdVector;
+    vector<int> m_MemberBareVector;
+    std::unordered_map<int, int> m_MemberStdMap;
+    unordered_map<int, int> m_MemberBareMap;
+    std::unordered_set<int> m_MemberStdSet;
+    unordered_set<int> m_MemberBareSet;
+
+    std::string m_StringMember;
+    std::wstring m_WStringMember;
+    std::u8string m_U8StringMember;
+    std::u16string m_U16StringMember;
+    std::u32string m_U32StringMember;
+    string m_BareStringMember;
+    wstring m_BareWStringMember;
+    u8string m_BareU8StringMember;
+
+    char32_t m_Char32Member;
+    char16_t m_Char16Member;
+    wchar_t m_WCharMember;
+
+    std::filesystem::path m_FsPathMember;
+};

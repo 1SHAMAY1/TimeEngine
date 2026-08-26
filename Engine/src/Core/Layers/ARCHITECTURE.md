@@ -1,6 +1,6 @@
 # Layers & LayerStack Architecture
 
-The Layers subsystem in TimeEngine handles modular execution stacks ([`LayerStack`](file:///e:/TimeEngine/Engine/Include/Layers/LayerStack.hpp)), application update dispatching, GUI rendering passes, and event propagation pipelines ([`Layer`](file:///e:/TimeEngine/Engine/Include/Layers/Layer.hpp)).
+The Layers subsystem in TimeEngine handles modular execution stacks ([`LayerStack`](../../../Include/Layers/LayerStack.hpp)), application update dispatching, GUI rendering passes, and event propagation pipelines ([`Layer`](../../../Include/Layers/Layer.hpp)).
 
 > [!NOTE]
 > In short, think of the **Layers Subsystem** as a stack of transparent animation sheets: regular game layers (like 2D Scene, Camera, or Game World) sit at the bottom, while overlay layers (like `TimeGUILayer`, Editor Panels, Profiler, and Settings Dialogs) sit on top. Every frame, the engine updates and draws layers from back to front, but passes user events from top to bottom so overlays can consume inputs first.
@@ -9,31 +9,25 @@ The Layers subsystem in TimeEngine handles modular execution stacks ([`LayerStac
 
 ## Layer Pipeline & Data Flow
 
-```
-[ OS Hardware Event ]
-         │
-         ▼ (Propagated TOP-TO-BOTTOM)
-┌────────────────────────────────────────┐
-│ Overlays (TimeGUILayer, Profiler, etc) │ ──► Can mark event as Handled!
-├────────────────────────────────────────┤
-│ Application Layers (EditorLayer, etc) │
-└────────────────────────────────────────┘
-         │
-         ▼ (Rendered BOTTOM-TO-TOP)
-[ Final Viewport Frame Screen ]
+```mermaid
+flowchart TD
+    OSEvent["OS Hardware Event"] -->|Propagated Top-to-Bottom| Overlays["Overlays (TimeGUILayer, Profiler)"]
+    Overlays -->|Can mark event as Handled| Handled["Event Handled / Consumed"]
+    Overlays --> ApplicationLayers["Application Layers (EditorLayer, GameLayer)"]
+    ApplicationLayers -->|Rendered Bottom-to-Top| FinalFrame["Final Viewport Frame Screen"]
 ```
 
 ---
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TE::Layer`](file:///e:/TimeEngine/Engine/Include/Layers/Layer.hpp)**: Base class defining life cycle hooks:
+1. **[`TE::Layer`](../../../Include/Layers/Layer.hpp)**: Base class defining life cycle hooks:
    - `OnAttach()`: Called when layer is pushed to `LayerStack`.
    - `OnDetach()`: Called when layer is popped or removed.
    - `OnUpdate()`: Frame logic and rendering pass.
    - `OnTimeGUIRender()`: Immediate-mode GUI rendering pass.
    - `OnEvent(event)`: Input event handler.
-2. **[`TE::LayerStack`](file:///e:/TimeEngine/Engine/Include/Layers/LayerStack.hpp)**: Vector container dividing normal layers (`0` to `m_LayerInsertIndex`) from overlays (`m_LayerInsertIndex` to end).
+2. **[`TE::LayerStack`](../../../Include/Layers/LayerStack.hpp)**: Vector container dividing normal layers (`0` to `m_LayerInsertIndex`) from overlays (`m_LayerInsertIndex` to end).
 
 ---
 
@@ -81,15 +75,15 @@ void EditorLayer::OnEvent(TE::Event &e) {
 
 - **`EditorLayer`**: Main 2D editor workspace layer.
 - **`TimeGUILayer`**: Core ImGui context layer.
+- **`LogoLayer`**: Engine startup splash / welcome intro layer.
 - **`ProjectHubLayer`**: Startup project browser dialog.
 - **`ProfilingLayer`**: Real-time FPS, CPU, and GPU performance overlay.
 - **`EngineSettingsLayer`**: Engine configuration and graphics backend options.
-- **`CameraLayer`**: Viewport camera management.
 
 ---
 
 ## Related Architectural Documentation
 
-- [Editor Architecture](file:///e:/TimeEngine/Engine/src/Editor/ARCHITECTURE.md) — Documentation for `EditorLayer` and editor modes.
-- [Window Architecture](file:///e:/TimeEngine/Engine/src/Window/ARCHITECTURE.md) — Documentation for OS window creation and event callback dispatch.
-- [Utils & TimeGUI Architecture](file:///e:/TimeEngine/Engine/src/Utils/ARCHITECTURE.md) — Documentation for `TimeGUI` rendering primitives.
+- [Editor Architecture](../../Editor/ARCHITECTURE.md) — Documentation for `EditorLayer` and editor modes.
+- [Window Architecture](../../Window/ARCHITECTURE.md) — Documentation for OS window creation and event callback dispatch.
+- [Utils & TimeGUI Architecture](../../Utils/ARCHITECTURE.md) — Documentation for `TimeGUI` rendering primitives.

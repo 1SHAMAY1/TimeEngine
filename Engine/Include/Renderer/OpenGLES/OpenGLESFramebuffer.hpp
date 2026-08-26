@@ -1,8 +1,5 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/Framebuffer.hpp"
-
-namespace TE
-{
 
 class OpenGLESFramebuffer : public Framebuffer
 {
@@ -25,5 +22,3 @@ private:
     uint32_t m_DepthAttachment = 0;
     FramebufferSpecification m_Specification;
 };
-
-} // namespace TE

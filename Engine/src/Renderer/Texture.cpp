@@ -1,10 +1,11 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Texture.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
 #include "Renderer/RendererContext.hpp"
 #include "Renderer/TextureSerializer.hpp"
-#include <filesystem>
+#include "Utils/TEFileSystem.hpp"
 #include <glad/glad.h>
 
 #ifdef TE_SUPPORT_DIRECTX11
@@ -12,17 +13,39 @@
 #include <d3d11.h>
 #endif
 
-namespace TE
-{
+TE_REGISTER_ASSET(Texture)
 
-Texture::Texture(const std::string &path)
-    : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
+bool Texture::LoadFromFile(const TEString &path)
+{
+    TEString ext = path.GetExtension();
+    if (ext == ".tetexture")
+    {
+        auto self = TERef<Texture>(this, [](Texture *) {});
+        TextureSerializer serializer(self);
+        return serializer.Deserialize(path);
+    }
+    else if (ext == ".png" || ext == ".jpg")
+    {
+        m_FilePath = path;
+        m_Handle = AssetRegistry::RegisterPath(path);
+        m_Name = path.GetStem();
+        ImageData img = AssetManager::ImportImage(path, 4);
+        if (!img.IsValid())
+            return false;
+        m_Width = img.Width;
+        m_Height = img.Height;
+        m_Channels = img.Channels;
+        return true;
+    }
+    return false;
+}
+
+Texture::Texture(const TEString &path) : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
 {
     m_Handle = AssetRegistry::RegisterPath(path);
-    m_Name = std::filesystem::path(path).stem().string();
+    m_Name = path.GetStem();
 
-    std::filesystem::path p(path);
-    if (p.extension() == ".tetexture")
+    if (path.GetExtension() == ".tetexture")
     {
         // Deserialization will load image source and GPU params via TextureSerializer
     }
@@ -32,7 +55,7 @@ Texture::Texture(const std::string &path)
     }
 }
 
-bool Texture::LoadImageSource(const std::string &path)
+bool Texture::LoadImageSource(const TEString &path)
 {
     if (path.empty())
         return false;
@@ -45,60 +68,52 @@ bool Texture::LoadImageSource(const std::string &path)
 
     m_FilePath = path;
 
-    bool isDX11 = false;
-#ifdef TE_SUPPORT_DIRECTX11
-    isDX11 = (RendererContext::GetAPI() == GraphicsAPI::DirectX11);
-#endif
-    ImageData img = AssetManager::ImportImage(path, isDX11 ? 4 : 0);
-
-    if (img.Data)
+    ImageData img = AssetManager::ImportImage(path, 4);
+    if (img.IsValid())
     {
         m_Width = img.Width;
         m_Height = img.Height;
         m_Channels = img.Channels;
+
 #ifdef TE_SUPPORT_DIRECTX11
         if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
         {
             DX11Context &ctx = DX11Context::Get();
-            if (ctx.Device)
+            if (!ctx.Device)
+                return false;
+
+            D3D11_TEXTURE2D_DESC desc = {};
+            desc.Width = img.Width;
+            desc.Height = img.Height;
+            desc.MipLevels = 1;
+            desc.ArraySize = 1;
+            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            desc.SampleDesc.Count = 1;
+            desc.Usage = D3D11_USAGE_DEFAULT;
+            desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+            D3D11_SUBRESOURCE_DATA subData = {};
+            subData.pSysMem = img.Data();
+            subData.SysMemPitch = img.Width * 4;
+
+            ID3D11Texture2D *dxTex = nullptr;
+            HRESULT hr = ctx.Device->CreateTexture2D(&desc, &subData, &dxTex);
+            if (SUCCEEDED(hr))
             {
-                D3D11_TEXTURE2D_DESC desc = {};
-                desc.Width = img.Width;
-                desc.Height = img.Height;
-                desc.MipLevels = 1;
-                desc.ArraySize = 1;
-                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                desc.SampleDesc.Count = 1;
-                desc.SampleDesc.Quality = 0;
-                desc.Usage = D3D11_USAGE_DEFAULT;
-                desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-                desc.CPUAccessFlags = 0;
-                desc.MiscFlags = 0;
+                m_DX11Texture = dxTex;
+                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+                srvDesc.Format = desc.Format;
+                srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+                srvDesc.Texture2D.MipLevels = 1;
+                srvDesc.Texture2D.MostDetailedMip = 0;
 
-                D3D11_SUBRESOURCE_DATA initData = {};
-                initData.pSysMem = img.Data;
-                initData.SysMemPitch = img.Width * 4;
-
-                ID3D11Texture2D *dxTex = nullptr;
-                HRESULT hr = ctx.Device->CreateTexture2D(&desc, &initData, &dxTex);
+                ID3D11ShaderResourceView *dxSRV = nullptr;
+                hr = ctx.Device->CreateShaderResourceView(dxTex, &srvDesc, &dxSRV);
                 if (SUCCEEDED(hr))
                 {
-                    m_DX11Texture = dxTex;
-                    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-                    srvDesc.Format = desc.Format;
-                    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-                    srvDesc.Texture2D.MipLevels = 1;
-                    srvDesc.Texture2D.MostDetailedMip = 0;
-
-                    ID3D11ShaderResourceView *dxSRV = nullptr;
-                    hr = ctx.Device->CreateShaderResourceView(dxTex, &srvDesc, &dxSRV);
-                    if (SUCCEEDED(hr))
-                    {
-                        m_DX11SRV = dxSRV;
-                    }
+                    m_DX11SRV = dxSRV;
                 }
             }
-            AssetManager::FreeImage(img.Data);
         }
         else
 #endif
@@ -129,9 +144,7 @@ bool Texture::LoadImageSource(const std::string &path)
             glTextureStorage2D(m_RendererID, 1, internalFormat, img.Width, img.Height);
 
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            glTextureSubImage2D(m_RendererID, 0, 0, 0, img.Width, img.Height, dataFormat, GL_UNSIGNED_BYTE, img.Data);
-
-            AssetManager::FreeImage(img.Data);
+            glTextureSubImage2D(m_RendererID, 0, 0, 0, img.Width, img.Height, dataFormat, GL_UNSIGNED_BYTE, img.Data());
         }
 
         UpdateGPUParameters();
@@ -262,39 +275,37 @@ void Texture::Unbind() const
     }
 }
 
-void Texture::OnContentBrowserCreate(const std::filesystem::path &path)
+void Texture::OnContentBrowserCreate(const TEString &path)
 {
-    std::filesystem::create_directories(path);
-    std::string baseName = "NewTexture";
-    std::filesystem::path finalPath = path / (baseName + ".tetexture");
+    TEFileSystem::CreateDirectories(path);
+    TEString baseName = "NewTexture";
+    TEString finalPath = path / (baseName + ".tetexture");
     int counter = 1;
-    while (std::filesystem::exists(finalPath))
+    while (TEFileSystem::Exists(finalPath))
     {
-        finalPath = path / (baseName + "_" + std::to_string(counter++) + ".tetexture");
+        finalPath = path / (baseName + "_" + TEString::FromInt(counter++) + ".tetexture");
     }
 
-    std::string texName = finalPath.stem().string();
-    std::filesystem::path pngPath = path / (texName + ".png");
+    TEString texName = finalPath.GetStem();
+    TEString pngPath = path / (texName + ".png");
 
     // Write a 1x1 white PNG
-    unsigned char whitePixel[4] = {255, 255, 255, 255};
-    if (!AssetManager::ExportImagePNG(pngPath.string(), 1, 1, 4, whitePixel))
+    uint32_t whitePixel = 0xFFFFFFFF;
+    if (!AssetManager::ExportImagePNG(pngPath, 1, 1, 4, &whitePixel))
     {
-        TE_CORE_ERROR("Failed to write blank PNG for Texture at {0}", pngPath.string());
+        TE_CORE_ERROR("Failed to write blank PNG for Texture at {0}", pngPath.c_str());
     }
 
     // Write the metadata file
-    auto newTexture = std::make_shared<Texture>(pngPath.string());
+    auto newTexture = CreateRef<Texture>(pngPath);
     newTexture->m_Name = texName;
     TextureSerializer serializer(newTexture);
     if (serializer.Serialize(finalPath))
     {
-        TE_CORE_INFO("Created New Texture at {0}", finalPath.string());
+        TE_CORE_INFO("Created New Texture at {0}", finalPath.c_str());
     }
     else
     {
-        TE_CORE_ERROR("Failed to serialize and create Texture metadata at {0}", finalPath.string());
+        TE_CORE_ERROR("Failed to serialize and create Texture metadata at {0}", finalPath.c_str());
     }
 }
-
-} // namespace TE

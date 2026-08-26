@@ -29,3 +29,9 @@
 [submodule "Vendor/volk"]
 	path = Vendor/volk
 	url = https://github.com/zeux/volk.git
+[submodule "Vendor/miniaudio"]
+	path = Vendor/miniaudio
+	url = https://github.com/mackron/miniaudio.git
+[submodule "Vendor/ForgeUI"]
+	path = Vendor/ForgeUI
+	url = https://github.com/TimeEngineOrg/ForgeUI.git

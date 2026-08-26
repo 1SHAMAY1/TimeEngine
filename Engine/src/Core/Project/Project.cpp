@@ -1,39 +1,36 @@
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
-#include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/Project/ProjectSerializer.hpp"
 
-namespace TE {
+TERef<Project> Project::New()
+{
+    s_ActiveProject = CreateRef<Project>();
+    return s_ActiveProject;
+}
 
-    std::shared_ptr<Project> Project::New()
+TERef<Project> Project::Load(const TEString &path)
+{
+    TERef<Project> project = CreateRef<Project>();
+
+    ProjectSerializer serializer(project);
+    if (serializer.Deserialize(path))
     {
-        s_ActiveProject = std::make_shared<Project>();
+        project->m_ProjectDirectory = path.GetParentPath();
+        s_ActiveProject = project;
         return s_ActiveProject;
     }
 
-    std::shared_ptr<Project> Project::Load(const std::filesystem::path& path)
+    return nullptr;
+}
+
+bool Project::SaveActive(const TEString &path)
+{
+    ProjectSerializer serializer(s_ActiveProject);
+    if (serializer.Serialize(path))
     {
-        std::shared_ptr<Project> project = std::make_shared<Project>();
-        
-        ProjectSerializer serializer(project);
-        if (serializer.Deserialize(path))
-        {
-            project->m_ProjectDirectory = path.parent_path();
-            s_ActiveProject = project;
-            return s_ActiveProject;
-        }
-
-        return nullptr;
+        s_ActiveProject->m_ProjectDirectory = path.GetParentPath();
+        return true;
     }
-
-    bool Project::SaveActive(const std::filesystem::path& path)
-    {
-        ProjectSerializer serializer(s_ActiveProject);
-        if (serializer.Serialize(path))
-        {
-            s_ActiveProject->m_ProjectDirectory = path.parent_path();
-            return true;
-        }
-        return false;
-    }
-
+    return false;
 }

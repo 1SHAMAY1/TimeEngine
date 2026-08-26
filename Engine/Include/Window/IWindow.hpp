@@ -5,11 +5,11 @@
 
 struct WindowProps
 {
-    std::string Title;
+    TEString Title;
     unsigned int Width;
     unsigned int Height;
 
-    WindowProps(const std::string &title = "Time Engine", unsigned int width = 1280, unsigned int height = 720)
+    WindowProps(const TEString &title = "Time Engine", unsigned int width = 1280, unsigned int height = 720)
         : Title(title), Width(width), Height(height)
     {
     }
@@ -18,7 +18,7 @@ struct WindowProps
 class IWindow
 {
 public:
-    using EventCallbackFn = std::function<void(TE::Event &)>;
+    using EventCallbackFn = std::function<void(Event &)>;
 
     virtual ~IWindow() = default;
 
@@ -38,6 +38,7 @@ public:
     static void Terminate();
     static void *GetCurrentContext();
     static void MakeContextCurrent(void *context);
+    static void SwapBuffers(void *nativeWindow);
 
-    static IWindow *Create(const WindowProps &props = WindowProps());
+    static TEScope<IWindow> Create(const WindowProps &props = WindowProps());
 };

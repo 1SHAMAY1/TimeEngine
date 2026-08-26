@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
@@ -17,37 +18,34 @@
 #include "Renderer/Metal/MetalVertexArray.hpp"
 #endif
 
-namespace TE
-{
-VertexArray *VertexArray::Create()
+TERef<VertexArray> VertexArray::Create()
 {
     switch (RendererContext::GetAPI())
     {
 #ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
-        return new OpenGLVertexArray();
+        return CreateRef<OpenGLVertexArray>();
 #endif
 #if defined(TE_PLATFORM_MOBILE)
     case GraphicsAPI::OpenGLES:
-        return new OpenGLESVertexArray();
+        return CreateRef<OpenGLESVertexArray>();
 #else
     case GraphicsAPI::OpenGLES:
         return nullptr;
 #endif
 #ifdef TE_SUPPORT_VULKAN
     case GraphicsAPI::Vulkan:
-        return new VulkanVertexArray();
+        return CreateRef<VulkanVertexArray>();
 #endif
 #ifdef TE_SUPPORT_DIRECTX11
     case GraphicsAPI::DirectX11:
-        return new DirectX11VertexArray();
+        return CreateRef<DirectX11VertexArray>();
 #endif
 #ifdef TE_SUPPORT_METAL
     case GraphicsAPI::Metal:
-        return new MetalVertexArray();
+        return CreateRef<MetalVertexArray>();
 #endif
     default:
         return nullptr;
     }
 }
-} // namespace TE

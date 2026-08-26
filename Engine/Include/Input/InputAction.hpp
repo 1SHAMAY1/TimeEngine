@@ -1,11 +1,7 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Utils/MathUtils.hpp"
-#include <string>
 #include <variant>
-
-namespace TE
-{
 
 enum class EInputActionValueType
 {
@@ -26,10 +22,9 @@ struct InputActionValue
 class InputAction
 {
 public:
-    std::string Name;
+    TEString Name;
     EInputActionValueType ValueType;
 
-    InputAction(const std::string &name, EInputActionValueType type) : Name(name), ValueType(type) {}
+    InputAction() = default;
+    InputAction(const TEString &name, EInputActionValueType type) : Name(name), ValueType(type) {}
 };
-
-} // namespace TE

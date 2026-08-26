@@ -1,21 +1,21 @@
+#include "Core/PreRequisites.h"
 #include "Layers/ProjectHubLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Project/Project.hpp"
+#include "Core/Scene/Scene.hpp"
+#include "Core/Scene/SceneSerializer.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/PlatformUtils.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
-#include <filesystem>
 #include <fstream>
 
 #include "Renderer/Texture.hpp"
 
 // Note: Ensure PlatformUtils.hpp is implemented for Windows/Project Folder picking
 
-namespace TE
-{
-
-static void DrawUI_Title(const char *text, const TEVector4 &color = TEVector4(1, 1, 1, 1))
+static void DrawUI_Title(const TEString &text, const TEVector4 &color = TEVector4(1, 1, 1, 1))
 {
     TimeGUI::PushFont(TimeGUI::GetDefaultFont()); // Assuming default font for now, ideally use a Large Font
     TimeGUI::TextColored(color, text);
@@ -25,13 +25,13 @@ static void DrawUI_Title(const char *text, const TEVector4 &color = TEVector4(1,
 ProjectHubLayer::ProjectHubLayer() : Layer("ProjectHubLayer")
 {
     // Default path to where the engine is or a "Projects" folder
-    std::filesystem::path defaultInfo = std::filesystem::current_path() / "Projects";
-    if (!std::filesystem::exists(defaultInfo))
+    TEString defaultInfo = TEFileSystem::GetCurrentWorkingDirectory() / "Projects";
+    if (!TEFileSystem::Exists(defaultInfo))
     {
-        std::filesystem::create_directory(defaultInfo);
+        TEFileSystem::CreateDirectory(defaultInfo);
     }
 
-    strncpy(m_NewProjectPath, defaultInfo.string().c_str(), sizeof(m_NewProjectPath));
+    m_NewProjectPath = defaultInfo;
 }
 
 ProjectHubLayer::~ProjectHubLayer() {}
@@ -39,20 +39,12 @@ ProjectHubLayer::~ProjectHubLayer() {}
 #include "Renderer/Texture.hpp"
 
 // Helper to find projects in a directory
-static std::vector<std::filesystem::path> ScanForProjects(const std::filesystem::path &directory)
+static TEArray<TEString> ScanForProjects(const TEString &directory)
 {
-    std::vector<std::filesystem::path> projects;
-    if (!std::filesystem::exists(directory))
-        return projects;
+    if (!TEFileSystem::Exists(directory))
+        return {};
 
-    for (const auto &entry : std::filesystem::recursive_directory_iterator(directory))
-    {
-        if (entry.path().extension() == ".teproj")
-        {
-            projects.push_back(entry.path());
-        }
-    }
-    return projects;
+    return TEFileSystem::GetFiles(directory, ".teproj", true);
 }
 
 void ProjectHubLayer::OnAttach()
@@ -61,16 +53,16 @@ void ProjectHubLayer::OnAttach()
     LoadRecentProjects();
 
     // Load Branding
-    if (std::filesystem::exists("Resources/Branding/Icon.png"))
-        m_LogoIcon = std::make_shared<Texture>("Resources/Branding/Icon.png");
-    else if (std::filesystem::exists("e:/TimeEngine/Resources/Branding/Icon.png"))
-        m_LogoIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Branding/Icon.png");
+    if (TEFileSystem::Exists("Resources/Branding/Icon.png"))
+        m_LogoIcon = CreateRef<Texture>("Resources/Branding/Icon.png");
+    else if (TEFileSystem::Exists("e:/TimeEngine/Resources/Branding/Icon.png"))
+        m_LogoIcon = CreateRef<Texture>("e:/TimeEngine/Resources/Branding/Icon.png");
 
     // Use custom thumbnail if available, or fallback
-    if (std::filesystem::exists("Resources/Branding/Thumbnail.png"))
-        m_ProjectIcon = std::make_shared<Texture>("Resources/Branding/Thumbnail.png");
-    else if (std::filesystem::exists("e:/TimeEngine/Resources/Branding/Thumbnail.png"))
-        m_ProjectIcon = std::make_shared<Texture>("e:/TimeEngine/Resources/Branding/Thumbnail.png");
+    if (TEFileSystem::Exists("Resources/Branding/Thumbnail.png"))
+        m_ProjectIcon = CreateRef<Texture>("Resources/Branding/Thumbnail.png");
+    else if (TEFileSystem::Exists("e:/TimeEngine/Resources/Branding/Thumbnail.png"))
+        m_ProjectIcon = CreateRef<Texture>("e:/TimeEngine/Resources/Branding/Thumbnail.png");
 }
 
 void ProjectHubLayer::OnDetach() {}
@@ -136,7 +128,7 @@ void ProjectHubLayer::OnTimeGUIRender()
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(20, 12));
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 8.0f);
 
-    auto drawNavButton = [&](const char *label, HubView view)
+    auto drawNavButton = [&](const TEString &label, HubView view)
     {
         bool active = m_CurrentView == view;
         if (active)
@@ -189,7 +181,7 @@ void ProjectHubLayer::OnTimeGUIRender()
     if (!m_ProjectToOpen.empty())
     {
         OpenProject(m_ProjectToOpen);
-        m_ProjectToOpen.clear();
+        m_ProjectToOpen = "";
     }
 }
 
@@ -199,18 +191,16 @@ void ProjectHubLayer::UI_DrawProjectsList()
     TimeGUI::SameLine();
     if (TimeGUI::Button("Scan Directory..."))
     {
-        // Fallback to manual input or platform dialog if available (assuming PlatformUtils works as per existing code)
-        // For now, let's just use the current logic, or maybe a simple input text for a path to scan?
-        // Actually, let's try opening a folder picker.
-        std::string folder = PlatformUtils::OpenFolder("");
+        // Open native directory picker to scan directory for projects
+        TEString folder = PlatformUtils::OpenFolder("");
         if (!folder.empty())
         {
             auto projects = ScanForProjects(folder);
             for (const auto &p : projects)
             {
-                if (std::find(m_RecentProjects.begin(), m_RecentProjects.end(), p) == m_RecentProjects.end())
+                if (!m_RecentProjects.Contains(p))
                 {
-                    m_RecentProjects.push_back(p);
+                    m_RecentProjects.Add(p);
                 }
             }
             SaveRecentProjects();
@@ -239,16 +229,13 @@ void ProjectHubLayer::UI_DrawProjectsList()
 
         for (const auto &path : m_RecentProjects)
         {
-            std::string filename = path.filename().string();
-            size_t lastdot = filename.find_last_of(".");
-            if (lastdot != std::string::npos)
-                filename = filename.substr(0, lastdot);
+            TEString filename = path.GetStem();
 
             bool hovered = false;
             TEVector2 pos = TimeGUI::GetCursorScreenPos();
             TEVector2 size(cardWidth, cardHeight);
 
-            if (TimeGUI::BeginProjectCard(path.string(), size, hovered))
+            if (TimeGUI::BeginProjectCard(path, size, hovered))
             {
                 m_ProjectToOpen = path;
             }
@@ -272,7 +259,7 @@ void ProjectHubLayer::UI_DrawProjectsList()
             TimeGUI::SetCursorPosY(TimeGUI::GetCursorPosY() + iconSize.y + 10);
             TimeGUI::Text("%s", filename.c_str());
             TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4(0.6f, 0.62f, 0.65f, 1.0f));
-            TimeGUI::Text("%.30s...", path.parent_path().string().c_str());
+            TimeGUI::Text("%.30s...", path.GetParentPath().c_str());
             TimeGUI::PopStyleColor();
             TimeGUI::EndGroup();
 
@@ -295,22 +282,22 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
     // Name
     TimeGUI::Text("Project Name");
     TimeGUI::SetNextItemWidth(400.0f);
-    TimeGUI::InputText("##project_name", m_NewProjectName, sizeof(m_NewProjectName));
+    TimeGUI::InputText("##project_name", m_NewProjectName);
 
     TimeGUI::Spacing();
 
     // Location
     TimeGUI::Text("Location");
     TimeGUI::SetNextItemWidth(400.0f);
-    TimeGUI::InputText("##project_path", m_NewProjectPath, sizeof(m_NewProjectPath));
+    TimeGUI::InputText("##project_path", m_NewProjectPath);
     TimeGUI::SameLine();
     if (TimeGUI::Button("..."))
     {
         // Use Platform Utils to pick folder
-        std::string folder = PlatformUtils::OpenFolder(m_NewProjectPath);
+        TEString folder = PlatformUtils::OpenFolder(m_NewProjectPath);
         if (!folder.empty())
         {
-            strncpy(m_NewProjectPath, folder.c_str(), sizeof(m_NewProjectPath));
+            m_NewProjectPath = folder;
         }
     }
 
@@ -320,15 +307,15 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
     // Thumbnail
     TimeGUI::Text("Thumbnail (Optional)");
     TimeGUI::SetNextItemWidth(400.0f);
-    static char thumbnailPath[1024] = "";
-    TimeGUI::InputText("##thumbnail_path", thumbnailPath, sizeof(thumbnailPath));
+    static TEString thumbnailPath;
+    TimeGUI::InputText("##thumbnail_path", thumbnailPath);
     TimeGUI::SameLine();
     if (TimeGUI::Button("...##thumb"))
     {
-        std::string file = PlatformUtils::OpenFile("Image Files\0*.png;*.jpg;*.jpeg\0");
+        TEString file = PlatformUtils::OpenFile("Image Files\0*.png;*.jpg;*.jpeg\0");
         if (!file.empty())
         {
-            strncpy(thumbnailPath, file.c_str(), sizeof(thumbnailPath));
+            thumbnailPath = file;
         }
     }
 
@@ -336,7 +323,7 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
     TimeGUI::Spacing();
 
     // Preview Result
-    TimeGUI::TextDisabled("Project will be created at: %s\\%s", m_NewProjectPath, m_NewProjectName);
+    TimeGUI::TextDisabled("Project will be created at: %s\\%s", m_NewProjectPath.c_str(), m_NewProjectName.c_str());
 
     TimeGUI::Spacing();
     TimeGUI::Separator();
@@ -348,41 +335,50 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
     }
 }
 
-void ProjectHubLayer::CreateProject(const std::string &name, const std::filesystem::path &path,
-                                    const std::string &thumbnailPath)
+void ProjectHubLayer::CreateProject(const TEString &name, const TEString &path, const TEString &thumbnailPath)
 {
     // 1. Create Directories
-    std::filesystem::path projectPath = path / name;
-    if (std::filesystem::exists(projectPath))
+    TEString projectPath = path / name;
+    if (TEFileSystem::Exists(projectPath))
     {
         TE_CORE_WARN("Project directory already exists!");
         return;
     }
 
-    std::filesystem::create_directories(projectPath);
-    std::filesystem::create_directories(projectPath / "Assets");
-    std::filesystem::create_directories(projectPath / "Scripts");
+    TEFileSystem::CreateDirectories(projectPath);
+    TEFileSystem::CreateDirectories(projectPath / "Assets");
+    TEFileSystem::CreateDirectories(projectPath / "Assets" / "Scenes");
+    TEFileSystem::CreateDirectories(projectPath / "Scripts");
+
+    // Create default MainScene.tescene
+    TEString mainScenePath = projectPath / "Assets" / "Scenes" / "MainScene.tescene";
+    auto mainScene = CreateRef<Scene>();
+    mainScene->SetName("MainScene");
+    mainScene->SetAssetPath(mainScenePath);
+    mainScene->CreateEntity("Main Camera");
+    SceneSerializer serializer(mainScene);
+    serializer.Serialize(mainScenePath);
 
     // 2. Create Project Object
-    std::shared_ptr<Project> newProject = Project::New();
+    TERef<Project> newProject = Project::New();
     ProjectConfig &config = newProject->GetConfig();
     config.Name = name;
     config.AssetDirectory = "Assets";
-    config.StartScene = "Assets/Default.tescene";
+    config.StartScene = "Assets/Scenes/MainScene.tescene";
     if (!thumbnailPath.empty())
         config.ThumbnailPath = thumbnailPath;
 
     // 3. Save .teproj
-    std::filesystem::path projFile = projectPath / (name + ".teproj");
+    TEString projFile = projectPath / (name + ".teproj");
     Project::SaveActive(projFile);
 
     // 4. Open It
     m_ProjectToOpen = projFile;
 }
 
-void ProjectHubLayer::OpenProject(const std::filesystem::path &path)
+void ProjectHubLayer::OpenProject(const TEString &path)
 {
-    if (std::filesystem::exists(path))
+    if (TEFileSystem::Exists(path))
     {
         // Update Recent
         // Add to Recent Projects
@@ -406,41 +402,41 @@ void ProjectHubLayer::OpenProject(const std::filesystem::path &path)
         // Load the project into the global state
         if (Project::Load(path))
         {
-            TE_CORE_INFO("Project loaded successfully: ", path.string());
+            TE_CORE_INFO("Project loaded successfully: {0}", path.c_str());
 
             // Switch layers safely using deferred queue
             // Add EditorLayer
-            Application::Get().MarkLayerForAddition(new EditorLayer());
+            Application::Get().MarkLayerForAddition(CreateRef<EditorLayer>());
 
             // Remove ProjectHubLayer (this)
-            Application::Get().MarkLayerForRemoval(this);
+            Application::Get().MarkLayerForRemoval(shared_from_this());
         }
         else
         {
-            TE_CORE_ERROR("Failed to load project: ", path.string());
+            TE_CORE_ERROR("Failed to load project: {0}", path.c_str());
         }
     }
     else
     {
-        TE_CORE_ERROR("Project file not found: ", path.string());
+        TE_CORE_ERROR("Project file not found: {0}", path.c_str());
     }
 }
 
 void ProjectHubLayer::LoadRecentProjects()
 {
-    std::filesystem::path recentFile = "recent_projects.txt";
-    if (!std::filesystem::exists(recentFile))
+    TEString recentFile = "recent_projects.txt";
+    if (!TEFileSystem::Exists(recentFile))
         return;
 
-    std::ifstream in(recentFile);
-    std::string line;
-    while (std::getline(in, line))
-    {
-        if (!line.empty() && std::filesystem::exists(line))
-        {
-            m_RecentProjects.push_back(line);
-        }
-    }
+    TEFileSystem::ForEachLine(recentFile,
+                              [this](const TEString &line)
+                              {
+                                  if (!line.IsEmpty() && TEFileSystem::Exists(line))
+                                  {
+                                      m_RecentProjects.push_back(line);
+                                  }
+                                  return true;
+                              });
 }
 
 void ProjectHubLayer::SaveRecentProjects()
@@ -448,7 +444,7 @@ void ProjectHubLayer::SaveRecentProjects()
     std::ofstream out("recent_projects.txt");
     for (const auto &path : m_RecentProjects)
     {
-        out << path.string() << std::endl;
+        out << path.c_str() << std::endl;
     }
 }
 
@@ -504,5 +500,3 @@ void ProjectHubLayer::SetDarkThemeColors()
     colors[TimeGUICol_SliderGrab] = TEVector4{0.35f, 0.65f, 1.0f, 0.8f};
     colors[TimeGUICol_SliderGrabActive] = TEVector4{0.4f, 0.7f, 1.0f, 1.0f};
 }
-
-} // namespace TE

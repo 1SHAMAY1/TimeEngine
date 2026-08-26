@@ -1,21 +1,33 @@
 #pragma once
 #include "Log.h"
 
-extern TE::Application *TE::CreateApplication(int argc, char **argv);
+extern Scope<Application> CreateApplication(int argc, char **argv);
+
+#ifdef TE_PLATFORM_WINDOWS
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <shobjidl.h>
+#include <windows.h>
+#endif
 
 inline int RunEngine(int argc, char **argv)
 {
     try
     {
-        TE::Log::Init();
+        Log::Init();
         TE_CORE_INFO("Log Initialized!");
         TE_CLIENT_INFO("Welcome to Time Engine.");
 
-        auto project = TE::CreateApplication(argc, argv);
+#ifdef TE_PLATFORM_WINDOWS
+        SetCurrentProcessExplicitAppUserModelID(L"TimeEngine.TimeEditor");
+#endif
+
+        auto project = CreateApplication(argc, argv);
         if (project)
         {
             project->Run();
-            delete project;
+            project.reset();
         }
     }
     catch (const std::exception &e)

@@ -1,12 +1,10 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLRendererAPI.hpp"
 #include "Renderer/RendererContext.hpp"
 #include <glad/glad.h>
 
 // NOTE: RendererAPI::GetAPI() and RendererAPI::Create() are defined in
 // DirectX11RendererAPI.cpp so that all backends are visible in one place.
-
-namespace TE
-{
 
 void OpenGLRendererAPI::Init()
 {
@@ -51,19 +49,19 @@ void OpenGLRendererAPI::SetBlendMode(int blendMode)
 
 bool OpenGLRendererAPI::LoadLoader(void *(*loadProc)(const char *)) { return gladLoadGLLoader((GLADloadproc)loadProc); }
 
-std::string OpenGLRendererAPI::GetVersionString()
+TEString OpenGLRendererAPI::GetVersionString()
 {
     const char *version = (const char *)glGetString(GL_VERSION);
     return version ? version : "Unknown";
 }
 
-std::string OpenGLRendererAPI::GetGPUVendor()
+TEString OpenGLRendererAPI::GetGPUVendor()
 {
     const char *vendor = (const char *)glGetString(GL_VENDOR);
     return vendor ? vendor : "Unknown";
 }
 
-std::string OpenGLRendererAPI::GetGPURenderer()
+TEString OpenGLRendererAPI::GetGPURenderer()
 {
     const char *renderer = (const char *)glGetString(GL_RENDERER);
     return renderer ? renderer : "Unknown";
@@ -107,5 +105,3 @@ void OpenGLRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dst
     glBlendFuncSeparate(GetGLBlendFactor(srcRGB), GetGLBlendFactor(dstRGB), GetGLBlendFactor(srcAlpha),
                         GetGLBlendFactor(dstAlpha));
 }
-
-} // namespace TE

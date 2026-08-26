@@ -1,0 +1,70 @@
+// ==============================================================================
+// TimeEngine Engine Content - AggroPursuitBehavior.tscript
+// Category: AI & NPC Behaviors
+// Extends: StateTreeComponent / NavigationAgent2DComponent
+// Description: Proximity pursuit AI with aggro radius, attack range, and leash distance.
+// ==============================================================================
+
+class AggroPursuitBehavior : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, aggro_radius, 250.0)
+    T_REGISTER_PROPERTY(float, attack_range, 45.0)
+    T_REGISTER_PROPERTY(float, chase_speed, 180.0)
+    T_REGISTER_PROPERTY(float, leash_distance, 450.0)
+    T_REGISTER_PROPERTY(float, lost_target_timeout, 2.5)
+
+    public:
+        string current_state = "Idle"
+        bool has_target = false
+        float distance_to_target = 9999.0
+
+    private:
+        float m_lost_timer = 0.0
+
+    on_ready() {
+        current_state = "Idle"
+        has_target = false
+        distance_to_target = 9999.0
+        m_lost_timer = 0.0
+        TE_CORE_INFO("AggroPursuitBehavior initialized. Aggro Radius: " + aggro_radius)
+    }
+
+    on_update(float dt) {
+        if (current_state == "Idle") {
+            if (has_target and distance_to_target <= aggro_radius) {
+                current_state = "Pursuit"
+                TE_CORE_INFO("Target spotted! Entering Pursuit.")
+            }
+        } else if (current_state == "Pursuit") {
+            if (distance_to_target <= attack_range) {
+                current_state = "Attacking"
+                TE_CORE_INFO("Target in attack range! Entering Attacking.")
+            } else if (distance_to_target > leash_distance) {
+                current_state = "Returning"
+                has_target = false
+                TE_CORE_WARN("Target exceeded leash distance! Returning to origin.")
+            } else if (distance_to_target > aggro_radius) {
+                m_lost_timer += dt
+                if (m_lost_timer >= lost_target_timeout) {
+                    current_state = "Returning"
+                    has_target = false
+                    m_lost_timer = 0.0
+                    TE_CORE_INFO("Lost target sight timeout. Returning.")
+                }
+            } else {
+                m_lost_timer = 0.0
+            }
+        } else if (current_state == "Attacking") {
+            if (distance_to_target > attack_range) {
+                current_state = "Pursuit"
+            }
+        } else if (current_state == "Returning") {
+            current_state = "Idle"
+        }
+    }
+
+    on_collision(other) {
+        has_target = true
+        distance_to_target = 30.0
+    }

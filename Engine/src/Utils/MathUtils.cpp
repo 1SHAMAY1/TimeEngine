@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "Utils/MathUtils.hpp"
 #include "imgui.h"
@@ -6,9 +7,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/euler_angles.hpp>
-
-namespace TE
-{
 
 // ===== TEVector2 ImGui Conversion =====
 TEVector2::TEVector2(const ImVec2 &v) : x(v.x), y(v.y) {}
@@ -112,5 +110,3 @@ TEMatrix4 TEMatrix4::Ortho(float left, float right, float bottom, float top, flo
     memcpy(&ret.m[0][0], glm::value_ptr(result), 16 * sizeof(float));
     return ret;
 }
-
-} // namespace TE

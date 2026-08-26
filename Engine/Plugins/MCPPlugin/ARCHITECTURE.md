@@ -11,30 +11,39 @@ The `MCPPlugin` module provides a Model Context Protocol (MCP) HTTP/SSE server (
 ## Component Overview
 
 - **`TE::IPlugin` Implementation**: `MCPPlugin` (`src/MCPPlugin.hpp`, `src/MCPPlugin.cpp`).
+- **Dynamic Tool Registry**: `MCPToolRegistry` (`src/MCPToolRegistry.hpp`) with `TE_REGISTER_MCP_TOOL` macro.
 - **Protocol**: HTTP/1.1 + Server-Sent Events (SSE) with JSON-RPC 2.0.
 - **Port**: Listens on `http://127.0.0.1:3000`.
 
 ## Architecture & Data Flow
 
+```mermaid
+flowchart TD
+    AI["External AI Agent"] -->|1. GET /sse (Opens SSE Stream)| Listen["ServerThreadMain (Listen Loop)"]
+    Listen -->|Registers SSE Client| SSE["event: endpoint"]
+    AI -->|2. POST /message (JSON-RPC 2.0 Request)| Dispatcher["DispatchToolCall"]
+    Dispatcher --> Registry["MCPToolRegistry (Dynamic Map)"]
+    Registry --> BuiltIn["Engine Core Tools"]
+    Registry --> Plugins["Registered Plugin Tools (e.g. SpriteEditor)"]
+    BuiltIn --> Result["200 OK + JSON-RPC Result"]
+    Plugins --> Result
+    Result --> AI
 ```
-[ External AI Agent ]
-         │
-         ├─── 1. GET /sse ──────────────► [ ServerThreadMain (Listen Loop) ]
-         │    (Opens SSE Stream)                         │
-         │    ◄── event: endpoint ──────────────────────┤ (Registers SSE Client)
-         │                                               │
-         ├─── 2. POST /message ──────────────────────────┤ (Dispatches JSON-RPC)
-         │    (JSON-RPC 2.0 Request)                     │
-         │                                               ▼
-         │                                     [ DispatchToolCall ]
-         │                                               │
-         │                                               ├─► Engine Info / Hierarchy
-         │                                               ├─► Scene & Entity Mutation
-         │                                               ├─► Asset / File System Operations
-         │                                               └─► Editor Mode & Viewport Capture
-         │                                               │
-         │    ◄── 200 OK + JSON-RPC Result ──────────────┤
-         └─── ◄── Broadcast event: message (SSE) ────────┘
+
+## Macro-Based Tool Registration (`TE_REGISTER_MCP_TOOL`)
+
+Any plugin or engine module can declare an MCP tool without touching `MCPPlugin`:
+
+```cpp
+TE_REGISTER_MCP_TOOL(
+    my_custom_tool,
+    "Description of what the tool does",
+    R"({"type":"object","properties":{"param1":{"type":"string"}}})",
+    [](const std::string &paramsJson) -> std::string {
+        // Execute tool logic and return JSON result string
+        return R"({"status":"success"})";
+    }
+);
 ```
 
 ## Endpoints
@@ -51,16 +60,21 @@ The `MCPPlugin` module provides a Model Context Protocol (MCP) HTTP/SSE server (
 4. **`OPTIONS /message`**:
    - CORS preflight response for browser/web-based AI tooling.
 
-## Tool Invocation & Helper Scripts
+## Tool Invocation
 
-Tools exposed by `MCPPlugin` can be called either directly via HTTP POST requests to `http://127.0.0.1:3000/message` carrying JSON-RPC 2.0 payloads or through the provided CLI wrapper script:
+Tools exposed by `MCPPlugin` are called directly via standard HTTP POST requests to `http://127.0.0.1:3000/message` carrying JSON-RPC 2.0 payloads:
 
-- **Shell Wrapper**: [`Scripts/MCP_Tools.sh`](../../../Scripts/MCP_Tools.sh)
-  - Usage: `./Scripts/MCP_Tools.sh <command_name> [args...]`
-  - Maps simplified CLI commands to JSON-RPC 2.0 tool requests via `curl`.
-  - Commands include `info`, `get_scene`, `create_entity <name>`, `destroy_entity <id>`, `create_sprite <name> <path>`, `mkdir <path>`, `rm <path>`, `get_modes`, `set_mode <name>`, `screenshot`, `delete_screenshot`, `send_key <code>`, `send_click <code>`, `select <id>`, `set_properties <id> <json>`, and `add_component <id> <type>`.
-
-- **JSON Helper**: Uses [`Scripts/parse_json.py`](../../../Scripts/parse_json.py) for constructing structured JSON property payloads for complex entity modifications.
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+        "name": "set_editor_mode",
+        "arguments": { "mode": "Sprite Mode" }
+    },
+    "id": 1
+}
+```
 
 
 ## Provided MCP Tools & Function Handlers

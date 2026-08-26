@@ -1,6 +1,6 @@
 # Camera Subsystem Architecture
 
-The Camera subsystem in TimeEngine provides 2D/3D projection matrices ([`Camera`](file:///e:/TimeEngine/Engine/Include/Camera/Camera.hpp)), orthographic view management ([`OrthographicCamera`](file:///e:/TimeEngine/Engine/Include/Camera/OrthographicCamera.hpp)), 3D perspective projection ([`PerspectiveCamera`](file:///e:/TimeEngine/Engine/Include/Camera/PerspectiveCamera.hpp)), rotation controllers ([`CameraController`](file:///e:/TimeEngine/Engine/Include/Camera/CameraController.hpp)), and gameplay camera tracking ([`PlayerCameraComponent`](file:///e:/TimeEngine/Engine/Include/Core/Scene/PlayerCameraComponent.hpp)).
+The Camera subsystem in TimeEngine provides 2D/3D projection matrices ([`Camera`](../../Include/Camera/Camera.hpp)), orthographic view management ([`OrthographicCamera`](../../Include/Camera/OrthographicCamera.hpp)), 3D perspective projection ([`PerspectiveCamera`](../../Include/Camera/PerspectiveCamera.hpp)), rotation controllers ([`CameraController`](../../Include/Camera/CameraController.hpp)), and gameplay camera tracking ([`PlayerCameraComponent`](../../Include/Core/Scene/PlayerCameraComponent.hpp)).
 
 > [!NOTE]
 > In short, think of the **Camera Subsystem** as the director's lens: `Camera` calculates projection and view matrices ($\mathbf{M}_{view}$ and $\mathbf{M}_{proj}$) to transform 2D/3D world coordinates into screen coordinates, `OrthographicCamera` handles 2D pixel-perfect tile and sprite rendering, while `PlayerCameraComponent` smoothly tracks player entities in scenes.
@@ -9,27 +9,24 @@ The Camera subsystem in TimeEngine provides 2D/3D projection matrices ([`Camera`
 
 ## Subsystem Pipeline & Data Flow
 
-```
-[ Camera Position & Rotation ]
-         │
-         ▼ (Recalculate View Matrix)
-[ View Matrix (M_view) ] ──┐
-                           ├─► Multiply: M_viewProj = M_proj * M_view
-[ Projection Matrix (M_proj) ] ┘
-         │
-         ▼ (Uploaded to Shaders)
-[ Renderer2D / Renderer3D ] ──► [ Screen Space Viewport ]
+```mermaid
+flowchart TD
+    PosRot["Camera Position & Rotation"] -->|Recalculate View Matrix| ViewMatrix["View Matrix (M_view)"]
+    ViewMatrix --> Multiply["Multiply: M_viewProj = M_proj * M_view"]
+    ProjMatrix["Projection Matrix (M_proj)"] --> Multiply
+    Multiply -->|Uploaded to Shaders| Renderer["Renderer2D / Renderer3D"]
+    Renderer --> Screen["Screen Space Viewport"]
 ```
 
 ---
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TE::Camera`](file:///e:/TimeEngine/Engine/Include/Camera/Camera.hpp)**: Abstract base class storing `m_ProjectionMatrix`, `m_ViewMatrix`, and combined `m_ViewProjectionMatrix`.
-2. **[`TE::OrthographicCamera`](file:///e:/TimeEngine/Engine/Include/Camera/OrthographicCamera.hpp)**: 2D orthographic camera with position ($X, Y, Z$), rotation angle, and zoom scale factors.
-3. **[`TE::PerspectiveCamera`](file:///e:/TimeEngine/Engine/Include/Camera/PerspectiveCamera.hpp)**: 3D perspective camera supporting Field of View ($\text{FOV}$), aspect ratio, and Euler angles (pitch, yaw, roll).
-4. **[`TE::CameraController`](file:///e:/TimeEngine/Engine/Include/Camera/CameraController.hpp)**: Rotation and FOV input controller.
-5. **[`TE::PlayerCameraComponent`](file:///e:/TimeEngine/Engine/Include/Core/Scene/PlayerCameraComponent.hpp)**: ECS component providing smooth player tracking (`SmoothSpeed`), camera shake effects, and follow offsets.
+1. **[`TE::Camera`](../../Include/Camera/Camera.hpp)**: Abstract base class storing `m_ProjectionMatrix`, `m_ViewMatrix`, and combined `m_ViewProjectionMatrix`.
+2. **[`TE::OrthographicCamera`](../../Include/Camera/OrthographicCamera.hpp)**: 2D orthographic camera with position ($X, Y, Z$), rotation angle, and zoom scale factors.
+3. **[`TE::PerspectiveCamera`](../../Include/Camera/PerspectiveCamera.hpp)**: 3D perspective camera supporting Field of View ($\text{FOV}$), aspect ratio, and Euler angles (pitch, yaw, roll).
+4. **[`TE::CameraController`](../../Include/Camera/CameraController.hpp)**: Rotation and FOV input controller.
+5. **[`TE::PlayerCameraComponent`](../../Include/Core/Scene/PlayerCameraComponent.hpp)**: ECS component providing smooth player tracking (`SmoothSpeed`), camera shake effects, and follow offsets.
 
 ---
 
@@ -84,6 +81,6 @@ playerCam->SmoothSpeed = 5.0f;
 
 ## Related Architectural Documentation
 
-- [Renderer2D Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Renderer/ARCHITECTURE.md) — View-projection matrix binding in batch rendering.
-- [Scene & ECS Architecture](file:///e:/TimeEngine/Engine/src/Core/Scene/ARCHITECTURE.md) — Attaching `PlayerCameraComponent` to scene entities.
-- [Layers Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/Layers/ARCHITECTURE.md) — `CameraLayer` viewport navigation.
+- [Renderer2D Subsystem Architecture](../Renderer/ARCHITECTURE.md) — View-projection matrix binding in batch rendering.
+- [Scene & ECS Architecture](../Core/Scene/ARCHITECTURE.md) — Attaching `PlayerCameraComponent` to scene entities.
+- [Layers Subsystem Architecture](../Core/Layers/ARCHITECTURE.md) — Application layer stack and editor viewport integration.

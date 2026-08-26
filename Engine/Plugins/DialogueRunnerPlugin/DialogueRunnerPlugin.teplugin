@@ -1,0 +1,5 @@
+Name: DialogueRunnerPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: Story trees, NPC branching dialogues, quest flags, localized string substitution, and visual graph asset editor.
+Enabled: true

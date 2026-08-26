@@ -1,21 +1,15 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/Material.hpp"
 #include "Renderer/VertexArray.hpp"
 #include "Utils/MathUtils.hpp"
-#include <memory>
-
-namespace TE
-{
 
 class Renderer
 {
 public:
     virtual ~Renderer() = default;
-    virtual void BeginFrame(const TE::TEMatrix4 &viewProjection) = 0;
-    virtual void Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
-                        const TE::TEMatrix4 &transform, uint32_t indexCount) = 0;
+    virtual void BeginFrame(const TEMatrix4 &viewProjection) = 0;
+    virtual void Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const TEMatrix4 &transform,
+                        uint32_t indexCount) = 0;
     virtual void EndFrame() = 0;
     virtual void Flush() = 0;
 };
-
-} // namespace TE

@@ -21,5 +21,15 @@ Contains icons used specifically for the Editor UI and Content Browser.
 ### 3. Game Assets (`/Assets`)
 General purpose assets for game development (textures, models, etc.).
 
+### 4. Engine Content Scripts (`/Scripts`)
+Comprehensive out-of-the-box **TScript** (`.tscript`) standard library providing production-ready gameplay extensions, mechanics, and utilities:
+- **Player Extensions (`/Scripts/Player`)**: Dash, stamina, double jump, and wall mechanics extensions.
+- **Camera Extensions (`/Scripts/Camera`)**: Lookahead, boundary clamping, trauma shake, and zoom controllers.
+- **Gameplay & Combat (`/Scripts/Gameplay`)**: Health/shield damage handler, projectile impact FX, trigger event dispatcher, proximity interactable, and wave spawner.
+- **AI Behaviors (`/Scripts/AI`)**: Waypoint patrol and aggro pursuit state machines.
+- **Environment Props (`/Scripts/Environment`)**: Harmonic floating bobber, oscillating rotator, moving platforms, and destructible props.
+- **Utilities (`/Scripts/Utilities`)**: Timed action trigger and day/night cycle manager.
+- For complete documentation and property listings, refer to **[`Resources/Scripts/README.md`](Scripts/README.md)**.
+
 ## Usage in Code
-The engine expects these resources to be located in the `Resources/` directory relative to the execution path. Path lookups in the engine prioritize this folder for all UI and branding elements.
+The engine expects these resources to be located in the `Resources/` directory relative to the execution path. Path lookups in the engine prioritize this folder for all UI, branding, and standard engine content elements.

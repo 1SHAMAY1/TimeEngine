@@ -6,9 +6,6 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-namespace TE
-{
-
 class SpriteComponent : public TComponent
 {
 public:
@@ -17,19 +14,19 @@ public:
     T_PROPERTY(TEColor, Color, "Color", TEColor::White())
 
     SpriteComponent() = default;
-    SpriteComponent(const std::shared_ptr<Texture> &texture, const TEColor &color = TEColor::White())
+    SpriteComponent(const TERef<Texture> &texture, const TEColor &color = TEColor::White())
         : Texture(texture), Color(color)
     {
     }
 
-    std::shared_ptr<Texture> Texture;
+    TERef<Texture> Texture;
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 };
 
 #ifdef TE_EDITOR
 T_REGISTER_COMPONENT(SpriteComponent, "Sprite Component")
 T_REGISTER_PROPERTY(SpriteComponent, TEColor, Color, "Color")
+T_REGISTER_PRESET(SpriteComponent, "Sprite", "2D Rendering",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<SpriteComponent>(id); })
 #endif
-
-} // namespace TE

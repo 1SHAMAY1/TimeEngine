@@ -1,0 +1,82 @@
+// ==============================================================================
+// TimeEngine Engine Content - HealthDamageHandler.tscript
+// Category: Gameplay & Combat
+// Extends: CollisionComponent / Damage System
+// Description: Manages health points, shield absorption, damage reduction, and i-frames.
+// ==============================================================================
+
+class HealthDamageHandler : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, max_health, 100.0)
+    T_REGISTER_PROPERTY(float, max_shield, 50.0)
+    T_REGISTER_PROPERTY(float, armor_reduction, 0.15)
+    T_REGISTER_PROPERTY(float, invulnerability_duration, 0.6)
+    T_REGISTER_PROPERTY(bool, destroy_on_zero_health, true)
+
+    public:
+        float current_health = 100.0
+        float current_shield = 50.0
+        bool is_alive = true
+        bool is_invulnerable = false
+
+    private:
+        float m_invuln_timer = 0.0
+
+    on_ready() {
+        current_health = max_health
+        current_shield = max_shield
+        is_alive = true
+        is_invulnerable = false
+        m_invuln_timer = 0.0
+        TE_CORE_INFO("HealthDamageHandler initialized with Max Health: " + max_health)
+    }
+
+    on_update(float dt) {
+        if (is_invulnerable) {
+            m_invuln_timer -= dt
+            if (m_invuln_timer <= 0.0) {
+                is_invulnerable = false
+                m_invuln_timer = 0.0
+            }
+        }
+    }
+
+    on_collision(other) {
+        if (!is_alive or is_invulnerable) {
+            return
+        }
+
+        // Apply incoming damage logic
+        float incoming_damage = 15.0
+        float reduced_damage = incoming_damage * (1.0 - armor_reduction)
+
+        // Absorb with shield first
+        if (current_shield > 0.0) {
+            if (current_shield >= reduced_damage) {
+                current_shield -= reduced_damage
+                reduced_damage = 0.0
+            } else {
+                reduced_damage -= current_shield
+                current_shield = 0.0
+            }
+        }
+
+        // Apply remaining damage to health
+        if (reduced_damage > 0.0) {
+            current_health = max(0.0, current_health - reduced_damage)
+            is_invulnerable = true
+            m_invuln_timer = invulnerability_duration
+            TE_CORE_WARN("Damage taken! Remaining Health: " + current_health)
+        }
+
+        // Check for death
+        if (current_health <= 0.0 and is_alive) {
+            is_alive = false
+            TE_CORE_ERROR("Entity destroyed! Health dropped to 0.")
+        }
+    }
+
+    on_destroy() {
+        TE_CORE_INFO("HealthDamageHandler on_destroy triggered.")
+    }

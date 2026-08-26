@@ -1,0 +1,58 @@
+// ==============================================================================
+// TimeEngine Engine Content - PlatformerDoubleJumpExtension.tscript
+// Category: Player Extensions
+// Extends: PlayerMovementComponent2D (SideScroller Mode)
+// Description: Multi-jump tracking, coyote-time buffer, and air jump impulse scaling.
+// ==============================================================================
+
+class PlatformerDoubleJumpExtension : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(int, max_air_jumps, 1)
+    T_REGISTER_PROPERTY(float, air_jump_multiplier, 0.9)
+    T_REGISTER_PROPERTY(float, coyote_time, 0.15)
+    T_REGISTER_PROPERTY(bool, reset_on_ground, true)
+
+    public:
+        int remaining_jumps = 1
+        bool is_grounded = true
+        bool can_coyote_jump = false
+
+    private:
+        float m_coyote_timer = 0.0
+
+    on_ready() {
+        remaining_jumps = max_air_jumps
+        is_grounded = true
+        can_coyote_jump = false
+        m_coyote_timer = 0.0
+        TE_CORE_INFO("PlatformerDoubleJumpExtension ready. Max Air Jumps: " + max_air_jumps)
+    }
+
+    on_update(float dt) {
+        // Manage coyote time window when leaving ground without jumping
+        if (!is_grounded and can_coyote_jump) {
+            m_coyote_timer -= dt
+            if (m_coyote_timer <= 0.0) {
+                can_coyote_jump = false
+            }
+        }
+    }
+
+    on_collision(other) {
+        // Reset air jumps upon landing on ground
+        if (reset_on_ground) {
+            is_grounded = true
+            remaining_jumps = max_air_jumps
+            can_coyote_jump = true
+            m_coyote_timer = coyote_time
+        }
+    }
+
+    on_input(bindings) {
+        // Air Jump Execution
+        if (!is_grounded and remaining_jumps > 0) {
+            remaining_jumps -= 1
+            TE_CORE_INFO("Air Jump executed! Remaining: " + remaining_jumps)
+        }
+    }

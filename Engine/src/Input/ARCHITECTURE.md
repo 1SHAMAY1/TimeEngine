@@ -9,17 +9,12 @@ The Input subsystem in TimeEngine handles raw device polling (keyboard, mouse), 
 
 ## Architecture & Data Flow
 
-```
-[ OS Hardware Input ]
-         │
-         ▼ (GLFW Callbacks in WindowsWindow)
-[ Input Static Class ]  ◄── (Raw Polling: Input::IsKeyPressed)
-         │
-         ▼ (Evaluates Context Priorities)
-[ InputSystem Manager ]
-         │
-         ▼ (Triggers Action Bindings)
-[ InputComponent ] ─────► [ Game Entity Callbacks ]
+```mermaid
+flowchart TD
+    HWInput["OS Hardware Input"] -->|GLFW Callbacks in WindowsWindow| InputClass["Input Static Class<br/>(Raw Polling)"]
+    InputClass -->|Evaluates Context Priorities| InputSystem["InputSystem Manager"]
+    InputSystem -->|Triggers Action Bindings| InputComp["InputComponent"]
+    InputComp --> Callbacks["Game Entity Callbacks"]
 ```
 
 ---

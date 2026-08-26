@@ -1,8 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/IndexBuffer.hpp"
 
-namespace TE
-{
 class OpenGLESIndexBuffer : public IndexBuffer
 {
 public:
@@ -19,4 +17,3 @@ private:
     uint32_t m_RendererID;
     uint32_t m_Count;
 };
-} // namespace TE

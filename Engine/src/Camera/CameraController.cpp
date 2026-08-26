@@ -1,7 +1,5 @@
-﻿#include "Camera/CameraController.hpp"
-
-namespace TE
-{
+#include "Core/PreRequisites.h"
+#include "Camera/CameraController.hpp"
 
 CameraController::CameraController() : m_FOV(45.0f), m_Position(0.0f, 0.0f, 5.0f), m_Rotation(0.0f, 0.0f, 0.0f) {}
 
@@ -25,5 +23,3 @@ TEMatrix4 CameraController::GetViewMatrix() const
     TEMatrix4 translation = TEMatrix4::Translate(TEMatrix4(1.0f), -m_Position);
     return rotation * translation;
 }
-
-} // namespace TE

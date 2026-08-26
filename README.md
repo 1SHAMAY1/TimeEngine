@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Architecture-IGDE-purple.svg" alt="Integrated Game Development Environment">
   <img src="https://img.shields.io/badge/Language-C%2B%2B20-blue.svg" alt="C++20">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Windows | Linux | macOS">
-  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
+  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20Metal%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT">
 </p>
 
@@ -35,21 +35,12 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 🖼️ Editor Showcase
 
 <p align="center">
-  <img width="100%" alt="Time Engine Editor Workspace" src="https://github.com/user-attachments/assets/d48599c2-300e-4cfb-9022-af682d60252f" />
-</p>
-
-<p align="center">
-  <img width="49%" alt="Editor Viewport & UI" src="https://github.com/user-attachments/assets/8e2ae8d9-fd04-4680-a0cb-19b1c76fbfdd" />
-  <img width="49%" alt="Performance Profiler Dashboard" src="https://github.com/user-attachments/assets/e794acb5-7ada-4c5e-a673-c88d68d6be7c" />
-</p>
-
-<p align="center">
-  <img width="49%" alt="Sprite IDE View 1" src="https://github.com/user-attachments/assets/ee8db0e9-4f17-4b33-b2a4-bfd60151338a" />
-  <img width="49%" alt="Sprite IDE View 2" src="https://github.com/user-attachments/assets/0bbb0594-019a-4173-8ade-cfdd333836f4" />
+  <img width="100%" alt="Time Engine" src="https://github.com/user-attachments/assets/3726c10f-d31a-4d97-a73b-795d96537a81" />
+  <img width="100%" alt="Time Engine Editor Workspace" src="https://github.com/user-attachments/assets/4b1bc364-4672-4a9e-9f8f-5c657f8c2806" />
 </p>
 <p align="center">
-  <img width="49%" alt="Sprite IDE View 3" src="https://github.com/user-attachments/assets/73eb1567-28cc-407b-bec5-3bb0841fad17" />
-  <img width="49%" alt="Sprite IDE View 4" src="https://github.com/user-attachments/assets/9d5f8098-c56d-4514-9f8f-f80dec346490" />
+  <img width="49%" alt="Editor Viewport & UI" src="https://github.com/user-attachments/assets/83025fbb-cf6e-426f-9283-a2ef6a475574" />
+  <img width="49%" alt="Performance Profiler Dashboard" src="https://github.com/user-attachments/assets/27e7108a-7ee5-4650-9cb2-da97b523afef" />
 </p>
 
 ---
@@ -87,10 +78,10 @@ Traditional game development forces creators to constantly context-switch betwee
 
 ## 📚 Documentation & Developer Guides
 
-* 🏛️ **[ARCHITECTURE.md](ARCHITECTURE.md)** — Core subsystems, ECS components, rendering backends, vendor wrappers, and MCP automation specs.
-* 📄 **[ROADMAP.md](ROADMAP.md)** — Feature milestones and time-manipulation architecture plans.
+* 🏛️ **[Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md)** — Core subsystems, ECS components, rendering backends, vendor wrappers, and MCP automation specs.
+* 📄 **[Docs/ROADMAP.md](Docs/ROADMAP.md)** — Feature milestones and time-manipulation architecture plans.
 * 🤖 **[llms.txt](llms.txt)** / **[llms.md](llms.md)** — LLM architecture summary, coding rules, vendor wrapping guidelines, and MCP server tools.
-* 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** — Guidelines for code style, submodules, and PR submissions.
+* 🤝 **[.github/CONTRIBUTING.md](.github/CONTRIBUTING.md)** — Guidelines for code style, submodules, and PR submissions.
 
 ---
 

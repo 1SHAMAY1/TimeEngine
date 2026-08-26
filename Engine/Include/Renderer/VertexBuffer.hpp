@@ -1,15 +1,13 @@
 #pragma once
 #include "Core/PreRequisites.h"
 
-namespace TE
+class TE_API VertexBuffer
 {
-	class VertexBuffer {
-	public:
-		static VertexBuffer* Create(float* vertices, uint32_t size);
+public:
+    static TERef<VertexBuffer> Create(float *vertices, uint32_t size);
 
-		virtual ~VertexBuffer() = default;
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
-		virtual void SetData(float* vertices, uint32_t size) const = 0;
-	};
-}
+    virtual ~VertexBuffer() = default;
+    virtual void Bind() const = 0;
+    virtual void Unbind() const = 0;
+    virtual void SetData(float *vertices, uint32_t size) const = 0;
+};

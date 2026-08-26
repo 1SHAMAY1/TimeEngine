@@ -1,0 +1,5 @@
+Name: Lighting2DPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: 2D Dynamic Lighting, Soft Shadows, Normal Mapping & 2D Ray Tracing / Radiosity Plugin
+Enabled: true

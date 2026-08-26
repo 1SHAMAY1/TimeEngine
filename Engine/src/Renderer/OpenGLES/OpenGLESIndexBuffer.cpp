@@ -1,8 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESIndexBuffer.hpp"
 #include <glad/glad.h>
-
-namespace TE
-{
 
 OpenGLESIndexBuffer::OpenGLESIndexBuffer(uint32_t *indices, uint32_t count) : m_Count(count)
 {
@@ -24,5 +22,3 @@ void OpenGLESIndexBuffer::SetData(uint32_t *indices, uint32_t size) const
 }
 
 uint32_t OpenGLESIndexBuffer::GetCount() const { return m_Count; }
-
-} // namespace TE

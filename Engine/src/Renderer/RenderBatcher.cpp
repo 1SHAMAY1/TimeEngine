@@ -1,18 +1,16 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/RenderBatcher.hpp"
 #include "Layers/ProfilingLayer.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 #include <chrono>
 
-namespace TE
-{
+void RenderBatcher::Begin() { m_DrawCommands.Empty(); }
 
-void RenderBatcher::Begin() { m_DrawCommands.clear(); }
-
-void RenderBatcher::Submit(const std::shared_ptr<VertexArray> &vao, const std::shared_ptr<Material> &material,
-                           const glm::mat4 &transform, uint32_t indexCount, int blendMode)
+void RenderBatcher::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const glm::mat4 &transform,
+                           uint32_t indexCount, int blendMode, const TEColor &color)
 {
-    m_DrawCommands.push_back({vao, material, transform, indexCount, blendMode});
+    m_DrawCommands.Add({vao, material, transform, color, indexCount, blendMode});
 }
 
 void RenderBatcher::End()
@@ -33,7 +31,7 @@ void RenderBatcher::Flush()
                   return a.material->GetShader().get() < b.material->GetShader().get();
               });
 
-    std::shared_ptr<Material> lastMaterial = nullptr;
+    TERef<Material> lastMaterial = nullptr;
     int lastBlendMode = 0;
 
     // Default blending
@@ -58,8 +56,9 @@ void RenderBatcher::Flush()
             ShaderLibrary::SetViewProjection(cmd.material->GetShader().get(), m_ViewProjection);
             lastMaterial = cmd.material;
         }
-        // Set transform uniform
+        // Set transform and color uniforms directly per draw command
         ShaderLibrary::SetTransform(cmd.material->GetShader().get(), cmd.transform);
+        ShaderLibrary::SetColor(cmd.material->GetShader().get(), cmd.color);
         cmd.vertexArray->Bind();
         RenderCommand::DrawIndexed(cmd.vertexArray->GetRendererID(), cmd.indexCount);
 
@@ -70,7 +69,7 @@ void RenderBatcher::Flush()
 
     // Reset to default
     RenderCommand::SetBlendMode(0);
-    m_DrawCommands.clear();
+    m_DrawCommands.Empty();
 
     auto endTime = std::chrono::high_resolution_clock::now();
     float durationMs = std::chrono::duration<float, std::milli>(endTime - startTime).count();
@@ -86,5 +85,3 @@ void RenderBatcher::Flush()
         profiler->RecordVertex(totalVertices);
     }
 }
-
-} // namespace TE

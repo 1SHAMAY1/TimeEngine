@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Layers/ProfilingLayer.hpp"
 #include "Core/Log.h"
 #include "Renderer/RendererContext.hpp"
@@ -14,23 +15,21 @@
 #pragma comment(lib, "pdh.lib")
 #endif
 
-namespace TE
-{
-
 ProfilingLayer *ProfilingLayer::s_Instance = nullptr;
 
-StackProfileScope::StackProfileScope(const std::string &name, size_t size) : funcName(name)
+StackProfileScope::StackProfileScope(const TEString &name, size_t size) : funcName(name)
 {
     ProfilingLayer::PushStackFrame(name, size);
 }
 
 StackProfileScope::~StackProfileScope() { ProfilingLayer::PopStackFrame(funcName); }
 
-void ProfilingLayer::TrackClassAllocation(const std::string &className, size_t sizeBytes, bool isHeap)
+void ProfilingLayer::TrackClassAllocation(const TEString &className, size_t sizeBytes, bool isHeap)
 {
-    if (s_Instance)
+    auto *inst = GetInstance();
+    if (inst)
     {
-        auto &alloc = s_Instance->m_ClassAllocations[className];
+        auto &alloc = inst->m_ClassAllocations[className];
         alloc.className = className;
         alloc.count++;
         alloc.sizeBytes += sizeBytes;
@@ -38,12 +37,13 @@ void ProfilingLayer::TrackClassAllocation(const std::string &className, size_t s
     }
 }
 
-void ProfilingLayer::TrackClassDeallocation(const std::string &className, size_t sizeBytes, bool isHeap)
+void ProfilingLayer::TrackClassDeallocation(const TEString &className, size_t sizeBytes, bool isHeap)
 {
-    if (s_Instance)
+    auto *inst = GetInstance();
+    if (inst)
     {
-        auto it = s_Instance->m_ClassAllocations.find(className);
-        if (it != s_Instance->m_ClassAllocations.end())
+        auto it = inst->m_ClassAllocations.find(className);
+        if (it != inst->m_ClassAllocations.end())
         {
             if (it->second.count > 0)
                 it->second.count--;
@@ -55,34 +55,46 @@ void ProfilingLayer::TrackClassDeallocation(const std::string &className, size_t
     }
 }
 
-void ProfilingLayer::PushStackFrame(const std::string &functionName, size_t sizeBytes)
+void ProfilingLayer::PushStackFrame(const TEString &functionName, size_t sizeBytes)
 {
-    if (s_Instance)
+    auto *inst = GetInstance();
+    if (inst)
     {
-        s_Instance->m_ActiveStackFrames[functionName] = sizeBytes;
+        inst->m_ActiveStackFrames[functionName] = sizeBytes;
     }
 }
 
-void ProfilingLayer::PopStackFrame(const std::string &functionName)
+void ProfilingLayer::PopStackFrame(const TEString &functionName)
 {
-    if (s_Instance)
+    auto *inst = GetInstance();
+    if (inst)
     {
-        s_Instance->m_ActiveStackFrames.erase(functionName);
+        inst->m_ActiveStackFrames.erase(functionName);
     }
 }
 
-ProfilingLayer::ProfilingLayer() : Layer("ProfilingLayer")
+ProfilingLayer::ProfilingLayer() : IEditorPanel("ProfilingLayer")
 {
     s_Instance = this;
+    m_Visible = false;
+    m_IsVisible = false;
     m_LastFrameTime = std::chrono::high_resolution_clock::now();
     m_LastUpdateTime = m_LastFrameTime;
-    GetSystemInfo();
 
-    // Baseline system heap and general allocations
-    TrackClassAllocation("Baseline System Heap", 124 * 1024 * 1024); // 124 MB base engine heap
-    TrackClassAllocation("AssetManager (Cache)", 18 * 1024 * 1024);
-    TrackClassAllocation("PhysicsWorld (Velox)", 4 * 1024 * 1024);
-    TrackClassAllocation("ShaderLibrary", 512 * 1024);
+    // Baseline system heap and general allocations - populate directly to avoid recursive static lock
+    auto addBaseline = [this](const TEString &className, size_t sizeBytes)
+    {
+        auto &alloc = m_ClassAllocations[className];
+        alloc.className = className;
+        alloc.count = 1;
+        alloc.sizeBytes = sizeBytes;
+        alloc.isHeap = true;
+    };
+
+    addBaseline("Baseline System Heap", 124 * 1024 * 1024); // 124 MB base engine heap
+    addBaseline("AssetManager (Cache)", 18 * 1024 * 1024);
+    addBaseline("PhysicsWorld (Velox)", 4 * 1024 * 1024);
+    addBaseline("ShaderLibrary", 512 * 1024);
 }
 
 ProfilingLayer::~ProfilingLayer()
@@ -94,6 +106,7 @@ ProfilingLayer::~ProfilingLayer()
 void ProfilingLayer::OnAttach()
 {
     TE_CORE_INFO("ProfilingLayer: OnAttach called.");
+    GetSystemInfo();
     m_LastFrameTime = std::chrono::high_resolution_clock::now();
     m_LastUpdateTime = m_LastFrameTime;
     m_FrameCount = 0;
@@ -245,8 +258,6 @@ void ProfilingLayer::UpdateSystemMetrics()
 void ProfilingLayer::UpdateGPUMetrics()
 {
     m_CurrentMetrics.gpuUsage = GetSystemGPUUsage();
-    // GPU memory and VRAM usage would be implemented based on the graphics API
-    // For now, we'll use placeholder values
     m_CurrentMetrics.gpuMemory = 0.0f;
     m_CurrentMetrics.vramUsage = 0.0f;
 }
@@ -339,12 +350,13 @@ void ProfilingLayer::GetSystemInfo()
 {
 #ifdef _WIN32
     // Get CPU info
-    char cpuName[256];
-    DWORD size = sizeof(cpuName);
+    TEString cpuName;
+    cpuName.Reserve(256);
+    DWORD size = 256;
     if (RegGetValueA(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", "ProcessorNameString",
-                     RRF_RT_ANY, NULL, cpuName, &size) == ERROR_SUCCESS)
+                     RRF_RT_ANY, NULL, cpuName.Data(), &size) == ERROR_SUCCESS)
     {
-        m_CPUName = cpuName;
+        m_CPUName = cpuName.c_str();
     }
     else
     {
@@ -363,14 +375,14 @@ void ProfilingLayer::GetSystemInfo()
     m_CPUCores = sysInfo.dwNumberOfProcessors;
 
     // GPU info
-    m_GPUName = TE::RendererContext::GetGPUVendor() + " / " + TE::RendererContext::GetGPURenderer() + " (" +
-                TE::RendererContext::GetGPUType() + ")";
+    m_GPUName = RendererContext::GetGPUVendor() + " / " + RendererContext::GetGPURenderer() + " (" +
+                RendererContext::GetGPUType() + ")";
     m_VRAMTotal = 0; // Would need to query GPU VRAM
 #else
     // Linux implementation would go here
     m_CPUName = "Unknown CPU";
-    m_GPUName = TE::RendererContext::GetGPUVendor() + " / " + TE::RendererContext::GetGPURenderer() + " (" +
-                TE::RendererContext::GetGPUType() + ")";
+    m_GPUName = RendererContext::GetGPUVendor() + " / " + RendererContext::GetGPURenderer() + " (" +
+                RendererContext::GetGPUType() + ")";
     m_CPUCores = 0;
     m_RAMTotal = 0;
     m_VRAMTotal = 0;
@@ -379,8 +391,13 @@ void ProfilingLayer::GetSystemInfo()
 
 void ProfilingLayer::RenderPerformanceWindow()
 {
-    if (!m_IsVisible)
+    if (!m_Visible && !m_IsVisible)
         return;
+
+    if (m_CPUName.empty() || m_CPUName == "Unknown CPU")
+    {
+        GetSystemInfo();
+    }
 
     TimeGUI::SetNextWindowPos(m_WindowPos, TimeGUICond_FirstUseEver);
     TimeGUI::SetNextWindowSize(m_WindowSize, TimeGUICond_FirstUseEver);
@@ -395,7 +412,7 @@ void ProfilingLayer::RenderPerformanceWindow()
     // When not floating, allow docking by not adding NoDocking flag
 
     bool windowOpen = true;
-    if (TimeGUI::Begin(m_WindowTitle.c_str(), &windowOpen, windowFlags))
+    if (TimeGUI::Begin(GetTitle().c_str(), &windowOpen, windowFlags))
     {
         if (TimeGUI::BeginTabBar("PerformanceTabs"))
         {
@@ -436,7 +453,7 @@ void ProfilingLayer::RenderPerformanceWindow()
     // Handle window close
     if (!windowOpen)
     {
-        m_IsVisible = false;
+        SetVisible(false);
     }
 }
 
@@ -486,10 +503,10 @@ void ProfilingLayer::RenderSystemInfo()
     // Frame Time Breakdown (Stacked Bar)
     float sumTime = m_CurrentMetrics.gameTime + m_CurrentMetrics.renderTime + m_CurrentMetrics.physicsTime +
                     m_CurrentMetrics.uiTime;
-    float gamePct = sumTime > 0.0f ? m_CurrentMetrics.gameTime / sumTime : 0.0f;
-    float renderPct = sumTime > 0.0f ? m_CurrentMetrics.renderTime / sumTime : 0.0f;
-    float physicsPct = sumTime > 0.0f ? m_CurrentMetrics.physicsTime / sumTime : 0.0f;
-    float uiPct = sumTime > 0.0f ? m_CurrentMetrics.uiTime / sumTime : 0.0f;
+    float gamePct = sumTime > 0.001f ? m_CurrentMetrics.gameTime / sumTime : 0.0f;
+    float renderPct = sumTime > 0.001f ? m_CurrentMetrics.renderTime / sumTime : 0.0f;
+    float physicsPct = sumTime > 0.001f ? m_CurrentMetrics.physicsTime / sumTime : 0.0f;
+    float uiPct = sumTime > 0.001f ? m_CurrentMetrics.uiTime / sumTime : 0.0f;
 
     TimeGUI::Text("Frame Timing Breakdown");
 
@@ -502,7 +519,7 @@ void ProfilingLayer::RenderSystemInfo()
     drawList.AddRectFilled(barPos, TEVector2(barPos.x + width, barPos.y + height), IM_COL32(30, 30, 30, 255));
 
     float currentX = barPos.x;
-    if (sumTime > 0.0f)
+    if (sumTime > 0.001f)
     {
         float wGame = width * gamePct;
         if (wGame > 0.0f)
@@ -707,9 +724,6 @@ void ProfilingLayer::RenderMemoryInfo()
 
 void ProfilingLayer::RenderPerformanceGraphs()
 {
-    if (!m_ShowGraphs)
-        return;
-
     TimeGUI::Text("Performance Graphs");
     TimeGUI::Separator();
 
@@ -735,7 +749,7 @@ void ProfilingLayer::RenderPerformanceGraphs()
     RenderGraph("GPU Usage (%)", m_GPUHistory, m_GPUColor, 0.0f, 100.0f);
 }
 
-void ProfilingLayer::RenderGraph(const std::string &title, const std::deque<float> &data, const TEVector4 &color,
+void ProfilingLayer::RenderGraph(const TEString &title, const std::deque<float> &data, const TEVector4 &color,
                                  float minValue, float maxValue)
 {
     if (data.empty())
@@ -755,7 +769,7 @@ void ProfilingLayer::RenderGraph(const std::string &title, const std::deque<floa
 
 void ProfilingLayer::DrawLineGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2 &pos, const TEVector2 &size,
                                    const std::deque<float> &data, const TEVector4 &color, float minValue,
-                                   float maxValue, const std::string &label)
+                                   float maxValue, const TEString &label)
 {
     if (data.empty())
         return;
@@ -795,7 +809,7 @@ void ProfilingLayer::DrawLineGraph(TimeGUI::TimeGUIDrawList drawList, const TEVe
 
 void ProfilingLayer::DrawBarGraph(TimeGUI::TimeGUIDrawList drawList, const TEVector2 &pos, const TEVector2 &size,
                                   const std::deque<float> &data, const TEVector4 &color, float minValue, float maxValue,
-                                  const std::string &label)
+                                  const TEString &label)
 {
     if (data.empty())
         return;
@@ -823,7 +837,7 @@ void ProfilingLayer::DrawBarGraph(TimeGUI::TimeGUIDrawList drawList, const TEVec
     drawList.AddRect(pos, TEVector2(pos.x + size.x, pos.y + size.y), IM_COL32(100, 100, 100, 255));
 }
 
-std::string ProfilingLayer::FormatBytes(uint64_t bytes)
+TEString ProfilingLayer::FormatBytes(uint64_t bytes)
 {
     const char *units[] = {"B", "KB", "MB", "GB", "TB"};
     int unitIndex = 0;
@@ -835,33 +849,26 @@ std::string ProfilingLayer::FormatBytes(uint64_t bytes)
         unitIndex++;
     }
 
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << size << " " << units[unitIndex];
-    return ss.str();
+    return TEString::FromDouble(size, 1) + " " + units[unitIndex];
 }
 
-std::string ProfilingLayer::FormatTime(float seconds)
+TEString ProfilingLayer::FormatTime(float seconds)
 {
     if (seconds < 0.001f)
     {
-        return std::to_string((int)(seconds * 1000000.0f)) + " μs";
+        return TEString::FromInt((int)(seconds * 1000000.0f)) + " μs";
     }
     else if (seconds < 1.0f)
     {
-        return std::to_string((int)(seconds * 1000.0f)) + " ms";
+        return TEString::FromInt((int)(seconds * 1000.0f)) + " ms";
     }
     else
     {
-        return std::to_string((int)seconds) + " s";
+        return TEString::FromInt((int)seconds) + " s";
     }
 }
 
-std::string ProfilingLayer::FormatPercentage(float percentage)
-{
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << percentage << "%";
-    return ss.str();
-}
+TEString ProfilingLayer::FormatPercentage(float percentage) { return TEString::FromFloat(percentage, 1) + "%"; }
 
 TEVector4 ProfilingLayer::GetColorForValue(float value, float warningThreshold, float criticalThreshold)
 {
@@ -879,4 +886,4 @@ TEVector4 ProfilingLayer::GetColorForValue(float value, float warningThreshold, 
     }
 }
 
-} // namespace TE
+TE_REGISTER_EDITOR_PANEL(ProfilingLayer);

@@ -1,6 +1,6 @@
 # 2D Collision Subsystem Architecture
 
-The 2D Collision subsystem in TimeEngine handles broadphase spatial filtering ([`BroadPhase`](file:///e:/TimeEngine/Engine/Include/Core/Collision/BroadPhase.hpp)), narrowphase geometric overlap detection using the Separating Axis Theorem (SAT) ([`CollisionSystem`](file:///e:/TimeEngine/Engine/Include/Core/Collision/CollisionSystem.hpp)), shape bounds ([`CollisionTypes.hpp`](file:///e:/TimeEngine/Engine/Include/Core/Collision/CollisionTypes.hpp)), and collider components (`BoxColliderComponent`, `CircleColliderComponent`, `TriangleColliderComponent`, `PolygonColliderComponent`).
+The 2D Collision subsystem in TimeEngine handles broadphase spatial filtering ([`BroadPhase`](../../../../Include/Core/Collision/BroadPhase.hpp)), narrowphase geometric overlap detection using the Separating Axis Theorem (SAT) ([`CollisionSystem`](../../../../Include/Core/Collision/CollisionSystem.hpp)), shape bounds ([`CollisionTypes.hpp`](../../../../Include/Core/Collision/CollisionTypes.hpp)), and collider components (`BoxColliderComponent`, `CircleColliderComponent`, `TriangleColliderComponent`, `PolygonColliderComponent`).
 
 > [!NOTE]
 > In short, think of the **Collision Subsystem** as the game's touch sensor and boundary detector: `BroadPhase` quickly filters out pairs of objects that are nowhere near each other, while `CollisionSystem` performs precise mathematical checks (AABB vs AABB, Circle vs Circle, SAT Polygon vs Polygon) to detect collisions and fire `onCollision` callbacks.
@@ -9,39 +9,33 @@ The 2D Collision subsystem in TimeEngine handles broadphase spatial filtering ([
 
 ## Subsystem Pipeline & Data Flow
 
-```
-[ Active Entities in Scene ]
-         │
-         ▼ (Collect World-Transformed Shapes: OnUpdateShape)
-[ Collider Components ]  (Box, Circle, Triangle, Polygon)
-         │
-         ▼ (Filter Distant Pairs)
-[ BroadPhase::BruteForce ]
-         │
-         ▼ (Narrowphase SAT Geometry Checks)
-[ CollisionSystem::CheckCollision ]
-         │
-         ├─── AABB vs AABB (Fast Axis Overlap)
-         ├─── Circle vs Circle (Radius Distance Squared)
-         ├─── Circle vs Poly (Closest Point & Point-in-Poly)
-         └─── Poly vs Poly (Separating Axis Theorem - SAT)
-         │
-         ▼ (On Intersection)
-[ Collision Callback: onCollision(entityA, entityB) ]
+```mermaid
+flowchart TD
+    Entities["Active Entities in Scene"] -->|Collect World Transforms| Colliders["Collider Components<br/>(Box, Circle, Triangle, Polygon)"]
+    Colliders -->|Filter Distant Pairs| BroadPhase["BroadPhase Filtering"]
+    BroadPhase -->|Narrowphase Geometry Checks| SAT["CollisionSystem SAT Checks"]
+    SAT --> AABB["AABB vs AABB"]
+    SAT --> Circle["Circle vs Circle"]
+    SAT --> CirclePoly["Circle vs Polygon"]
+    SAT --> SATPoly["Polygon vs Polygon (SAT)"]
+    AABB --> Callback["Collision Callback<br/>onCollision(entityA, entityB)"]
+    Circle --> Callback
+    CirclePoly --> Callback
+    SATPoly --> Callback
 ```
 
 ---
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TE::CollisionShape`](file:///e:/TimeEngine/Engine/Include/Core/Collision/CollisionTypes.hpp)**:
+1. **[`TE::CollisionShape`](../../../../Include/Core/Collision/CollisionTypes.hpp)**:
    - Unified shape container holding `CollisionType` enum (`AABB`, `Circle`, `Triangle`, `Polygon`).
    - Stores geometric bounds structures (`BoundsAABB`, `BoundsCircle`, `BoundsTriangle`, `BoundsPolygon`).
 
-2. **[`TE::BroadPhase`](file:///e:/TimeEngine/Engine/Include/Core/Collision/BroadPhase.hpp)**:
+2. **[`TE::BroadPhase`](../../../../Include/Core/Collision/BroadPhase.hpp)**:
    - Performs initial spatial pruning to generate potential colliding entity pairs (`EntityPair`).
 
-3. **[`TE::CollisionSystem`](file:///e:/TimeEngine/Engine/Include/Core/Collision/CollisionSystem.hpp)**:
+3. **[`TE::CollisionSystem`](../../../../Include/Core/Collision/CollisionSystem.hpp)**:
    - Central collision manager executing narrowphase geometry intersection algorithms.
    - Computes world-space transformations for nested component hierarchies.
    - Triggers `onCollision` std::function callback upon intersection.
@@ -107,5 +101,5 @@ collisionSystem->onCollision = [](EntityID a, EntityID b) {
 
 ## Related Architectural Documentation
 
-- [2D Physics Architecture](file:///e:/TimeEngine/Engine/src/Core/Physics/ARCHITECTURE.md) — Documentation for 2D rigid body dynamics and impulse resolution.
-- [Scene & ECS Architecture](file:///e:/TimeEngine/Engine/src/Core/Scene/ARCHITECTURE.md) — Documentation for entity lifespan and component management.
+- [2D Physics Architecture](../Physics/ARCHITECTURE.md) — Documentation for 2D rigid body dynamics and impulse resolution.
+- [Scene & ECS Architecture](../Scene/ARCHITECTURE.md) — Documentation for entity lifespan and component management.

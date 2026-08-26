@@ -1,6 +1,6 @@
 # Scene Subsystem Architecture
 
-The Scene subsystem in TimeEngine provides the Entity-Component-System (ECS) architecture, entity lifespan management ([`EntityManager`](file:///e:/TimeEngine/Engine/Include/Core/Scene/EntityManager.hpp)), scene graph lifecycle ([`Scene`](file:///e:/TimeEngine/Engine/Include/Core/Scene/Scene.hpp)), component reflection ([`ComponentRegistry`](file:///e:/TimeEngine/Engine/Include/Core/Scene/ComponentRegistry.hpp)), and JSON scene serialization.
+The Scene subsystem in TimeEngine provides the Entity-Component-System (ECS) architecture, entity lifespan management ([`EntityManager`](../../../../Include/Core/Scene/EntityManager.hpp)), scene graph lifecycle ([`Scene`](../../../../Include/Core/Scene/Scene.hpp)), component reflection ([`ComponentRegistry`](../../../../Include/Core/Scene/ComponentRegistry.hpp)), and JSON scene serialization.
 
 > [!NOTE]
 > In short, think of the **Scene Subsystem** as the movie stage: `Scene` represents the stage holding all active props and actors; `Entity` represents an individual actor ID on stage; and `TComponent` (like `SpriteComponent`, `TransformComponent`, `PlayerMovementComponent2D`) are the costumes, scripts, and abilities attached to each actor.
@@ -9,18 +9,12 @@ The Scene subsystem in TimeEngine provides the Entity-Component-System (ECS) arc
 
 ## Core Component Overview & Hierarchy
 
-```
-                          [ Scene ] (.tescene Asset)
-                             │
-                             ▼
-                    [ EntityManager ]
-                             │
-       ┌─────────────────────┼─────────────────────┐
-       ▼                     ▼                     ▼
-[ Entity (ID 1) ]     [ Entity (ID 2) ]     [ Entity (ID 3) ]
-  ├─ TagComponent       ├─ TagComponent       ├─ TagComponent
-  ├─ TransformComponent ├─ TransformComponent ├─ TransformComponent
-  └─ SpriteComponent    └─ BoxComponent       └─ PlayerMovementComponent2D
+```mermaid
+flowchart TD
+    Scene["Scene (.tescene Asset)"] --> EM["EntityManager"]
+    EM --> E1["Entity (ID 1)<br/>Tag, Transform, Sprite"]
+    EM --> E2["Entity (ID 2)<br/>Tag, Transform, Box"]
+    EM --> E3["Entity (ID 3)<br/>Tag, Transform, PlayerMovement2D"]
 ```
 
 ---

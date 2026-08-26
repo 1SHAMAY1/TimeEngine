@@ -1,0 +1,6 @@
+#include "Core/PreRequisites.h"
+#include "Core/Collision/BoxColliderComponent.hpp"
+#include "Core/Collision/CapsuleColliderComponent.hpp"
+#include "Core/Collision/CircleColliderComponent.hpp"
+#include "Core/Collision/PolygonColliderComponent.hpp"
+#include "Core/Collision/TriangleColliderComponent.hpp"

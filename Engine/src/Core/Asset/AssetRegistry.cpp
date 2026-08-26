@@ -1,82 +1,82 @@
+#include "Core/PreRequisites.h"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Utils/TEFileSystem.hpp"
 #include <fstream>
-#include <sstream>
 
-namespace TE
-{
-
-std::unordered_map<AssetHandle, std::filesystem::path> AssetRegistry::s_HandleToPath;
-std::unordered_map<std::string, AssetHandle> AssetRegistry::s_PathToHandle;
+TEMap<AssetHandle, TEString> AssetRegistry::s_HandleToPath;
+TEMap<TEString, AssetHandle> AssetRegistry::s_PathToHandle;
 AssetHandle AssetRegistry::s_NextHandle = 1;
 
-AssetHandle AssetRegistry::RegisterPath(const std::filesystem::path &path)
+AssetHandle AssetRegistry::RegisterPath(const TEString &path)
 {
-    std::string pathStr = path.string();
-    if (s_PathToHandle.find(pathStr) != s_PathToHandle.end())
+    auto *found = s_PathToHandle.Find(path);
+    if (found)
     {
-        return s_PathToHandle[pathStr];
+        return *found;
     }
 
     AssetHandle handle = s_NextHandle++;
     s_HandleToPath[handle] = path;
-    s_PathToHandle[pathStr] = handle;
+    s_PathToHandle[path] = handle;
     return handle;
 }
 
-std::filesystem::path AssetRegistry::GetPath(AssetHandle handle)
+TEString AssetRegistry::GetPath(AssetHandle handle)
 {
-    if (s_HandleToPath.find(handle) != s_HandleToPath.end())
+    auto *found = s_HandleToPath.Find(handle);
+    if (found)
     {
-        return s_HandleToPath[handle];
+        return *found;
     }
     return "";
 }
 
-bool AssetRegistry::Exists(AssetHandle handle) { return s_HandleToPath.find(handle) != s_HandleToPath.end(); }
+bool AssetRegistry::Exists(AssetHandle handle) { return s_HandleToPath.Find(handle) != nullptr; }
 
-bool AssetRegistry::Exists(const std::filesystem::path &path)
+bool AssetRegistry::Exists(const TEString &path) { return s_PathToHandle.Find(path) != nullptr; }
+
+void AssetRegistry::Unregister(AssetHandle handle)
 {
-    return s_PathToHandle.find(path.string()) != s_PathToHandle.end();
+    auto *found = s_HandleToPath.Find(handle);
+    if (found)
+    {
+        s_PathToHandle.Remove(*found);
+        s_HandleToPath.Remove(handle);
+    }
 }
 
-void AssetRegistry::Save(const std::filesystem::path &path)
+void AssetRegistry::Save(const TEString &path)
 {
-    std::ofstream fout(path);
+    std::ofstream fout(path.c_str());
     if (!fout.is_open())
         return;
 
     for (auto const &[handle, p] : s_HandleToPath)
     {
-        fout << handle << ": " << p.string() << "\n";
+        fout << handle << ": " << p.c_str() << "\n";
     }
     fout.close();
 }
 
-void AssetRegistry::Load(const std::filesystem::path &path)
+void AssetRegistry::Load(const TEString &path)
 {
-    std::ifstream fin(path);
-    if (!fin.is_open())
-        return;
-
     s_HandleToPath.clear();
     s_PathToHandle.clear();
 
-    std::string line;
-    while (std::getline(fin, line))
-    {
-        size_t colonPos = line.find(": ");
-        if (colonPos != std::string::npos)
-        {
-            AssetHandle handle = std::stoull(line.substr(0, colonPos));
-            std::filesystem::path p = line.substr(colonPos + 2);
-            s_HandleToPath[handle] = p;
-            s_PathToHandle[p.string()] = handle;
-            if (handle >= s_NextHandle)
-                s_NextHandle = handle + 1;
-        }
-    }
-    fin.close();
+    TEFileSystem::ForEachLine(path,
+                              [](const TEString &line)
+                              {
+                                  int colonPos = line.Find(": ");
+                                  if (colonPos >= 0)
+                                  {
+                                      AssetHandle handle = std::stoull(line.Left(colonPos).c_str());
+                                      TEString p = line.Mid(colonPos + 2);
+                                      s_HandleToPath[handle] = p;
+                                      s_PathToHandle[p] = handle;
+                                      if (handle >= s_NextHandle)
+                                          s_NextHandle = handle + 1;
+                                  }
+                                  return true;
+                              });
 }
-
-} // namespace TE

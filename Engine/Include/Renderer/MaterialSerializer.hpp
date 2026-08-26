@@ -1,21 +1,13 @@
 #pragma once
 #include "Renderer/Material.hpp"
-#include <filesystem>
-#include <memory>
-
-namespace TE
-{
-
 class MaterialSerializer
 {
 public:
-    MaterialSerializer(const std::shared_ptr<Material> &material);
+    MaterialSerializer(const TERef<Material> &material);
 
-    bool Serialize(const std::filesystem::path &filepath);
-    bool Deserialize(const std::filesystem::path &filepath);
+    bool Serialize(const TEString &filepath);
+    bool Deserialize(const TEString &filepath);
 
 private:
-    std::shared_ptr<Material> m_Material;
+    TERef<Material> m_Material;
 };
-
-} // namespace TE

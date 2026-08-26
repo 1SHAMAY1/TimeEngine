@@ -1,233 +1,218 @@
+#include "Core/PreRequisites.h"
 #include "Layers/LogoLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "Core/Plugin/PluginManager.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TimeGUI.hpp"
+#include <algorithm>
 
-namespace TE
+LogoLayer::LogoLayer(const TEString &name) : Layer(name), m_ShouldClose(false)
 {
+    m_StatusText = "Discovering Engine Plugins...";
+    PluginManager::StartAsyncLoading();
+}
 
-// Constructor
-LogoLayer::LogoLayer(const std::string &name) : Layer(name), m_ShouldClose(false) {}
-
-// Destructor
 LogoLayer::~LogoLayer() {}
 
-// Called when welcome animation is done
+void LogoLayer::OnAttach() { TE_CORE_INFO("[LogoLayer] OnAttach called. Starting welcome animation."); }
+
 void LogoLayer::OnWelcomeAnimationComplete()
 {
-    // Don't broadcast immediately - defer to next frame
+    TE_CORE_INFO("[LogoLayer] OnWelcomeAnimationComplete fired.");
     m_ShouldBroadcast = true;
     m_ShouldClose = true;
 }
 
-// Render the logo animation using TimeGUI draw lists
 void LogoLayer::OnTimeGUIRender()
 {
     TimeGUI::TimeGUIIO io = TimeGUI::GetIO();
-    m_Time += io.DeltaTime;
+    float dt = io.DeltaTime > 0.0f ? io.DeltaTime : 0.016f;
+    m_Time += dt;
 
-    // Start animation after a short delay
-    if (!m_AnimationStarted && m_Time >= 1.0f)
+    static float s_LastLogTime = 0.0f;
+    bool shouldLogHeartbeat = (m_Time - s_LastLogTime) >= 1.0f;
+
+    // ── Asynchronous Plugin Loading (Real-time queue draining) ────────────────
+    if (!m_PluginsLoaded)
     {
-        m_AnimationStarted = true;
-        m_AnimationStartTime = m_Time;
+        PluginProgressMessage progress;
+        while (PluginManager::TryGetAsyncProgress(progress))
+        {
+            if (progress.TotalCount > 0)
+            {
+                m_TargetProgress = (float)progress.LoadedCount / (float)progress.TotalCount;
+                m_StatusText = "Loading Plugin: " + progress.PluginName + " [" +
+                               TEString::FromInt((int)progress.LoadedCount) + " of " +
+                               TEString::FromInt((int)progress.TotalCount) + "]";
+            }
+            else
+            {
+                m_TargetProgress = 1.0f;
+                m_StatusText = "Initializing Core Systems...";
+            }
+
+            if (progress.IsComplete)
+            {
+                m_PluginsLoaded = true;
+                m_TargetProgress = 1.0f;
+                m_StatusText = "Ready. Launching Workspace...";
+                m_FinishTime = m_Time;
+                TE_CORE_INFO("[LogoLayer] Async plugin loading complete! FinishTime: %.2fs", m_FinishTime);
+                break;
+            }
+        }
+
+        if (!m_PluginsLoaded && (PluginManager::IsAsyncLoadingComplete() || PluginManager::IsFullyLoaded()))
+        {
+            m_PluginsLoaded = true;
+            m_TargetProgress = 1.0f;
+            m_StatusText = "Ready. Launching Workspace...";
+            m_FinishTime = m_Time;
+            TE_CORE_INFO("[LogoLayer] PluginManager reports fully loaded! FinishTime: %.2fs", m_FinishTime);
+        }
     }
 
-    // Exit if not animating or finished
-    if (!m_AnimationStarted || m_AnimationFinished)
+    // Smoothly interpolate display progress towards target using engine Clamp and Lerp
+    float t = Clamp(dt * 10.0f, 0.0f, 1.0f);
+    m_DisplayProgress = Lerp(m_DisplayProgress, m_TargetProgress, t);
+    m_DisplayProgress = Clamp(m_DisplayProgress, 0.0f, 1.0f);
+
+    // Fade-in at start, fade-out at finish
+    float alpha = 1.0f;
+    if (m_Time < 0.3f)
     {
-        if (m_ShouldClose)
-            Application::Get().MarkLayerForRemoval(this);
-        return;
+        alpha = m_Time / 0.3f;
+    }
+    else if (m_PluginsLoaded && (m_Time - m_FinishTime) > 0.4f)
+    {
+        float fadeElapsed = (m_Time - m_FinishTime) - 0.4f;
+        alpha = Max(0.0f, 1.0f - (fadeElapsed / 0.3f));
+
+        if (alpha <= 0.0f && !m_AnimationFinished)
+        {
+            m_AnimationFinished = true;
+            TE_CORE_INFO("[LogoLayer] Welcome animation finished (Alpha <= 0.0). Triggering completion.");
+            OnWelcomeAnimationComplete();
+        }
     }
 
-    // Setup screen geometry and exact center
+    if (shouldLogHeartbeat)
+    {
+        s_LastLogTime = m_Time;
+        TE_CORE_INFO("[LogoLayer] Heartbeat | Time: %.2fs | Progress: %.1f%% | Alpha: %.2f | Status: %s", m_Time,
+                     m_DisplayProgress * 100.0f, alpha, m_StatusText.c_str());
+    }
+
+    // ── Render Loading Screen Visuals ─────────────────────────────────────────
     TimeGUI::TimeGUIViewport viewport = TimeGUI::GetMainViewport();
     TEVector2 screenPos = viewport.Pos;
     TEVector2 screenSize = viewport.Size;
     TEVector2 center = screenPos + screenSize * 0.5f;
 
+    static bool s_LoggedViewport = false;
+    if (!s_LoggedViewport && screenSize.x > 0.0f)
+    {
+        TE_CORE_INFO("[LogoLayer] Main Viewport: (%.1f, %.1f) - Size: (%.1f, %.1f) - Center: (%.1f, %.1f)", screenPos.x,
+                     screenPos.y, screenSize.x, screenSize.y, center.x, center.y);
+        s_LoggedViewport = true;
+    }
+
     TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetBackgroundDrawList();
 
-    // === Background Fill ===
-    drawList.AddRectFilled(screenPos, screenPos + screenSize, TimeGUI::GetColorU32(TEColor(0.0f, 0.0f, 0.0f, 1.0f)));
+    // 1. Background Fill (#0B0E14)
+    drawList.AddRectFilled(screenPos, screenPos + screenSize, TimeGUI::GetColorU32(TEColor(0.04f, 0.05f, 0.08f, 1.0f)));
 
-    // === Minimalistic Procedural Animated Logo (TimeGUI API) ===
-    float animTime = m_Time - m_AnimationStartTime;
-
-    // Smooth overall fade-in
-    float alpha = std::min(1.0f, animTime / 0.5f);
-
-    // Smooth breathing cycles for circle & clock hands
+    // 2. Animated Pulsing Neon Logo (Centered)
+    float animTime = m_Time;
     float blueRingGlowPulse = 0.5f + 0.5f * sinf(animTime * 2.5f);
     float redHandFade = 0.5f + 0.5f * sinf(animTime * 3.2f);
     float whiteHandFade = 0.5f + 0.5f * sinf(animTime * 2.8f + 1.0f);
     float grayHandFade = 0.5f + 0.5f * sinf(animTime * 2.2f + 2.0f);
 
-    float radius = 70.0f;
+    float radius = 56.0f;
 
-    // 1. Outer Blue Ring & Soft Neon Glow
+    // Glowing Neon Rings
     TimeGUIColor32 softBlueGlow =
         TimeGUI::GetColorU32(TEColor(0.0f, 0.65f, 1.0f, alpha * (0.25f + 0.35f * blueRingGlowPulse)));
     TimeGUIColor32 brightCyanRing =
-        TimeGUI::GetColorU32(TEColor(0.0f, 0.9f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.90f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
 
-    drawList.AddCircle(center, radius + 4.0f, softBlueGlow, 64, 8.0f);
-    drawList.AddCircle(center, radius, brightCyanRing, 64, 2.5f);
+    drawList.AddCircle(center, radius + 4.0f, softBlueGlow, 64, 6.0f);
+    drawList.AddCircle(center, radius, brightCyanRing, 64, 2.2f);
 
-    // 2. Minimalist Clock Hands (Red, White, Gray fade-in/out animation)
-    TimeGUIColor32 redHandColor = TimeGUI::GetColorU32(TEColor(0.95f, 0.2f, 0.2f, alpha * (0.4f + 0.6f * redHandFade)));
+    // Minimalist Clock Hands
+    TimeGUIColor32 redHandColor =
+        TimeGUI::GetColorU32(TEColor(0.95f, 0.25f, 0.25f, alpha * (0.4f + 0.6f * redHandFade)));
     TimeGUIColor32 whiteHandColor =
         TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha * (0.4f + 0.6f * whiteHandFade)));
     TimeGUIColor32 grayHandColor =
-        TimeGUI::GetColorU32(TEColor(0.6f, 0.65f, 0.7f, alpha * (0.4f + 0.6f * grayHandFade)));
+        TimeGUI::GetColorU32(TEColor(0.6f, 0.68f, 0.78f, alpha * (0.4f + 0.6f * grayHandFade)));
     TimeGUIColor32 centerPinColor = TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha));
 
-    // Right horizontal hand (Red)
-    drawList.AddLine(center, center + TEVector2(radius * 0.75f, 0.0f), redHandColor, 2.5f);
+    drawList.AddLine(center, center + TEVector2(radius * 0.70f, 0.0f), redHandColor, 2.2f);
+    drawList.AddLine(center, center + TEVector2(-radius * 0.70f, 0.0f), whiteHandColor, 2.2f);
+    drawList.AddLine(center, center + TEVector2(0.0f, radius * 0.55f), grayHandColor, 2.6f);
+    drawList.AddCircleFilled(center, 3.0f, centerPinColor, 32);
 
-    // Left horizontal hand (White)
-    drawList.AddLine(center, center + TEVector2(-radius * 0.75f, 0.0f), whiteHandColor, 2.5f);
+    // 3. Status Text & Percentage at Bottom Extreme Points
+    float paddingX = 24.0f;
+    float textY = screenPos.y + screenSize.y - 32.0f;
+    TimeGUIColor32 statusCol = TimeGUI::GetColorU32(TEColor(0.60f, 0.72f, 0.88f, alpha));
 
-    // Bottom vertical hand (Gray)
-    drawList.AddLine(center, center + TEVector2(0.0f, radius * 0.6f), grayHandColor, 3.0f);
+    // Left Extreme Point: Current Loading Status & Plugin Name
+    drawList.AddText(TEVector2(screenPos.x + paddingX, textY), statusCol, m_StatusText.c_str());
 
-    // Minimalist Center Pin
-    drawList.AddCircleFilled(center, 3.5f, centerPinColor, 32);
+    // Right Extreme Point: Percentage
+    int pct = (int)(m_DisplayProgress * 100.0f);
+    TEString pctStr = TEString::FromInt(pct) + "%";
+    drawList.AddText(TEVector2(screenPos.x + screenSize.x - paddingX - 36.0f, textY), statusCol, pctStr.c_str());
 
-    // LEGACY ANIMATION PROCEDURAL TESTING - COMMENTED OUT
-    /*
-    // === Animate Text Reveal ===
-    size_t targetCount = static_cast<size_t>((m_Time - m_AnimationStartTime) / m_LetterInterval);
-    if (targetCount > m_CharIndex && m_CharIndex < m_FullText.length())
+    // 4. Edge-to-Edge Progress Bar at Very Bottom
+    float barHeight = 4.0f;
+    TEVector2 barMin = TEVector2(screenPos.x, screenPos.y + screenSize.y - barHeight);
+    TEVector2 barMax = TEVector2(screenPos.x + screenSize.x, screenPos.y + screenSize.y);
+
+    // Track
+    drawList.AddRectFilled(barMin, barMax, TimeGUI::GetColorU32(TEColor(0.08f, 0.11f, 0.16f, alpha * 0.9f)));
+
+    // Fill
+    float filledW = screenSize.x * Clamp(m_DisplayProgress, 0.0f, 1.0f);
+    if (filledW > 0.0f)
     {
-        m_CharIndex++;
-        m_DisplayText = m_FullText.substr(0, m_CharIndex);
+        drawList.AddRectFilled(barMin, TEVector2(barMin.x + filledW, barMax.y),
+                               TimeGUI::GetColorU32(TEColor(0.0f, 0.85f, 1.0f, alpha)));
+        // Subtle top glow accent line on the progress bar
+        drawList.AddLine(TEVector2(barMin.x, barMin.y), TEVector2(barMin.x + filledW, barMin.y),
+                         TimeGUI::GetColorU32(TEColor(0.3f, 0.95f, 1.0f, alpha * 0.7f)), 1.5f);
     }
 
-    // === Logo Rendering ===
-    DrawTimeEngineLogo(center, 40.0f, drawList, m_Time);
-
-    // === Animated Text Rendering ===
-    auto font = TimeGUI::GetDefaultFont();
-    float fontSize = 24.0f;
-    TEVector2 textSize = font.CalcTextSizeA(fontSize, FLT_MAX, -1.0f, m_DisplayText.c_str());
-    TEVector2 textPos = center + TEVector2(-textSize.x * 0.5f, 55.0f);
-    drawList.AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), m_DisplayText.c_str());
-    */
-
-    // === Animation Completion Check (Maintained timing duration without displaying text) ===
-    if ((m_Time - m_AnimationStartTime) >= (m_FullText.length() * m_LetterInterval + m_TextClearDelay))
-    {
-        m_AnimationFinished = true;
-        OnWelcomeAnimationComplete();
-    }
-
-    // Broadcast completion on next frame to avoid modifying layer stack during render
+    // ── Broadcast & Layer Removal ─────────────────────────────────────────────
     if (m_ShouldBroadcast)
     {
         m_ShouldBroadcast = false;
+        TE_CORE_INFO("[LogoLayer] Broadcasting LogoFinishedDelegate...");
         LogoFinishedDelegate.Broadcast();
     }
 
-    // Layer removal check - only after broadcasting is done
     if (m_ShouldClose && !m_ShouldBroadcast && !m_IsBeingRemoved)
     {
-        TE_CORE_INFO("Removing Logo.");
+        TE_CORE_INFO("[LogoLayer] Startup Loading finished. Marking LogoLayer for removal.");
         m_IsBeingRemoved = true;
-        Application::Get().MarkLayerForRemoval(this);
+        Application::Get().MarkLayerForRemoval(shared_from_this());
     }
 }
 
-// Reset layer state on removal
 void LogoLayer::OnDetach()
 {
+    TE_CORE_INFO("[LogoLayer] OnDetach called. Cleaning up.");
     m_Time = 0.0f;
-    m_AnimationStartTime = 0.0f;
-    // LEGACY ANIMATION PROCEDURAL TESTING - COMMENTED OUT UNUSED STATE RESET
-    /*
-    m_CharIndex = 0;
-    m_DisplayText.clear();
-    */
+    m_DisplayProgress = 0.0f;
+    m_TargetProgress = 0.0f;
+    m_PluginsLoaded = false;
     m_AnimationStarted = false;
     m_AnimationFinished = false;
     m_ShouldClose = false;
     m_ShouldBroadcast = false;
     m_IsBeingRemoved = false;
 }
-
-// === Draw the animated TimeEngine Logo (LEGACY ANIMATION PROCEDURAL TESTING - COMMENTED OUT) ===
-/*
-void LogoLayer::DrawTimeEngineLogo(const TEVector2 &center, float radius, TimeGUI::TimeGUIDrawList drawList, float time)
-{
-    const float pi = 3.1415926f;
-    const unsigned int color = IM_COL32(255, 255, 255, 255);
-    const unsigned int faintColor = IM_COL32(255, 255, 255, 60);
-    const unsigned int strongColor = IM_COL32(255, 255, 255, 200);
-
-    // === Static Clock Face Circle ===
-    drawList.AddCircle(center, radius, color, 64, 2.5f);
-
-    // === Hour Tick Marks ===
-    for (int i = 0; i < 12; ++i)
-    {
-        float angle = i * (2.0f * pi / 12);
-        TEVector2 dir = {cosf(angle), sinf(angle)};
-        TEVector2 inner = center + dir * (radius - 4.0f);
-        TEVector2 outer = center + dir * radius;
-        drawList.AddLine(inner, outer, color, 1.8f);
-    }
-
-    // === Rotating Gear Arcs (Separated) ===
-    const int gearTeeth = 12;
-    float gearRotation = -time * 0.5f;
-    float arcSpacing = 50.0f;
-    float arcThickness = 12.0f;
-    float arcRadiusInner = radius + arcSpacing;
-    float arcRadiusOuter = arcRadiusInner + arcThickness;
-
-    for (int i = 0; i < gearTeeth; ++i)
-    {
-        float startAngle = i * (2.0f * pi / gearTeeth) + gearRotation;
-        float endAngle = startAngle + (2.0f * pi / gearTeeth) * 0.6f;
-
-        const int arcSegments = 8;
-        for (int j = 0; j < arcSegments; ++j)
-        {
-            float t0 = startAngle + (endAngle - startAngle) * (j / (float)arcSegments);
-            float t1 = startAngle + (endAngle - startAngle) * ((j + 1) / (float)arcSegments);
-
-            TEVector2 p0_outer = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusOuter;
-            TEVector2 p1_outer = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusOuter;
-            TEVector2 p0_inner = center + TEVector2(cosf(t0), sinf(t0)) * arcRadiusInner;
-            TEVector2 p1_inner = center + TEVector2(cosf(t1), sinf(t1)) * arcRadiusInner;
-
-            drawList.AddQuadFilled(p0_inner, p1_inner, p1_outer, p0_outer, faintColor);
-        }
-    }
-
-    // === Clock Hands (Fast Spinning) ===
-    float fastTime = time * 100.0f;
-    float seconds = fmod(fastTime, 60.0f);
-    float minutes = fmod(fastTime * 5 / 60.0f, 60.0f);
-    float hours = fmod(fastTime * 10 / 3600.0f, 12.0f);
-
-    float secondAngle = -pi / 2.0f + seconds * (2.0f * pi / 60.0f);
-    float minuteAngle = -pi / 2.0f + minutes * (2.0f * pi / 60.0f);
-    float hourAngle = -pi / 2.0f + hours * (2.0f * pi / 12.0f);
-
-    TEVector2 secDir = {cosf(secondAngle), sinf(secondAngle)};
-    TEVector2 minDir = {cosf(minuteAngle), sinf(minuteAngle)};
-    TEVector2 hrDir = {cosf(hourAngle), sinf(hourAngle)};
-
-    drawList.AddLine(center, center + secDir * (radius - 5.0f), IM_COL32(255, 50, 50, 200), 1.5f); // Second hand
-    drawList.AddLine(center, center + minDir * (radius - 10.0f), strongColor, 2.5f);               // Minute hand
-    drawList.AddLine(center, center + hrDir * (radius - 20.0f), color, 3.5f);                      // Hour hand
-
-    // === Clock Center Pin ===
-    drawList.AddCircleFilled(center, 3.0f, color);
-}
-*/
-
-} // namespace TE

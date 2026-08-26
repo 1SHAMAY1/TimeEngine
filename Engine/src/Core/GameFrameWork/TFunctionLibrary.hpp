@@ -1,7 +1,14 @@
-﻿#pragma once
+#pragma once
+#ifndef TE_TFUNCTIONLIBRARY_HPP
+#define TE_TFUNCTIONLIBRARY_HPP
 
-class TFunctionLibrary {
+#include "Utils/TEString.hpp"
+
+class TFunctionLibrary
+{
 public:
     // Base for stateless utility classes
-    static constexpr const char* StaticClassName = "TFunctionLibrary";
+    inline static const TEString StaticClassName = "TFunctionLibrary";
 };
+
+#endif // TE_TFUNCTIONLIBRARY_HPP

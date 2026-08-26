@@ -1,0 +1,62 @@
+// ==============================================================================
+// TimeEngine Engine Content - PlayerStaminaExtension.tscript
+// Category: Player Extensions
+// Extends: PlayerMovementComponent2D / 2DPlayerController
+// Description: Manages stamina resource, sprint drain, recovery delay, and exhaustion.
+// ==============================================================================
+
+class PlayerStaminaExtension : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, max_stamina, 100.0)
+    T_REGISTER_PROPERTY(float, drain_rate, 25.0)
+    T_REGISTER_PROPERTY(float, recovery_rate, 20.0)
+    T_REGISTER_PROPERTY(float, recovery_delay, 1.2)
+    T_REGISTER_PROPERTY(float, sprint_speed_multiplier, 1.6)
+
+    public:
+        float current_stamina = 100.0
+        bool is_sprinting = false
+        bool is_exhausted = false
+
+    private:
+        float m_delay_timer = 0.0
+
+    on_ready() {
+        current_stamina = max_stamina
+        is_sprinting = false
+        is_exhausted = false
+        m_delay_timer = 0.0
+        TE_CORE_INFO("PlayerStaminaExtension initialized. Max Stamina: " + max_stamina)
+    }
+
+    on_update(float dt) {
+        // Drain stamina when sprinting
+        if (is_sprinting and !is_exhausted) {
+            current_stamina -= drain_rate * dt
+            m_delay_timer = recovery_delay
+
+            if (current_stamina <= 0.0) {
+                current_stamina = 0.0
+                is_exhausted = true
+                is_sprinting = false
+                TE_CORE_WARN("Player exhausted! Stamina depleted.")
+            }
+        } else {
+            // Recover stamina after delay
+            if (m_delay_timer > 0.0) {
+                m_delay_timer -= dt
+            } else if (current_stamina < max_stamina) {
+                current_stamina += recovery_rate * dt
+                if (current_stamina >= max_stamina) {
+                    current_stamina = max_stamina
+                }
+
+                // Recover from exhaustion at 25% stamina
+                if (is_exhausted and current_stamina >= max_stamina * 0.25) {
+                    is_exhausted = false
+                    TE_CORE_INFO("Player recovered from exhaustion.")
+                }
+            }
+        }
+    }

@@ -1,5 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Window/WindowsWindow.hpp"
 
-IWindow* IWindow::Create(const WindowProps& props) {
-    return new WindowsWindow(props);
-}
+TEScope<IWindow> IWindow::Create(const WindowProps &props) { return CreateScope<WindowsWindow>(props); }

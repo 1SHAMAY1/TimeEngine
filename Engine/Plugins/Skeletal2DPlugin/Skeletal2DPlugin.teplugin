@@ -1,0 +1,5 @@
+Name: Skeletal2DPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: Native 2D Skeletal Animation & Deformable Skinning Engine with Spine JSON Import, Sockets, and Editor Rigging Mode
+Enabled: true

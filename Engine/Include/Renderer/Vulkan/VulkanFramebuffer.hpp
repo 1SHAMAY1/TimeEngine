@@ -1,9 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/Framebuffer.hpp"
 #include <volk.h>
-
-namespace TE
-{
 
 class VulkanFramebuffer : public Framebuffer
 {
@@ -28,5 +25,3 @@ private:
     VkImage m_DepthImage = VK_NULL_HANDLE;
     FramebufferSpecification m_Specification;
 };
-
-} // namespace TE

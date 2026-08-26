@@ -1,13 +1,11 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/RenderCommandQueue.hpp"
 
-namespace TE
-{
+RenderCommandQueue::RenderCommandQueue() { m_Queue.Reserve(1000); }
 
-RenderCommandQueue::RenderCommandQueue() { m_Queue.reserve(1000); }
+RenderCommandQueue::~RenderCommandQueue() { m_Queue.Empty(); }
 
-RenderCommandQueue::~RenderCommandQueue() { m_Queue.clear(); }
-
-void RenderCommandQueue::Submit(std::unique_ptr<RenderCommand> &&command) { m_Queue.push_back(std::move(command)); }
+void RenderCommandQueue::Submit(TEScope<RenderCommand> &&command) { m_Queue.Add(std::move(command)); }
 
 void RenderCommandQueue::Execute()
 {
@@ -18,7 +16,5 @@ void RenderCommandQueue::Execute()
             cmd->Execute();
         }
     }
-    m_Queue.clear();
+    m_Queue.Empty();
 }
-
-} // namespace TE

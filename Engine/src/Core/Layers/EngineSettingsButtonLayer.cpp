@@ -1,13 +1,11 @@
+#include "Core/PreRequisites.h"
 #include "Layers/EngineSettingsButtonLayer.hpp"
 #include "Core/Log.h"
 #include "Utils/TimeGUI.hpp"
 
-namespace TE
-{
-
 EngineSettingsButtonLayer::EngineSettingsButtonLayer() : Layer("EngineSettingsButtonLayer")
 {
-    m_EngineSettingsLayer = std::make_shared<EngineSettingsLayer>();
+    m_EngineSettingsLayer = CreateRef<EngineSettingsLayer>();
 }
 
 EngineSettingsButtonLayer::~EngineSettingsButtonLayer() {}
@@ -81,5 +79,3 @@ void EngineSettingsButtonLayer::CreateFloatingEngineSettingsWindow()
 
     TE_CORE_INFO("Engine settings window opened");
 }
-
-} // namespace TE

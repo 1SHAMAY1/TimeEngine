@@ -1,32 +1,43 @@
 #pragma once
-#include "Core/GameFrameWork/TComponent.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
+#include "GameFrameWork/TComponent.hpp"
 #include "InputAction.hpp"
 #include <functional>
-#include <map>
-#include <memory>
 
-namespace TE
-{
-
-class InputComponent : public TComponent
+TE_CLASS()
+class TE_API InputComponent : public TComponent
 {
 public:
+    GENERATED_BODY(InputComponent)
+
+    InputComponent();
+    virtual ~InputComponent() override;
+
+    void OnAttach();
+    void OnDetach();
+
     using ActionBinding = std::function<void(const InputActionValue &)>;
 
-    void BindAction(std::shared_ptr<InputAction> action, ActionBinding callback) { m_Bindings[action] = callback; }
+    void BindAction(const TEString &actionName, ActionBinding callback) { m_ActionBindings[actionName] = callback; }
 
-    void ExecuteAction(std::shared_ptr<InputAction> action, const InputActionValue &value)
+    void ExecuteAction(const TEString &actionName, const InputActionValue &value)
     {
-        if (m_Bindings.count(action))
+        if (m_ActionBindings.find(actionName) != m_ActionBindings.end())
         {
-            m_Bindings[action](value);
+            m_ActionBindings[actionName](value);
         }
     }
 
-    static constexpr const char *StaticClassName = "InputComponent";
+    void ExecuteAction(const InputAction &action, const InputActionValue &value) { ExecuteAction(action.Name, value); }
+
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
 private:
-    std::map<std::shared_ptr<InputAction>, ActionBinding> m_Bindings;
+    TEMap<TEString, ActionBinding> m_ActionBindings;
 };
 
-} // namespace TE
+#ifdef TE_EDITOR
+T_REGISTER_COMPONENT(InputComponent, "Input Component")
+T_REGISTER_PRESET(InputComponent, "Input Component", "Input & Controls",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<InputComponent>(id); })
+#endif

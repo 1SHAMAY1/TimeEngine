@@ -1,37 +1,45 @@
 #pragma once
-#include "GameFrameWork/TComponent.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
+#include "GameFrameWork/TComponent.hpp"
 
-namespace TE {
+#include "Core/Scene/ComponentRegistry.hpp"
 
-    class RigidBodyComponent : public TComponent {
-    public:
-        // Internal Physics Body Data
-        RigidBody Body;
+class RigidBodyComponent : public TComponent
+{
+public:
+    GENERATED_BODY(RigidBodyComponent)
 
-        RigidBodyComponent() {
-            // Default configuration
-            Body.Mass = 1.0f;
-            Body.InverseMass = 1.0f;
-            Body.Position = { 0.0f, 0.0f };
-        }
+    // Internal Physics Body Data
+    RigidBody Body;
 
-        void OnAttach() {
-            // Register with PhysicsWorld if available globally or passed in
-            // For now, let's assume we manage it externally or via a System
-        }
+    RigidBodyComponent()
+    {
+        // Default configuration
+        Body.Mass = 1.0f;
+        Body.InverseMass = 1.0f;
+        Body.Position = {0.0f, 0.0f};
+    }
 
-        // Helpers
-        void SetMass(float mass) {
-            Body.Mass = mass;
-            Body.InverseMass = (mass > 0.0f) ? 1.0f / mass : 0.0f;
-        }
+    void OnAttach()
+    {
+        // Register with PhysicsWorld if available globally or passed in
+        // For now, let's assume we manage it externally or via a System
+    }
 
-        void AddForce(const TEVector2& force) {
-            Body.ApplyForce(force);
-        }
+    // Helpers
+    void SetMass(float mass)
+    {
+        Body.Mass = mass;
+        Body.InverseMass = (mass > 0.0f) ? 1.0f / mass : 0.0f;
+    }
 
-        static constexpr const char* StaticClassName = "RigidBodyComponent";
-    };
+    void AddForce(const TEVector2 &force) { Body.ApplyForce(force); }
 
-}
+    virtual TEString GetClassName() const override { return StaticClassName; }
+};
+
+#ifdef TE_EDITOR
+T_REGISTER_COMPONENT(RigidBodyComponent, "RigidBody 2D Component")
+T_REGISTER_PRESET(RigidBodyComponent, "RigidBody 2D", "Physics & Collisions",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<RigidBodyComponent>(id); })
+#endif

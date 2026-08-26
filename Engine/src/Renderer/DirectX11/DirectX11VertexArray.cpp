@@ -1,17 +1,15 @@
+#include "Core/PreRequisites.h"
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#include "Renderer/DirectX11/DirectX11VertexArray.hpp"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include "Renderer/DirectX11/DirectX11VertexArray.hpp"
 #include <Windows.h>
 #include <d3d11.h>
 #include <iostream>
-
-namespace TE
-{
 
 DirectX11VertexArray::DirectX11VertexArray()
 {
@@ -59,7 +57,7 @@ void DirectX11VertexArray::Unbind() const
         m_IndexBuffer->Unbind();
 }
 
-void DirectX11VertexArray::AddVertexBuffer(VertexBuffer *vertexBuffer)
+void DirectX11VertexArray::AddVertexBuffer(const TERef<VertexBuffer> &vertexBuffer)
 {
     m_VertexBuffer = vertexBuffer;
     // Note: The ID3D11InputLayout requires a compiled shader's bytecode at creation time.
@@ -76,11 +74,9 @@ void DirectX11VertexArray::AddVertexBuffer(VertexBuffer *vertexBuffer)
     // This is wired up per-pipeline when DirectX11Shader::Bind() is called.
 }
 
-void DirectX11VertexArray::SetIndexBuffer(IndexBuffer *indexBuffer)
+void DirectX11VertexArray::SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer)
 {
     m_IndexBuffer = indexBuffer;
     if (m_IndexBuffer)
         m_IndexBuffer->Bind();
 }
-
-} // namespace TE

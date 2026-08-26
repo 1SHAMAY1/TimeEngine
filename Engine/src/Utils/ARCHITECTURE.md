@@ -50,7 +50,7 @@ inline TEVector Cross(const TEVector &a, const TEVector &b)
 
 ## 2. TimeGUI Abstraction Layer (`TimeGUI`)
 
-[`TE::TimeGUI`](file:///e:/TimeEngine/Engine/Include/Utils/TimeGUI.hpp) wraps Dear ImGui behind clean TimeEngine-native types. This shields engine code from third-party ImGui header leaks and allows switching or extending the UI frontend transparently.
+[`TE::TimeGUI`](../../Include/Utils/TimeGUI.hpp) wraps Dear ImGui behind clean TimeEngine-native types. This shields engine code from third-party ImGui header leaks and allows switching or extending the UI frontend transparently.
 
 ### Architecture Highlights
 - **Opaque Handles & Cast Proxies**: Types like `TimeGUIFont`, `TimeGUIDrawList`, and `TimeGUITextureID` (`void*`) wrap third-party pointers safely:

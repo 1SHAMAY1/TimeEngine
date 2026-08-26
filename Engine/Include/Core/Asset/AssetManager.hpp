@@ -1,29 +1,28 @@
 #pragma once
 #include "Core/Asset/Asset.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
-#include <filesystem>
-#include <memory>
-#include <string>
-#include <unordered_map>
-
-namespace TE
-{
 
 struct TE_API ImageData
 {
-    unsigned char *Data = nullptr;
+    TEArray<uint8_t> Pixels;
     int Width = 0;
     int Height = 0;
     int Channels = 0;
+
+    bool IsValid() const { return !Pixels.IsEmpty() && Width > 0 && Height > 0; }
+    void *Data() { return Pixels.GetData(); }
+    const void *Data() const { return Pixels.GetData(); }
+    const void *GetData() const { return Pixels.GetData(); }
 };
 
 struct AssetTypeMetadata
 {
-    std::string Type;
-    std::string Extension;
-    std::string IconPath;
+    TEString Type;
+    TEString Extension;
+    TEString IconPath;
     TEVector2 IconSize = {64.0f, 64.0f};
-    std::shared_ptr<Asset> Prototype;
+    TERef<Asset> Prototype;
 };
 
 class TE_API AssetManager
@@ -32,39 +31,46 @@ public:
     static void Init();
     static void Shutdown();
 
-    template <typename T> static std::shared_ptr<T> GetAsset(AssetHandle handle)
+    template <typename T> static TERef<T> GetAsset(AssetHandle handle)
     {
-        if (s_LoadedAssets.find(handle) != s_LoadedAssets.end())
+        auto *found = s_LoadedAssets.Find(handle);
+        if (found)
         {
-            return std::static_pointer_cast<T>(s_LoadedAssets[handle]);
+            return std::static_pointer_cast<T>(*found);
         }
         return nullptr;
     }
 
-    static AssetHandle LoadAsset(const std::filesystem::path &path);
+    static AssetHandle LoadAsset(const TEString &path);
+    static AssetHandle ReloadAsset(AssetHandle handle);
+    static void UnloadAsset(AssetHandle handle);
+    static bool DeleteAsset(const TEString &path);
 
-    static void AddAsset(AssetHandle handle, const std::shared_ptr<Asset> &asset);
+    static void AddAsset(AssetHandle handle, const TERef<Asset> &asset);
     static bool HasAsset(AssetHandle handle);
 
     // Modular Registration
-    static void RegisterAssetType(std::shared_ptr<Asset> prototype);
-    static const std::unordered_map<std::string, AssetTypeMetadata> &GetRegisteredAssetTypes()
-    {
-        return s_AssetTypeRegistry;
-    }
+    static void RegisterAssetType(TERef<Asset> prototype);
+    static const TEMap<TEString, AssetTypeMetadata> &GetRegisteredAssetTypes();
+    static TERef<Asset> CreateFromPrototype(const TEString &extension);
 
-    static std::shared_ptr<class Texture> GetDefaultIcon(const std::string &type);
-    static std::shared_ptr<class Texture> GetIconForExtension(const std::string &extension);
-    static TEVector2 GetDefaultIconSize(const std::string &type);
+    static TERef<class Texture> GetDefaultIcon(const TEString &type);
+    static TERef<class Texture> GetIconForExtension(const TEString &extension);
+    static TEVector2 GetDefaultIconSize(const TEString &type);
 
-    // Image utilities (stb_image encapsulation)
-    static ImageData ImportImage(const std::string &filepath, int desiredChannels = 0);
-    static void FreeImage(unsigned char *data);
-    static bool ExportImagePNG(const std::string &path, int width, int height, int channels, const void *data);
+    // Image & Font utilities (stb encapsulation)
+    static ImageData ImportImage(const TEString &filepath, int desiredChannels = 0);
+    static bool ExportImagePNG(const TEString &path, int width, int height, int channels, const void *data);
+    static bool BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSize, uint32_t atlasWidth,
+                              uint32_t atlasHeight, float &outAscent, float &outDescent, float &outLineHeight,
+                              TEMap<TEString, struct FontGlyph> &outGlyphs, TEArray<uint8_t> &outRgbaBitmap);
 
 private:
-    static std::unordered_map<AssetHandle, std::shared_ptr<Asset>> s_LoadedAssets;
-    static std::unordered_map<std::string, AssetTypeMetadata> s_AssetTypeRegistry;
+    static TEMap<AssetHandle, TERef<Asset>> s_LoadedAssets;
 };
 
-} // namespace TE
+#define TE_REGISTER_ASSET(type)                                                                                        \
+    static struct TEAssetRegistrar_##type                                                                              \
+    {                                                                                                                  \
+        TEAssetRegistrar_##type() { AssetManager::RegisterAssetType(CreateRef<type>()); }                              \
+    } g_TEAssetRegistrar_##type;

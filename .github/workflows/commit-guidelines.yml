@@ -1,0 +1,97 @@
+name: Commit Guidelines Validator
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  commit-guidelines-check:
+    name: Validate Commit & PR Guidelines
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Resolve Author Email
+        id: author-info
+        run: |
+          AUTHOR_EMAIL="${{ github.event.pusher.email }}"
+          if [ -z "$AUTHOR_EMAIL" ] || [ "$AUTHOR_EMAIL" = "null" ]; then
+            AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          fi
+          echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+          echo "Causer email resolved to: $AUTHOR_EMAIL"
+
+      - name: Run Commit Guidelines Validator
+        id: run-commit-check
+        run: |
+          mkdir -p .github/reports
+          BASE_REF="${{ github.event.pull_request.base.sha || github.event.before }}"
+          HEAD_REF="${{ github.event.pull_request.head.sha || github.sha }}"
+
+          if [ "$BASE_REF" = "0000000000000000000000000000000000000000" ] || [ -z "$BASE_REF" ]; then
+            BASE_REF="HEAD~1"
+          fi
+
+          python .github/scripts/commit_guidelines.py \
+            --base-ref "$BASE_REF" \
+            --head-ref "$HEAD_REF" \
+            --pr-title "${{ github.event.pull_request.title }}" \
+            --pr-body "${{ github.event.pull_request.body }}" \
+            --causer-email "${{ steps.author-info.outputs.email }}" \
+            --trigger-context "${{ github.event_name }} on ${{ github.ref_name }}" \
+            --report-dir ".github/reports"
+
+      - name: Upload Audit Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commit-guidelines-audit-report
+          path: .github/reports/
+          retention-days: 7
+
+      - name: Post Comment on Pull Request (Irrespective of email settings)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = '.github/reports/commit_guidelines_report.txt';
+            if (fs.existsSync(reportPath)) {
+              const body = fs.readFileSync(reportPath, 'utf8');
+              const comment = `### ⚠️ Commit Guidelines Audit Notice\n\nHey @${context.actor}, please review the following issues with your commit / PR:\n\n${body}`;
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+      - name: Send Direct Email Notification to Causer
+        if: always() && env.MAIL_SERVER != '' && steps.author-info.outputs.email != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT || 465 }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[TimeEngine CI] Commit Guidelines Audit Report - ${{ steps.run-commit-check.outcome == 'success' && 'PASSED' || 'ISSUES DETECTED' }}"
+          to: ${{ steps.author-info.outputs.email }}
+          from: ${{ secrets.MAIL_FROM || 'ci-bot@timeengine.org' }}
+          html_body: file://.github/reports/commit_guidelines_report.html

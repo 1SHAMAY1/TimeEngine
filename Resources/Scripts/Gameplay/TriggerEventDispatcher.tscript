@@ -1,0 +1,47 @@
+// ==============================================================================
+// TimeEngine Engine Content - TriggerEventDispatcher.tscript
+// Category: Gameplay & Combat
+// Extends: BoxColliderComponent / CircleColliderComponent (Trigger Mode)
+// Description: Detects trigger entry/exit events, player tag filtering, and one-shot logic.
+// ==============================================================================
+
+class TriggerEventDispatcher : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(string, target_tag, "Player")
+    T_REGISTER_PROPERTY(bool, one_shot_only, false)
+    T_REGISTER_PROPERTY(float, retrigger_cooldown, 1.0)
+    T_REGISTER_PROPERTY(bool, is_active, true)
+
+    public:
+        bool has_triggered = false
+        int trigger_count = 0
+
+    private:
+        float m_cooldown_timer = 0.0
+
+    on_ready() {
+        has_triggered = false
+        trigger_count = 0
+        m_cooldown_timer = 0.0
+        TE_CORE_INFO("TriggerEventDispatcher ready for tag: " + target_tag)
+    }
+
+    on_update(float dt) {
+        if (m_cooldown_timer > 0.0) {
+            m_cooldown_timer -= dt
+        }
+    }
+
+    on_collision(other) {
+        if (!is_active or (one_shot_only and has_triggered)) {
+            return
+        }
+
+        if (m_cooldown_timer <= 0.0) {
+            has_triggered = true
+            trigger_count += 1
+            m_cooldown_timer = retrigger_cooldown
+            TE_CORE_INFO("Trigger activated by object: " + other + " (Count: " + trigger_count + ")")
+        }
+    }

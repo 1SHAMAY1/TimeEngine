@@ -9,8 +9,8 @@ The Core Time subsystem in TimeEngine provides frame timing, repeating tick coun
 
 ## Component Overview
 
-1. **[`TE::Timer`](file:///e:/TimeEngine/Engine/src/Core/Time/Timer.hpp)**: Static manager for scheduling delayed or looping callbacks based on elapsed time or frame counts.
-2. **[`TE::Ticker`](file:///e:/TimeEngine/Engine/src/Core/Time/Ticker.hpp)**: Class instance managing interval-based tick callbacks with accumulators.
+1. **[`TE::Timer`](Timer.hpp)**: Static manager for scheduling delayed or looping callbacks based on elapsed time or frame counts.
+2. **[`TE::Ticker`](Ticker.hpp)**: Class instance managing interval-based tick callbacks with accumulators.
 
 ---
 

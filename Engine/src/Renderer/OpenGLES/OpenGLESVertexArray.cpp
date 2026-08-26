@@ -1,8 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESVertexArray.hpp"
 #include <glad/glad.h>
-
-namespace TE
-{
 
 OpenGLESVertexArray::OpenGLESVertexArray()
 {
@@ -16,7 +14,7 @@ void OpenGLESVertexArray::Bind() const { glBindVertexArray(m_RendererID); }
 
 void OpenGLESVertexArray::Unbind() const { glBindVertexArray(0); }
 
-void OpenGLESVertexArray::AddVertexBuffer(VertexBuffer *vertexBuffer)
+void OpenGLESVertexArray::AddVertexBuffer(const TERef<VertexBuffer> &vertexBuffer)
 {
     glBindVertexArray(m_RendererID);
     vertexBuffer->Bind();
@@ -33,11 +31,9 @@ void OpenGLESVertexArray::AddVertexBuffer(VertexBuffer *vertexBuffer)
     m_VertexBuffer = vertexBuffer;
 }
 
-void OpenGLESVertexArray::SetIndexBuffer(IndexBuffer *indexBuffer)
+void OpenGLESVertexArray::SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer)
 {
     glBindVertexArray(m_RendererID);
     indexBuffer->Bind();
     m_IndexBuffer = indexBuffer;
 }
-
-} // namespace TE

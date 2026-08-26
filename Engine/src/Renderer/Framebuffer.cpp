@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Framebuffer.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLFramebuffer.hpp"
@@ -8,14 +9,15 @@
 #include "Renderer/OpenGLES/OpenGLESFramebuffer.hpp"
 #endif
 
+#ifdef TE_SUPPORT_VULKAN
+#include "Renderer/Vulkan/VulkanFramebuffer.hpp"
+#endif
+
 #ifdef TE_SUPPORT_METAL
 #include "Renderer/Metal/MetalFramebuffer.hpp"
 #endif
 
-namespace TE
-{
-
-std::shared_ptr<Framebuffer> Framebuffer::Create(const FramebufferSpecification &spec)
+TERef<Framebuffer> Framebuffer::Create(const FramebufferSpecification &spec)
 {
     switch (RendererContext::GetAPI())
     {
@@ -23,20 +25,22 @@ std::shared_ptr<Framebuffer> Framebuffer::Create(const FramebufferSpecification 
         return nullptr;
 #ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
-        return std::make_shared<OpenGLFramebuffer>(spec);
+        return CreateRef<OpenGLFramebuffer>(spec);
 #endif
 #if defined(TE_PLATFORM_MOBILE)
     case GraphicsAPI::OpenGLES:
-        return std::make_shared<OpenGLESFramebuffer>(spec);
+        return CreateRef<OpenGLESFramebuffer>(spec);
+#endif
+#ifdef TE_SUPPORT_VULKAN
+    case GraphicsAPI::Vulkan:
+        return CreateRef<VulkanFramebuffer>(spec);
 #endif
 #ifdef TE_SUPPORT_METAL
     case GraphicsAPI::Metal:
-        return std::make_shared<MetalFramebuffer>(spec);
+        return CreateRef<MetalFramebuffer>(spec);
 #endif
     default:
         break;
     }
     return nullptr;
 }
-
-} // namespace TE

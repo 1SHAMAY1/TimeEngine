@@ -1,9 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 #include <volk.h>
-
-namespace TE
-{
 
 class VulkanContext
 {
@@ -31,5 +28,3 @@ private:
     inline static VkCommandPool s_CommandPool = VK_NULL_HANDLE;
     inline static void *s_WindowHandle = nullptr;
 };
-
-} // namespace TE

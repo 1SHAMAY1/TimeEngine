@@ -1,14 +1,12 @@
 #pragma once
 #include "Core/Asset/Asset.hpp"
+#include "Core/Asset/AssetManager.hpp"
 #include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
 #include <glm/glm.hpp>
-#include <unordered_map>
-
-namespace TE
-{
 
 enum class MaterialPassNodeType
 {
@@ -32,14 +30,14 @@ enum class MaterialPassNodeType
 
 struct MaterialPassNode
 {
-    std::string Name;
+    TEString Name;
     MaterialPassNodeType Type = MaterialPassNodeType::BaseSurfaceSlab;
     bool Enabled = true;
     int TargetQueueIndex = 0;
-    std::string QueueName = "Queue 1";
+    TEString QueueName = "Queue 1";
 
-    std::string TexturePath;
-    std::shared_ptr<class Texture> TextureRef;
+    TEString TexturePath;
+    TERef<class Texture> TextureRef;
     TEVector4 Color = {1.0f, 1.0f, 1.0f, 1.0f};
     float FloatVal1 = 1.0f; // e.g. Roughness / Bump Depth / Intensity / Speed X
     float FloatVal2 = 0.0f; // e.g. Metallic / Speed Y
@@ -51,75 +49,78 @@ struct MaterialPassNode
 class TE_API Material : public Asset
 {
 public:
-    Material(const std::shared_ptr<Shader> &shader);
+    Material(const TERef<Shader> &shader);
     Material();
     virtual ~Material();
 
     void SetColor(const TEColor &color);
     const TEColor &GetColor() const;
 
-    void SetUniform(const std::string &name, float value);
-    void SetUniform(const std::string &name, int value);
-    void SetUniform(const std::string &name, const glm::vec2 &value);
-    void SetUniform(const std::string &name, const glm::vec3 &value);
-    void SetUniform(const std::string &name, const glm::vec4 &value);
-    void SetUniform(const std::string &name, const glm::mat4 &value);
+    void SetUniform(const TEString &name, float value);
+    void SetUniform(const TEString &name, int value);
+    void SetUniform(const TEString &name, const glm::vec2 &value);
+    void SetUniform(const TEString &name, const glm::vec3 &value);
+    void SetUniform(const TEString &name, const glm::vec4 &value);
+    void SetUniform(const TEString &name, const glm::mat4 &value);
 
-    void SetShader(const std::shared_ptr<Shader> &shader);
-    std::shared_ptr<Shader> GetShader() const;
+    void SetShader(const TERef<Shader> &shader);
+    TERef<Shader> GetShader() const;
 
     // Set all uniforms (for now, just color and custom ones)
     void ApplyUniforms();
 
     // Pass Stack Methods
-    const std::vector<MaterialPassNode> &GetPassStack() const { return m_PassStack; }
-    std::vector<MaterialPassNode> &GetPassStack() { return m_PassStack; }
-    void AddPassNode(const MaterialPassNode &node) { m_PassStack.push_back(node); }
+    const TEArray<MaterialPassNode> &GetPassStack() const { return m_PassStack; }
+    TEArray<MaterialPassNode> &GetPassStack() { return m_PassStack; }
+    void AddPassNode(const MaterialPassNode &node) { m_PassStack.Add(node); }
     void RemovePassNode(size_t index)
     {
-        if (index < m_PassStack.size())
-            m_PassStack.erase(m_PassStack.begin() + index);
+        if (index < m_PassStack.Size())
+            m_PassStack.RemoveAt(index);
     }
 
     // Asset Interface
     virtual AssetHandle GetHandle() const override { return m_Handle; }
-    virtual const std::string &GetType() const override
+    virtual const TEString &GetType() const override
     {
-        static std::string type = "Material";
+        static TEString type = "Material";
         return type;
     }
-    virtual const std::string &GetName() const override { return m_Name; }
-    virtual const std::string &GetHoverDescription() const override
+    virtual const TEString &GetName() const override { return m_Name; }
+    virtual const TEString &GetHoverDescription() const override
     {
-        static std::string desc = "Material Asset";
+        static TEString desc = "Material Asset";
         return desc;
     }
-    virtual std::string GetDefaultExtension() const override { return ".tematerial"; }
-    virtual std::string GetDefaultIconPath() const override { return "Resources/Editor/MaterialIcon.png"; }
+    virtual TEString GetDefaultExtension() const override { return ".tematerial"; }
+    virtual TEString GetDefaultIconPath() const override { return "Resources/Editor/MaterialIcon.png"; }
 
-    virtual std::shared_ptr<class Texture> GetIcon() const override { return nullptr; }
-    virtual std::shared_ptr<class Texture> GetThumbnail() const override { return nullptr; }
+    virtual TERef<class Texture> GetIcon() const override { return nullptr; }
+    virtual TERef<class Texture> GetThumbnail() const override { return nullptr; }
 
-    virtual void OnContentBrowserCreate(const std::filesystem::path &path) override;
+    virtual TERef<Asset> Clone() const override { return CreateRef<Material>(nullptr); }
+    virtual bool LoadFromFile(const TEString &path) override;
 
-    void SetName(const std::string &name) { m_Name = name; }
+    virtual void OnContentBrowserCreate(const TEString &path) override;
+
+    void SetName(const TEString &name) { m_Name = name; }
     void SetHandle(AssetHandle handle) { m_Handle = handle; }
 
+    static TERef<Material> GetDefault();
+
 private:
-    std::shared_ptr<Shader> m_Shader;
+    TERef<Shader> m_Shader;
     TEColor m_Color;
 
-    std::unordered_map<std::string, float> m_FloatUniforms;
-    std::unordered_map<std::string, int> m_IntUniforms;
-    std::unordered_map<std::string, glm::vec2> m_Vec2Uniforms;
-    std::unordered_map<std::string, glm::vec3> m_Vec3Uniforms;
-    std::unordered_map<std::string, glm::vec4> m_Vec4Uniforms;
-    std::unordered_map<std::string, glm::mat4> m_Mat4Uniforms;
+    TEMap<TEString, float> m_FloatUniforms;
+    TEMap<TEString, int> m_IntUniforms;
+    TEMap<TEString, glm::vec2> m_Vec2Uniforms;
+    TEMap<TEString, glm::vec3> m_Vec3Uniforms;
+    TEMap<TEString, glm::vec4> m_Vec4Uniforms;
+    TEMap<TEString, glm::mat4> m_Mat4Uniforms;
 
-    std::vector<MaterialPassNode> m_PassStack;
+    TEArray<MaterialPassNode> m_PassStack;
 
     AssetHandle m_Handle = 0;
-    std::string m_Name = "Unnamed Material";
+    TEString m_Name = "Unnamed Material";
 };
-
-} // namespace TE

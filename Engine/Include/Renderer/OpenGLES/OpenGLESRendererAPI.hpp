@@ -1,9 +1,6 @@
 #pragma once
 #include "Renderer/RendererAPI.hpp"
 
-namespace TE
-{
-
 class OpenGLESRendererAPI : public RendererAPI
 {
 public:
@@ -17,9 +14,9 @@ public:
     virtual void SetBlendMode(int blendMode) override;
 
     virtual bool LoadLoader(void *(*loadProc)(const char *)) override;
-    virtual std::string GetVersionString() override;
-    virtual std::string GetGPUVendor() override;
-    virtual std::string GetGPURenderer() override;
+    virtual TEString GetVersionString() override;
+    virtual TEString GetGPUVendor() override;
+    virtual TEString GetGPURenderer() override;
 
     virtual void GetViewport(int *viewport) override;
     virtual void GetClearColor(float *color) override;
@@ -28,5 +25,3 @@ public:
     virtual void SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dstRGB, BlendFactor srcAlpha,
                                       BlendFactor dstAlpha) override;
 };
-
-} // namespace TE

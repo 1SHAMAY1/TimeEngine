@@ -1,12 +1,9 @@
 #pragma once
 
-#include "Core/EngineSettings.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Settings/GeneralEngineSettings.hpp"
 #include "Layers/Layer.hpp"
 #include "Utils/TimeGUI.hpp"
-
-namespace TE
-{
 
 /**
  * EngineSettingsLayer - UI layer for managing engine settings
@@ -15,7 +12,7 @@ namespace TE
 class TE_API EngineSettingsLayer : public Layer
 {
 public:
-    EngineSettingsLayer(const std::string &name = "Engine Settings");
+    EngineSettingsLayer(const TEString &name = "Engine Settings");
     virtual ~EngineSettingsLayer();
 
     virtual void OnAttach() override;
@@ -31,7 +28,7 @@ public:
 
     void SetWindowPosition(const TEVector2 &pos) { m_WindowPos = pos; }
     void SetWindowSize(const TEVector2 &size) { m_WindowSize = size; }
-    void SetWindowTitle(const std::string &title) { m_WindowTitle = title; }
+    void SetWindowTitle(const TEString &title) { m_WindowTitle = title; }
 
 private:
     // ===== UI Rendering Methods =====
@@ -58,16 +55,16 @@ private:
     bool m_IsVisible = true;
     TEVector2 m_WindowPos = TEVector2(50, 50);
     TEVector2 m_WindowSize = TEVector2(600, 500);
-    std::string m_WindowTitle = "Engine Settings";
+    TEString m_WindowTitle = "Engine Settings";
 
     // ===== Settings Cache =====
-    EngineSettings &m_Settings = EngineSettings::Get();
+    GeneralEngineSettings &m_Settings = GeneralEngineSettings::Get();
 
     // ===== UI State Variables =====
     bool m_ShowConfirmationDialog = false;
     bool m_ShowValidationErrors = false;
-    std::string m_ValidationErrorText;
-    std::string m_SelectedSettingsFile = "engine_settings.json";
+    TEString m_ValidationErrorText;
+    TEString m_SelectedSettingsFile = "engine_settings.json";
 
     // ===== Temporary Settings (for UI) =====
     struct TempSettings
@@ -81,9 +78,9 @@ private:
         // Logging
         bool logToFile = true;
         bool logToConsole = true;
-        std::string logLevel = "INFO";
+        TEString logLevel = "INFO";
         bool logTimestamp = true;
-        std::string logFile = "TimeEngineLog.json";
+        TEString logFile = "TimeEngineLog.json";
 
         // Performance
         uint32_t maxDrawCalls = 10000;
@@ -101,7 +98,7 @@ private:
         bool showBoundingBoxes = false;
 
         // Window
-        std::string windowTitle = "TimeEngine";
+        TEString windowTitle = "TimeEngine";
         uint32_t windowWidth = 1280;
         uint32_t windowHeight = 720;
         bool windowResizable = true;
@@ -127,10 +124,10 @@ private:
         uint32_t audioChannels = 2;
 
         // File I/O
-        std::string assetPath = "assets/";
-        std::string configPath = "config/";
-        std::string logPath = "logs/";
-        std::string savePath = "saves/";
+        TEString assetPath = "assets/";
+        TEString configPath = "config/";
+        TEString logPath = "logs/";
+        TEString savePath = "saves/";
     };
 
     TempSettings m_TempSettings;
@@ -142,5 +139,3 @@ private:
     TEVector4 m_ErrorColor = TEVector4(1.0f, 0.0f, 0.0f, 1.0f);
     TEVector4 m_SuccessColor = TEVector4(0.0f, 1.0f, 0.0f, 1.0f);
 };
-
-} // namespace TE

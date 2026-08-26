@@ -5,20 +5,17 @@
 #include <memory>
 #include <vector>
 
-namespace TE
-{
-
-class InputSystem
+class TE_API InputSystem
 {
 public:
     static InputSystem &Get();
 
-    void AddMappingContext(std::shared_ptr<InputMappingContext> context, int priority = 0);
-    void RemoveMappingContext(std::shared_ptr<InputMappingContext> context);
+    void AddMappingContext(TERef<InputMappingContext> context, int priority = 0);
+    void RemoveMappingContext(TERef<InputMappingContext> context);
 
     void Update(float deltaTime);
 
-    void SetRemapper(std::shared_ptr<InputRemapper> remapper) { m_Remapper = remapper; }
+    void SetRemapper(TERef<InputRemapper> remapper) { m_Remapper = remapper; }
 
     // Internally used by components to register themselves
     void RegisterComponent(InputComponent *component);
@@ -29,13 +26,11 @@ private:
 
     struct ContextPriority
     {
-        std::shared_ptr<InputMappingContext> Context;
+        TERef<InputMappingContext> Context;
         int Priority;
     };
 
-    std::vector<ContextPriority> m_Contexts;
-    std::vector<InputComponent *> m_Components;
-    std::shared_ptr<InputRemapper> m_Remapper;
+    TEArray<ContextPriority> m_Contexts;
+    TEArray<InputComponent *> m_Components;
+    TERef<InputRemapper> m_Remapper;
 };
-
-} // namespace TE

@@ -1,0 +1,43 @@
+// ==============================================================================
+// TimeEngine Engine Content - ProjectileImpactFX.tscript
+// Category: Gameplay & Combat
+// Extends: ProjectileMovementComponent / CollisionComponent
+// Description: Manages projectile impact triggers, splash radius damage, and ricochets.
+// ==============================================================================
+
+class ProjectileImpactFX : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, direct_damage, 25.0)
+    T_REGISTER_PROPERTY(float, splash_radius, 80.0)
+    T_REGISTER_PROPERTY(float, splash_damage, 15.0)
+    T_REGISTER_PROPERTY(int, max_ricochets, 0)
+    T_REGISTER_PROPERTY(bool, explode_on_impact, true)
+
+    public:
+        int current_ricochets = 0
+        bool has_detonated = false
+
+    on_ready() {
+        current_ricochets = 0
+        has_detonated = false
+        TE_CORE_INFO("ProjectileImpactFX armed. Damage: " + direct_damage)
+    }
+
+    on_collision(other) {
+        if (has_detonated) {
+            return
+        }
+
+        if (current_ricochets < max_ricochets) {
+            current_ricochets += 1
+            TE_CORE_INFO("Projectile ricocheted! Count: " + current_ricochets)
+        } else {
+            has_detonated = true
+            if (explode_on_impact) {
+                TE_CORE_INFO("Projectile detonated with splash radius: " + splash_radius)
+            } else {
+                TE_CORE_INFO("Projectile impact on target: " + other)
+            }
+        }
+    }

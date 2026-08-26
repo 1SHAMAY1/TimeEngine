@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef __cplusplus
 // ====================================================================================
 // Standard Library Includes
 // ====================================================================================
@@ -15,15 +16,22 @@
 #include <map>           // Ordered map
 #include <memory>        // Smart pointers (unique_ptr, shared_ptr)
 #include <mutex>         // Mutex for thread safety
+#include <optional>      // Optional values
 #include <queue>         // Queue operations
 #include <set>           // Ordered set
+#include <span>          // Safe contiguous views
 #include <sstream>       // String stream operations
-#include <string>        // std::string operations
+#include <string>        // TEString operations
+#include <string_view>   // Non-owning string slices
 #include <thread>        // Threading support
 #include <unordered_map> // Hash-based map
 #include <unordered_set> // Hash-based set
 #include <utility>       // Utilities (move, swap, etc.)
+#include <variant>       // Type-safe algebraic unions
 #include <vector>        // Dynamic array container
+#if defined(__cpp_lib_expected) || (__cplusplus >= 202302L && __has_include(<expected>))
+#include <expected> // C++23 Expected error handling
+#endif
 
 #ifdef __MINGW32__
 #include <sec_api/string_s.h>
@@ -33,6 +41,11 @@
 // Platform Detection & API Export Macros
 // ====================================================================================
 // Used to support DLL export/import on Windows.
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4251) // class 'xxx' needs to have dll-interface to be used by clients of class 'yyy'
+#pragma warning(disable : 4275) // non dll-interface class 'xxx' used as base for dll-interface class 'yyy'
+#endif
 
 #ifdef TE_PLATFORM_WINDOWS
 #ifdef TE_BUILD_DLL
@@ -44,12 +57,47 @@
 #define TE_API __attribute__((visibility("default")))
 #endif
 
+// Core Engine String Type
+#include "Utils/TEString.hpp"
+
 // ====================================================================================
 // Common Macros
 // ====================================================================================
 // Bit masking macro to set a specific bit (used for flags, event categories, etc.)
 
 #define BIT(x) (1 << x)
+
+// ====================================================================================
+// Core Smart Pointer Aliases & Factory Functions
+// ====================================================================================
+namespace TE
+{
+
+// Unique Ownership (Exclusive, Move-Only)
+template <typename T> using TEScope = std::unique_ptr<T>;
+
+template <typename T, typename... Args> constexpr TEScope<T> CreateScope(Args &&...args)
+{
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
+
+// Shared Ownership (Reference Counted)
+template <typename T> using TERef = std::shared_ptr<T>;
+
+template <typename T, typename... Args> constexpr TERef<T> CreateRef(Args &&...args)
+{
+    return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+// Weak Non-Owning Observer (Breaks Reference Cycles)
+template <typename T> using TEWeakRef = std::weak_ptr<T>;
+
+// Common short aliases matching engine conventions
+template <typename T> using Scope = TEScope<T>;
+template <typename T> using Ref = TERef<T>;
+template <typename T> using WeakRef = TEWeakRef<T>;
+
+} // namespace TE
 
 // ====================================================================================
 // Delegate System
@@ -85,15 +133,15 @@
 #define DECLARE_MULTICAST_DELEGATE(Name)                                                                               \
     struct Name                                                                                                        \
     {                                                                                                                  \
-        std::vector<std::function<void()>> Listeners;                                                                  \
-        void Add(const std::function<void()> &listener) { Listeners.push_back(listener); }                             \
+        TEArray<std::function<void()>> Listeners;                                                                      \
+        void Add(const std::function<void()> &listener) { Listeners.Add(listener); }                                   \
         void Broadcast() const                                                                                         \
         {                                                                                                              \
-            for (auto &f : Listeners)                                                                                  \
-                f();                                                                                                   \
+            for (size_t i = 0; i < Listeners.Num(); ++i)                                                               \
+                Listeners[i]();                                                                                        \
         }                                                                                                              \
-        void Clear() { Listeners.clear(); }                                                                            \
-        bool IsBound() const { return !Listeners.empty(); }                                                            \
+        void Clear() { Listeners.Clear(); }                                                                            \
+        bool IsBound() const { return !Listeners.IsEmpty(); }                                                          \
     };
 
 // ====================================================================================
@@ -143,25 +191,10 @@
 #pragma once
 
 // === [Meta Marker Macros for Classes, Structs, Enums] ===
-// NOTE: Parameters like Category, Name, Description, Tooltip are for future parsing
-
-#define TE_CLASS(...)                                                                                                  \
-    static constexpr const char *TEClassCategory = "DefaultClass";                                                     \
-    static constexpr const char *TEClassName = "UnnamedClass";                                                         \
-    static constexpr const char *TEClassDescription = "No description provided.";                                      \
-    static constexpr const char *TEClassTooltip = "No tooltip provided.";
-
-#define TE_STRUCT(...)                                                                                                 \
-    static constexpr const char *TEStructCategory = "DefaultStruct";                                                   \
-    static constexpr const char *TEStructName = "UnnamedStruct";                                                       \
-    static constexpr const char *TEStructDescription = "No description provided.";                                     \
-    static constexpr const char *TEStructTooltip = "No tooltip provided."
-
-#define TE_ENUM(...)                                                                                                   \
-    static constexpr const char *TEEnumCategory = "DefaultEnum";                                                       \
-    static constexpr const char *TEEnumName = "UnnamedEnum";                                                           \
-    static constexpr const char *TEEnumDescription = "No description provided.";                                       \
-    static constexpr const char *TEEnumTooltip = "No tooltip provided."
+// Marker macros for header parsing and reflection
+#define TE_CLASS(...)
+#define TE_STRUCT(...)
+#define TE_ENUM(...)
 
 // === [Property Marker Macro] ===
 // Marker only (zero runtime overhead)
@@ -239,6 +272,7 @@ template <size_t Size> inline int strncpy_s(char (&dest)[Size], const char *src,
 #endif
 
 #ifndef TE_PLATFORM_WINDOWS
+#include <cstdlib>
 #include <dlfcn.h>
 using HMODULE = void *;
 #define GetProcAddress dlsym
@@ -246,9 +280,12 @@ using HMODULE = void *;
 
 inline HMODULE LoadLibraryW(const wchar_t *wpath)
 {
-    std::wstring ws(wpath);
-    std::string path(ws.begin(), ws.end());
-    return dlopen(path.c_str(), RTLD_NOW);
+    if (!wpath)
+        return nullptr;
+    char path[1024];
+    wcstombs(path, wpath, sizeof(path));
+    path[sizeof(path) - 1] = '\0';
+    return dlopen(path, RTLD_NOW);
 }
 #endif
 
@@ -266,3 +303,12 @@ inline HMODULE LoadLibraryW(const wchar_t *wpath)
 #define TE_SUPPORT_OPENGL
 #define TE_SUPPORT_VULKAN
 #endif
+
+// ====================================================================================
+// Global Engine Namespace Exposure
+// ====================================================================================
+namespace TE
+{
+}
+using namespace TE;
+#endif // __cplusplus

@@ -1,10 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Renderer/VertexBuffer.hpp"
 
 struct ID3D11Buffer;
-
-namespace TE
-{
 
 class DirectX11VertexBuffer : public VertexBuffer
 {
@@ -21,5 +18,3 @@ private:
     uint32_t m_Stride = 0; // stride in bytes (always sizeof(float) * components)
     uint32_t m_Size = 0;
 };
-
-} // namespace TE

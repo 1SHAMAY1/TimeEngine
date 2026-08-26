@@ -1,12 +1,10 @@
+#include "Core/PreRequisites.h"
 #include "Layers/Layer.hpp"
 #include "Utils/TimeGUI.hpp"
 
 #include "Utils/TimeGUI.hpp"
 
-namespace TE
-{
-
-Layer::Layer(const std::string &name) : m_DebugName(name) {}
+Layer::Layer(const TEString &name) : m_DebugName(name) {}
 
 Layer::~Layer() {}
 
@@ -15,6 +13,8 @@ void Layer::OnAttach() {}
 void Layer::OnDetach() {}
 
 void Layer::OnUpdate() {}
+
+void Layer::OnRender() {}
 
 void Layer::OnTimeGUIRender() {}
 
@@ -47,5 +47,3 @@ void Layer::DockTo(bool padding)
 
     TimeGUI::PopStyleVar(padding ? 1 : 2);
 }
-
-} // namespace TE

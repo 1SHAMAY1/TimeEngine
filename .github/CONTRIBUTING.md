@@ -1,0 +1,80 @@
+# Contributing to TimeEngine
+
+First off, thank you for considering contributing to TimeEngine! It's people like you who make it a great tool for everyone.
+
+## Code of Conduct
+
+By participating in this project, you agree to abide by our Code of Conduct (standard Contributor Covenant).
+
+## How Can I Contribute?
+
+### Reporting Bugs
+- Use the **GitHub Issue Tracker**.
+- Check if the issue has already been reported.
+- Include steps to reproduce, expected behavior, and actual behavior.
+
+### Suggesting Enhancements
+- Open a **Feature Request** issue.
+- Describe the use case and why this feature would be beneficial.
+
+### Pull Requests
+1. Fork the repo and create your branch from `main`.
+2. If you've added code that should be tested, add tests.
+3. If you've changed APIs, update the documentation.
+4. Ensure the test suite passes.
+5. Make sure your code follows the existing style (`.clang-format`).
+
+## Development Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
+   ```
+2. **Generate Project Files**:
+   Run the workspace generation script for your platform:
+   - **Windows**: `Scripts/Windows/GenerateProjectFiles.bat`
+   - **Linux**: `Scripts/Linux/GenerateProjectFiles.sh`
+   - **macOS**: `Scripts/Mac/GenerateProjectFiles.sh`
+3. **Build**:
+   Open the generated IDE workspace/solution or build using the native platform tools (e.g. MSBuild on Windows, `make` on Linux, `xcodebuild` on macOS).
+
+## Code Style & Engine Conventions
+
+We use `.clang-format` to maintain consistent code style. Please run clang-format on your changes before submitting a PR.
+
+- **Naming**: PascalCase for Classes, camelCase for variables (`m_` prefix for private member variables), SCREAMING_SNAKE_CASE for macros.
+- **Headers**: Use `#pragma once` in all headers.
+- **Indentation**: 4 spaces.
+
+### Memory Management & Smart Pointers
+- **No Raw Owning Pointers**: Never use `new` / `delete` or unmanaged raw pointers for memory ownership.
+- **Unique Ownership**: Use `TE::Scope<T>` and create instances using `TE::CreateScope<T>(...)` (aliases for `std::unique_ptr` / `std::make_unique`).
+- **Shared Ownership**: Use `TE::Ref<T>` and create instances using `TE::CreateRef<T>(...)` (aliases for `std::shared_ptr` / `std::make_shared`).
+- **Weak Observers**: Use `TE::WeakRef<T>` (`std::weak_ptr`) to observe objects without taking ownership and to prevent circular reference leaks.
+
+### Engine Types Over Raw / STL Types
+- **Strings**: Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` instead of raw `std::string` or `const char*` across engine public APIs, components, properties, and serialization.
+- **Dynamic Arrays**: Use `TEArray<T>` (from `GameFrameWork/GameplayUtils.hpp`) with engine methods (`Add()`, `Num()`, `IsEmpty()`, `Clear()`).
+- **Optional & Results**: Use `TEOption<T>` / `TENone`, `TESpan<T>`, and `TEResult<T, E>` / `TEUnexpected<E>` (from `GameFrameWork/GameplayUtils.hpp`) for clean error handling.
+- **Math & Vectors**: Always use engine math types (`TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` from `Utils/MathUtils.hpp`) rather than raw GLM or vendor math structs.
+- **GUI Abstraction**: Never call raw `ImGui` functions or include `imgui.h` outside `TimeGUI.cpp` / `TimeGUILayer.cpp`. Use the `TE::TimeGUI` abstraction wrapper namespace and types (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`).
+
+### Writing Plugins & MCP Tools
+- **Writing Plugins**:
+  - Save descriptors as `<PluginName>.teplugin` (containing `Name: ...`, `Version: ...`, `Description: ...`, `Enabled: true/false`).
+  - Keep the DLL inside the same plugin subdirectory. Discovered dynamically by `PluginManager`.
+- **Writing MCP Tools**:
+  - Add tool schemas to `Tool_GetEngineInfo()` inside `MCPPlugin.cpp`.
+  - Add dispatch handlers inside `DispatchToolCall()` mapping to your custom `Tool_<Name>` method.
+
+### Component Registration
+When adding new components to the ECS (under `Engine/Include/Core/Scene/`), make sure to use the reflection macros so they register with the serialization and Editor systems:
+- Register the component using `T_REGISTER_COMPONENT(MyComponent, "My Component Name")`.
+- Register each property using `T_REGISTER_PROPERTY(MyComponent, Type, VariableName, "Display Name")`.
+
+This allows the Editor's **Properties** panel to draw the controls automatically without writing manual ImGui code.
+
+## Core Focus: 2D Excellence & Time Manipulation
+
+Contributions that advance the **Inbuilt 2D Sprite Editor** or the **Time Manipulation** system (deterministic simulation, state snapshots, time-reversal) are highly prioritized. We aim to be the premier C++ solution for deterministic 2D development. See [ROADMAP.md](../Docs/ROADMAP.md) for details.
+

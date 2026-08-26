@@ -2,9 +2,6 @@
 #include "CollisionComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 
-namespace TE
-{
-
 class BoxColliderComponent : public CollisionComponent
 {
 public:
@@ -15,7 +12,7 @@ public:
 
     BoxColliderComponent() { shape.type = CollisionType::AABB; }
 
-    virtual const char *GetClassName() const override { return StaticClassName; }
+    virtual TEString GetClassName() const override { return StaticClassName; }
 
     virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
     {
@@ -33,6 +30,6 @@ T_REGISTER_PROPERTY(BoxColliderComponent, TEVector2, Offset, "Offset")
 T_REGISTER_PROPERTY(BoxColliderComponent, TEVector2, Size, "Size")
 T_REGISTER_PROPERTY(BoxColliderComponent, bool, isStatic, "Is Static")
 T_REGISTER_PROPERTY(BoxColliderComponent, bool, isTrigger, "Is Trigger")
+T_REGISTER_PRESET(BoxColliderComponent, "Box Collider 2D", "Physics & Collisions",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<BoxColliderComponent>(id); })
 #endif
-
-} // namespace TE

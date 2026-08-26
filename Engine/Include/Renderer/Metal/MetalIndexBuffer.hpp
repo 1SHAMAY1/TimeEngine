@@ -1,9 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Renderer/IndexBuffer.hpp"
 
-namespace TE
-{
 class MetalIndexBuffer : public IndexBuffer
 {
 public:
@@ -21,4 +19,3 @@ private:
     void *m_Buffer = nullptr;
     uint32_t m_Count = 0;
 };
-} // namespace TE

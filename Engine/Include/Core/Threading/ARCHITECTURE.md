@@ -1,6 +1,6 @@
 # Multi-Threading & Task System Architecture
 
-The Multi-Threading subsystem in TimeEngine provides dedicated thread pools ([`ThreadPool`](file:///e:/TimeEngine/Engine/Include/Core/Threading/ThreadPool.hpp)), task-type queue scheduling ([`TaskSystem`](file:///e:/TimeEngine/Engine/Include/Core/Threading/TaskSystem.hpp)), and submission macros ([`ThreadingMacros.hpp`](file:///e:/TimeEngine/Engine/Include/Core/Threading/ThreadingMacros.hpp)).
+The Multi-Threading subsystem in TimeEngine provides dedicated thread pools ([`ThreadPool`](ThreadPool.hpp)), task-type queue scheduling ([`TaskSystem`](TaskSystem.hpp)), and submission macros ([`ThreadingMacros.hpp`](ThreadingMacros.hpp)).
 
 > [!NOTE]
 > In short, think of the **Multi-Threading Subsystem** as the engine's multi-core task dispatcher: instead of running heavy computations on the main thread, `TaskSystem` maintains 6 specialized thread pools (Main, Render, Gameplay, AI, Calculation, Widget) and provides macro helpers (`SUBMIT_CALC`, `SUBMIT_AI`, `SUBMIT_RENDER`) to execute asynchronous jobs safely across CPU cores.
@@ -9,34 +9,36 @@ The Multi-Threading subsystem in TimeEngine provides dedicated thread pools ([`T
 
 ## Threading Architecture & Dedicated Pools
 
-```
-[ Application::Application() ]
-              │
-              ▼ (Initialize Worker Thread Pools)
-┌─────────────────────────────────────────────────────────────┐
-│                       TaskSystem                            │
-├─────────────┬─────────────┬─────────────┬─────────────┬─────┴───────┐
-│     MAIN    │   RENDER    │  GAMEPLAY   │     AI      │    CALC     │  WIDGET
-│ ThreadPool  │ ThreadPool  │ ThreadPool  │ ThreadPool  │ ThreadPool  │ ThreadPool
-└──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┴─────┬──┘
-       │             │             │             │             │            │
-       ▼             ▼             ▼             ▼             ▼            ▼
-[ Main Loop ] [ GPU Submit ] [ Game Logic] [ Pathfinding] [ Physics/Math] [ ImGui UI ]
+```mermaid
+flowchart TD
+    AppInit["Application::Application()"] -->|Initialize Worker Thread Pools| TaskSystem["TaskSystem"]
+    TaskSystem --> Main["MAIN ThreadPool"]
+    TaskSystem --> Render["RENDER ThreadPool"]
+    TaskSystem --> Gameplay["GAMEPLAY ThreadPool"]
+    TaskSystem --> AI["AI ThreadPool"]
+    TaskSystem --> Calc["CALC ThreadPool"]
+    TaskSystem --> Widget["WIDGET ThreadPool"]
+    Main --> MainLoop["Main Loop"]
+    Render --> GPUSubmit["GPU Submit"]
+    Gameplay --> GameLogic["Game Logic"]
+    AI --> Pathfinding["Pathfinding"]
+    Calc --> Math["Physics / Math"]
+    Widget --> UI["ImGui UI"]
 ```
 
 ---
 
 ## Core Classes & Component Roles
 
-1. **[`TaskSystem`](file:///e:/TimeEngine/Engine/Include/Core/Threading/TaskSystem.hpp)**:
+1. **[`TaskSystem`](TaskSystem.hpp)**:
    - Central static job dispatcher mapping `TaskType` enums (`MAIN`, `RENDER`, `GAMEPLAY`, `AI`, `CALC`, `WIDGET`) to dedicated `ThreadPool` instances.
    - Manages thread pool state toggles (`SetThreadEnabled`) and thread restarts (`RestartThread`).
 
-2. **[`ThreadPool`](file:///e:/TimeEngine/Engine/Include/Core/Threading/ThreadPool.hpp)**:
+2. **[`ThreadPool`](ThreadPool.hpp)**:
    - Worker thread container spawning `std::thread::hardware_concurrency()` threads.
    - Uses `std::mutex`, `std::condition_variable`, and `std::queue<std::function<void()>>` for thread-safe work-stealing job queues.
 
-3. **[`ThreadingMacros.hpp`](file:///e:/TimeEngine/Engine/Include/Core/Threading/ThreadingMacros.hpp)**:
+3. **[`ThreadingMacros.hpp`](ThreadingMacros.hpp)**:
    - Ergonomic macro suite for initializing pools and submitting asynchronous jobs.
 
 ---
@@ -78,6 +80,58 @@ SUBMIT_AI([npcEntity]() {
 
 #### `SUBMIT_RENDER(job)`
 - **When Used**: Enqueue asynchronous texture decoding or material pipeline compilation tasks.
+
+---
+
+## Fearless Concurrency ([`Threading.hpp`](Threading.hpp))
+
+TimeEngine provides memory-safe, Rust-inspired synchronization and communication primitives:
+
+### 1. `TEMutex<T>` (Protected Value Mutex)
+Wraps inner data so that it is structurally impossible to access `T` without acquiring an RAII `Guard`:
+
+```cpp
+TEMutex<std::vector<int>> protectedList;
+
+{
+    auto guard = protectedList.Lock();
+    guard->push_back(42); // Value accessed via RAII Guard operator-> or *
+} // Mutex automatically unlocked when guard exits scope
+```
+
+### 2. `TERwLock<T>` (Multiple Readers, Single Writer Lock)
+Matches Rust's `RwLock<T>`, granting concurrent read access via `ReadGuard` and exclusive write access via `WriteGuard`:
+
+```cpp
+TERwLock<GameState> gameState;
+
+// Concurrent readers
+{
+    auto reader = gameState.Read();
+    std::cout << reader->Score << std::endl;
+}
+
+// Exclusive writer
+{
+    auto writer = gameState.Write();
+    writer->Score += 100;
+}
+```
+
+### 3. `TEChannel<T>` (MPSC Message Passing Channel)
+Thread-safe multi-producer single-consumer channel for communicating sequential processes without shared mutable state:
+
+```cpp
+TEChannel<AudioCommand> audioQueue;
+
+// Producer (e.g. Gameplay Thread)
+audioQueue.Send(PlaySoundEvent{"Explosion.wav"});
+
+// Consumer (e.g. Audio / Calc Thread)
+if (auto cmd = audioQueue.Receive()) {
+    ProcessAudio(*cmd);
+}
+```
 
 ---
 

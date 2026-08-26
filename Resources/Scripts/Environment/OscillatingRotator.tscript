@@ -1,0 +1,52 @@
+// ==============================================================================
+// TimeEngine Engine Content - OscillatingRotator.tscript
+// Category: Environment & Props
+// Extends: RotationComponent
+// Description: Constrains and oscillates rotation angle between angular limits (e.g. pendulums).
+// ==============================================================================
+
+class OscillatingRotator : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, min_angle, -45.0)
+    T_REGISTER_PROPERTY(float, max_angle, 45.0)
+    T_REGISTER_PROPERTY(float, oscillation_speed, 60.0)
+    T_REGISTER_PROPERTY(float, pause_at_extremes, 0.2)
+    T_REGISTER_PROPERTY(bool, is_active, true)
+
+    public:
+        float current_angle = 0.0
+        int rotation_direction = 1
+
+    private:
+        float m_pause_timer = 0.0
+
+    on_ready() {
+        current_angle = min_angle
+        rotation_direction = 1
+        m_pause_timer = 0.0
+        TE_CORE_INFO("OscillatingRotator ready. Angle range: [" + min_angle + ", " + max_angle + "]")
+    }
+
+    on_update(float dt) {
+        if (!is_active) {
+            return
+        }
+
+        if (m_pause_timer > 0.0) {
+            m_pause_timer -= dt
+            return
+        }
+
+        current_angle += rotation_direction * oscillation_speed * dt
+
+        if (current_angle >= max_angle) {
+            current_angle = max_angle
+            rotation_direction = -1
+            m_pause_timer = pause_at_extremes
+        } else if (current_angle <= min_angle) {
+            current_angle = min_angle
+            rotation_direction = 1
+            m_pause_timer = pause_at_extremes
+        }
+    }

@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Editor/SpriteAssetEditor.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Renderer/Sprite.hpp"
@@ -5,16 +6,17 @@
 #include "Renderer/Texture.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-#include <filesystem>
-#include <imgui.h>
-#include <string>
-
-namespace TE
-{
 
 void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 {
     auto sprite = std::dynamic_pointer_cast<Sprite>(tab.LoadedAsset);
+    if (!sprite)
+    {
+        sprite = CreateRef<Sprite>();
+        SpriteSerializer serializer(sprite);
+        serializer.Deserialize(tab.AssetPath);
+        tab.LoadedAsset = sprite;
+    }
     if (!sprite)
         return;
 
@@ -28,28 +30,33 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::Text("Sprite Asset Inspector");
     TimeGUI::TextDisabled("Name: %s", sprite->GetName().c_str());
-
-    std::string curTexPath = sprite->GetTexturePath();
-    static char spriteTexBuf[512] = "";
-    strcpy_s(spriteTexBuf, curTexPath.c_str());
-    if (TimeGUI::InputText("Source Texture", spriteTexBuf, sizeof(spriteTexBuf)))
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("Save Sprite", TEVector2(90.0f, 22.0f)))
     {
-        sprite->SetTexturePath(spriteTexBuf);
         SpriteSerializer serializer(sprite);
         serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, false);
+    }
+
+    TEString curTexPath = sprite->GetTexturePath();
+    static TEString spriteTexBuf;
+    spriteTexBuf = curTexPath;
+    if (TimeGUI::InputText("Source Texture", spriteTexBuf))
+    {
+        sprite->SetTexturePath(spriteTexBuf);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
     TimeGUI::SameLine();
     if (TimeGUI::Button("Browse..."))
     {
-        std::string filepath =
+        TEString filepath =
             PlatformUtils::OpenFile("Texture Files (*.png;*.jpg;*.tetexture)\0*.png;*.jpg;*.tetexture\0All Files "
                                     "(*.*)\0*.*\0");
         if (!filepath.empty())
         {
-            strcpy_s(spriteTexBuf, filepath.c_str());
+            spriteTexBuf = filepath;
             sprite->SetTexturePath(filepath);
-            SpriteSerializer serializer(sprite);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
     }
 
@@ -71,15 +78,13 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     if (uvChanged)
     {
         sprite->SetUVs(u0, v0, u1, v1);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     if (TimeGUI::Button("Reset Full Image UVs (0..1)"))
     {
         sprite->SetUVs(0.0f, 0.0f, 1.0f, 1.0f);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     TimeGUI::Separator();
@@ -96,29 +101,25 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     if (pivotChanged)
     {
         sprite->SetPivot(px, py);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     TimeGUI::Text("Pivot Presets:");
     if (TimeGUI::Button("Center (0.5, 0.5)"))
     {
         sprite->SetPivot(0.5f, 0.5f);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
     TimeGUI::SameLine();
     if (TimeGUI::Button("Bottom-Center (0.5, 0.0)"))
     {
         sprite->SetPivot(0.5f, 0.0f);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
     if (TimeGUI::Button("Top-Left (0.0, 1.0)"))
     {
         sprite->SetPivot(0.0f, 1.0f);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     TimeGUI::Separator();
@@ -127,8 +128,7 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     if (TimeGUI::SliderFloat("PPU", &ppu, 1.0f, 256.0f, "%.0f PPU"))
     {
         sprite->SetPixelsPerUnit(ppu);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     TimeGUI::Separator();
@@ -136,22 +136,19 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     if (TimeGUI::Button("Auto Box Contour"))
     {
         sprite->GenerateAutoContourCollider(0.1f);
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
     TimeGUI::SameLine();
     if (TimeGUI::Button("Clear Points"))
     {
         sprite->GetCustomColliderPoints().clear();
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     if (TimeGUI::Button("Add Vertex Point"))
     {
         sprite->GetCustomColliderPoints().push_back({0.0f, 0.0f});
-        SpriteSerializer serializer(sprite);
-        serializer.Serialize(tab.AssetPath);
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
     auto &pts = sprite->GetCustomColliderPoints();
@@ -159,16 +156,15 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     {
         TimeGUI::PushID((int)ptIdx);
         bool ptChanged = false;
-        std::string labelX = "Pt #" + std::to_string(ptIdx) + " X";
-        std::string labelY = "Pt #" + std::to_string(ptIdx) + " Y";
+        TEString labelX = "Pt #" + TEString::FromInt64(static_cast<int64_t>(ptIdx)) + " X";
+        TEString labelY = "Pt #" + TEString::FromInt64(static_cast<int64_t>(ptIdx)) + " Y";
         if (TimeGUI::SliderFloat(labelX.c_str(), &pts[ptIdx].x, -1.0f, 1.0f, "%.2f"))
             ptChanged = true;
         if (TimeGUI::SliderFloat(labelY.c_str(), &pts[ptIdx].y, -1.0f, 1.0f, "%.2f"))
             ptChanged = true;
         if (ptChanged)
         {
-            SpriteSerializer serializer(sprite);
-            serializer.Serialize(tab.AssetPath);
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
         }
         TimeGUI::PopID();
     }
@@ -230,8 +226,7 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
                 newPy = (newPy < 0.0f) ? 0.0f : ((newPy > 1.0f) ? 1.0f : newPy);
 
                 sprite->SetPivot(newPx, newPy);
-                SpriteSerializer serializer(sprite);
-                serializer.Serialize(tab.AssetPath);
+                AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
                 spx = newPx;
                 spy = newPy;
             }
@@ -239,12 +234,12 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
             float pivotScreenX = canvasPos.x + spx * fullW;
             float pivotScreenY = canvasPos.y + (1.0f - spy) * fullH; // top-down Y
 
-            drawList->AddLine(ImVec2(pivotScreenX - 15.0f, pivotScreenY), ImVec2(pivotScreenX + 15.0f, pivotScreenY),
-                              IM_COL32(255, 230, 0, 255), 2.5f);
-            drawList->AddLine(ImVec2(pivotScreenX, pivotScreenY - 15.0f), ImVec2(pivotScreenX, pivotScreenY + 15.0f),
-                              IM_COL32(255, 230, 0, 255), 2.5f);
-            drawList->AddCircleFilled(ImVec2(pivotScreenX, pivotScreenY), 6.0f, IM_COL32(255, 230, 0, 255));
-            drawList->AddCircle(ImVec2(pivotScreenX, pivotScreenY), 12.0f, IM_COL32(255, 230, 0, 255), 0, 1.5f);
+            drawList.AddLine(TEVector2(pivotScreenX - 15.0f, pivotScreenY),
+                             TEVector2(pivotScreenX + 15.0f, pivotScreenY), TIMEGUI_COL32(255, 230, 0, 255), 2.5f);
+            drawList.AddLine(TEVector2(pivotScreenX, pivotScreenY - 15.0f),
+                             TEVector2(pivotScreenX, pivotScreenY + 15.0f), TIMEGUI_COL32(255, 230, 0, 255), 2.5f);
+            drawList.AddCircleFilled(TEVector2(pivotScreenX, pivotScreenY), 6.0f, TIMEGUI_COL32(255, 230, 0, 255));
+            drawList.AddCircle(TEVector2(pivotScreenX, pivotScreenY), 12.0f, TIMEGUI_COL32(255, 230, 0, 255), 0, 1.5f);
         }
         // Mode 2: Physics Polygon Collider Editor (Draw red wireframe + Direct Dragging Vertices)
         else if (s_SpriteViewMode == 2)
@@ -260,7 +255,7 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
             // Check dragging or selecting vertex
             if (isCanvasHovered && isMouseDown && s_DraggedVertexIdx == -1)
             {
-                for (size_t i = 0; i < cPoints.size(); ++i)
+                for (size_t i = 0; i < cPoints.Num(); ++i)
                 {
                     float vx = canvasPos.x + (cPoints[i].x + 0.5f) * fullW;
                     float vy = canvasPos.y + (0.5f - cPoints[i].y) * fullH;
@@ -274,21 +269,20 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
             }
 
             // Perform Dragging
-            if (s_DraggedVertexIdx >= 0 && s_DraggedVertexIdx < (int)cPoints.size() && isMouseDown)
+            if (s_DraggedVertexIdx >= 0 && s_DraggedVertexIdx < (int)cPoints.Num() && isMouseDown)
             {
                 float newX = (mousePos.x - canvasPos.x) / fullW - 0.5f;
                 float newY = 0.5f - ((mousePos.y - canvasPos.y) / fullH);
                 cPoints[s_DraggedVertexIdx] = {newX, newY};
-                SpriteSerializer serializer(sprite);
-                serializer.Serialize(tab.AssetPath);
+                AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
             }
 
             // Render wireframe and handles
-            if (cPoints.size() >= 2)
+            if (cPoints.Num() >= 2)
             {
-                for (size_t i = 0; i < cPoints.size(); ++i)
+                for (size_t i = 0; i < cPoints.Num(); ++i)
                 {
-                    size_t nextIdx = (i + 1) % cPoints.size();
+                    size_t nextIdx = (i + 1) % cPoints.Num();
                     TEVector2 p1 = cPoints[i];
                     TEVector2 p2 = cPoints[nextIdx];
 
@@ -297,12 +291,12 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
                     float x2 = canvasPos.x + (p2.x + 0.5f) * fullW;
                     float y2 = canvasPos.y + (0.5f - p2.y) * fullH;
 
-                    drawList->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(255, 60, 60, 255), 2.5f);
+                    drawList.AddLine(TEVector2(x1, y1), TEVector2(x2, y2), TIMEGUI_COL32(255, 60, 60, 255), 2.5f);
 
-                    uint32_t handleColor =
-                        (s_DraggedVertexIdx == (int)i) ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 60, 60, 255);
-                    drawList->AddCircleFilled(ImVec2(x1, y1), 6.0f, handleColor);
-                    drawList->AddCircle(ImVec2(x1, y1), 10.0f, handleColor, 0, 1.5f);
+                    uint32_t handleColor = (s_DraggedVertexIdx == (int)i) ? TIMEGUI_COL32(255, 255, 0, 255)
+                                                                          : TIMEGUI_COL32(255, 60, 60, 255);
+                    drawList.AddCircleFilled(TEVector2(x1, y1), 6.0f, handleColor);
+                    drawList.AddCircle(TEVector2(x1, y1), 10.0f, handleColor, 0, 1.5f);
                 }
             }
         }
@@ -316,6 +310,25 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::Columns(1);
 }
 
-TE_REGISTER_ASSET_EDITOR(SpriteAssetEditor);
+void SpriteAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) const
+{
+    TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+    float w = max.x - min.x;
+    float h = max.y - min.y;
+    float pad = w * 0.12f;
 
-} // namespace TE
+    // Background Card
+    dl.AddRectFilled(min, max, IM_COL32(235, 145, 30, 230), 4.0f);
+    // Inner Sprite Frame
+    TEVector2 iMin(min.x + pad, min.y + pad);
+    TEVector2 iMax(max.x - pad, max.y - pad);
+    dl.AddRectFilled(iMin, iMax, IM_COL32(35, 35, 42, 255), 2.0f);
+    // Stylized Playful Sprite Diamond
+    float cx = (iMin.x + iMax.x) * 0.5f;
+    float cy = (iMin.y + iMax.y) * 0.5f;
+    float r = (iMax.x - iMin.x) * 0.35f;
+    dl.AddQuadFilled(TEVector2(cx, cy - r), TEVector2(cx + r, cy), TEVector2(cx, cy + r), TEVector2(cx - r, cy),
+                     IM_COL32(255, 205, 80, 255));
+}
+
+TE_REGISTER_ASSET_EDITOR(SpriteAssetEditor);

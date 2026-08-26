@@ -1,23 +1,18 @@
 #pragma once
 #include "InputMappingContext.hpp"
-#include <string>
-#include <unordered_map>
-
-namespace TE
-{
 
 class InputRemapper
 {
 public:
     // Key: Context Name -> (Action Name -> New Key)
-    using RemapOverrides = std::unordered_map<std::string, std::unordered_map<std::string, KeyCode>>;
+    using RemapOverrides = TEMap<TEString, TEMap<TEString, KeyCode>>;
 
-    void SetRemap(const std::string &contextName, const std::string &actionName, KeyCode newKey)
+    void SetRemap(const TEString &contextName, const TEString &actionName, KeyCode newKey)
     {
         m_Overrides[contextName][actionName] = newKey;
     }
 
-    KeyCode GetKey(const std::string &contextName, const std::string &actionName, KeyCode defaultKey) const
+    KeyCode GetKey(const TEString &contextName, const TEString &actionName, KeyCode defaultKey) const
     {
         if (m_Overrides.count(contextName))
         {
@@ -35,5 +30,3 @@ public:
 private:
     RemapOverrides m_Overrides;
 };
-
-} // namespace TE

@@ -1,88 +1,154 @@
+#include "Core/PreRequisites.h"
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+
 #include "Core/Asset/AssetManager.hpp"
+#include "Core/Asset/FontAsset.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
+#define STB_TRUETYPE_IMPLEMENTATION
+#include <imstb_truetype.h>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include "Core/Asset/Asset.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-#include "Core/Scene/Scene.hpp"
-#include "Renderer/Material.hpp"
-#include "Renderer/MaterialSerializer.hpp"
-#include "Renderer/Sprite.hpp"
-#include "Renderer/SpriteSerializer.hpp"
-#include "Renderer/SpriteSheet.hpp"
-#include "Renderer/SpriteSheetSerializer.hpp"
 #include "Renderer/Texture.hpp"
-#include "Renderer/TextureSerializer.hpp"
-#include <filesystem>
+#include "Utils/TEFileSystem.hpp"
+#include <fstream>
+#include <sstream>
 #include <unordered_set>
 
-namespace TE
-{
+TEMap<AssetHandle, TERef<Asset>> AssetManager::s_LoadedAssets;
 
-std::unordered_map<AssetHandle, std::shared_ptr<Asset>> AssetManager::s_LoadedAssets;
-std::unordered_map<std::string, AssetTypeMetadata> AssetManager::s_AssetTypeRegistry;
+static TEMap<TEString, AssetTypeMetadata> &GetAssetTypeRegistryMap()
+{
+    static TEMap<TEString, AssetTypeMetadata> s_Registry;
+    return s_Registry;
+}
+
+const TEMap<TEString, AssetTypeMetadata> &AssetManager::GetRegisteredAssetTypes() { return GetAssetTypeRegistryMap(); }
+
+#include "Core/Asset/DataAsset.hpp"
+#include "Core/Asset/FontAsset.hpp"
+#include "Core/Asset/StateTreeAsset.hpp"
+#include "Core/Asset/TEDataTable.hpp"
+#include "Core/Asset/TEStringTable.hpp"
 
 void AssetManager::Init()
 {
     TE_CORE_INFO("AssetManager initializing...");
-
-    // Explicitly register core asset types via prototypes
-    RegisterAssetType(std::make_shared<Scene>());
-    RegisterAssetType(std::make_shared<Texture>("Resources/Editor/TextureIcon.png"));
-    RegisterAssetType(std::make_shared<Material>(nullptr));
-    RegisterAssetType(std::make_shared<Sprite>());
-    RegisterAssetType(std::make_shared<SpriteSheet>());
+    RegisterAssetType(CreateRef<DataAsset>());
+    RegisterAssetType(CreateRef<TEDataTable>());
+    RegisterAssetType(CreateRef<TEStringTable>());
+    RegisterAssetType(CreateRef<FontAsset>());
+    RegisterAssetType(CreateRef<StateTreeAsset>());
 }
 
 void AssetManager::Shutdown()
 {
     TE_CORE_INFO("AssetManager shutting down...");
-    s_LoadedAssets.clear();
-    s_AssetTypeRegistry.clear();
+    s_LoadedAssets.Clear();
+    GetAssetTypeRegistryMap().Clear();
 }
 
-void AssetManager::AddAsset(AssetHandle handle, const std::shared_ptr<Asset> &asset)
+void AssetManager::AddAsset(AssetHandle handle, const TERef<Asset> &asset)
 {
-    if (s_LoadedAssets.find(handle) != s_LoadedAssets.end())
+    if (s_LoadedAssets.Find(handle) != nullptr)
     {
         TE_CORE_WARN("AssetManager: Overwriting asset with handle {0}", handle);
     }
     s_LoadedAssets[handle] = asset;
 }
 
-static std::filesystem::path GetRootPath()
+static TEString GetRootPath()
 {
-    static std::filesystem::path s_RootPath = "";
+    static TEString s_RootPath = "";
     if (!s_RootPath.empty())
         return s_RootPath;
 
-    std::filesystem::path current = std::filesystem::current_path();
-    while (current.has_parent_path())
+    TEString current = TEFileSystem::GetCurrentWorkingDirectory();
+    while (current.HasParentPath())
     {
-        if (std::filesystem::exists(current / "Resources"))
+        if (TEFileSystem::Exists(current / "Resources"))
         {
             s_RootPath = current;
             return s_RootPath;
         }
-        current = current.parent_path();
+        current = current.GetParentPath();
     }
     return "";
 }
 
-bool AssetManager::HasAsset(AssetHandle handle) { return s_LoadedAssets.find(handle) != s_LoadedAssets.end(); }
+bool AssetManager::HasAsset(AssetHandle handle) { return s_LoadedAssets.Find(handle) != nullptr; }
 
-AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
+void AssetManager::UnloadAsset(AssetHandle handle)
 {
-    std::filesystem::path finalPath = path;
+    if (s_LoadedAssets.Find(handle) != nullptr)
+    {
+        TE_CORE_INFO("AssetManager: Unloading asset handle {0}", handle);
+        s_LoadedAssets.Remove(handle);
+    }
+}
+
+bool AssetManager::DeleteAsset(const TEString &path)
+{
+    if (!TEFileSystem::Exists(path))
+    {
+        TE_CORE_WARN("AssetManager::DeleteAsset - path does not exist: {0}", path);
+        return false;
+    }
+
+    // Resolve handle if registered
+    if (AssetRegistry::Exists(path))
+    {
+        AssetHandle handle = AssetRegistry::RegisterPath(path); // returns existing handle
+        UnloadAsset(handle);
+        AssetRegistry::Unregister(handle);
+    }
+
+    if (!TEFileSystem::Remove(path))
+    {
+        TE_CORE_ERROR("AssetManager::DeleteAsset - failed to remove file: {0}", path);
+        return false;
+    }
+
+    TE_CORE_INFO("AssetManager: Deleted asset at {0}", path);
+    return true;
+}
+
+AssetHandle AssetManager::ReloadAsset(AssetHandle handle)
+{
+    TEString path = AssetRegistry::GetPath(handle);
+    if (path.empty())
+    {
+        TE_CORE_WARN("AssetManager::ReloadAsset - no path registered for handle {0}", handle);
+        return 0;
+    }
+
+    UnloadAsset(handle);
+    return LoadAsset(path);
+}
+
+AssetHandle AssetManager::LoadAsset(const TEString &path)
+{
+    TEString finalPath = path;
 
     // Resolve relative paths starting with Resources/
-    std::string pathStr = path.string();
-    if (!std::filesystem::exists(finalPath) && (pathStr.find("Resources/") == 0 || pathStr.find("Resources\\") == 0))
+    if (!TEFileSystem::Exists(finalPath) && (path.StartsWith("Resources/") || path.StartsWith("Resources\\")))
     {
-        std::filesystem::path root = GetRootPath();
+        TEString root = GetRootPath();
         if (!root.empty())
         {
             finalPath = root / path;
@@ -97,85 +163,54 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path &path)
     }
 
     // Keep track of failed loads to avoid repeatedly hitting disk and logging every frame
-    static std::unordered_set<std::wstring> s_FailedLoads;
-    if (s_FailedLoads.find(finalPath.wstring()) != s_FailedLoads.end())
+    static TESet<TEString> s_FailedLoads;
+    if (s_FailedLoads.find(finalPath) != s_FailedLoads.end())
     {
         return 0;
     }
 
-    if (!std::filesystem::exists(finalPath))
+    if (!TEFileSystem::Exists(finalPath))
     {
-        TE_CORE_ERROR("AssetManager: Failed to find asset at path: {0}", finalPath.string());
-        s_FailedLoads.insert(finalPath.wstring());
+        TE_CORE_ERROR("AssetManager: Failed to find asset at path: {0}", finalPath);
+        s_FailedLoads.insert(finalPath);
         return 0;
     }
 
-    TE_CORE_INFO("AssetManager: Loading asset from path {0}", finalPath.string());
+    TE_CORE_INFO("AssetManager: Loading asset from path {0}", finalPath.c_str());
 
-    // If it's a texture, we can actually load it for icons etc.
-    if (finalPath.extension() == ".png" || finalPath.extension() == ".jpg")
+    // Dynamic registered asset type dispatch (Fully modular asset loader)
+    TEString ext = finalPath.GetExtension();
+    for (const auto &[type, meta] : GetAssetTypeRegistryMap())
     {
-        auto tex = std::make_shared<Texture>(finalPath.string());
-        AddAsset(tex->GetHandle(), tex);
-        return tex->GetHandle();
-    }
-    else if (finalPath.extension() == ".tematerial")
-    {
-        auto mat = std::make_shared<Material>(nullptr);
-        MaterialSerializer serializer(mat);
-        if (serializer.Deserialize(finalPath))
+        if ((meta.Extension == ext || (ext == ".jpg" && meta.Extension == ".png")) && meta.Prototype)
         {
-            AddAsset(mat->GetHandle(), mat);
-            return mat->GetHandle();
-        }
-    }
-    else if (finalPath.extension() == ".tesprite")
-    {
-        auto sprite = std::make_shared<Sprite>();
-        SpriteSerializer serializer(sprite);
-        if (serializer.Deserialize(finalPath))
-        {
-            AddAsset(sprite->GetHandle(), sprite);
-            return sprite->GetHandle();
-        }
-    }
-    else if (finalPath.extension() == ".tespritesheet")
-    {
-        auto sheet = std::make_shared<SpriteSheet>();
-        SpriteSheetSerializer serializer(sheet);
-        if (serializer.Deserialize(finalPath))
-        {
-            AddAsset(sheet->GetHandle(), sheet);
-            return sheet->GetHandle();
-        }
-    }
-    else if (finalPath.extension() == ".tesprite")
-    {
-        auto sprite = std::make_shared<Sprite>();
-        SpriteSerializer serializer(sprite);
-        if (serializer.Deserialize(finalPath))
-        {
-            AddAsset(sprite->GetHandle(), sprite);
-            return sprite->GetHandle();
-        }
-    }
-    else if (finalPath.extension() == ".tetexture")
-    {
-        auto tex = std::make_shared<Texture>(finalPath.string());
-        TextureSerializer serializer(tex);
-        if (serializer.Deserialize(finalPath))
-        {
-            AddAsset(tex->GetHandle(), tex);
-            return tex->GetHandle();
+            auto newAsset = CreateFromPrototype(ext);
+            if (newAsset && newAsset->LoadFromFile(finalPath))
+            {
+                AddAsset(newAsset->GetHandle(), newAsset);
+                return newAsset->GetHandle();
+            }
         }
     }
 
     // If all load attempts failed, cache this path as a failed load to prevent retries
-    s_FailedLoads.insert(finalPath.wstring());
-    return 0; // AssetRegistry will handle the mapping later
+    s_FailedLoads.insert(finalPath);
+    return 0;
 }
 
-void AssetManager::RegisterAssetType(std::shared_ptr<Asset> prototype)
+TERef<Asset> AssetManager::CreateFromPrototype(const TEString &extension)
+{
+    for (const auto &[type, meta] : GetAssetTypeRegistryMap())
+    {
+        if ((meta.Extension == extension || (extension == ".jpg" && meta.Extension == ".png")) && meta.Prototype)
+        {
+            return meta.Prototype->Clone();
+        }
+    }
+    return nullptr;
+}
+
+void AssetManager::RegisterAssetType(TERef<Asset> prototype)
 {
     if (!prototype)
         return;
@@ -187,25 +222,26 @@ void AssetManager::RegisterAssetType(std::shared_ptr<Asset> prototype)
     metadata.IconSize = prototype->GetDefaultIconSize();
     metadata.Prototype = prototype;
 
-    s_AssetTypeRegistry[metadata.Type] = metadata;
+    GetAssetTypeRegistryMap()[metadata.Type] = metadata;
     TE_CORE_INFO("AssetManager: Registered asset type {0} (.{1}) -> {2}", metadata.Type, metadata.Extension,
                  metadata.IconPath);
 }
 
-std::shared_ptr<class Texture> AssetManager::GetDefaultIcon(const std::string &type)
+TERef<class Texture> AssetManager::GetDefaultIcon(const TEString &type)
 {
-    auto it = s_AssetTypeRegistry.find(type);
-    if (it != s_AssetTypeRegistry.end())
+    auto &registry = GetAssetTypeRegistryMap();
+    auto *found = registry.Find(type);
+    if (found)
     {
-        AssetHandle handle = LoadAsset(it->second.IconPath);
+        AssetHandle handle = LoadAsset(found->IconPath);
         return GetAsset<Texture>(handle);
     }
     return nullptr;
 }
 
-std::shared_ptr<class Texture> AssetManager::GetIconForExtension(const std::string &extension)
+TERef<class Texture> AssetManager::GetIconForExtension(const TEString &extension)
 {
-    for (const auto &[type, entry] : s_AssetTypeRegistry)
+    for (const auto &[type, entry] : GetAssetTypeRegistryMap())
     {
         if (entry.Extension == extension)
         {
@@ -215,43 +251,43 @@ std::shared_ptr<class Texture> AssetManager::GetIconForExtension(const std::stri
     return nullptr;
 }
 
-TEVector2 AssetManager::GetDefaultIconSize(const std::string &type)
+TEVector2 AssetManager::GetDefaultIconSize(const TEString &type)
 {
-    auto it = s_AssetTypeRegistry.find(type);
-    if (it != s_AssetTypeRegistry.end())
-    {
-        return it->second.IconSize;
-    }
+    auto &registry = GetAssetTypeRegistryMap();
+    auto *found = registry.Find(type);
+    if (found)
+        return found->IconSize;
     return {64.0f, 64.0f};
 }
 
-ImageData AssetManager::ImportImage(const std::string &filepath, int desiredChannels)
+ImageData AssetManager::ImportImage(const TEString &filepath, int desiredChannels)
 {
     ImageData img;
     stbi_set_flip_vertically_on_load(0);
-    img.Data = stbi_load(filepath.c_str(), &img.Width, &img.Height, &img.Channels, desiredChannels);
-    if (desiredChannels > 0)
+    int w = 0, h = 0, c = 0;
+    auto rawPixels = stbi_load(filepath.c_str(), &w, &h, &c, desiredChannels);
+    if (rawPixels)
     {
-        img.Channels = desiredChannels;
+        img.Width = w;
+        img.Height = h;
+        img.Channels = (desiredChannels > 0) ? desiredChannels : c;
+        size_t totalBytes = static_cast<size_t>(img.Width * img.Height * img.Channels);
+        img.Pixels.Reserve(totalBytes);
+        for (size_t i = 0; i < totalBytes; ++i)
+        {
+            img.Pixels.Add(rawPixels[i]);
+        }
+        stbi_image_free(rawPixels);
     }
     return img;
 }
 
-void AssetManager::FreeImage(unsigned char *data)
-{
-    if (data)
-    {
-        stbi_image_free(data);
-    }
-}
-
-bool AssetManager::ExportImagePNG(const std::string &path, int width, int height, int channels, const void *data)
+bool AssetManager::ExportImagePNG(const TEString &path, int width, int height, int channels, const void *data)
 {
     // Create directory if not exists
-    std::filesystem::path p = path;
-    if (p.has_parent_path())
+    if (path.HasParentPath())
     {
-        std::filesystem::create_directories(p.parent_path());
+        TEFileSystem::CreateDirectories(path.GetParentPath());
     }
 
     int result = stbi_write_png(path.c_str(), width, height, channels, data, width * channels);
@@ -264,4 +300,72 @@ bool AssetManager::ExportImagePNG(const std::string &path, int width, int height
     return true;
 }
 
-} // namespace TE
+bool AssetManager::BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSize, uint32_t atlasWidth,
+                                 uint32_t atlasHeight, float &outAscent, float &outDescent, float &outLineHeight,
+                                 TEMap<TEString, FontGlyph> &outGlyphs, TEArray<uint8_t> &outRgbaBitmap)
+{
+    if (ttfData.IsEmpty())
+        return false;
+
+    stbtt_fontinfo fontInfo;
+    if (!stbtt_InitFont(&fontInfo, ttfData.GetData(), stbtt_GetFontOffsetForIndex(ttfData.GetData(), 0)))
+    {
+        return false;
+    }
+
+    float scale = stbtt_ScaleForPixelHeight(&fontInfo, pixelSize);
+    int ascent = 0, descent = 0, lineGap = 0;
+    stbtt_GetFontVMetrics(&fontInfo, &ascent, &descent, &lineGap);
+
+    outAscent = ascent * scale;
+    outDescent = descent * scale;
+    outLineHeight = (ascent - descent + lineGap) * scale;
+
+    const int firstChar = 32;
+    const int numChars = 96;
+    TEArray<stbtt_bakedchar> bakedChars;
+    bakedChars.Resize(numChars);
+    TEArray<uint8_t> monoBitmap;
+    monoBitmap.Resize(atlasWidth * atlasHeight, 0);
+
+    int result = stbtt_BakeFontBitmap(ttfData.GetData(), 0, pixelSize, monoBitmap.GetData(), atlasWidth, atlasHeight,
+                                      firstChar, numChars, bakedChars.GetData());
+    if (result <= 0)
+    {
+        TE_CORE_WARN("AssetManager::BakeFontAtlas - Atlas might be too small for font size!");
+    }
+
+    outGlyphs.clear();
+    for (int i = 0; i < numChars; ++i)
+    {
+        char ch = static_cast<char>(firstChar + i);
+        TEString chStr(&ch, 1);
+        const auto &bc = bakedChars[i];
+
+        FontGlyph glyph;
+        glyph.Character = chStr;
+        glyph.AdvanceX = bc.xadvance;
+        glyph.BearingX = bc.xoff;
+        glyph.BearingY = bc.yoff;
+        glyph.Width = static_cast<float>(bc.x1 - bc.x0);
+        glyph.Height = static_cast<float>(bc.y1 - bc.y0);
+
+        glyph.UV.x = static_cast<float>(bc.x0) / atlasWidth;
+        glyph.UV.y = static_cast<float>(bc.y0) / atlasHeight;
+        glyph.UV.z = static_cast<float>(bc.x1) / atlasWidth;
+        glyph.UV.w = static_cast<float>(bc.y1) / atlasHeight;
+
+        outGlyphs[chStr] = glyph;
+    }
+
+    outRgbaBitmap.Resize(atlasWidth * atlasHeight * 4);
+    for (size_t i = 0; i < monoBitmap.Num(); ++i)
+    {
+        outRgbaBitmap[i * 4 + 0] = 255;
+        outRgbaBitmap[i * 4 + 1] = 255;
+        outRgbaBitmap[i * 4 + 2] = 255;
+        outRgbaBitmap[i * 4 + 3] = monoBitmap[i];
+    }
+
+    return true;
+}

@@ -1,0 +1,65 @@
+// ==============================================================================
+// TimeEngine Engine Content - PlayerDashExtension.tscript
+// Category: Player Extensions
+// Extends: PlayerMovementComponent2D / 2DPlayerController
+// Description: Provides dash impulse, cooldown management, and invulnerability state.
+// ==============================================================================
+
+class PlayerDashExtension : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, dash_speed, 650.0)
+    T_REGISTER_PROPERTY(float, dash_duration, 0.18)
+    T_REGISTER_PROPERTY(float, dash_cooldown, 1.0)
+    T_REGISTER_PROPERTY(bool, enable_invulnerability, true)
+
+    public:
+        bool is_dashing = false
+        bool can_dash = true
+        float dash_direction_x = 1.0
+        float dash_direction_y = 0.0
+
+    private:
+        float m_dash_timer = 0.0
+        float m_cooldown_timer = 0.0
+
+    on_ready() {
+        is_dashing = false
+        can_dash = true
+        m_dash_timer = 0.0
+        m_cooldown_timer = 0.0
+        TE_CORE_INFO("PlayerDashExtension initialized. Dash Speed: " + dash_speed)
+    }
+
+    on_update(float dt) {
+        // Handle Active Dash Duration
+        if (is_dashing) {
+            m_dash_timer -= dt
+            if (m_dash_timer <= 0.0) {
+                is_dashing = false
+                m_dash_timer = 0.0
+                m_cooldown_timer = dash_cooldown
+                TE_CORE_INFO("Dash finished. Cooldown started.")
+            }
+        }
+
+        // Handle Cooldown Recovery
+        if (!can_dash and !is_dashing) {
+            m_cooldown_timer -= dt
+            if (m_cooldown_timer <= 0.0) {
+                can_dash = true
+                m_cooldown_timer = 0.0
+                TE_CORE_INFO("Dash is ready.")
+            }
+        }
+    }
+
+    on_input(bindings) {
+        // Trigger dash if available and not on cooldown
+        if (can_dash and !is_dashing) {
+            is_dashing = true
+            can_dash = false
+            m_dash_timer = dash_duration
+            TE_CORE_INFO("Dash triggered!")
+        }
+    }

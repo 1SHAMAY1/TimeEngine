@@ -1,0 +1,31 @@
+// ==============================================================================
+// TimeEngine Engine Content - CameraBoundaryClamp.tscript
+// Category: Camera Extensions
+// Extends: PlayerCameraComponent / CameraController
+// Description: Clamps camera coordinates within strict level bounding box boundaries.
+// ==============================================================================
+
+class CameraBoundaryClamp : TComponent
+
+    // Inspector Exposed Properties
+    T_REGISTER_PROPERTY(float, min_bound_x, -1000.0)
+    T_REGISTER_PROPERTY(float, max_bound_x, 1000.0)
+    T_REGISTER_PROPERTY(float, min_bound_y, -600.0)
+    T_REGISTER_PROPERTY(float, max_bound_y, 600.0)
+    T_REGISTER_PROPERTY(bool, enable_clamping, true)
+
+    public:
+        float clamped_x = 0.0
+        float clamped_y = 0.0
+
+    on_ready() {
+        TE_CORE_INFO("CameraBoundaryClamp initialized. Bounds X: [" + min_bound_x + ", " + max_bound_x + "]")
+    }
+
+    on_update(float dt) {
+        if (enable_clamping) {
+            // Apply bounding box constraints
+            clamped_x = max(min_bound_x, min(max_bound_x, clamped_x))
+            clamped_y = max(min_bound_y, min(max_bound_y, clamped_y))
+        }
+    }

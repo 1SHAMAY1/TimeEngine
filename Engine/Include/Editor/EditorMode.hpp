@@ -1,13 +1,11 @@
 #pragma once
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <functional>
-#include <memory>
-#include <string>
-#include <vector>
 
-namespace TE
-{
+class EditorLayer;
 
-class EditorMode
+class TE_API EditorMode
 {
 public:
     virtual ~EditorMode() = default;
@@ -15,55 +13,51 @@ public:
     virtual void OnUpdate(float dt) {}
     virtual void OnTimeGUIRender() {}
     virtual void OnExit() {}
-    virtual const char *GetName() const = 0;
-    virtual const char *GetIcon() const { return ""; }
+    virtual bool OnShortcut(const TEString &shortcutId) { return false; }
+    virtual TEString GetName() const = 0;
+    virtual TEString GetIcon() const { return ""; }
+
+    // Panel & Layout Policy
+    virtual bool ShouldHideStandardPanels() const { return false; }
+    virtual bool IsPanelAllowed(const TEString &panelId) const { return !ShouldHideStandardPanels(); }
+    virtual bool WantsFullscreenWorkspace() const { return false; }
+    virtual TEString GetWorkspaceWindowName() const { return GetName() + " Studio"; }
+    virtual void RegisterMenubarItems(Ref<EditorLayer> editor) {}
 };
 
-class EditorModeRegistry
+class TE_API EditorModeRegistry
 {
 public:
-    static void RegisterMode(std::unique_ptr<EditorMode> mode) { Instance().m_Modes.push_back(std::move(mode)); }
+    EditorModeRegistry(const EditorModeRegistry &) = delete;
+    EditorModeRegistry &operator=(const EditorModeRegistry &) = delete;
+    EditorModeRegistry(EditorModeRegistry &&) = delete;
+    EditorModeRegistry &operator=(EditorModeRegistry &&) = delete;
 
-    static void SetActiveMode(const std::string &name)
+    template <typename T, typename... Args> static void RegisterMode(Args &&...args)
     {
-        auto &instance = Instance();
-        if (instance.m_ActiveMode && instance.m_ActiveMode->GetName() == name)
-            return;
-
-        for (auto &mode : instance.m_Modes)
-        {
-            if (mode->GetName() == name)
-            {
-                if (instance.m_ActiveMode)
-                    instance.m_ActiveMode->OnExit();
-                instance.m_ActiveMode = mode.get();
-                instance.m_ActiveMode->OnEnter();
-                return;
-            }
-        }
+        RegisterModeInternal(CreateScope<T>(std::forward<Args>(args)...));
     }
 
-    static EditorMode *GetActiveMode() { return Instance().m_ActiveMode; }
-
-    static const std::vector<std::unique_ptr<EditorMode>> &GetModes() { return Instance().m_Modes; }
+    static void RegisterModeInternal(TEScope<EditorMode> mode);
+    static void UnregisterMode(const TEString &name);
+    static void SetActiveMode(const TEString &name);
+    static EditorMode *GetActiveMode();
+    static const TEArray<TEScope<EditorMode>> &GetModes();
+    static void Clear();
 
 private:
-    static EditorModeRegistry &Instance()
-    {
-        static EditorModeRegistry instance;
-        return instance;
-    }
+    EditorModeRegistry() = default;
+    ~EditorModeRegistry() = default;
+    static EditorModeRegistry &Instance();
 
-    std::vector<std::unique_ptr<EditorMode>> m_Modes;
+    TEArray<TEScope<EditorMode>> m_Modes;
     EditorMode *m_ActiveMode = nullptr;
 };
 
 // Auto-registration helper
 template <typename T> struct EditorModeRegisterer
 {
-    EditorModeRegisterer() { EditorModeRegistry::RegisterMode(std::make_unique<T>()); }
+    EditorModeRegisterer() { EditorModeRegistry::RegisterMode<T>(); }
 };
 
-#define T_REGISTER_EDITOR_MODE(Type) static ::TE::EditorModeRegisterer<Type> Type##_Registerer;
-
-} // namespace TE
+#define T_REGISTER_EDITOR_MODE(Type) static EditorModeRegisterer<Type> Type##_Registerer;

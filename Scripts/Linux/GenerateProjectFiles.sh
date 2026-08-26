@@ -66,10 +66,19 @@ fi
 echo "[≡ Generating Makefiles with Premake...]"
 cd "$ROOT_DIR"
 
-if command -v premake5 &> /dev/null; then
-    premake5 gmake2 --file=Premake5.lua
+PREMAKE_BIN=""
+if [ -x "$ROOT_DIR/Vendor/Premake/Linux/premake5" ]; then
+    PREMAKE_BIN="$ROOT_DIR/Vendor/Premake/Linux/premake5"
+elif [ -x "$ROOT_DIR/Vendor/Premake/premake5" ]; then
+    PREMAKE_BIN="$ROOT_DIR/Vendor/Premake/premake5"
+elif command -v premake5 &> /dev/null; then
+    PREMAKE_BIN="premake5"
+fi
+
+if [ -n "$PREMAKE_BIN" ]; then
+    "$PREMAKE_BIN" gmake2 --file=Premake5.lua
 else
-    echo "[!] premake5 not found in PATH. Please install premake5 or ensure it is in your PATH."
+    echo "[!] premake5 not found in Vendor/Premake/ or system PATH. Please install premake5 or ensure it is in your PATH."
     read -p "Press Enter to exit..."
     exit 1
 fi

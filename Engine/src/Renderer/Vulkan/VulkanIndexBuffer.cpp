@@ -1,9 +1,7 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanIndexBuffer.hpp"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include <iostream>
-
-namespace TE
-{
 
 VulkanIndexBuffer::VulkanIndexBuffer(uint32_t *indices, uint32_t Count) : m_Count(Count)
 {
@@ -60,5 +58,3 @@ void VulkanIndexBuffer::SetData(uint32_t *indices, uint32_t Size) const
 }
 
 uint32_t VulkanIndexBuffer::GetCount() const { return m_Count; }
-
-} // namespace TE

@@ -5,9 +5,6 @@
 #import <Metal/Metal.h>
 #endif
 
-namespace TE
-{
-
 MetalVertexBuffer::MetalVertexBuffer(float *vertices, uint32_t size)
     : m_Size(size)
 {
@@ -53,5 +50,3 @@ void MetalVertexBuffer::SetData(float *vertices, uint32_t size) const
     }
 #endif
 }
-
-} // namespace TE

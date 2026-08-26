@@ -1,12 +1,9 @@
 #pragma once
-
+#include "Core/PreRequisites.h"
+#include "Utils/TEString.hpp"
 #include <glm/glm.hpp>
-#include <string>
 
-namespace TE
-{
-
-class TEColor
+class TE_API TEColor
 {
 public:
     float r = 0.0f;
@@ -40,7 +37,7 @@ public:
 
     // ===== Utilities =====
     static TEColor ToLinear(const TEColor &srgb);
-    static TEColor FromHex(const std::string &hex); // "#RRGGBB" or "#RRGGBBAA"
+    static TEColor FromHex(const TEString &hex); // "#RRGGBB" or "#RRGGBBAA"
 
     // ===== Accessor =====
     const TEColor &GetValue() const { return *this; }
@@ -51,5 +48,3 @@ public:
 
     operator glm::vec4() const { return {r, g, b, a}; }
 };
-
-} // namespace TE

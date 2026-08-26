@@ -1,22 +1,20 @@
 #pragma once
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 
 #include <chrono>
-#include <unordered_map>
 
 #include "Core/Events/Event.h"
 #include "Core/KeyCodes.hpp"
 #include "Core/MouseCodes.hpp"
-#include "Core/PreRequisites.h"
 
-namespace TE
-{
 struct TE_API InputState
 {
     bool IsPressed = false;
     int RepeatCount = 0;
     float DurationHeld = 0.0f;
-    TE::Event *LastEvent = nullptr;
+    Event *LastEvent = nullptr;
 
     std::chrono::steady_clock::time_point PressedTime;
 };
@@ -40,10 +38,10 @@ public:
     TE_API static float GetMouseY();
     TE_API static std::pair<float, float> GetMousePosition();
 
-    TE_API static void OnKeyPressed(KeyCode key, TE::Event *e, bool isRepeat);
-    TE_API static void OnKeyReleased(KeyCode key, TE::Event *e);
-    TE_API static void OnMousePressed(MouseCode button, TE::Event *e);
-    TE_API static void OnMouseReleased(MouseCode button, TE::Event *e);
+    TE_API static void OnKeyPressed(KeyCode key, Event *e, bool isRepeat);
+    TE_API static void OnKeyReleased(KeyCode key, Event *e);
+    TE_API static void OnMousePressed(MouseCode button, Event *e);
+    TE_API static void OnMouseReleased(MouseCode button, Event *e);
 
     TE_API static const InputState &GetKeyState(KeyCode key);
     TE_API static const InputState &GetMouseState(MouseCode button);
@@ -62,11 +60,10 @@ public:
 
 private:
     static void *s_Window;
-    static std::unordered_map<KeyCode, InputState> s_KeyStates;
-    static std::unordered_map<MouseCode, InputState> s_MouseStates;
+    static TEMap<KeyCode, InputState> s_KeyStates;
+    static TEMap<MouseCode, InputState> s_MouseStates;
     static float s_MouseScrollX;
     static float s_MouseScrollY;
     static bool s_MouseButtonDown[3];
     static bool s_MouseButtonUp[3];
 };
-} // namespace TE

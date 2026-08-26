@@ -1,6 +1,6 @@
 # Asset Subsystem Architecture
 
-The Asset subsystem in TimeEngine provides 64-bit integer asset handles ([`AssetHandle`](file:///e:/TimeEngine/Engine/Include/Core/Asset/Asset.hpp)), prototype-based modular asset type registration (`AssetTypeMetadata`), global asset caching ([`AssetManager`](file:///e:/TimeEngine/Engine/Include/Core/Asset/AssetManager.hpp)), path-to-handle mapping ([`AssetRegistry`](file:///e:/TimeEngine/Engine/Include/Core/Asset/AssetRegistry.hpp)), and `stb_image` encapsulation (`ImportImage`, `ExportImagePNG`).
+The Asset subsystem in TimeEngine provides 64-bit integer asset handles ([`AssetHandle`](../../../../Include/Core/Asset/Asset.hpp)), prototype-based modular asset type registration (`AssetTypeMetadata`), global asset caching ([`AssetManager`](../../../../Include/Core/Asset/AssetManager.hpp)), path-to-handle mapping ([`AssetRegistry`](../../../../Include/Core/Asset/AssetRegistry.hpp)), and `stb_image` encapsulation (`ImportImage`, `ExportImagePNG`).
 
 > [!NOTE]
 > In short, think of the **Asset Subsystem** as the engine's library librarian: `Asset` is the base book interface, `AssetRegistry` maintains a card catalog mapping unique 64-bit handle IDs (`AssetHandle`) to physical file paths on disk, and `AssetManager` loads, caches, and dispenses asset instances into memory so files are never redundantly loaded twice.
@@ -9,31 +9,27 @@ The Asset subsystem in TimeEngine provides 64-bit integer asset handles ([`Asset
 
 ## Subsystem Pipeline & Data Flow
 
-```
-[ File on Disk ] (e.g. Assets/Textures/Player.png)
-       │
-       ▼ (Register Path -> Compute/Fetch 64-bit AssetHandle)
-[ AssetRegistry ] (Path ◄──► Handle Map)
-       │
-       ▼ (Check Memory Cache: s_LoadedAssets[handle])
-[ AssetManager::LoadAsset ]
-       ├──► (If Cached): Return std::shared_ptr<T> immediately
-       └──► (If New): Deserialize file, populate Asset instance, cache in s_LoadedAssets
+```mermaid
+flowchart TD
+    Disk["File on Disk<br/>(Assets/Textures/Player.png)"] -->|Register Path -> Compute Handle| Registry["AssetRegistry<br/>(Path <--> Handle Map)"]
+    Registry -->|Check Memory Cache| CacheCheck{"AssetManager::LoadAsset<br/>Is Handle Cached?"}
+    CacheCheck -->|Yes| Cached["Return std::shared_ptr<T> immediately"]
+    CacheCheck -->|No| LoadDisk["Deserialize file, populate Asset instance & cache in s_LoadedAssets"]
 ```
 
 ---
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TE::Asset`](file:///e:/TimeEngine/Engine/Include/Core/Asset/Asset.hpp)**: Abstract base class for engine assets (`Scene`, `Texture`, `Material`, `Sprite`, `SpriteSheet`).
+1. **[`TE::Asset`](../../../../Include/Core/Asset/Asset.hpp)**: Abstract base class for engine assets (`Scene`, `Texture`, `Material`, `Sprite`, `SpriteSheet`).
    - Virtual metadata methods (`GetType`, `GetName`, `GetDefaultExtension`, `GetDefaultIconPath`, `OnContentBrowserCreate`).
 
-2. **[`TE::AssetManager`](file:///e:/TimeEngine/Engine/Include/Core/Asset/AssetManager.hpp)**: Central static manager for asset allocation and image file I/O.
+2. **[`TE::AssetManager`](../../../../Include/Core/Asset/AssetManager.hpp)**: Central static manager for asset allocation and image file I/O.
    - Maintains memory cache `s_LoadedAssets` (`std::unordered_map<AssetHandle, std::shared_ptr<Asset>>`).
    - Prototype registry `s_AssetTypeRegistry` for extension icon resolution.
    - Encapsulates `stb_image` for PNG/JPG importing (`ImportImage`) and exporting (`ExportImagePNG`).
 
-3. **[`TE::AssetRegistry`](file:///e:/TimeEngine/Engine/Include/Core/Asset/AssetRegistry.hpp)**: Bi-directional path-handle registry.
+3. **[`TE::AssetRegistry`](../../../../Include/Core/Asset/AssetRegistry.hpp)**: Bi-directional path-handle registry.
    - Maps `AssetHandle` $\leftrightarrow$ `std::filesystem::path`.
    - Persists registry mappings across project restarts.
 
@@ -94,5 +90,5 @@ TE::AssetManager::ExportImagePNG("Screenshots/Viewport.png", width, height, 4, p
 
 ## Related Architectural Documentation
 
-- [Project Subsystem Architecture](file:///e:/TimeEngine/Engine/src/Core/Project/ARCHITECTURE.md) — Documentation for asset directory resolution.
-- [Editor & Asset Editors Architecture](file:///e:/TimeEngine/Engine/src/Editor/ARCHITECTURE.md) — Documentation for `AssetEditorRegistry` file inspectors.
+- [Project Subsystem Architecture](../Project/ARCHITECTURE.md) — Documentation for asset directory resolution.
+- [Editor & Asset Editors Architecture](../../Editor/ARCHITECTURE.md) — Documentation for `AssetEditorRegistry` file inspectors.

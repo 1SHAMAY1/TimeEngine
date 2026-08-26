@@ -1,8 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESVertexBuffer.hpp"
 #include <glad/glad.h>
-
-namespace TE
-{
 
 OpenGLESVertexBuffer::OpenGLESVertexBuffer(float *vertices, uint32_t size)
 {
@@ -22,5 +20,3 @@ void OpenGLESVertexBuffer::SetData(float *vertices, uint32_t size) const
     glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
 }
-
-} // namespace TE

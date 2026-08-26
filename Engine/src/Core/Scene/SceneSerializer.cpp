@@ -1,24 +1,28 @@
+#include "Core/PreRequisites.h"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Log.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include <fstream>
-#include <sstream>
 
-namespace TE
+SceneSerializer::SceneSerializer(const TERef<Scene> &scene) : m_Scene(scene) {}
+
+bool SceneSerializer::Serialize(const TEString &filepath)
 {
+    TEString parentDir = filepath.GetParentPath();
+    if (!parentDir.empty() && !TEFileSystem::Exists(parentDir))
+    {
+        TEFileSystem::CreateDirectories(parentDir);
+    }
 
-SceneSerializer::SceneSerializer(const std::shared_ptr<Scene> &scene) : m_Scene(scene) {}
-
-bool SceneSerializer::Serialize(const std::filesystem::path &filepath)
-{
     // A simple text-based serializer for Scenes to ensure reliability without extra dependencies.
-    std::ofstream hout(filepath);
+    std::ofstream hout(filepath.c_str());
     if (!hout.is_open())
         return false;
 
-    hout << "Scene: " << filepath.filename().string() << "\n";
+    hout << "Scene: " << filepath.GetFilename().c_str() << "\n";
     hout << "Entities:\n";
 
     auto &entityManager = m_Scene->GetEntityManager();
@@ -29,32 +33,52 @@ bool SceneSerializer::Serialize(const std::filesystem::path &filepath)
         Entity entity(id);
 
         // Skip purely internal entities for now if needed, though usually we serialize everything.
-        auto *tagComp = entityManager.GetComponent<TagComponent>(entity);
-        std::string name = tagComp ? tagComp->Tag : "Entity_" + std::to_string(id);
-
         hout << "  - Entity: " << id << "\n";
-        hout << "    Tag: " << name << "\n";
 
-        auto components = entityManager.GetAllComponents(entity);
-        for (auto *comp : components)
+        // Tag
+        auto *tagComp = entityManager.GetComponent<TagComponent>(entity);
+        if (tagComp)
         {
-            std::string compName = comp->GetClassName();
-            // Optional: Skip internal structural components if needed, but usually we serialize.
-            // We already serialized TagComponent manually above, so skip it to avoid duplication.
+            hout << "    Tag: " << tagComp->Tag.c_str() << "\n";
+        }
+
+        // Components via ComponentRegistry
+        auto allComps = entityManager.GetAllComponents(id);
+        const auto &registryMap = ComponentRegistry::Get().GetComponents();
+
+        for (auto *comp : allComps)
+        {
+            if (!comp)
+                continue;
+
+            TEString compName = comp->GetClassName();
+
+            // Tag is serialized separately as header info
             if (compName == "TagComponent")
                 continue;
 
-            hout << "    " << compName << ":\n";
-            const auto &metaMap = ComponentRegistry::Get().GetComponents();
-            auto it = metaMap.find(compName);
-            if (it != metaMap.end())
+            auto it = registryMap.find(compName);
+            if (it != registryMap.end())
             {
+                hout << "    " << compName.c_str() << ":\n";
                 for (const auto &prop : it->second.Properties)
                 {
                     if (prop.SerializeFunc)
                     {
-                        std::string valStr = prop.SerializeFunc(comp);
-                        hout << "      " << prop.Name << ": " << valStr << "\n";
+                        TEString valStr = prop.SerializeFunc(comp);
+                        hout << "      " << prop.Name.c_str() << ": " << valStr.c_str() << "\n";
+                    }
+                }
+
+                // Serialize attached scripts
+                const auto &scripts = comp->GetScripts();
+                if (!scripts.empty())
+                {
+                    hout << "      Scripts:\n";
+                    for (const auto &slot : scripts)
+                    {
+                        hout << "        - Handle: " << slot.ScriptHandle << "\n";
+                        hout << "          Enabled: " << (slot.Enabled ? "true" : "false") << "\n";
                     }
                 }
             }
@@ -65,40 +89,59 @@ bool SceneSerializer::Serialize(const std::filesystem::path &filepath)
     return true;
 }
 
-bool SceneSerializer::Deserialize(const std::filesystem::path &filepath)
+bool SceneSerializer::Deserialize(const TEString &filepath)
 {
-    std::ifstream hin(filepath);
-    if (!hin.is_open())
+    if (!TEFileSystem::Exists(filepath))
         return false;
 
     // Use shared scene instance for entity creation
     auto &entityManager = m_Scene->GetEntityManager();
 
     // Clear existing entities before deserializing
-    std::set<EntityID> alive = entityManager.GetAliveEntities();
+    TESet<EntityID> alive = entityManager.GetAliveEntities();
     for (EntityID id : alive)
     {
         entityManager.DestroyEntity(Entity(id, &entityManager));
     }
 
-    std::string line;
-    std::vector<std::string> lines;
-    while (std::getline(hin, line))
+    TEArray<TEString> lines;
+    TEFileSystem::ForEachLine(filepath,
+                              [&lines](const TEString &line)
+                              {
+                                  lines.push_back(line);
+                                  return true;
+                              });
+
+    if (m_Scene)
     {
-        lines.push_back(line);
+        m_Scene->SetAssetPath(filepath);
+        TEString filename = filepath.GetFilename();
+        if (filename.EndsWith(".tescene"))
+            filename = filename.Left(filename.Length() - 8);
+        m_Scene->SetName(filename);
     }
 
-    std::map<EntityID, EntityID> idMap;
-    std::map<EntityID, Entity> entityMap;
+    TEMap<EntityID, EntityID> idMap;
+    TEMap<EntityID, Entity> entityMap;
     Entity currentEntity;
 
     // Pass 1: Create all entities and record IDs
     for (const auto &l : lines)
     {
-        if (l.find("  - Entity: ") != std::string::npos)
+        if (l.StartsWith("Scene: ") && m_Scene)
         {
-            EntityID oldID = std::stoull(l.substr(12));
+            TEString headerName = l.Mid(7);
+            if (headerName.EndsWith(".tescene"))
+                headerName = headerName.Left(headerName.Length() - 8);
+            if (!headerName.empty())
+                m_Scene->SetName(headerName);
+        }
+        else if (l.StartsWith("  - Entity: "))
+        {
+            EntityID oldID = (EntityID)std::stoull(l.Mid(12).c_str());
             currentEntity = entityManager.CreateEntity();
+            if (!entityManager.GetComponent<TransformComponent>(currentEntity))
+                entityManager.AddComponent<TransformComponent>(currentEntity);
             idMap[oldID] = currentEntity.GetID();
             entityMap[oldID] = currentEntity;
         }
@@ -106,34 +149,33 @@ bool SceneSerializer::Deserialize(const std::filesystem::path &filepath)
 
     // Pass 2: Parse components and properties
     currentEntity = Entity();
-    std::string currentComponentName;
+    TEString currentComponentName;
     TComponent *currentComponent = nullptr;
 
     const auto &registryMap = ComponentRegistry::Get().GetComponents();
 
     for (const auto &l : lines)
     {
-        if (l.find("  - Entity: ") != std::string::npos)
+        if (l.StartsWith("  - Entity: "))
         {
-            EntityID oldID = std::stoull(l.substr(12));
+            EntityID oldID = (EntityID)std::stoull(l.Mid(12).c_str());
             currentEntity = entityMap[oldID];
             currentComponent = nullptr;
             currentComponentName = "";
         }
-        else if (l.find("    Tag: ") != std::string::npos)
+        else if (l.StartsWith("    Tag: "))
         {
-            std::string tagName = l.substr(9);
+            TEString tagName = l.Mid(9);
             auto *tagComp = entityManager.GetComponent<TagComponent>(currentEntity);
             if (!tagComp)
                 tagComp = entityManager.AddComponent<TagComponent>(currentEntity);
             if (tagComp)
                 tagComp->Tag = tagName;
         }
-        else if (l.find("    ") == 0 && l.find(":") != std::string::npos && l.find("  - ") == std::string::npos &&
-                 l.find("      ") != 0)
+        else if (l.StartsWith("    ") && l.Find(":") != -1 && !l.StartsWith("  - ") && !l.StartsWith("      "))
         {
-            size_t colonPos = l.find(":");
-            currentComponentName = l.substr(4, colonPos - 4);
+            int colonPos = l.Find(":");
+            currentComponentName = l.Mid(4, colonPos - 4);
 
             if (registryMap.count(currentComponentName))
             {
@@ -160,13 +202,34 @@ bool SceneSerializer::Deserialize(const std::filesystem::path &filepath)
                 currentComponent = nullptr;
             }
         }
-        else if (l.find("      ") == 0 && currentComponent)
+        else if (l.StartsWith("        - Handle: ") && currentComponent)
         {
-            size_t colonPos = l.find(": ");
-            if (colonPos != std::string::npos)
+            try
             {
-                std::string propName = l.substr(6, colonPos - 6);
-                std::string propValue = l.substr(colonPos + 2);
+                AssetHandle handle = std::stoull(l.Mid(18).c_str());
+                currentComponent->AddScript(handle);
+            }
+            catch (...)
+            {
+            }
+        }
+        else if (l.StartsWith("          Enabled: ") && currentComponent)
+        {
+            TEString enStr = l.Mid(19);
+            bool en = (enStr == "true" || enStr == "1");
+            auto &scripts = currentComponent->GetScripts();
+            if (!scripts.empty())
+            {
+                scripts.back().Enabled = en;
+            }
+        }
+        else if (l.StartsWith("      ") && currentComponent)
+        {
+            int colonPos = l.Find(": ");
+            if (colonPos != -1)
+            {
+                TEString propName = l.Mid(6, colonPos - 6);
+                TEString propValue = l.Mid(colonPos + 2);
 
                 auto it = registryMap.find(currentComponentName);
                 if (it != registryMap.end())
@@ -179,13 +242,14 @@ bool SceneSerializer::Deserialize(const std::filesystem::path &filepath)
                             {
                                 try
                                 {
-                                    if (!propValue.empty() && propValue != "0")
+                                    if (!propValue.IsEmpty() && propValue != "0")
                                     {
-                                        EntityID oldID = std::stoull(propValue);
+                                        EntityID oldID = (EntityID)std::stoull(propValue.c_str());
                                         if (idMap.count(oldID))
                                         {
                                             EntityID newID = idMap[oldID];
-                                            prop.DeserializeFunc(currentComponent, std::to_string(newID));
+                                            prop.DeserializeFunc(currentComponent,
+                                                                 TEString::FromInt64(static_cast<int64_t>(newID)));
                                         }
                                         else
                                         {
@@ -221,7 +285,31 @@ bool SceneSerializer::Deserialize(const std::filesystem::path &filepath)
         }
     }
 
+    // Pass 3: Rebuild TransformComponent::Children relationships
+    for (EntityID id : entityManager.GetAliveEntities())
+    {
+        Entity entity(id, &entityManager);
+        auto *tc = entityManager.GetComponent<TransformComponent>(entity);
+        if (tc)
+        {
+            tc->Children.clear();
+        }
+    }
+
+    for (EntityID id : entityManager.GetAliveEntities())
+    {
+        Entity entity(id, &entityManager);
+        auto *tc = entityManager.GetComponent<TransformComponent>(entity);
+        if (tc && tc->Parent != 0 && entityManager.IsValid(tc->Parent))
+        {
+            Entity parentEntity(tc->Parent, &entityManager);
+            auto *parentTC = entityManager.GetComponent<TransformComponent>(parentEntity);
+            if (parentTC)
+            {
+                parentTC->Children.push_back(id);
+            }
+        }
+    }
+
     return true;
 }
-
-} // namespace TE

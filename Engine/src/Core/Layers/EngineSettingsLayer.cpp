@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Layers/EngineSettingsLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
@@ -5,10 +6,7 @@
 #include <iomanip>
 #include <sstream>
 
-namespace TE
-{
-
-EngineSettingsLayer::EngineSettingsLayer(const std::string &name) : Layer(name)
+EngineSettingsLayer::EngineSettingsLayer(const TEString &name) : Layer(name)
 {
     TE_CORE_INFO("EngineSettingsLayer created");
 }
@@ -270,11 +268,8 @@ void EngineSettingsLayer::RenderLoggingTab()
     }
 
     // Log File
-    char logFileBuffer[256];
-    strcpy_s(logFileBuffer, m_TempSettings.logFile.c_str());
-    if (TimeGUI::InputText("Log File", logFileBuffer, sizeof(logFileBuffer)))
+    if (TimeGUI::InputText("Log File", m_TempSettings.logFile))
     {
-        m_TempSettings.logFile = logFileBuffer;
         changed = true;
     }
 
@@ -359,11 +354,8 @@ void EngineSettingsLayer::RenderWindowTab()
     bool changed = false;
 
     // Window Properties
-    char titleBuffer[256];
-    strcpy_s(titleBuffer, m_TempSettings.windowTitle.c_str());
-    if (TimeGUI::InputText("Window Title", titleBuffer, sizeof(titleBuffer)))
+    if (TimeGUI::InputText("Window Title", m_TempSettings.windowTitle))
     {
-        m_TempSettings.windowTitle = titleBuffer;
         changed = true;
     }
 
@@ -477,35 +469,23 @@ void EngineSettingsLayer::RenderFileIOTab()
     bool changed = false;
 
     // File Paths
-    char assetPathBuffer[256];
-    strcpy_s(assetPathBuffer, m_TempSettings.assetPath.c_str());
-    if (TimeGUI::InputText("Asset Path", assetPathBuffer, sizeof(assetPathBuffer)))
+    if (TimeGUI::InputText("Asset Path", m_TempSettings.assetPath))
     {
-        m_TempSettings.assetPath = assetPathBuffer;
         changed = true;
     }
 
-    char configPathBuffer[256];
-    strcpy_s(configPathBuffer, m_TempSettings.configPath.c_str());
-    if (TimeGUI::InputText("Config Path", configPathBuffer, sizeof(configPathBuffer)))
+    if (TimeGUI::InputText("Config Path", m_TempSettings.configPath))
     {
-        m_TempSettings.configPath = configPathBuffer;
         changed = true;
     }
 
-    char logPathBuffer[256];
-    strcpy_s(logPathBuffer, m_TempSettings.logPath.c_str());
-    if (TimeGUI::InputText("Log Path", logPathBuffer, sizeof(logPathBuffer)))
+    if (TimeGUI::InputText("Log Path", m_TempSettings.logPath))
     {
-        m_TempSettings.logPath = logPathBuffer;
         changed = true;
     }
 
-    char savePathBuffer[256];
-    strcpy_s(savePathBuffer, m_TempSettings.savePath.c_str());
-    if (TimeGUI::InputText("Save Path", savePathBuffer, sizeof(savePathBuffer)))
+    if (TimeGUI::InputText("Save Path", m_TempSettings.savePath))
     {
-        m_TempSettings.savePath = savePathBuffer;
         changed = true;
     }
 
@@ -548,12 +528,7 @@ void EngineSettingsLayer::RenderSettingsTab()
     TimeGUI::Separator();
 
     // File Operations
-    char settingsFileBuffer[256];
-    strcpy_s(settingsFileBuffer, m_SelectedSettingsFile.c_str());
-    if (TimeGUI::InputText("Settings File", settingsFileBuffer, sizeof(settingsFileBuffer)))
-    {
-        m_SelectedSettingsFile = settingsFileBuffer;
-    }
+    TimeGUI::InputText("Settings File", m_SelectedSettingsFile);
 
     if (TimeGUI::Button("Load Settings", TEVector2(120, 30)))
     {
@@ -700,5 +675,3 @@ void EngineSettingsLayer::ValidateCurrentSettings()
         TE_CORE_INFO("Settings validation passed");
     }
 }
-
-} // namespace TE

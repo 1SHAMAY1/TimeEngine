@@ -1,10 +1,7 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
-#include <string>
 
-namespace TE
-{
 class TE_API RendererContext
 {
 public:
@@ -13,10 +10,9 @@ public:
 
     // GPU selection and detection
     static void EnableBestGPU(); // Call before context creation
-    static std::string GetGPUVendor();
-    static std::string GetGPURenderer();
-    static std::string GetGPUType(); // "Dedicated", "Integrated", or "Unknown"
+    static TEString GetGPUVendor();
+    static TEString GetGPURenderer();
+    static TEString GetGPUType(); // "Dedicated", "Integrated", or "Unknown"
 private:
     static GraphicsAPI s_API;
 };
-} // namespace TE

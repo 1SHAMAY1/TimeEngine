@@ -1,12 +1,10 @@
+#include "Core/PreRequisites.h"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Log.h"
 #include "Layers/ProfilingLayer.hpp"
 #include <algorithm>
 #include <chrono>
 #include <velox/VeloxAPI.h>
-
-namespace TE
-{
 
 PhysicsWorld::PhysicsWorld()
 {
@@ -28,7 +26,7 @@ PhysicsWorld::~PhysicsWorld()
 
 void PhysicsWorld::AddBody(RigidBody *body)
 {
-    m_Bodies.push_back(body);
+    m_Bodies.Add(body);
 
     if (!m_VeloxWorld)
         return;
@@ -71,17 +69,17 @@ void PhysicsWorld::AddBody(RigidBody *body)
     }
     else if (body->Shape.type == CollisionType::Polygon)
     {
-        std::vector<float> verticesX;
-        std::vector<float> verticesY;
+        TEArray<float> verticesX;
+        TEArray<float> verticesY;
         for (const auto &pt : body->Shape.polygon.points)
         {
-            verticesX.push_back(pt.x);
-            verticesY.push_back(pt.y);
+            verticesX.Add(pt.x);
+            verticesY.Add(pt.y);
         }
-        if (!verticesX.empty())
+        if (!verticesX.IsEmpty())
         {
-            Velox_AddPolygonCollider((VeloxWorld *)m_VeloxWorld, id, verticesX.data(), verticesY.data(),
-                                     (int)verticesX.size());
+            Velox_AddPolygonCollider((VeloxWorld *)m_VeloxWorld, id, verticesX.Data(), verticesY.Data(),
+                                     (int)verticesX.Size());
         }
     }
     else
@@ -93,11 +91,7 @@ void PhysicsWorld::AddBody(RigidBody *body)
 
 void PhysicsWorld::RemoveBody(RigidBody *body)
 {
-    auto it = std::find(m_Bodies.begin(), m_Bodies.end(), body);
-    if (it != m_Bodies.end())
-    {
-        m_Bodies.erase(it);
-    }
+    m_Bodies.Remove(body);
 
     if (m_VeloxWorld && body->m_VeloxEntityID != 0)
     {
@@ -292,5 +286,3 @@ bool PhysicsWorld::Raycast(const TEVector2 &start, const TEVector2 &direction, f
     }
     return false;
 }
-
-} // namespace TE

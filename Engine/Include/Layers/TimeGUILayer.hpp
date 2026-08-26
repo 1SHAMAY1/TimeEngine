@@ -2,13 +2,10 @@
 
 #include "Layers/Layer.hpp"
 
-namespace TE
-{
-
 class TE_API TimeGUILayer : public Layer
 {
 public:
-    TimeGUILayer(const std::string &name = "Editor Layer");
+    TimeGUILayer(const TEString &name = "Editor Layer");
     ~TimeGUILayer();
 
     virtual void OnAttach() override;
@@ -16,10 +13,8 @@ public:
     virtual void OnTimeGUIRender() override;
 
     void Begin();
-    void End();
+    void *End();
 
 private:
     bool m_Initialized = false;
 };
-
-} // namespace TE

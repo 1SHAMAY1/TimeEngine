@@ -16,13 +16,16 @@
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Log.h"
+#include "Core/Plugin/PluginManager.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
+#include "Editor/AssetEditorRegistry.hpp"
 #include "Editor/EditorMode.hpp"
 #include "Layers/EditorLayer.hpp"
+#include "MCPToolRegistry.hpp"
 #include "Renderer/RenderCommand.hpp"
 
 #ifdef TE_PLATFORM_WINDOWS
@@ -34,25 +37,15 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
+#include "Utils/TEFileSystem.hpp"
 #include <algorithm>
 #include <cctype>
-#include <filesystem>
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <thread>
 #include <vector>
 
-namespace TE
-{
-
-// ---------------------------------------------------------------------------
-// Plugin entry points
-// ---------------------------------------------------------------------------
-
-TE_PLUGIN_EXPORT IPlugin *CreatePluginInstance() { return new MCPPlugin(); }
-
-TE_PLUGIN_EXPORT void DestroyPluginInstance(IPlugin *plugin) { delete plugin; }
+TE_REGISTER_PLUGIN(MCPPlugin);
 
 // ---------------------------------------------------------------------------
 // Lifecycle
@@ -84,7 +77,7 @@ void MCPPlugin::OnUnload()
             if (c.Active)
                 closesocket((SOCKET)c.Socket);
         }
-        m_SSEClients.clear();
+        m_SSEClients.Empty();
     }
 #endif
 
@@ -92,6 +85,47 @@ void MCPPlugin::OnUnload()
         m_ServerThread.join();
 
     TE_CORE_INFO("[MCPPlugin] MCP server stopped.");
+}
+
+void MCPPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const
+{
+    float w = max.x - min.x;
+    float h = max.y - min.y;
+    TEVector2 c = TEVector2(min.x + w * 0.5f, min.y + h * 0.5f);
+
+    unsigned int bgCol = 0xFF0A1E30;
+    unsigned int borderCol = 0xFF00D2D3;
+    dl.AddRectFilled(min, max, bgCol, 6.0f);
+    dl.AddRect(min, max, borderCol, 6.0f, 0, 1.0f);
+
+    // Neural network peripheral nodes
+    TEVector2 n1(c.x - 13.0f, c.y - 10.0f);
+    TEVector2 n2(c.x + 13.0f, c.y - 10.0f);
+    TEVector2 n3(c.x - 14.0f, c.y + 11.0f);
+    TEVector2 n4(c.x + 14.0f, c.y + 11.0f);
+    TEVector2 n5(c.x, c.y - 14.0f);
+
+    // Circuit connections
+    dl.AddLine(n1, c, 0xFF0984E3, 1.5f);
+    dl.AddLine(n2, c, 0xFF0984E3, 1.5f);
+    dl.AddLine(n3, c, 0xFF0984E3, 1.5f);
+    dl.AddLine(n4, c, 0xFF0984E3, 1.5f);
+    dl.AddLine(n5, c, 0xFF0984E3, 1.5f);
+    dl.AddLine(n1, n3, 0x6600D2D3, 1.0f);
+    dl.AddLine(n2, n4, 0x6600D2D3, 1.0f);
+
+    // Peripheral node disks
+    dl.AddCircleFilled(n1, 3.0f, 0xFF70A1FF);
+    dl.AddCircleFilled(n2, 3.0f, 0xFF70A1FF);
+    dl.AddCircleFilled(n3, 3.0f, 0xFF70A1FF);
+    dl.AddCircleFilled(n4, 3.0f, 0xFF70A1FF);
+    dl.AddCircleFilled(n5, 2.5f, 0xFF55EFC4);
+
+    // Central diamond core
+    TEVector2 corePts[4] = {TEVector2(c.x, c.y - 6.0f), TEVector2(c.x + 6.0f, c.y), TEVector2(c.x, c.y + 6.0f),
+                            TEVector2(c.x - 6.0f, c.y)};
+    dl.AddConvexPolyFilled(corePts, 4, 0xFF00D2D3);
+    dl.AddCircleFilled(c, 2.5f, 0xFFFFFFFF);
 }
 
 // ---------------------------------------------------------------------------
@@ -186,7 +220,7 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     ioctlsocket((SOCKET)clientSocket, FIONBIO, &mode);
 #endif
 
-    std::string req = ReadHttpRequest(clientSocket);
+    TEString req = ReadHttpRequest(clientSocket);
     if (req.empty())
     {
 #ifdef TE_PLATFORM_WINDOWS
@@ -196,10 +230,14 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     }
 
     // Parse request line: METHOD /path HTTP/1.x
-    std::string method, path;
+    TEString method, path;
     {
-        std::istringstream ss(req);
-        ss >> method >> path;
+        TEArray<TEString> parts = req.Split(' ');
+        if (parts.Size() >= 2)
+        {
+            method = parts[0];
+            path = parts[1];
+        }
     }
 
     // Normalise method to uppercase
@@ -221,12 +259,12 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     if (method == "GET" && path == "/sse")
     {
         // Send SSE headers — keep connection alive
-        std::string headers = "HTTP/1.1 200 OK\r\n"
-                              "Content-Type: text/event-stream\r\n"
-                              "Cache-Control: no-cache\r\n"
-                              "Connection: keep-alive\r\n"
-                              "Access-Control-Allow-Origin: *\r\n"
-                              "\r\n";
+        TEString headers = "HTTP/1.1 200 OK\r\n"
+                           "Content-Type: text/event-stream\r\n"
+                           "Cache-Control: no-cache\r\n"
+                           "Connection: keep-alive\r\n"
+                           "Access-Control-Allow-Origin: *\r\n"
+                           "\r\n";
 #ifdef TE_PLATFORM_WINDOWS
         send((SOCKET)clientSocket, headers.c_str(), (int)headers.size(), 0);
 #endif
@@ -237,14 +275,14 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
         // Register as an active SSE client
         {
             std::lock_guard<std::mutex> lock(m_SSEMutex);
-            m_SSEClients.push_back({clientSocket, true});
+            m_SSEClients.Add({clientSocket, true});
         }
 
         // Keep this thread alive; the socket stays open until disconnected or shutdown
         while (m_Running)
         {
             // Send a keep-alive comment every 15 s
-            std::string ping = ": ping\n\n";
+            TEString ping = ": ping\n\n";
 #ifdef TE_PLATFORM_WINDOWS
             int sent = send((SOCKET)clientSocket, ping.c_str(), (int)ping.size(), 0);
             if (sent == SOCKET_ERROR)
@@ -276,12 +314,12 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     // -----------------------------------------------------------------------
     if (method == "OPTIONS")
     {
-        std::string resp = "HTTP/1.1 204 No Content\r\n"
-                           "Access-Control-Allow-Origin: *\r\n"
-                           "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
-                           "Access-Control-Allow-Headers: Content-Type\r\n"
-                           "Content-Length: 0\r\n"
-                           "\r\n";
+        TEString resp = "HTTP/1.1 204 No Content\r\n"
+                        "Access-Control-Allow-Origin: *\r\n"
+                        "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
+                        "Access-Control-Allow-Headers: Content-Type\r\n"
+                        "Content-Length: 0\r\n"
+                        "\r\n";
 #ifdef TE_PLATFORM_WINDOWS
         send((SOCKET)clientSocket, resp.c_str(), (int)resp.size(), 0);
         closesocket((SOCKET)clientSocket);
@@ -295,9 +333,9 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     if (method == "POST" && path == "/message")
     {
         // Extract body (after \r\n\r\n)
-        std::string body;
+        TEString body;
         size_t headerEnd = req.find("\r\n\r\n");
-        if (headerEnd != std::string::npos)
+        if (headerEnd != TEString::npos)
             body = req.substr(headerEnd + 4);
 
         if (body.empty())
@@ -309,34 +347,42 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
         }
 
         // Extract JSON-RPC fields
-        std::string rpcMethod = ExtractString(body, "method");
-        std::string idStr = ExtractString(body, "id");
+        TEString rpcMethod = ExtractString(body, "method");
+        TEString idStr = ExtractString(body, "id");
         // id can be number — fall back to raw extraction
-        if (idStr.empty())
+        if (idStr.IsEmpty())
         {
-            size_t idPos = body.find("\"id\"");
-            if (idPos != std::string::npos)
+            size_t idPos = body.Find("\"id\"");
+            if (idPos != TEString::npos)
             {
-                size_t colon = body.find(':', idPos);
-                if (colon != std::string::npos)
+                size_t colon = body.Find(":", ESearchCase::CaseSensitive, ESearchDir::FromStart, (int)idPos);
+                if (colon != TEString::npos)
                 {
                     size_t valStart = body.find_first_not_of(" \t\r\n", colon + 1);
-                    size_t valEnd = body.find_first_of(",}\r\n", valStart);
-                    if (valStart != std::string::npos)
-                        idStr = body.substr(valStart, valEnd - valStart);
+                    size_t valEnd = TEString::npos;
+                    if (valStart != TEString::npos)
+                    {
+                        for (size_t i = valStart; i < body.Len(); ++i)
+                        {
+                            char ch = body[i];
+                            if (ch == ',' || ch == '}' || ch == '\r' || ch == '\n')
+                            {
+                                valEnd = i;
+                                break;
+                            }
+                        }
+                        idStr = body.Substr(valStart, valEnd != TEString::npos ? valEnd - valStart : TEString::npos);
+                    }
                 }
             }
         }
-        if (idStr.empty())
+        if (idStr.IsEmpty())
             idStr = "null";
 
         // Strip surrounding whitespace from idStr
-        while (!idStr.empty() && isspace((unsigned char)idStr.front()))
-            idStr.erase(idStr.begin());
-        while (!idStr.empty() && isspace((unsigned char)idStr.back()))
-            idStr.pop_back();
+        idStr.TrimInline();
 
-        std::string responseJson;
+        TEString responseJson;
 
         // ------------------------------------------------------------------
         // MCP: initialize
@@ -367,155 +413,35 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
         // ------------------------------------------------------------------
         else if (rpcMethod == "tools/list")
         {
-            responseJson =
-                "{\"jsonrpc\":\"2.0\","
-                "\"result\":{\"tools\":["
-                "{"
-                "\"name\":\"get_engine_info\","
-                "\"description\":\"Retrieve TimeEngine version, active project name, and current configuration.\","
-                "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}"
-                "},"
-                "{"
-                "\"name\":\"get_scene_hierarchy\","
-                "\"description\":\"Get a list of all entities in the active scene with their IDs and tags.\","
-                "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}"
-                "},"
-                "{"
-                "\"name\":\"create_entity\","
-                "\"description\":\"Create a new named entity in the active scene.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"name\":{\"type\":\"string\",\"description\":\"Name/tag for the new entity\"}"
-                "},"
-                "\"required\":[\"name\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"destroy_entity\","
-                "\"description\":\"Destroy an entity by its integer ID.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"id\":{\"type\":\"integer\",\"description\":\"Entity ID to destroy\"}"
-                "},"
-                "\"required\":[\"id\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"create_sprite\","
-                "\"description\":\"Create a .tesprite asset file at the given relative path inside the project assets "
-                "folder.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"name\":{\"type\":\"string\",\"description\":\"Sprite asset name (no extension)\"},"
-                "\"path\":{\"type\":\"string\",\"description\":\"Relative folder path inside Assets/\"}"
-                "},"
-                "\"required\":[\"name\",\"path\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"create_directory\","
-                "\"description\":\"Create a directory relative to the active project's Assets folder.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"path\":{\"type\":\"string\",\"description\":\"Relative directory path to create\"}"
-                "},"
-                "\"required\":[\"path\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"delete_file_or_directory\","
-                "\"description\":\"Delete a file or directory relative to the project Assets folder.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"path\":{\"type\":\"string\",\"description\":\"Relative path to delete\"}"
-                "},"
-                "\"required\":[\"path\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"get_editor_modes\","
-                "\"description\":\"Get list of registered editor modes and highlight the active mode.\","
-                "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}"
-                "},"
-                "{"
-                "\"name\":\"set_editor_mode\","
-                "\"description\":\"Switch the current active editor mode by name.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"mode\":{\"type\":\"string\",\"description\":\"The editor mode name to switch to\"}"
-                "},"
-                "\"required\":[\"mode\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"get_viewport_screenshot\","
-                "\"description\":\"Take screenshot of editor viewport, save to temp file, return absolute path, and "
-                "clean up.\","
-                "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}"
-                "},"
-                "{"
-                "\"name\":\"delete_screenshot\","
-                "\"description\":\"Delete the temporary screenshot file from disk once processed by client.\","
-                "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}"
-                "},"
-                "{"
-                "\"name\":\"send_editor_input\","
-                "\"description\":\"Simulate editor input (e.g. key_press, mouse_press).\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"type\":{\"type\":\"string\",\"description\":\"Input event type: key_press, key_release, "
-                "mouse_press, mouse_release\"},"
-                "\"code\":{\"type\":\"integer\",\"description\":\"The integer KeyCode or MouseCode\"}"
-                "},"
-                "\"required\":[\"type\",\"code\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"select_entity\","
-                "\"description\":\"Select a specific entity in the editor by ID.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"id\":{\"type\":\"integer\",\"description\":\"The entity ID to select\"}"
-                "},"
-                "\"required\":[\"id\"]"
-                "}"
-                "},"
-                "{"
-                "\"name\":\"set_entity_properties\","
-                "\"description\":\"Set properties of an entity's components using JSON serialized key-values.\","
-                "\"inputSchema\":{"
-                "\"type\":\"object\","
-                "\"properties\":{"
-                "\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},"
-                "\"properties\":{\"type\":\"object\",\"description\":\"JSON object mapping component names to "
-                "key-value variables\"}"
-                "},"
-                "\"required\":[\"id\",\"properties\"]"
-                "}"
-                "}"
-                "]},"
-                "\"id\":" +
-                idStr + "}";
+            std::ostringstream json;
+            json << "{\"jsonrpc\":\"2.0\",\"id\":" << idStr << ",\"result\":{\"tools\":[";
+
+            const auto &tools = MCPToolRegistry::GetTools();
+            for (size_t i = 0; i < tools.size(); i++)
+            {
+                if (i > 0)
+                    json << ",";
+                json << "{"
+                     << "\"name\":\"" << tools[i].Name << "\","
+                     << "\"description\":\"" << tools[i].Description << "\","
+                     << "\"inputSchema\":"
+                     << (tools[i].InputSchemaJson.empty() ? "{\"type\":\"object\",\"properties\":{}}"
+                                                          : tools[i].InputSchemaJson)
+                     << "}";
+            }
+
+            json << "]}}";
+            responseJson = json.str();
         }
         // ------------------------------------------------------------------
         // MCP: tools/call
         // ------------------------------------------------------------------
         else if (rpcMethod == "tools/call")
         {
-            std::string toolName = ExtractString(body, "name");
-            std::string paramsJson = ExtractObject(body, "arguments");
-            if (paramsJson.empty())
-                paramsJson = "{}";
+            TEString toolName = ExtractString(body, "name");
+            TEString paramsJson = ExtractObject(body, "arguments");
 
-            std::string toolResult = DispatchToolCall(toolName, paramsJson);
+            TEString toolResult = DispatchToolCall(toolName, paramsJson);
 
             responseJson = "{\"jsonrpc\":\"2.0\","
                            "\"result\":{\"content\":[{\"type\":\"text\",\"text\":" +
@@ -555,8 +481,14 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
 // Tool dispatch
 // ---------------------------------------------------------------------------
 
-std::string MCPPlugin::DispatchToolCall(const std::string &toolName, const std::string &paramsJson)
+TEString MCPPlugin::DispatchToolCall(const TEString &toolName, const TEString &paramsJson)
 {
+    TEString result;
+    if (MCPToolRegistry::ExecuteTool(toolName, paramsJson, result))
+    {
+        return result;
+    }
+
     if (toolName == "get_engine_info")
         return Tool_GetEngineInfo();
     if (toolName == "get_scene_hierarchy")
@@ -589,6 +521,8 @@ std::string MCPPlugin::DispatchToolCall(const std::string &toolName, const std::
         return Tool_AddComponent(paramsJson);
     if (toolName == "delete_screenshot")
         return Tool_DeleteScreenshot();
+    if (toolName == "open_asset_editor")
+        return Tool_OpenAssetEditor(paramsJson);
 
     return "\"Error: Unknown tool '" + toolName + "'\"";
 }
@@ -597,20 +531,20 @@ std::string MCPPlugin::DispatchToolCall(const std::string &toolName, const std::
 // Tool implementations
 // ---------------------------------------------------------------------------
 
-std::string MCPPlugin::Tool_GetEngineInfo()
+TEString MCPPlugin::Tool_GetEngineInfo()
 {
-    std::string projectName = "None";
-    std::string projectPath = "N/A";
+    TEString projectName = "None";
+    TEString projectPath = "N/A";
     if (Project::GetActive())
     {
         projectName = Project::GetActiveConfig().Name;
-        projectPath = Project::GetProjectDirectory().string();
+        projectPath = Project::GetProjectDirectory();
     }
-    std::string info = "TimeEngine v1.0 (C++20) | Project: " + projectName + " | Path: " + projectPath;
+    TEString info = "TimeEngine v1.0 (C++20) | Project: " + projectName + " | Path: " + projectPath;
     return "\"" + info + "\"";
 }
 
-std::string MCPPlugin::Tool_GetSceneHierarchy()
+TEString MCPPlugin::Tool_GetSceneHierarchy()
 {
     const auto &layers = Application::Get().GetLayerStack();
     for (Layer *layer : layers)
@@ -629,7 +563,7 @@ std::string MCPPlugin::Tool_GetSceneHierarchy()
         for (EntityID id : manager.GetAliveEntities())
         {
             Entity entity(id, &manager);
-            std::string name = "Entity";
+            TEString name = "Entity";
             if (entity.HasComponent<TagComponent>())
                 name = entity.GetComponent<TagComponent>()->Tag;
             ss << "\\n- [" << id << "] " << name;
@@ -639,9 +573,9 @@ std::string MCPPlugin::Tool_GetSceneHierarchy()
     return "\"No active scene\"";
 }
 
-std::string MCPPlugin::Tool_CreateEntity(const std::string &paramsJson)
+TEString MCPPlugin::Tool_CreateEntity(const TEString &paramsJson)
 {
-    std::string name = ExtractString(paramsJson, "name");
+    TEString name = ExtractString(paramsJson, "name");
     if (name.empty())
         name = "NewEntity";
 
@@ -657,12 +591,12 @@ std::string MCPPlugin::Tool_CreateEntity(const std::string &paramsJson)
             break;
 
         Entity e = scene->CreateEntity(name);
-        return "\"Created entity '" + name + "' with ID: " + std::to_string(e.GetID()) + "\"";
+        return "\"Created entity '" + name + "' with ID: " + TEString::FromInt((int)e.GetID()) + "\"";
     }
     return "\"Error: No active scene\"";
 }
 
-std::string MCPPlugin::Tool_DestroyEntity(const std::string &paramsJson)
+TEString MCPPlugin::Tool_DestroyEntity(const TEString &paramsJson)
 {
     int64_t id = ExtractInt(paramsJson, "id");
     if (id < 0)
@@ -681,177 +615,173 @@ std::string MCPPlugin::Tool_DestroyEntity(const std::string &paramsJson)
 
         auto &manager = scene->GetEntityManager();
         if (!manager.IsValid((EntityID)id))
-            return "\"Error: Entity " + std::to_string(id) + " does not exist\"";
+            return "\"Error: Entity " + TEString::FromInt((int)id) + " does not exist\"";
 
         Entity e((EntityID)id, &manager);
         scene->DestroyEntity(e);
-        return "\"Destroyed entity with ID: " + std::to_string(id) + "\"";
+        return "\"Destroyed entity with ID: " + TEString::FromInt((int)id) + "\"";
     }
     return "\"Error: No active scene\"";
 }
 
-std::string MCPPlugin::Tool_CreateSprite(const std::string &paramsJson)
+TEString MCPPlugin::Tool_CreateSprite(const TEString &paramsJson)
 {
-    std::string name = ExtractString(paramsJson, "name");
-    std::string relPath = ExtractString(paramsJson, "path");
+    TEString name = ExtractString(paramsJson, "name");
+    TEString relPath = ExtractString(paramsJson, "path");
 
     if (!Project::GetActive())
         return "\"Error: No active project\"";
     if (name.empty() || relPath.empty())
         return "\"Error: 'name' and 'path' are required\"";
 
-    std::filesystem::path fullPath = Project::GetAssetDirectory() / relPath / (name + ".tesprite");
-    std::filesystem::create_directories(fullPath.parent_path());
+    TEString fullPath = Project::GetAssetDirectory() / relPath / (name + ".tesprite");
+    TEFileSystem::CreateDirectories(fullPath.GetParentPath());
 
-    std::ofstream file(fullPath);
+    std::ofstream file(fullPath.c_str());
     if (!file.is_open())
-        return "\"Error: Cannot write to " + fullPath.string() + "\"";
+        return "\"Error: Cannot write to " + fullPath + "\"";
 
-    file << "Sprite: " << name << "\n";
+    file << "Sprite: " << name.c_str() << "\n";
     file << "Texture: 0\n";
     file << "UVs: 0 0 1 1\n";
     file.close();
 
-    return "\"Created sprite at: " + fullPath.string() + "\"";
+    return "\"Created sprite at: " + fullPath + "\"";
 }
 
-std::string MCPPlugin::Tool_CreateDirectory(const std::string &paramsJson)
+TEString MCPPlugin::Tool_CreateDirectory(const TEString &paramsJson)
 {
-    std::string relPath = ExtractString(paramsJson, "path");
+    TEString relPath = ExtractString(paramsJson, "path");
 
     if (!Project::GetActive())
         return "\"Error: No active project\"";
     if (relPath.empty())
         return "\"Error: 'path' is required\"";
 
-    std::filesystem::path fullPath = Project::GetAssetDirectory() / relPath;
-    std::error_code ec;
-    if (std::filesystem::create_directories(fullPath, ec) || std::filesystem::exists(fullPath))
-        return "\"Directory ready: " + fullPath.string() + "\"";
+    TEString fullPath = Project::GetAssetDirectory() / relPath;
+    if (TEFileSystem::CreateDirectories(fullPath) || TEFileSystem::Exists(fullPath))
+        return "\"Directory ready: " + fullPath + "\"";
 
-    return "\"Error: " + ec.message() + "\"";
+    return "\"Error: Failed to create directory\"";
 }
 
-std::string MCPPlugin::Tool_DeletePath(const std::string &paramsJson)
+TEString MCPPlugin::Tool_DeletePath(const TEString &paramsJson)
 {
-    std::string relPath = ExtractString(paramsJson, "path");
+    TEString relPath = ExtractString(paramsJson, "path");
 
     if (!Project::GetActive())
         return "\"Error: No active project\"";
     if (relPath.empty())
         return "\"Error: 'path' is required\"";
 
-    std::filesystem::path fullPath = Project::GetAssetDirectory() / relPath;
-    if (!std::filesystem::exists(fullPath))
-        return "\"Error: Path not found: " + fullPath.string() + "\"";
+    TEString fullPath = Project::GetAssetDirectory() / relPath;
+    if (!TEFileSystem::Exists(fullPath))
+        return "\"Error: Path not found: " + fullPath + "\"";
 
-    std::error_code ec;
-    uintmax_t count = std::filesystem::remove_all(fullPath, ec);
-    if (ec)
-        return "\"Error: " + ec.message() + "\"";
-
-    return "\"Deleted " + std::to_string(count) + " item(s) at: " + fullPath.string() + "\"";
+    uint64_t count = TEFileSystem::RemoveAll(fullPath);
+    return "\"Deleted " + TEString::FromInt((int)count) + " item(s) at: " + fullPath + "\"";
 }
 
 // ---------------------------------------------------------------------------
 // NEW MCP Tool Implementations
 // ---------------------------------------------------------------------------
 
-std::string MCPPlugin::Tool_GetEditorModes()
+TEString MCPPlugin::Tool_GetEditorModes()
 {
-    std::ostringstream ss;
-    const auto &modes = EditorLayer::GetGlobalModes();
-    EditorMode *active = EditorLayer::GetGlobalActiveMode();
-
-    ss << "Available Editor Modes: [";
-    for (size_t i = 0; i < modes.size(); ++i)
+    TEString json = "{\"modes\":[";
+    const auto &modes = EditorModeRegistry::GetModes();
+    for (size_t i = 0; i < modes.Size(); ++i)
     {
-        ss << modes[i]->GetName();
-        if (i < modes.size() - 1)
-            ss << ", ";
+        if (i > 0)
+            json += ",";
+        json += "{\"name\":\"" + modes[i]->GetName() + "\"}";
     }
-    ss << "] | Active: " << (active ? active->GetName() : "None");
-    return "\"" + ss.str() + "\"";
+    json += "]}";
+    return json;
 }
 
-std::string MCPPlugin::Tool_SetEditorMode(const std::string &paramsJson)
+TEString MCPPlugin::Tool_SetEditorMode(const TEString &paramsJson)
 {
-    std::string modeName = ExtractString(paramsJson, "mode");
-    if (modeName.empty())
-        return "\"Error: 'mode' name parameter is required\"";
-
-    const auto &modes = EditorLayer::GetGlobalModes();
-    bool found = false;
-    for (const auto &m : modes)
+    TEString modeName = "";
+    int nameKey = paramsJson.Find("\"name\"");
+    if (nameKey != -1)
     {
-        if (m->GetName() == modeName)
+        int valStart = paramsJson.Find(":", ESearchCase::IgnoreCase, ESearchDir::FromStart, nameKey);
+        if (valStart != -1)
         {
-            found = true;
-            break;
+            int q1 = paramsJson.Find("\"", ESearchCase::IgnoreCase, ESearchDir::FromStart, valStart);
+            if (q1 != -1)
+            {
+                int q2 = paramsJson.Find("\"", ESearchCase::IgnoreCase, ESearchDir::FromStart, q1 + 1);
+                if (q2 != -1)
+                {
+                    modeName = paramsJson.Substr(q1 + 1, q2 - q1 - 1);
+                }
+            }
         }
     }
 
-    if (!found)
-        return "\"Error: Mode '" + modeName + "' not found\"";
+    if (modeName.empty())
+        return "\"Error: 'name' property is required\"";
 
-    EditorLayer::SetGlobalActiveMode(modeName);
-    return "\"Switched editor mode to " + modeName + "\"";
+    EditorModeRegistry::SetActiveMode(modeName);
+    return "\"Success: Mode switched to '" + modeName + "'\"";
 }
 
-std::string MCPPlugin::Tool_GetViewportScreenshot()
+TEString MCPPlugin::Tool_GetViewportScreenshot()
 {
+    // Find EditorLayer
     const auto &layers = Application::Get().GetLayerStack();
     for (Layer *layer : layers)
     {
-        if (!layer || layer->GetName() != "EditorLayer")
+        EditorLayer *editorLayer = dynamic_cast<EditorLayer *>(layer);
+        if (!editorLayer)
             continue;
 
-        EditorLayer *editorLayer = static_cast<EditorLayer *>(layer);
-
-        // Grab framebuffer spec using reflection metadata or direct access to framebuffer
-        // We know from EditorLayer.hpp that m_Framebuffer is of type std::shared_ptr<Framebuffer>
+        // We know from EditorLayer.hpp that m_Framebuffer is of type TERef<Framebuffer>
         // and we have its pointer or we can read from standard RenderCommand screen size.
         // We will read pixels from active bound framebuffer target.
         uint32_t width = Application::Get().GetWindow().GetWidth();
         uint32_t height = Application::Get().GetWindow().GetHeight();
 
-        std::vector<uint32_t> pixels(width * height);
-        RenderCommand::ReadPixelsRGBA(0, 0, width, height, pixels.data());
+        TEArray<uint32_t> pixels;
+        pixels.Resize(width * height, 0);
+        RenderCommand::ReadPixelsRGBA(0, 0, width, height, pixels.GetData());
 
         // Flip image Y coordinate since OpenGL reads from bottom-left
-        std::vector<uint32_t> flipped(width * height);
+        TEArray<uint32_t> flipped;
+        flipped.Resize(width * height, 0);
         for (uint32_t y = 0; y < height; y++)
         {
             memcpy(&flipped[y * width], &pixels[(height - 1 - y) * width], width * 4);
         }
 
         // Export screenshot file
-        std::filesystem::path screenshotPath = std::filesystem::current_path() / "temp_viewport_capture.png";
+        TEString screenshotPath = TEFileSystem::GetCurrentWorkingDirectory() / "temp_viewport_capture.png";
 
         // Save the PNG using built-in engine asset utilities
-        AssetManager::ExportImagePNG(screenshotPath.string(), width, height, 4, flipped.data());
+        AssetManager::ExportImagePNG(screenshotPath.c_str(), width, height, 4, flipped.GetData());
 
-        return "\"Screenshot taken and saved temporarily to: " + screenshotPath.string() + "\"";
+        return "\"Screenshot taken and saved temporarily to: " + screenshotPath + "\"";
     }
 
     return "\"Error: EditorLayer viewport not found\"";
 }
 
-std::string MCPPlugin::Tool_DeleteScreenshot()
+TEString MCPPlugin::Tool_DeleteScreenshot()
 {
-    std::filesystem::path screenshotPath = std::filesystem::current_path() / "temp_viewport_capture.png";
-    std::error_code ec;
-    if (std::filesystem::exists(screenshotPath))
+    TEString screenshotPath = TEFileSystem::GetCurrentWorkingDirectory() / "temp_viewport_capture.png";
+    if (TEFileSystem::Exists(screenshotPath))
     {
-        std::filesystem::remove(screenshotPath, ec);
+        TEFileSystem::Remove(screenshotPath);
         return "\"Screenshot deleted successfully\"";
     }
     return "\"Error: No active screenshot found to delete\"";
 }
 
-std::string MCPPlugin::Tool_SendEditorInput(const std::string &paramsJson)
+TEString MCPPlugin::Tool_SendEditorInput(const TEString &paramsJson)
 {
-    std::string type = ExtractString(paramsJson, "type");
+    TEString type = ExtractString(paramsJson, "type");
     int64_t code = ExtractInt(paramsJson, "code");
 
     if (type.empty() || code < 0)
@@ -867,7 +797,7 @@ std::string MCPPlugin::Tool_SendEditorInput(const std::string &paramsJson)
         {
             (*--it)->OnEvent(event);
         }
-        return "\"Simulated key_press: " + std::to_string(code) + "\"";
+        return "\"Simulated key_press: " + TEString::FromInt((int)code) + "\"";
     }
     else if (type == "key_release")
     {
@@ -877,7 +807,7 @@ std::string MCPPlugin::Tool_SendEditorInput(const std::string &paramsJson)
         {
             (*--it)->OnEvent(event);
         }
-        return "\"Simulated key_release: " + std::to_string(code) + "\"";
+        return "\"Simulated key_release: " + TEString::FromInt((int)code) + "\"";
     }
     else if (type == "mouse_press")
     {
@@ -887,7 +817,7 @@ std::string MCPPlugin::Tool_SendEditorInput(const std::string &paramsJson)
         {
             (*--it)->OnEvent(event);
         }
-        return "\"Simulated mouse_press: " + std::to_string(code) + "\"";
+        return "\"Simulated mouse_press: " + TEString::FromInt((int)code) + "\"";
     }
     else if (type == "mouse_release")
     {
@@ -897,13 +827,13 @@ std::string MCPPlugin::Tool_SendEditorInput(const std::string &paramsJson)
         {
             (*--it)->OnEvent(event);
         }
-        return "\"Simulated mouse_release: " + std::to_string(code) + "\"";
+        return "\"Simulated mouse_release: " + TEString::FromInt((int)code) + "\"";
     }
 
     return "\"Error: Invalid input type. Valid: key_press, key_release, mouse_press, mouse_release\"";
 }
 
-std::string MCPPlugin::Tool_SelectEntity(const std::string &paramsJson)
+TEString MCPPlugin::Tool_SelectEntity(const TEString &paramsJson)
 {
     int64_t entityId = ExtractInt(paramsJson, "id");
     if (entityId < 0)
@@ -922,7 +852,7 @@ std::string MCPPlugin::Tool_SelectEntity(const std::string &paramsJson)
 
         auto &manager = scene->GetEntityManager();
         if (!manager.IsValid((EntityID)entityId))
-            return "\"Error: Entity ID " + std::to_string(entityId) + " is not valid in active scene\"";
+            return "\"Error: Entity ID " + TEString::FromInt((int)entityId) + " is not valid in active scene\"";
 
         Entity entity((EntityID)entityId, &manager);
 
@@ -931,16 +861,16 @@ std::string MCPPlugin::Tool_SelectEntity(const std::string &paramsJson)
         // Let's call it via EditorLayer pointer! (It's marked TE_API / public in EditorLayer.hpp)
         editorLayer->ClearSelection();
         editorLayer->SelectEntity(entity, false, false);
-        return "\"Selected entity with ID: " + std::to_string(entityId) + "\"";
+        return "\"Selected entity with ID: " + TEString::FromInt((int)entityId) + "\"";
     }
 
     return "\"Error: EditorLayer or active scene not found\"";
 }
 
-std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
+TEString MCPPlugin::Tool_SetEntityProperties(const TEString &paramsJson)
 {
     int64_t entityId = ExtractInt(paramsJson, "id");
-    std::string propObj = ExtractObject(paramsJson, "properties");
+    TEString propObj = ExtractObject(paramsJson, "properties");
 
     if (entityId < 0 || propObj.empty())
         return "\"Error: 'id' (integer) and 'properties' (object) parameters are required\"";
@@ -958,34 +888,56 @@ std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
 
         auto &manager = scene->GetEntityManager();
         if (!manager.IsValid((EntityID)entityId))
-            return "\"Error: Entity ID " + std::to_string(entityId) + " not found\"";
+            return "\"Error: Entity ID " + TEString::FromInt((int)entityId) + " not found\"";
 
         // Clean escaped quotes \" to normal quotes " in the entire properties object
-        size_t bPos = 0;
-        while ((bPos = propObj.find("\\\"", bPos)) != std::string::npos)
-        {
-            propObj.replace(bPos, 2, "\"");
-            bPos += 1;
-        }
+        propObj = propObj.Replace("\\\"", "\"");
 
         int successfulUpdates = 0;
         size_t searchPos = 0;
-        while (searchPos < propObj.length())
+        while (searchPos < propObj.Len())
         {
-            size_t keyStart = propObj.find_first_of("\"", searchPos);
-            if (keyStart == std::string::npos)
+            size_t keyStart = TEString::npos;
+            for (size_t i = searchPos; i < propObj.Len(); ++i)
+            {
+                if (propObj[i] == '\"')
+                {
+                    keyStart = i;
+                    break;
+                }
+            }
+            if (keyStart == TEString::npos)
                 break;
-            size_t keyEnd = propObj.find_first_of("\"", keyStart + 1);
-            if (keyEnd == std::string::npos)
-                break;
-            std::string compName = propObj.substr(keyStart + 1, keyEnd - keyStart - 1);
 
-            size_t compValStart = propObj.find_first_of("{", keyEnd + 1);
-            if (compValStart == std::string::npos)
+            size_t keyEnd = TEString::npos;
+            for (size_t i = keyStart + 1; i < propObj.Len(); ++i)
+            {
+                if (propObj[i] == '\"')
+                {
+                    keyEnd = i;
+                    break;
+                }
+            }
+            if (keyEnd == TEString::npos)
                 break;
+
+            TEString compName = propObj.Substr(keyStart + 1, keyEnd - keyStart - 1);
+
+            size_t compValStart = TEString::npos;
+            for (size_t i = keyEnd + 1; i < propObj.Len(); ++i)
+            {
+                if (propObj[i] == '{')
+                {
+                    compValStart = i;
+                    break;
+                }
+            }
+            if (compValStart == TEString::npos)
+                break;
+
             size_t compValEnd = compValStart;
             int braceCount = 1;
-            while (braceCount > 0 && compValEnd < propObj.length() - 1)
+            while (braceCount > 0 && compValEnd < propObj.Len() - 1)
             {
                 compValEnd++;
                 if (propObj[compValEnd] == '{')
@@ -1001,22 +953,22 @@ std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
                 }
             }
 
-            std::string compPropsJson = propObj.substr(compValStart, compValEnd - compValStart);
+            TEString compPropsJson = propObj.Substr(compValStart, compValEnd - compValStart);
             searchPos = compValEnd; // Update lookahead pointer
 
             TE_CORE_INFO("[MCPPlugin Diagnostic] compName: {0}, compPropsJson: {1}", compName, compPropsJson);
 
             // Update matching component instance on the target entity
-            std::vector<TComponent *> allComponents = manager.GetAllComponents((EntityID)entityId);
+            TEArray<TComponent *> allComponents = manager.GetAllComponents((EntityID)entityId);
             TE_CORE_INFO("[MCPPlugin Diagnostic] Entity ID: {0}, Total Components found: {1}", entityId,
-                         allComponents.size());
+                         allComponents.Num());
             TComponent *targetComponent = nullptr;
             for (auto *c : allComponents)
             {
                 if (c)
                 {
                     const auto *meta = Scene::GetGlobalComponentRegistry().GetMetadata(std::type_index(typeid(*c)));
-                    std::string cClassName = meta ? meta->ClassName : "";
+                    TEString cClassName = meta ? meta->ClassName : "";
                     if (cClassName.empty() && typeid(*c) == typeid(TransformComponent))
                     {
                         cClassName = "TransformComponent";
@@ -1037,33 +989,45 @@ std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
             {
                 if (compName == "TransformComponent")
                 {
-                    std::string posStr = ExtractString(compPropsJson, "Position");
-                    std::string rotStr = ExtractString(compPropsJson, "Rotation");
-                    std::string scaleStr = ExtractString(compPropsJson, "Scale");
+                    TEString posStr = ExtractString(compPropsJson, "Position");
+                    TEString rotStr = ExtractString(compPropsJson, "Rotation");
+                    TEString scaleStr = ExtractString(compPropsJson, "Scale");
 
                     TE_CORE_INFO("[MCPPlugin Diagnostic] TransformComponent: posStr={0}, rotStr={1}, scaleStr={2}",
                                  posStr, rotStr, scaleStr);
 
                     if (!posStr.empty())
                     {
-                        std::stringstream ss(posStr);
-                        ss >> targetComponent->Transform.Position.x >> targetComponent->Transform.Position.y >>
-                            targetComponent->Transform.Position.z;
-                        successfulUpdates++;
+                        auto pParts = posStr.Split(' ');
+                        if (pParts.Num() >= 3)
+                        {
+                            targetComponent->Transform.Position.x = pParts[0].ToFloat();
+                            targetComponent->Transform.Position.y = pParts[1].ToFloat();
+                            targetComponent->Transform.Position.z = pParts[2].ToFloat();
+                            successfulUpdates++;
+                        }
                     }
                     if (!rotStr.empty())
                     {
-                        std::stringstream ss(rotStr);
-                        ss >> targetComponent->Transform.Rotation.Pitch >> targetComponent->Transform.Rotation.Yaw >>
-                            targetComponent->Transform.Rotation.Roll;
-                        successfulUpdates++;
+                        auto rParts = rotStr.Split(' ');
+                        if (rParts.Num() >= 3)
+                        {
+                            targetComponent->Transform.Rotation.Pitch = rParts[0].ToFloat();
+                            targetComponent->Transform.Rotation.Yaw = rParts[1].ToFloat();
+                            targetComponent->Transform.Rotation.Roll = rParts[2].ToFloat();
+                            successfulUpdates++;
+                        }
                     }
                     if (!scaleStr.empty())
                     {
-                        std::stringstream ss(scaleStr);
-                        ss >> targetComponent->Transform.Scale.Scale.x >> targetComponent->Transform.Scale.Scale.y >>
-                            targetComponent->Transform.Scale.Scale.z;
-                        successfulUpdates++;
+                        auto sParts = scaleStr.Split(' ');
+                        if (sParts.Num() >= 3)
+                        {
+                            targetComponent->Transform.Scale.Scale.x = sParts[0].ToFloat();
+                            targetComponent->Transform.Scale.Scale.y = sParts[1].ToFloat();
+                            targetComponent->Transform.Scale.Scale.z = sParts[2].ToFloat();
+                            successfulUpdates++;
+                        }
                     }
                 }
                 else
@@ -1074,19 +1038,33 @@ std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
                         // Update matching properties using reflection registry
                         for (const auto &propMeta : metadata->Properties)
                         {
-                            std::string propVal = ExtractString(compPropsJson, propMeta.Name);
-                            if (propVal.empty())
+                            TEString propVal = ExtractString(compPropsJson, propMeta.Name);
+                            if (propVal.IsEmpty())
                             {
-                                size_t pPos = compPropsJson.find("\"" + propMeta.Name + "\"");
-                                if (pPos != std::string::npos)
+                                size_t pPos = compPropsJson.Find("\"" + propMeta.Name + "\"");
+                                if (pPos != TEString::npos)
                                 {
-                                    size_t colon = compPropsJson.find(":", pPos);
-                                    if (colon != std::string::npos)
+                                    size_t colon = compPropsJson.Find(":", ESearchCase::CaseSensitive,
+                                                                      ESearchDir::FromStart, (int)pPos);
+                                    if (colon != TEString::npos)
                                     {
                                         size_t valStart = compPropsJson.find_first_not_of(" \t\r\n", colon + 1);
-                                        size_t valEnd = compPropsJson.find_first_of(",}\r\n", valStart);
-                                        if (valStart != std::string::npos)
-                                            propVal = compPropsJson.substr(valStart, valEnd - valStart);
+                                        size_t valEnd = TEString::npos;
+                                        if (valStart != TEString::npos)
+                                        {
+                                            for (size_t i = valStart; i < compPropsJson.Len(); ++i)
+                                            {
+                                                char ch = compPropsJson[i];
+                                                if (ch == ',' || ch == '}' || ch == '\r' || ch == '\n')
+                                                {
+                                                    valEnd = i;
+                                                    break;
+                                                }
+                                            }
+                                            propVal = compPropsJson.Substr(valStart, valEnd != TEString::npos
+                                                                                         ? valEnd - valStart
+                                                                                         : TEString::npos);
+                                        }
                                     }
                                 }
                             }
@@ -1094,7 +1072,7 @@ std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
                             TE_CORE_INFO("[MCPPlugin Diagnostic] Checking property: {0}, extracted value: {1}",
                                          propMeta.Name, propVal);
 
-                            if (!propVal.empty() && propMeta.DeserializeFunc)
+                            if (!propVal.IsEmpty() && propMeta.DeserializeFunc)
                             {
                                 propMeta.DeserializeFunc(targetComponent, propVal);
                                 successfulUpdates++;
@@ -1105,16 +1083,16 @@ std::string MCPPlugin::Tool_SetEntityProperties(const std::string &paramsJson)
             }
         }
 
-        return "\"Updated " + std::to_string(successfulUpdates) + " entity component properties successfully\"";
+        return "\"Updated " + TEString::FromInt(successfulUpdates) + " entity component properties successfully\"";
     }
 
     return "\"Error: Active EditorLayer or scene context missing\"";
 }
 
-std::string MCPPlugin::Tool_AddComponent(const std::string &paramsJson)
+TEString MCPPlugin::Tool_AddComponent(const TEString &paramsJson)
 {
     int64_t entityId = ExtractInt(paramsJson, "id");
-    std::string compType = ExtractString(paramsJson, "type");
+    TEString compType = ExtractString(paramsJson, "type");
 
     if (entityId < 0 || compType.empty())
         return "\"Error: 'id' (integer) and 'type' (string) parameters are required\"";
@@ -1132,7 +1110,7 @@ std::string MCPPlugin::Tool_AddComponent(const std::string &paramsJson)
 
         auto &manager = scene->GetEntityManager();
         if (!manager.IsValid((EntityID)entityId))
-            return "\"Error: Entity ID " + std::to_string(entityId) + " not found\"";
+            return "\"Error: Entity ID " + TEString::FromInt((int)entityId) + " not found\"";
 
         const auto &factories = manager.GetRegisteredComponents();
         auto it = factories.find(compType);
@@ -1144,7 +1122,7 @@ std::string MCPPlugin::Tool_AddComponent(const std::string &paramsJson)
         if (comp)
         {
             comp->OnInitialize();
-            return "\"Added component '" + compType + "' to entity " + std::to_string(entityId) + "\"";
+            return "\"Added component '" + compType + "' to entity " + TEString::FromInt((int)entityId) + "\"";
         }
         return "\"Error: Component factory failed to instantiate component\"";
     }
@@ -1156,35 +1134,36 @@ std::string MCPPlugin::Tool_AddComponent(const std::string &paramsJson)
 // HTTP / SSE helpers
 // ---------------------------------------------------------------------------
 
-std::string MCPPlugin::ReadHttpRequest(uintptr_t socket)
+TEString MCPPlugin::ReadHttpRequest(uintptr_t socket)
 {
-    std::string result;
+    TEString result;
     result.reserve(4096);
 
 #ifdef TE_PLATFORM_WINDOWS
     DWORD timeout = 3000;
     setsockopt((SOCKET)socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
 
-    char buf[4096];
+    TEString chunk;
+    chunk.Reserve(4096);
     int bytes;
 
     // Phase 1: read until we have complete headers (\r\n\r\n)
-    while ((bytes = recv((SOCKET)socket, buf, sizeof(buf) - 1, 0)) > 0)
+    while ((bytes = recv((SOCKET)socket, chunk.Data(), 4095, 0)) > 0)
     {
-        buf[bytes] = '\0';
-        result += buf;
-        if (result.find("\r\n\r\n") != std::string::npos)
+        chunk.Data()[bytes] = '\0';
+        result += chunk.c_str();
+        if (result.find("\r\n\r\n") != TEString::npos)
             break;
     }
 
-    if (result.find("\r\n\r\n") == std::string::npos)
+    if (result.find("\r\n\r\n") == TEString::npos)
         return result; // headers never completed
 
     TE_CORE_INFO("[MCPPlugin Diagnostic] Raw Headers received:\n{0}", result);
 
     // Handle "Expect: 100-continue" — client waits for this before sending body
-    bool hasExpect = (result.find("Expect: 100-continue") != std::string::npos ||
-                      result.find("expect: 100-continue") != std::string::npos);
+    bool hasExpect = (result.find("Expect: 100-continue") != TEString::npos ||
+                      result.find("expect: 100-continue") != TEString::npos);
     if (hasExpect)
     {
         const char *cont = "HTTP/1.1 100 Continue\r\n\r\n";
@@ -1192,44 +1171,47 @@ std::string MCPPlugin::ReadHttpRequest(uintptr_t socket)
     }
 
     // Phase 2: read body according to Content-Length
-    size_t clPos = result.find("Content-Length:");
-    if (clPos == std::string::npos)
+    size_t clPos = result.Find("Content-Length:");
+    if (clPos == TEString::npos)
         return result; // no body (GET / OPTIONS)
 
-    size_t clEnd = result.find("\r\n", clPos);
+    size_t clEnd = result.Find("\r\n", ESearchCase::CaseSensitive, ESearchDir::FromStart, (int)clPos);
     int contentLength = 0;
     try
     {
-        std::string clVal = result.substr(clPos + 15, clEnd - (clPos + 15));
+        TEString clVal = result.Substr(clPos + 15, clEnd != TEString::npos ? clEnd - (clPos + 15) : TEString::npos);
         // Remove whitespace
-        clVal.erase(std::remove_if(clVal.begin(), clVal.end(), ::isspace), clVal.end());
-        contentLength = std::stoi(clVal);
+        clVal.TrimInline();
+        contentLength = clVal.ToInt();
     }
     catch (...)
     {
         return result;
     }
 
-    size_t headerEnd = result.find("\r\n\r\n") + 4;
-    int bodyReceived = (int)(result.size() - headerEnd);
+    size_t headerEnd = result.Find("\r\n\r\n") + 4;
+    int bodyReceived = (int)(result.Len() - headerEnd);
+
+    TEArray<char> buffer;
+    buffer.Resize(1024, '\0');
 
     while (bodyReceived < contentLength)
     {
-        bytes = recv((SOCKET)socket, buf, sizeof(buf) - 1, 0);
+        bytes = recv((SOCKET)socket, buffer.GetData(), (int)buffer.Num() - 1, 0);
         if (bytes <= 0)
             break;
-        buf[bytes] = '\0';
-        result += buf;
+        buffer[bytes] = '\0';
+        result += buffer.GetData();
         bodyReceived += bytes;
     }
 #endif
     return result;
 }
 
-void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const std::string &contentType,
-                                 const std::string &body, bool keepAlive)
+void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const TEString &contentType, const TEString &body,
+                                 bool keepAlive)
 {
-    std::string statusText = "OK";
+    TEString statusText = "OK";
     if (statusCode == 202)
         statusText = "Accepted";
     if (statusCode == 204)
@@ -1239,20 +1221,20 @@ void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const std::st
     if (statusCode == 404)
         statusText = "Not Found";
 
-    std::string response = "HTTP/1.1 " + std::to_string(statusCode) + " " + statusText +
-                           "\r\n"
-                           "Content-Type: " +
-                           contentType +
-                           "\r\n"
-                           "Content-Length: " +
-                           std::to_string(body.size()) +
-                           "\r\n"
-                           "Access-Control-Allow-Origin: *\r\n"
-                           "Connection: " +
-                           (keepAlive ? "keep-alive" : "close") +
-                           "\r\n"
-                           "\r\n" +
-                           body;
+    TEString response = "HTTP/1.1 " + TEString::FromInt(statusCode) + " " + statusText +
+                        "\r\n"
+                        "Content-Type: " +
+                        contentType +
+                        "\r\n"
+                        "Content-Length: " +
+                        TEString::FromInt((int)body.size()) +
+                        "\r\n"
+                        "Access-Control-Allow-Origin: *\r\n"
+                        "Connection: " +
+                        (keepAlive ? "keep-alive" : "close") +
+                        "\r\n"
+                        "\r\n" +
+                        body;
 
 #ifdef TE_PLATFORM_WINDOWS
     send((SOCKET)socket, response.c_str(), (int)response.size(), 0);
@@ -1261,16 +1243,16 @@ void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const std::st
 #endif
 }
 
-void MCPPlugin::SendSSEEvent(uintptr_t socket, const std::string &eventName, const std::string &data)
+void MCPPlugin::SendSSEEvent(uintptr_t socket, const TEString &eventName, const TEString &data)
 {
     // SSE format: "event: <name>\ndata: <data>\n\n"
-    std::string sseMsg = "event: " + eventName + "\ndata: " + data + "\n\n";
+    TEString sseMsg = "event: " + eventName + "\ndata: " + data + "\n\n";
 #ifdef TE_PLATFORM_WINDOWS
     send((SOCKET)socket, sseMsg.c_str(), (int)sseMsg.size(), 0);
 #endif
 }
 
-void MCPPlugin::BroadcastSSE(const std::string &eventName, const std::string &data)
+void MCPPlugin::BroadcastSSE(const TEString &eventName, const TEString &data)
 {
     std::lock_guard<std::mutex> lock(m_SSEMutex);
     for (auto &client : m_SSEClients)
@@ -1278,7 +1260,7 @@ void MCPPlugin::BroadcastSSE(const std::string &eventName, const std::string &da
         if (!client.Active)
             continue;
 
-        std::string sseMsg = "event: " + eventName + "\ndata: " + data + "\n\n";
+        TEString sseMsg = "event: " + eventName + "\ndata: " + data + "\n\n";
 #ifdef TE_PLATFORM_WINDOWS
         int sent = send((SOCKET)client.Socket, sseMsg.c_str(), (int)sseMsg.size(), 0);
         if (sent == SOCKET_ERROR)
@@ -1290,28 +1272,32 @@ void MCPPlugin::BroadcastSSE(const std::string &eventName, const std::string &da
 void MCPPlugin::CleanupSSEClients()
 {
     std::lock_guard<std::mutex> lock(m_SSEMutex);
-    m_SSEClients.erase(
-        std::remove_if(m_SSEClients.begin(), m_SSEClients.end(), [](const SSEClient &c) { return !c.Active; }),
-        m_SSEClients.end());
+    for (int32_t i = (int32_t)m_SSEClients.Num() - 1; i >= 0; --i)
+    {
+        if (!m_SSEClients[i].Active)
+        {
+            m_SSEClients.RemoveAt(i);
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
 // JSON helpers
 // ---------------------------------------------------------------------------
 
-std::string MCPPlugin::ExtractString(const std::string &json, const std::string &key)
+TEString MCPPlugin::ExtractString(const TEString &json, const TEString &key)
 {
-    std::string search = "\"" + key + "\"";
+    TEString search = "\"" + key + "\"";
     size_t keyPos = json.find(search);
-    if (keyPos == std::string::npos)
+    if (keyPos == TEString::npos)
         return "";
 
     size_t colon = json.find(':', keyPos + search.size());
-    if (colon == std::string::npos)
+    if (colon == TEString::npos)
         return "";
 
     size_t start = json.find('"', colon + 1);
-    if (start == std::string::npos)
+    if (start == TEString::npos)
         return "";
 
     size_t end = start + 1;
@@ -1330,23 +1316,41 @@ std::string MCPPlugin::ExtractString(const std::string &json, const std::string 
     return json.substr(start + 1, end - start - 1);
 }
 
-int64_t MCPPlugin::ExtractInt(const std::string &json, const std::string &key)
+int64_t MCPPlugin::ExtractInt(const TEString &json, const TEString &key)
 {
-    std::string search = "\"" + key + "\"";
+    TEString search = "\"" + key + "\"";
     size_t keyPos = json.find(search);
-    if (keyPos == std::string::npos)
+    if (keyPos == TEString::npos)
         return -1;
 
     size_t colon = json.find(':', keyPos + search.size());
-    if (colon == std::string::npos)
+    if (colon == TEString::npos)
         return -1;
 
-    size_t valStart = json.find_first_of("-0123456789", colon + 1);
-    if (valStart == std::string::npos)
+    size_t valStart = TEString::npos;
+    for (size_t i = colon + 1; i < json.Len(); ++i)
+    {
+        char ch = json[i];
+        if (ch == '-' || (ch >= '0' && ch <= '9'))
+        {
+            valStart = i;
+            break;
+        }
+    }
+    if (valStart == TEString::npos)
         return -1;
 
-    size_t valEnd = json.find_first_not_of("0123456789", valStart + 1);
-    std::string numStr = json.substr(valStart, valEnd - valStart);
+    size_t valEnd = json.Len();
+    for (size_t i = valStart + 1; i < json.Len(); ++i)
+    {
+        char ch = json[i];
+        if (ch < '0' || ch > '9')
+        {
+            valEnd = i;
+            break;
+        }
+    }
+    TEString numStr = json.Substr(valStart, valEnd - valStart);
     try
     {
         return std::stoll(numStr);
@@ -1358,19 +1362,19 @@ int64_t MCPPlugin::ExtractInt(const std::string &json, const std::string &key)
 }
 
 // Extract a JSON object value: finds the '{' after the key and returns balanced braces
-std::string MCPPlugin::ExtractObject(const std::string &json, const std::string &key)
+TEString MCPPlugin::ExtractObject(const TEString &json, const TEString &key)
 {
-    std::string search = "\"" + key + "\"";
+    TEString search = "\"" + key + "\"";
     size_t keyPos = json.find(search);
-    if (keyPos == std::string::npos)
+    if (keyPos == TEString::npos)
         return "";
 
     size_t colon = json.find(':', keyPos + search.size());
-    if (colon == std::string::npos)
+    if (colon == TEString::npos)
         return "";
 
     size_t start = json.find('{', colon + 1);
-    if (start == std::string::npos)
+    if (start == TEString::npos)
         return "";
 
     int depth = 0;
@@ -1394,4 +1398,19 @@ std::string MCPPlugin::ExtractObject(const std::string &json, const std::string 
     return json.substr(start, end - start);
 }
 
-} // namespace TE
+TEString MCPPlugin::Tool_OpenAssetEditor(const TEString &paramsJson)
+{
+    TEString path = ExtractString(paramsJson, "path");
+    if (path.IsEmpty())
+        return "\"Error: 'path' parameter is required\"";
+
+    TEString ext = path.GetExtension();
+    if (!ext.IsEmpty() && ext[0] == '.')
+        ext = ext.Mid(1);
+
+    auto editor = AssetEditorRegistry::GetEditor(ext);
+    if (!editor)
+        return "\"Error: No registered asset editor for extension: " + ext + "\"";
+
+    return "\"Opened asset editor for: " + path + "\"";
+}

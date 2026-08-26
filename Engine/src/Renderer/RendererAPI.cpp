@@ -1,3 +1,4 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererAPI.hpp"
 #include "Renderer/RendererContext.hpp"
 
@@ -20,11 +21,9 @@
 #ifdef TE_SUPPORT_METAL
 #include "Renderer/Metal/MetalRendererAPI.hpp"
 #endif
-namespace TE
-{
 GraphicsAPI RendererAPI::GetAPI() { return RendererContext::GetAPI(); }
 
-std::unique_ptr<RendererAPI> RendererAPI::Create()
+TEScope<RendererAPI> RendererAPI::Create()
 {
     switch (RendererContext::GetAPI())
     {
@@ -32,35 +31,34 @@ std::unique_ptr<RendererAPI> RendererAPI::Create()
         return nullptr;
     case GraphicsAPI::OpenGL:
 #ifdef TE_SUPPORT_OPENGL
-        return std::make_unique<OpenGLRendererAPI>();
+        return CreateScope<OpenGLRendererAPI>();
 #else
         return nullptr;
 #endif
     case GraphicsAPI::OpenGLES:
 #ifdef TE_SUPPORT_OPENGLES
-        return std::make_unique<OpenGLESRendererAPI>();
+        return CreateScope<OpenGLESRendererAPI>();
 #else
         return nullptr;
 #endif
     case GraphicsAPI::Vulkan:
 #ifdef TE_SUPPORT_VULKAN
-        return std::make_unique<VulkanRendererAPI>();
+        return CreateScope<VulkanRendererAPI>();
 #else
         return nullptr;
 #endif
     case GraphicsAPI::DirectX11:
 #ifdef TE_SUPPORT_DIRECTX11
-        return std::make_unique<DirectX11RendererAPI>();
+        return CreateScope<DirectX11RendererAPI>();
 #else
         return nullptr;
 #endif
     case GraphicsAPI::Metal:
 #ifdef TE_SUPPORT_METAL
-        return std::make_unique<MetalRendererAPI>();
+        return CreateScope<MetalRendererAPI>();
 #else
         return nullptr;
 #endif
     }
     return nullptr;
 }
-} // namespace TE

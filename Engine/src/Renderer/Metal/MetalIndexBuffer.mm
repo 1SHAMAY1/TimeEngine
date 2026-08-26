@@ -5,9 +5,6 @@
 #import <Metal/Metal.h>
 #endif
 
-namespace TE
-{
-
 MetalIndexBuffer::MetalIndexBuffer(uint32_t *indices, uint32_t count)
     : m_Count(count)
 {
@@ -54,5 +51,3 @@ void MetalIndexBuffer::SetData(uint32_t *indices, uint32_t count) const
     }
 #endif
 }
-
-} // namespace TE

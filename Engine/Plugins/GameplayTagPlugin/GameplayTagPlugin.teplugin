@@ -1,4 +1,5 @@
 Name: GameplayTagPlugin
 Version: 1.0.0
+Author: TimeEngine Team
 Description: Hierarchical gameplay tags plugin for TimeEngine.
-Enabled: false
+Enabled: true
