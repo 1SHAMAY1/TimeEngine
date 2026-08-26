@@ -1,9 +1,9 @@
 name: Linux Build (Clang)
 
 on:
-  pull_request:
-    branches: [ '**' ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ '**' ]
   workflow_dispatch:
 
@@ -36,17 +36,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install System Dependencies & Clang
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y clang libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev xorg-dev
 
       - name: Install Premake5
         run: |
+          mkdir -p Vendor/Premake/Linux
           wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-linux.tar.gz
-          tar -xzf premake-5.0.0-beta4-linux.tar.gz
-          chmod +x premake5
-          sudo mv premake5 /usr/local/bin/
+          tar -xzf premake-5.0.0-beta4-linux.tar.gz -C Vendor/Premake/Linux
+          chmod +x Vendor/Premake/Linux/premake5
+          sudo ln -sf "$(pwd)/Vendor/Premake/Linux/premake5" /usr/local/bin/premake5
 
       - name: Build Logger Dependency (Clang)
         run: |

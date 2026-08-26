@@ -2,7 +2,7 @@ name: Clang-Format Check
 
 on:
   push:
-    branches: [ '**' ]
+    branches: [ main ]
   pull_request:
     branches: [ '**' ]
 
@@ -96,16 +96,17 @@ jobs:
 
       - name: Generate Professional Email
         if: failure()
+        shell: pwsh
         run: |
-          python .github/scripts/send_notification.py \
-            --workflow "Clang-Format Check" \
-            --status "FAILED" \
-            --repo "${{ github.repository }}" \
-            --branch "${{ github.ref_name }}" \
-            --commit "${{ github.sha }}" \
-            --author "${{ github.actor }}" \
-            --email "${{ steps.author-info.outputs.email }}" \
-            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          python .github/scripts/send_notification.py `
+            --workflow "Clang-Format Check" `
+            --status "FAILED" `
+            --repo "${{ github.repository }}" `
+            --branch "${{ github.ref_name }}" `
+            --commit "${{ github.sha }}" `
+            --author "${{ github.actor }}" `
+            --email "${{ steps.author-info.outputs.email }}" `
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" `
             --output ".github/reports/clang_format_failure.html"
 
       - name: Send Direct Email Notification to Causer

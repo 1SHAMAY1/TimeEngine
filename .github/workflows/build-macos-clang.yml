@@ -1,9 +1,9 @@
 name: macOS Build (Apple Clang)
 
 on:
-  pull_request:
-    branches: [ '**' ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ '**' ]
   workflow_dispatch:
 
@@ -38,10 +38,11 @@ jobs:
 
       - name: Install Premake5
         run: |
+          mkdir -p Vendor/Premake/Mac
           wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-macosx.tar.gz
-          tar -xzf premake-5.0.0-beta4-macosx.tar.gz
-          chmod +x premake5
-          sudo mv premake5 /usr/local/bin/
+          tar -xzf premake-5.0.0-beta4-macosx.tar.gz -C Vendor/Premake/Mac
+          chmod +x Vendor/Premake/Mac/premake5
+          sudo ln -sf "$(pwd)/Vendor/Premake/Mac/premake5" /usr/local/bin/premake5
 
       - name: Build Logger Dependency (Apple Clang)
         run: |

@@ -17,8 +17,7 @@ VALID_TAGS: Set[str] = {
     "Core", "Renderer", "Platform", "Window", "Utils", "ECS", "GameFrameWork",
     "Input", "Threading", "Time", "Asset", "Collision", "Events", "Physics",
     "Plugin", "Project", "Scene", "Editor", "Docs", "CI/CD", "Vendor",
-    "AI Agents", "Automation", "MAC", "Linux", "Windows", "resources",
-    "projects", "application", "plugin", "engine", "Release", "Build"
+    "AI Agents", "Automation", "MAC", "Linux", "Windows", "Release", "Build"
 }
 
 LAZY_MESSAGES = {

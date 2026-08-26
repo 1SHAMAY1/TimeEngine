@@ -1,9 +1,9 @@
 name: Windows Build (MSVC)
 
 on:
-  pull_request:
-    branches: [ '**' ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ '**' ]
   workflow_dispatch:
 
@@ -88,16 +88,17 @@ jobs:
 
       - name: Generate Professional Email
         if: failure()
+        shell: pwsh
         run: |
-          python .github/scripts/send_notification.py \
-            --workflow "Windows Build (MSVC)" \
-            --status "FAILED" \
-            --repo "${{ github.repository }}" \
-            --branch "${{ github.ref_name }}" \
-            --commit "${{ github.sha }}" \
-            --author "${{ github.actor }}" \
-            --email "${{ steps.author-info.outputs.email }}" \
-            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          python .github/scripts/send_notification.py `
+            --workflow "Windows Build (MSVC)" `
+            --status "FAILED" `
+            --repo "${{ github.repository }}" `
+            --branch "${{ github.ref_name }}" `
+            --commit "${{ github.sha }}" `
+            --author "${{ github.actor }}" `
+            --email "${{ steps.author-info.outputs.email }}" `
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" `
             --output ".github/reports/msvc_failure.html"
 
       - name: Send Direct Email Notification to Causer

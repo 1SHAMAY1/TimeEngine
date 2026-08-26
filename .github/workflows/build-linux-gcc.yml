@@ -1,9 +1,9 @@
 name: Linux Build (GCC)
 
 on:
-  pull_request:
-    branches: [ '**' ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ '**' ]
   workflow_dispatch:
 
@@ -43,10 +43,11 @@ jobs:
 
       - name: Install Premake5
         run: |
+          mkdir -p Vendor/Premake/Linux
           wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-linux.tar.gz
-          tar -xzf premake-5.0.0-beta4-linux.tar.gz
-          chmod +x premake5
-          sudo mv premake5 /usr/local/bin/
+          tar -xzf premake-5.0.0-beta4-linux.tar.gz -C Vendor/Premake/Linux
+          chmod +x Vendor/Premake/Linux/premake5
+          sudo ln -sf "$(pwd)/Vendor/Premake/Linux/premake5" /usr/local/bin/premake5
 
       - name: Build Logger Dependency (GCC)
         run: |
