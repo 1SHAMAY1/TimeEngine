@@ -65,21 +65,10 @@ jobs:
           }
 
       - name: Commit changes
-        if: steps.changed-files.outputs.any_changed == 'true' && github.event_name == 'push'
+        if: steps.changed-files.outputs.any_changed == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Fix CI: Automated Clang-Format"
-
-      - name: Verify Clang-Format on Pull Requests
-        if: steps.changed-files.outputs.any_changed == 'true' && github.event_name == 'pull_request'
-        shell: pwsh
-        run: |
-          $status = git status --porcelain
-          if ($status) {
-            Write-Error "Clang-Format check failed! Code formatting issues detected. Please run clang-format locally."
-            git diff
-            exit 1
-          }
+          commit_message: "Build: Format code with clang-format"
 
       - name: Notify on Pull Request Failure
         if: failure() && github.event_name == 'pull_request'
