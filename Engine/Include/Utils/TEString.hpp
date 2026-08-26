@@ -226,8 +226,7 @@ public:
     // ── Formatting (Printf & Token Format) ───────────────────────────────
     static TEString Printf(const char *fmt, ...);
 
-    template <typename T>
-    static auto FormatArg(T &&arg) -> decltype(auto)
+    template <typename T> static auto FormatArg(T &&arg) -> decltype(auto)
     {
         using Decayed = std::decay_t<T>;
         if constexpr (std::is_same_v<Decayed, TEString>)
