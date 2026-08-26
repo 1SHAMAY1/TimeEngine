@@ -37,6 +37,11 @@ jobs:
 
       - name: Run Commit Guidelines Validator
         id: run-commit-check
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          CAUSER_EMAIL: ${{ steps.author-info.outputs.email }}
+          TRIGGER_CONTEXT: ${{ github.event_name }} on ${{ github.ref_name }}
         run: |
           mkdir -p .github/reports
           BASE_REF="${{ github.event.pull_request.base.sha || github.event.before }}"
@@ -49,10 +54,10 @@ jobs:
           python .github/scripts/commit_guidelines.py \
             --base-ref "$BASE_REF" \
             --head-ref "$HEAD_REF" \
-            --pr-title "${{ github.event.pull_request.title }}" \
-            --pr-body "${{ github.event.pull_request.body }}" \
-            --causer-email "${{ steps.author-info.outputs.email }}" \
-            --trigger-context "${{ github.event_name }} on ${{ github.ref_name }}" \
+            --pr-title "$PR_TITLE" \
+            --pr-body "$PR_BODY" \
+            --causer-email "$CAUSER_EMAIL" \
+            --trigger-context "$TRIGGER_CONTEXT" \
             --report-dir ".github/reports"
 
       - name: Upload Audit Report Artifact
