@@ -113,7 +113,6 @@ project "TimeEditor"
     files {
         "src/**.h",
         "src/**.cpp",
-        "src/**.rc",
         "Include/Layers/**.h",
         "src/Core/Layers/**.cpp",
 
@@ -127,6 +126,10 @@ project "TimeEditor"
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h"
     }
+
+    filter { "system:windows", "action:vs*" }
+        files { "src/**.rc" }
+    filter {}
 
     includedirs {
         "%{IncludeDir.ImGui}",
