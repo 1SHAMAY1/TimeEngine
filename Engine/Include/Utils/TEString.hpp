@@ -131,8 +131,8 @@ public:
     const char *c_str() const { return m_Data.c_str(); }
     const char *Data() const { return m_Data.data(); }
     const char *data() const { return m_Data.data(); }
-    char *Data() { return m_Data.data(); }
-    char *data() { return m_Data.data(); }
+    char *Data() { return const_cast<char *>(m_Data.data()); }
+    char *data() { return const_cast<char *>(m_Data.data()); }
     const std::string &ToStdString() const { return m_Data; }
     std::string_view ToStringView() const { return std::string_view(m_Data); }
 
