@@ -568,8 +568,12 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
     {
         if (TimeGUI::IsMouseDown(TimeGUIMouseButton_Left))
         {
-            int dx = (int)(mousePos.x - m_CropDragMouseStart.x >= 0 ? (mousePos.x - m_CropDragMouseStart.x) / cellDim + 0.5f : (mousePos.x - m_CropDragMouseStart.x) / cellDim - 0.5f);
-            int dy = (int)(mousePos.y - m_CropDragMouseStart.y >= 0 ? (mousePos.y - m_CropDragMouseStart.y) / cellDim + 0.5f : (mousePos.y - m_CropDragMouseStart.y) / cellDim - 0.5f);
+            int dx = (int)(mousePos.x - m_CropDragMouseStart.x >= 0
+                               ? (mousePos.x - m_CropDragMouseStart.x) / cellDim + 0.5f
+                               : (mousePos.x - m_CropDragMouseStart.x) / cellDim - 0.5f);
+            int dy = (int)(mousePos.y - m_CropDragMouseStart.y >= 0
+                               ? (mousePos.y - m_CropDragMouseStart.y) / cellDim + 0.5f
+                               : (mousePos.y - m_CropDragMouseStart.y) / cellDim - 0.5f);
 
             if (m_ActiveDragHandle == 0) // Center Move
             {
@@ -827,8 +831,7 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
         TEVector2 origin =
             TEVector2(canvasCenter.x - (gridW * baseCellDim) * 0.5f, canvasCenter.y - (gridH * baseCellDim) * 0.5f);
 
-        RenderCheckerboard(dl, origin, TEVector2(gridW * baseCellDim, gridH * baseCellDim),
-                           Max(6.0f, baseCellDim));
+        RenderCheckerboard(dl, origin, TEVector2(gridW * baseCellDim, gridH * baseCellDim), Max(6.0f, baseCellDim));
 
         if (m_AnimFrameIndex >= 0 && m_AnimFrameIndex < frameCount)
         {
@@ -847,7 +850,8 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                         {
                             col.w *= layer.Opacity;
                             TEVector2 p1 = TEVector2(origin.x + x * baseCellDim, origin.y + y * baseCellDim);
-                            TEVector2 p2 = TEVector2(origin.x + (x + 1) * baseCellDim, origin.y + (y + 1) * baseCellDim);
+                            TEVector2 p2 =
+                                TEVector2(origin.x + (x + 1) * baseCellDim, origin.y + (y + 1) * baseCellDim);
                             dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                         }
                     }
@@ -905,7 +909,8 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                         {
                             col.w *= layer.Opacity;
                             TEVector2 p1 = TEVector2(cellOriginX + x * cellPixelDim, cellOriginY + y * cellPixelDim);
-                            TEVector2 p2 = TEVector2(cellOriginX + (x + 1) * cellPixelDim, cellOriginY + (y + 1) * cellPixelDim);
+                            TEVector2 p2 =
+                                TEVector2(cellOriginX + (x + 1) * cellPixelDim, cellOriginY + (y + 1) * cellPixelDim);
                             dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                         }
                     }
@@ -963,9 +968,8 @@ void SpriteExportLayer::RenderCheckerboard(TimeGUI::TimeGUIDrawList &dl, const T
             int ix = (int)(x / checkSize);
             int iy = (int)(y / checkSize);
             unsigned int col = ((ix + iy) % 2 == 0) ? IM_COL32(28, 28, 34, 255) : IM_COL32(38, 38, 46, 255);
-            dl.AddRectFilled(
-                TEVector2(pos.x + x, pos.y + y),
-                TEVector2(pos.x + Min(x + checkSize, size.x), pos.y + Min(y + checkSize, size.y)), col);
+            dl.AddRectFilled(TEVector2(pos.x + x, pos.y + y),
+                             TEVector2(pos.x + Min(x + checkSize, size.x), pos.y + Min(y + checkSize, size.y)), col);
         }
     }
 }
