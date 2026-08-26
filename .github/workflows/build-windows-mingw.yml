@@ -65,9 +65,15 @@ jobs:
           cmake ../glfw -G "MinGW Makefiles" -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug
           mingw32-make SHELL=cmd.exe
 
+      - name: Install Premake5
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-windows.zip" -OutFile "premake5.zip"
+          Expand-Archive -Path "premake5.zip" -DestinationPath "Vendor\Premake\Windows" -Force
+
       - name: Generate Makefiles with Premake
         shell: msys2 {0}
-        run: ./Vendor/Premake/premake5.exe gmake2
+        run: ./Vendor/Premake/Windows/premake5.exe gmake2 --file=Premake5.lua
 
       - name: Build Solution (MinGW GCC)
         shell: msys2 {0}

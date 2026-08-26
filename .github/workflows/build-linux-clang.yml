@@ -43,8 +43,9 @@ jobs:
 
       - name: Install Premake5
         run: |
-          wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-linux.tar.gz
-          tar -xzf premake-5.0.0-beta2-linux.tar.gz
+          wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-linux.tar.gz
+          tar -xzf premake-5.0.0-beta4-linux.tar.gz
+          chmod +x premake5
           sudo mv premake5 /usr/local/bin/
 
       - name: Build Logger Dependency (Clang)
