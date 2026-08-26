@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Settings/EditorGizmoGridSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,18 +7,18 @@ TE_REGISTER_EDITOR_SETTINGS(EditorGizmoGridSettings);
 
 namespace
 {
-    static float s_GizmoSize = 1.0f;
-    static bool s_SnapTranslation = false;
-    static float s_SnapTranslationValue = 0.5f;
-    static bool s_SnapRotation = false;
-    static float s_SnapRotationValue = 15.0f; // degrees
-    static bool s_SnapScale = false;
-    static float s_SnapScaleValue = 0.1f;
+static float s_GizmoSize = 1.0f;
+static bool s_SnapTranslation = false;
+static float s_SnapTranslationValue = 0.5f;
+static bool s_SnapRotation = false;
+static float s_SnapRotationValue = 15.0f; // degrees
+static bool s_SnapScale = false;
+static float s_SnapScaleValue = 0.1f;
 
-    static bool s_ShowGrid = true;
-    static float s_GridCellSize = 1.0f;
-    static int s_GridDivisions = 10;
-}
+static bool s_ShowGrid = true;
+static float s_GridCellSize = 1.0f;
+static int s_GridDivisions = 10;
+} // namespace
 
 void EditorGizmoGridSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {

@@ -3,7 +3,6 @@
 #include "Gameplay/ParticleSystemGameplayLib.hpp"
 #include <memory>
 
-
 class ParticleFXPlugin : public IPlugin
 {
 public:
@@ -20,4 +19,3 @@ public:
 
     virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;
 };
-

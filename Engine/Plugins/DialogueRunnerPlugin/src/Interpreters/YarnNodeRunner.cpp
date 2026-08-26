@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <sstream>
 
-
 bool YarnNodeRunner::LoadFromYarnSource(const TEString &yarnText)
 {
     Reset();
@@ -58,7 +57,8 @@ void YarnNodeRunner::ParseNodes(const TEString &yarnText)
                 currentNode.Title = line.substr(6);
                 while (!currentNode.Title.empty() && isspace((unsigned char)currentNode.Title[0]))
                     currentNode.Title = currentNode.Title.Substr(1);
-                while (!currentNode.Title.empty() && isspace((unsigned char)currentNode.Title[currentNode.Title.Length() - 1]))
+                while (!currentNode.Title.empty() &&
+                       isspace((unsigned char)currentNode.Title[currentNode.Title.Length() - 1]))
                     currentNode.Title = currentNode.Title.Substr(0, currentNode.Title.Length() - 1);
             }
         }
@@ -74,10 +74,7 @@ void YarnNodeRunner::ParseNodes(const TEString &yarnText)
     }
 }
 
-bool YarnNodeRunner::CanContinue() const
-{
-    return m_bCanContinue;
-}
+bool YarnNodeRunner::CanContinue() const { return m_bCanContinue; }
 
 TEString YarnNodeRunner::Continue(NarrativeBlackboard *blackboard)
 {
@@ -245,4 +242,3 @@ void YarnNodeRunner::Reset()
     m_CurrentChoices.clear();
     m_bCanContinue = false;
 }
-

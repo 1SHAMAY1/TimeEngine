@@ -4,7 +4,6 @@
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 void MaterialInstanceEditor::DrawEditor(EditorTab &tab)
 {
     auto instance = std::dynamic_pointer_cast<MaterialInstanceAsset>(tab.LoadedAsset);

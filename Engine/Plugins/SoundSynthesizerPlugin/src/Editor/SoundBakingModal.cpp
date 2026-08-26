@@ -2,11 +2,10 @@
 #include "Utils/TimeGUI.hpp"
 #include <cstring>
 
-namespace SoundStudio {
-
-SoundBakingModal::SoundBakingModal()
+namespace SoundStudio
 {
-}
+
+SoundBakingModal::SoundBakingModal() {}
 
 void SoundBakingModal::Open(TERef<SoundGraph> graph)
 {
@@ -28,7 +27,8 @@ void SoundBakingModal::Draw()
 
         TimeGUI::InputText("Output Path", m_PathBuffer, sizeof(m_PathBuffer));
         TimeGUI::SliderFloat("Duration (Seconds)", &m_Options.DurationSeconds, 0.1f, 30.0f, "%.2fs");
-        TimeGUI::SliderFloat("Trigger Hold Time", &m_Options.TriggerDurationSeconds, 0.05f, m_Options.DurationSeconds, "%.2fs");
+        TimeGUI::SliderFloat("Trigger Hold Time", &m_Options.TriggerDurationSeconds, 0.05f, m_Options.DurationSeconds,
+                             "%.2fs");
         TimeGUI::SliderInt("Trigger MIDI Note", &m_Options.TriggerMidiNote, 24, 108);
 
         TimeGUI::Spacing();

@@ -1,9 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Layers/Layer.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 
 #include "Utils/TimeGUI.hpp"
-
 
 Layer::Layer(const TEString &name) : m_DebugName(name) {}
 
@@ -14,6 +13,8 @@ void Layer::OnAttach() {}
 void Layer::OnDetach() {}
 
 void Layer::OnUpdate() {}
+
+void Layer::OnRender() {}
 
 void Layer::OnTimeGUIRender() {}
 
@@ -46,4 +47,3 @@ void Layer::DockTo(bool padding)
 
     TimeGUI::PopStyleVar(padding ? 1 : 2);
 }
-

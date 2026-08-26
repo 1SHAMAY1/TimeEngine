@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GameFrameWork/TComponent.hpp"
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
+#include "GameFrameWork/TComponent.hpp"
 #include "Utils/TEString.hpp"
 
 struct TimerEntry
@@ -41,7 +41,6 @@ private:
 
 #ifdef TE_EDITOR
 T_REGISTER_COMPONENT(TimerComponent, "Timer Component")
-T_REGISTER_PRESET(TimerPreset, "Timer Component", "Utility", [](EntityID id, EntityManager *em) {
-    em->AddComponent<TimerComponent>(id);
-})
+T_REGISTER_PRESET(TimerPreset, "Timer Component", "Utility",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<TimerComponent>(id); })
 #endif

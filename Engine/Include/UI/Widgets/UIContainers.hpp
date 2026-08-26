@@ -1,19 +1,21 @@
 #pragma once
 #include "UI/UIWidget.hpp"
 
-
 // =========================================================================
 // UIScrollBox - Scrollable container
 // =========================================================================
 class TE_API UIScrollBox : public UIWidget
 {
 public:
-    UIScrollBox(const TEVector2 &size = {0.0f, 0.0f}, const TEString &id = "##UIScrollBox")
-        : UIWidget(id) { m_Size = size; }
+    UIScrollBox(const TEVector2 &size = {0.0f, 0.0f}, const TEString &id = "##UIScrollBox") : UIWidget(id)
+    {
+        m_Size = size;
+    }
 
     void Draw() override
     {
-        if (!m_IsVisible) return;
+        if (!m_IsVisible)
+            return;
         TimeGUI::BeginChild(m_ID, m_Size, false, TimeGUIWindowFlags_AlwaysVerticalScrollbar);
         DrawSelf();
         for (auto &child : m_Children)
@@ -35,16 +37,18 @@ class TE_API UIBorder : public UIWidget
 {
 public:
     UIBorder(const TEVector4 &bgColor = {0.08f, 0.09f, 0.11f, 0.85f},
-             const TEVector4 &borderColor = {0.16f, 0.18f, 0.22f, 1.0f},
-             float rounding = 6.0f,
+             const TEVector4 &borderColor = {0.16f, 0.18f, 0.22f, 1.0f}, float rounding = 6.0f,
              const TEString &id = "##UIBorder")
-        : UIWidget(id), m_BgColor(bgColor), m_BorderColor(borderColor), m_Rounding(rounding) {}
+        : UIWidget(id), m_BgColor(bgColor), m_BorderColor(borderColor), m_Rounding(rounding)
+    {
+    }
 
     void SetPadding(const TEVector2 &pad) { m_Padding = pad; }
 
     void Draw() override
     {
-        if (!m_IsVisible) return;
+        if (!m_IsVisible)
+            return;
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowRounding, m_Rounding);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowBorderSize, 1.0f);
         TimeGUI::PushStyleVar(TimeGUIStyleVar_WindowPadding, m_Padding);
@@ -81,12 +85,15 @@ private:
 class TE_API UISizeBox : public UIWidget
 {
 public:
-    UISizeBox(const TEVector2 &explicitSize, const TEString &id = "##UISizeBox")
-        : UIWidget(id) { m_Size = explicitSize; }
+    UISizeBox(const TEVector2 &explicitSize, const TEString &id = "##UISizeBox") : UIWidget(id)
+    {
+        m_Size = explicitSize;
+    }
 
     void Draw() override
     {
-        if (!m_IsVisible) return;
+        if (!m_IsVisible)
+            return;
         TimeGUI::BeginChild(m_ID, m_Size, false);
         DrawSelf();
         for (auto &child : m_Children)
@@ -108,10 +115,13 @@ class TE_API UIButton : public UIWidget
 {
 public:
     UIButton(const TEString &label, const TEVector2 &size = {0.0f, 0.0f}, const TEString &id = "")
-        : UIWidget(id.empty() ? label : id), m_Label(label) { m_Size = size; }
+        : UIWidget(id.empty() ? label : id), m_Label(label)
+    {
+        m_Size = size;
+    }
 
     void SetLabel(const TEString &label) { m_Label = label; }
-    const TEString& GetLabel() const { return m_Label; }
+    const TEString &GetLabel() const { return m_Label; }
 
 protected:
     void DrawSelf() override
@@ -123,7 +133,8 @@ protected:
         }
         if (TimeGUI::IsItemHovered())
         {
-            if (OnHovered) OnHovered(this);
+            if (OnHovered)
+                OnHovered(this);
         }
     }
 
@@ -138,7 +149,9 @@ class TE_API UISlider : public UIWidget
 {
 public:
     UISlider(const TEString &label, float minVal = 0.0f, float maxVal = 1.0f, const TEString &id = "")
-        : UIWidget(id.empty() ? label : id), m_Label(label), m_Min(minVal), m_Max(maxVal) {}
+        : UIWidget(id.empty() ? label : id), m_Label(label), m_Min(minVal), m_Max(maxVal)
+    {
+    }
 
     void SetValue(float val) { m_Value = val; }
     float GetValue() const { return m_Value; }
@@ -164,4 +177,3 @@ private:
     float m_Min = 0.0f;
     float m_Max = 1.0f;
 };
-

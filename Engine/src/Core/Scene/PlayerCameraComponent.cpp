@@ -1,15 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/PlayerCameraComponent.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 
 #include <cmath>
 #include <cstdlib>
 
-
-PlayerCameraComponent::PlayerCameraComponent()
-{
-}
+PlayerCameraComponent::PlayerCameraComponent() {}
 
 void PlayerCameraComponent::OnAttach()
 {
@@ -102,4 +99,3 @@ float PlayerCameraComponent::GetCurrentShakeOffsetMagnitude() const
 {
     return (m_ShakeTimer > 0.0f) ? m_ShakeIntensity : 0.0f;
 }
-

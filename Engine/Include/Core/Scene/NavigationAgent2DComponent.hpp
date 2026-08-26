@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/Scene/MovementComponentBase.hpp"
 #include "Core/Navigation/NavigationMesh2D.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
+#include "Core/Scene/MovementComponentBase.hpp"
 
 TE_CLASS()
 class TE_API NavigationAgent2DComponent : public MovementComponentBase
@@ -53,7 +53,6 @@ T_REGISTER_PROPERTY(NavigationAgent2DComponent, float, MaxSpeed, "Max Speed")
 T_REGISTER_PROPERTY(NavigationAgent2DComponent, float, StoppingDistance, "Stopping Distance")
 T_REGISTER_PROPERTY(NavigationAgent2DComponent, float, PathUpdateInterval, "Path Update Interval")
 T_REGISTER_PROPERTY(NavigationAgent2DComponent, bool, AvoidanceEnabled, "Avoidance Enabled")
-T_REGISTER_PRESET(NavigationAgent2D, "Navigation Agent 2D", "AI", [](EntityID id, EntityManager *em) {
-    em->AddComponent<NavigationAgent2DComponent>(id);
-})
+T_REGISTER_PRESET(NavigationAgent2D, "Navigation Agent 2D", "AI",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<NavigationAgent2DComponent>(id); })
 #endif

@@ -1,12 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Editor/SpriteAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Renderer/Sprite.hpp"
 #include "Renderer/SpriteSerializer.hpp"
 #include "Renderer/Texture.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -235,10 +234,10 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
             float pivotScreenX = canvasPos.x + spx * fullW;
             float pivotScreenY = canvasPos.y + (1.0f - spy) * fullH; // top-down Y
 
-            drawList.AddLine(TEVector2(pivotScreenX - 15.0f, pivotScreenY), TEVector2(pivotScreenX + 15.0f, pivotScreenY),
-                             TIMEGUI_COL32(255, 230, 0, 255), 2.5f);
-            drawList.AddLine(TEVector2(pivotScreenX, pivotScreenY - 15.0f), TEVector2(pivotScreenX, pivotScreenY + 15.0f),
-                             TIMEGUI_COL32(255, 230, 0, 255), 2.5f);
+            drawList.AddLine(TEVector2(pivotScreenX - 15.0f, pivotScreenY),
+                             TEVector2(pivotScreenX + 15.0f, pivotScreenY), TIMEGUI_COL32(255, 230, 0, 255), 2.5f);
+            drawList.AddLine(TEVector2(pivotScreenX, pivotScreenY - 15.0f),
+                             TEVector2(pivotScreenX, pivotScreenY + 15.0f), TIMEGUI_COL32(255, 230, 0, 255), 2.5f);
             drawList.AddCircleFilled(TEVector2(pivotScreenX, pivotScreenY), 6.0f, TIMEGUI_COL32(255, 230, 0, 255));
             drawList.AddCircle(TEVector2(pivotScreenX, pivotScreenY), 12.0f, TIMEGUI_COL32(255, 230, 0, 255), 0, 1.5f);
         }
@@ -294,8 +293,8 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
 
                     drawList.AddLine(TEVector2(x1, y1), TEVector2(x2, y2), TIMEGUI_COL32(255, 60, 60, 255), 2.5f);
 
-                    uint32_t handleColor =
-                        (s_DraggedVertexIdx == (int)i) ? TIMEGUI_COL32(255, 255, 0, 255) : TIMEGUI_COL32(255, 60, 60, 255);
+                    uint32_t handleColor = (s_DraggedVertexIdx == (int)i) ? TIMEGUI_COL32(255, 255, 0, 255)
+                                                                          : TIMEGUI_COL32(255, 60, 60, 255);
                     drawList.AddCircleFilled(TEVector2(x1, y1), 6.0f, handleColor);
                     drawList.AddCircle(TEVector2(x1, y1), 10.0f, handleColor, 0, 1.5f);
                 }
@@ -329,8 +328,7 @@ void SpriteAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) con
     float cy = (iMin.y + iMax.y) * 0.5f;
     float r = (iMax.x - iMin.x) * 0.35f;
     dl.AddQuadFilled(TEVector2(cx, cy - r), TEVector2(cx + r, cy), TEVector2(cx, cy + r), TEVector2(cx - r, cy),
-                    IM_COL32(255, 205, 80, 255));
+                     IM_COL32(255, 205, 80, 255));
 }
 
 TE_REGISTER_ASSET_EDITOR(SpriteAssetEditor);
-

@@ -6,37 +6,41 @@
 #if defined(TE_HAS_PLUGIN_MCPPLUGIN) || defined(TE_PLUGIN_MCPPLUGIN) || 1
 #include "../../../MCPPlugin/src/MCPToolRegistry.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 // 1. synth_list_nodes
-TE_REGISTER_MCP_TOOL(
-    synth_list_nodes,
-    "List all available DSP sound synthesis nodes (Oscillators, Filters, Envelopes, Effects, Mixers) in SoundSynthesizerPlugin.",
-    "{\"type\":\"object\",\"properties\":{}}",
-    [](const TEString &paramsJson) -> TEString {
-        const auto &registered = SoundNodeRegistry::GetRegisteredNodes();
-        TEString json = "{\"nodes\":[";
-        bool first = true;
-        for (const auto &[name, info] : registered)
-        {
-            if (!first) json += ",";
-            first = false;
-            json += "{\"name\":\"" + info.TypeName + "\",";
-            json += "\"category\":\"" + info.Category + "\"}";
-        }
-        json += "]}";
-        return json;
-    }
-);
+TE_REGISTER_MCP_TOOL(synth_list_nodes,
+                     "List all available DSP sound synthesis nodes (Oscillators, Filters, Envelopes, Effects, Mixers) "
+                     "in SoundSynthesizerPlugin.",
+                     "{\"type\":\"object\",\"properties\":{}}",
+                     [](const TEString &paramsJson) -> TEString
+                     {
+                         const auto &registered = SoundNodeRegistry::GetRegisteredNodes();
+                         TEString json = "{\"nodes\":[";
+                         bool first = true;
+                         for (const auto &[name, info] : registered)
+                         {
+                             if (!first)
+                                 json += ",";
+                             first = false;
+                             json += "{\"name\":\"" + info.TypeName + "\",";
+                             json += "\"category\":\"" + info.Category + "\"}";
+                         }
+                         json += "]}";
+                         return json;
+                     });
 
 // 2. synth_bake_sound
 TE_REGISTER_MCP_TOOL(
     synth_bake_sound,
     "Bake a procedural DSP sound graph into a .wav file with specified note, duration, and output path.",
-    "{\"type\":\"object\",\"properties\":{\"output_path\":{\"type\":\"string\"},\"duration\":{\"type\":\"number\"},\"midi_note\":{\"type\":\"integer\"}},\"required\":[\"output_path\"]}",
-    [](const TEString &paramsJson) -> TEString {
+    "{\"type\":\"object\",\"properties\":{\"output_path\":{\"type\":\"string\"},\"duration\":{\"type\":\"number\"},"
+    "\"midi_note\":{\"type\":\"integer\"}},\"required\":[\"output_path\"]}",
+    [](const TEString &paramsJson) -> TEString
+    {
         TEString jsonStr = paramsJson;
-        
+
         TEString path = "Assets/Sounds/BakedSound.wav";
         size_t pathKey = jsonStr.find("\"output_path\"");
         if (pathKey != TEString::npos)
@@ -106,8 +110,7 @@ TE_REGISTER_MCP_TOOL(
             return "\"Success: Baked DSP graph to " + options.OutputPath + "\"";
         }
         return "\"Error: Failed to bake DSP graph to WAV\"";
-    }
-);
+    });
 
 void SoundSynthMCPTools::RegisterTools()
 {

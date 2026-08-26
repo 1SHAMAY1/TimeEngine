@@ -1,26 +1,17 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Asset/AssetManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Log.h"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Physics/RigidBodyComponent.hpp"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/MovementComponentBase.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "Input/InputSystem.hpp"
-
+#include "Utils/TEFileSystem.hpp"
 
 #include "Core/Project/Project.hpp"
 #include "Editor/EditorSaveManager.hpp"
@@ -46,38 +37,40 @@ bool Scene::Save()
     {
         // New / Untitled scene -> Prompt in-engine visual file browser dialog
         EditorUtils::OpenFileBrowser("Save Scene As", "Save", GetName(), ".tescene", true,
-            [self = shared_from_this()](const TEString &chosenPath) {
-                self->SetAssetPath(chosenPath);
-                self->SetName(chosenPath.GetStem());
-                SceneSerializer serializer(self);
-                if (serializer.Serialize(chosenPath))
-                {
-                    self->MarkDirty(false);
-                    EditorSaveManager::RegisterSavable(self);
-                    TE_CORE_INFO("Scene saved to: {0}", chosenPath);
+                                     [self = shared_from_this()](const TEString &chosenPath)
+                                     {
+                                         self->SetAssetPath(chosenPath);
+                                         self->SetName(chosenPath.GetStem());
+                                         SceneSerializer serializer(self);
+                                         if (serializer.Serialize(chosenPath))
+                                         {
+                                             self->MarkDirty(false);
+                                             EditorSaveManager::RegisterSavable(self);
+                                             TE_CORE_INFO("Scene saved to: {0}", chosenPath);
 
-                    if (Project::GetActive())
-                    {
-                        TEString projDir = Project::GetProjectDirectory();
-                        TEString relPath = chosenPath;
-                        if (!projDir.empty() && chosenPath.StartsWith(projDir))
-                        {
-                            relPath = chosenPath.Mid(projDir.Length());
-                            while (relPath.StartsWith("/") || relPath.StartsWith("\\"))
-                            {
-                                relPath = relPath.Mid(1);
-                            }
-                        }
-                        Project::GetActiveConfig().StartScene = relPath;
-                        TEString projFile = projDir / (Project::GetActiveConfig().Name + ".teproj");
-                        Project::SaveActive(projFile);
-                    }
-                }
-                else
-                {
-                    TE_CORE_ERROR("Failed to serialize scene to: {0}", chosenPath);
-                }
-            });
+                                             if (Project::GetActive())
+                                             {
+                                                 TEString projDir = Project::GetProjectDirectory();
+                                                 TEString relPath = chosenPath;
+                                                 if (!projDir.empty() && chosenPath.StartsWith(projDir))
+                                                 {
+                                                     relPath = chosenPath.Mid(projDir.Length());
+                                                     while (relPath.StartsWith("/") || relPath.StartsWith("\\"))
+                                                     {
+                                                         relPath = relPath.Mid(1);
+                                                     }
+                                                 }
+                                                 Project::GetActiveConfig().StartScene = relPath;
+                                                 TEString projFile =
+                                                     projDir / (Project::GetActiveConfig().Name + ".teproj");
+                                                 Project::SaveActive(projFile);
+                                             }
+                                         }
+                                         else
+                                         {
+                                             TE_CORE_ERROR("Failed to serialize scene to: {0}", chosenPath);
+                                         }
+                                     });
         return true;
     }
     else
@@ -187,8 +180,8 @@ void Scene::OnContentBrowserCreate(const TEString &path)
 
 class ComponentRegistry &Scene::GetGlobalComponentRegistry() { return ComponentRegistry::Get(); }
 
-#include "Core/Scene/RigidBody2DComponent.hpp"
 #include "Core/Scene/RayCast2DComponent.hpp"
+#include "Core/Scene/RigidBody2DComponent.hpp"
 #include "UI/UIWidget.hpp"
 
 void Scene::OnRuntimeStart()
@@ -327,4 +320,3 @@ TERef<Scene> Scene::Copy(TERef<Scene> other)
 }
 
 TE_REGISTER_ASSET(Scene);
-

@@ -1,7 +1,7 @@
 #pragma once
-#include "ParticlePool.hpp"
 #include "Modules/ParticleModule.hpp"
 #include "Modules/UpdateModules.hpp"
+#include "ParticlePool.hpp"
 
 class ParticleUpdater
 {
@@ -12,10 +12,7 @@ public:
             m_Modules.push_back(module);
     }
 
-    void ClearModules()
-    {
-        m_Modules.clear();
-    }
+    void ClearModules() { m_Modules.clear(); }
 
     void Update(EmitterContext &ctx, ParticlePool &pool, float dt)
     {
@@ -56,4 +53,3 @@ public:
 private:
     TEArray<TERef<ParticleModule>> m_Modules;
 };
-

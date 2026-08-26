@@ -1,7 +1,6 @@
 #pragma once
-#include "../ParticleTypes.hpp"
 #include "../ParticlePool.hpp"
-
+#include "../ParticleTypes.hpp"
 
 struct EmitterContext
 {
@@ -33,4 +32,3 @@ public:
 protected:
     bool m_Enabled = true;
 };
-

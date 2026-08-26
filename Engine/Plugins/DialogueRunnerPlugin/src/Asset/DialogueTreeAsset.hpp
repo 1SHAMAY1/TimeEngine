@@ -3,7 +3,6 @@
 #include "Core/Asset/Asset.hpp"
 #include "Graph/DialogueGraph.hpp"
 
-
 class DialogueTreeAsset : public Asset
 {
 public:
@@ -34,4 +33,3 @@ private:
     TEString m_Name = "NewDialogueTree";
     DialogueGraph m_Graph;
 };
-

@@ -1,12 +1,10 @@
 #include "ADSREnvelope.hpp"
 #include <algorithm>
 
-namespace SoundStudio {
-
-void ADSREnvelope::TriggerAttack()
+namespace SoundStudio
 {
-    m_State = EEnvelopeState::Attack;
-}
+
+void ADSREnvelope::TriggerAttack() { m_State = EEnvelopeState::Attack; }
 
 void ADSREnvelope::TriggerRelease()
 {

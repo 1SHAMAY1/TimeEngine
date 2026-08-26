@@ -1,6 +1,7 @@
 #include "AudioOutputNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 AudioOutputNode::AudioOutputNode()
 {

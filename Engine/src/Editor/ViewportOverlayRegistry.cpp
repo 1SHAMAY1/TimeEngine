@@ -1,7 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/ViewportOverlayRegistry.hpp"
+#include "Core/PreRequisites.h"
 #include <algorithm>
-
 
 static TEMap<TEString, ViewportOverlayItem> &GetItemsMap()
 {
@@ -17,10 +16,7 @@ void ViewportOverlayRegistry::RegisterItem(const ViewportOverlayItem &item)
     }
 }
 
-void ViewportOverlayRegistry::UnregisterItem(const TEString &id)
-{
-    GetItemsMap().Remove(id);
-}
+void ViewportOverlayRegistry::UnregisterItem(const TEString &id) { GetItemsMap().Remove(id); }
 
 TEArray<ViewportOverlayItem> ViewportOverlayRegistry::GetItems(ViewportOverlayCorner corner,
                                                                ViewportOverlayAlignment align)
@@ -37,17 +33,13 @@ TEArray<ViewportOverlayItem> ViewportOverlayRegistry::GetItems(ViewportOverlayCo
         }
     }
 
-    std::sort(result.begin(), result.end(), [](const ViewportOverlayItem &a, const ViewportOverlayItem &b) {
-        return a.priority < b.priority;
-    });
+    std::sort(result.begin(), result.end(),
+              [](const ViewportOverlayItem &a, const ViewportOverlayItem &b) { return a.priority < b.priority; });
 
     return result;
 }
 
-void ViewportOverlayRegistry::Clear()
-{
-    GetItemsMap().Clear();
-}
+void ViewportOverlayRegistry::Clear() { GetItemsMap().Clear(); }
 
 static TEArray<TERef<IViewportOverlay>> s_ViewportOverlays;
 
@@ -57,13 +49,6 @@ void ViewportOverlayOwnerRegistry::RegisterOverlay(TERef<IViewportOverlay> overl
         s_ViewportOverlays.Add(overlay);
 }
 
-TEArray<TERef<IViewportOverlay>> ViewportOverlayOwnerRegistry::GetOverlays()
-{
-    return s_ViewportOverlays;
-}
+TEArray<TERef<IViewportOverlay>> ViewportOverlayOwnerRegistry::GetOverlays() { return s_ViewportOverlays; }
 
-void ViewportOverlayOwnerRegistry::Clear()
-{
-    s_ViewportOverlays.Clear();
-}
-
+void ViewportOverlayOwnerRegistry::Clear() { s_ViewportOverlays.Clear(); }

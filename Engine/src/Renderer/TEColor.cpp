@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/TEColor.hpp"
+#include "Core/PreRequisites.h"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/TEOpenGLColor.hpp"
 #endif
@@ -7,7 +7,6 @@
 #include "Utils/MathUtils.hpp"
 #include <glm/glm.hpp>
 #include <iomanip>
-
 
 TEColor::TEColor() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 
@@ -137,4 +136,3 @@ TEColor TEColor::FromHex(const TEString &hex)
 
     return TEColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
-

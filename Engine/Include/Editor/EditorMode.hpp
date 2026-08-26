@@ -3,8 +3,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include <functional>
 
-
-
 class EditorLayer;
 
 class TE_API EditorMode
@@ -63,4 +61,3 @@ template <typename T> struct EditorModeRegisterer
 };
 
 #define T_REGISTER_EDITOR_MODE(Type) static EditorModeRegisterer<Type> Type##_Registerer;
-

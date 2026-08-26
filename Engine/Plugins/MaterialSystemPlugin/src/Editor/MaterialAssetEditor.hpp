@@ -5,7 +5,6 @@
 #include "Editor/Graph/NodeCanvas.hpp"
 #include "Editor/MaterialPreviewViewport.hpp"
 
-
 class MaterialAssetEditor : public AssetEditor
 {
 public:
@@ -18,7 +17,8 @@ public:
     virtual TEString GetAssetDescription() const override { return "Modular node-based shader graph material"; }
     virtual TEString CreateDefaultTemplate(const TEString &name) const override
     {
-        return "{\n  \"Material\": {\n    \"Name\": \"" + name + "\",\n    \"Shader\": \"DefaultPBR\",\n    \"Nodes\": []\n  }\n}";
+        return "{\n  \"Material\": {\n    \"Name\": \"" + name +
+               "\",\n    \"Shader\": \"DefaultPBR\",\n    \"Nodes\": []\n  }\n}";
     }
     virtual void DrawEditor(EditorTab &tab) override;
     virtual void DrawIcon(const TEVector2 &min, const TEVector2 &max) const override;

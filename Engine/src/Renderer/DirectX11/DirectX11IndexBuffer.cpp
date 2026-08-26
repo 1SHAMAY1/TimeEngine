@@ -12,7 +12,6 @@
 #include <d3d11.h>
 #include <iostream>
 
-
 DirectX11IndexBuffer::DirectX11IndexBuffer(uint32_t *indices, uint32_t count) : m_Count(count)
 {
     DX11Context &ctx = DX11Context::Get();
@@ -81,4 +80,3 @@ void DirectX11IndexBuffer::SetData(uint32_t *indices, uint32_t count) const
 }
 
 uint32_t DirectX11IndexBuffer::GetCount() const { return m_Count; }
-

@@ -1,8 +1,6 @@
 #include "DialogueTreeSerializer.hpp"
 #include "Core/Log.h"
 
-
-
 static TEString EscapePipes(const TEString &str)
 {
     TEString result;
@@ -89,44 +87,39 @@ TEString DialogueTreeSerializer::SerializeToNativeText(const DialogueGraph &grap
     for (size_t i = 0; i < nodes.Size(); ++i)
     {
         const auto &n = nodes[i];
-        result += TEString("Node: ")
-            + TEString(std::to_string(n.ID).c_str()) + "|"
-            + EscapePipes(n.Title) + "|"
-            + TEString::FromInt(static_cast<int>(n.Type)) + "|"
-            + TEString::FromFloat(n.Position.x) + " " + TEString::FromFloat(n.Position.y) + "|"
-            + EscapePipes(n.Speaker) + "|"
-            + EscapePipes(n.Text) + "|"
-            + EscapePipes(n.LocalizedKey) + "|"
-            + EscapePipes(n.PortraitTag) + "|"
-            + EscapePipes(n.ConditionVar) + "|"
-            + TEString::FromInt(static_cast<int>(n.ConditionOp)) + "|"
-            + EscapePipes(n.ConditionValue.AsString()) + "|"
-            + EscapePipes(n.ActionVar) + "|"
-            + TEString::FromInt(static_cast<int>(n.ActionOp)) + "|"
-            + EscapePipes(n.ActionValue.AsString()) + "|"
-            + EscapePipes(n.CustomFunction) + "|"
-            + EscapePipes(n.CustomArgs) + "|"
-            + EscapePipes(n.QuestID) + "|"
-            + TEString::FromInt(static_cast<int>(n.TargetQuestStatus)) + "|"
-            + EscapePipes(n.ObjectiveID) + "|"
-            + EscapePipes(n.DivertTargetKnot) + "\n";
+        result += TEString("Node: ") + TEString(std::to_string(n.ID).c_str()) + "|" + EscapePipes(n.Title) + "|" +
+                  TEString::FromInt(static_cast<int>(n.Type)) + "|" + TEString::FromFloat(n.Position.x) + " " +
+                  TEString::FromFloat(n.Position.y) + "|" + EscapePipes(n.Speaker) + "|" + EscapePipes(n.Text) + "|" +
+                  EscapePipes(n.LocalizedKey) + "|" + EscapePipes(n.PortraitTag) + "|" + EscapePipes(n.ConditionVar) +
+                  "|" + TEString::FromInt(static_cast<int>(n.ConditionOp)) + "|" +
+                  EscapePipes(n.ConditionValue.AsString()) + "|" + EscapePipes(n.ActionVar) + "|" +
+                  TEString::FromInt(static_cast<int>(n.ActionOp)) + "|" + EscapePipes(n.ActionValue.AsString()) + "|" +
+                  EscapePipes(n.CustomFunction) + "|" + EscapePipes(n.CustomArgs) + "|" + EscapePipes(n.QuestID) + "|" +
+                  TEString::FromInt(static_cast<int>(n.TargetQuestStatus)) + "|" + EscapePipes(n.ObjectiveID) + "|" +
+                  EscapePipes(n.DivertTargetKnot) + "\n";
 
         for (size_t c = 0; c < n.Choices.Size(); ++c)
         {
             const auto &ch = n.Choices[c];
-            result += TEString("Choice: ") + TEString(std::to_string(n.ID).c_str()) + "|" + TEString::FromInt(ch.Index) + "|" + EscapePipes(ch.Text) + "|" + EscapePipes(ch.ConditionExpression) + "\n";
+            result += TEString("Choice: ") + TEString(std::to_string(n.ID).c_str()) + "|" +
+                      TEString::FromInt(ch.Index) + "|" + EscapePipes(ch.Text) + "|" +
+                      EscapePipes(ch.ConditionExpression) + "\n";
         }
 
         for (size_t p = 0; p < n.InputPins.Size(); ++p)
         {
             const auto &pin = n.InputPins[p];
-            result += TEString("Pin: ") + TEString(std::to_string(n.ID).c_str()) + "|" + TEString(std::to_string(pin.ID).c_str()) + "|" + EscapePipes(pin.Name) + "|" + TEString(std::to_string(static_cast<int>(pin.Type.GetKind())).c_str()) + "|0\n";
+            result += TEString("Pin: ") + TEString(std::to_string(n.ID).c_str()) + "|" +
+                      TEString(std::to_string(pin.ID).c_str()) + "|" + EscapePipes(pin.Name) + "|" +
+                      TEString(std::to_string(static_cast<int>(pin.Type.GetKind())).c_str()) + "|0\n";
         }
 
         for (size_t p = 0; p < n.OutputPins.Size(); ++p)
         {
             const auto &pin = n.OutputPins[p];
-            result += TEString("Pin: ") + TEString(std::to_string(n.ID).c_str()) + "|" + TEString(std::to_string(pin.ID).c_str()) + "|" + EscapePipes(pin.Name) + "|" + TEString(std::to_string(static_cast<int>(pin.Type.GetKind())).c_str()) + "|1\n";
+            result += TEString("Pin: ") + TEString(std::to_string(n.ID).c_str()) + "|" +
+                      TEString(std::to_string(pin.ID).c_str()) + "|" + EscapePipes(pin.Name) + "|" +
+                      TEString(std::to_string(static_cast<int>(pin.Type.GetKind())).c_str()) + "|1\n";
         }
     }
 
@@ -135,7 +128,11 @@ TEString DialogueTreeSerializer::SerializeToNativeText(const DialogueGraph &grap
     for (size_t i = 0; i < conns.Size(); ++i)
     {
         const auto &c = conns[i];
-        result += TEString("Connection: ") + TEString(std::to_string(c.ID).c_str()) + "|" + TEString(std::to_string(c.SourceNodeID).c_str()) + "|" + TEString(std::to_string(c.SourcePinID).c_str()) + "|" + TEString(std::to_string(c.TargetNodeID).c_str()) + "|" + TEString(std::to_string(c.TargetPinID).c_str()) + "\n";
+        result += TEString("Connection: ") + TEString(std::to_string(c.ID).c_str()) + "|" +
+                  TEString(std::to_string(c.SourceNodeID).c_str()) + "|" +
+                  TEString(std::to_string(c.SourcePinID).c_str()) + "|" +
+                  TEString(std::to_string(c.TargetNodeID).c_str()) + "|" +
+                  TEString(std::to_string(c.TargetPinID).c_str()) + "\n";
     }
 
     return result;
@@ -294,4 +291,3 @@ bool DialogueTreeSerializer::LoadFromFile(DialogueGraph &graph, const TEString &
 
     return DeserializeFromNativeText(graph, content);
 }
-

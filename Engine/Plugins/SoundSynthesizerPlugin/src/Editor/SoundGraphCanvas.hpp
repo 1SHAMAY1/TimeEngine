@@ -4,7 +4,8 @@
 #include "Utils/TimeGUI.hpp"
 #include <memory>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGraphCanvas
 {

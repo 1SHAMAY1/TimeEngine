@@ -1,6 +1,5 @@
 #pragma once
 
-
 class ParticleShaders
 {
 public:
@@ -58,4 +57,3 @@ void main()
 )";
     }
 };
-

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/Graph.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/Graph/NodeCanvasStyle.hpp"
 #include "Editor/Graph/NodePalettePopup.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 #include <functional>
-
 
 using NodeBodyDrawerFn = std::function<void(const TERef<GraphNode> &node)>;
 

@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <sstream>
 
-
 bool InkBytecodeRunner::LoadFromJson(const TEString &inkJson)
 {
     Reset();
@@ -57,10 +56,7 @@ bool InkBytecodeRunner::LoadFromJson(const TEString &inkJson)
     return true;
 }
 
-bool InkBytecodeRunner::CanContinue() const
-{
-    return m_bCanContinue && m_InstructionPointer < m_Lines.size();
-}
+bool InkBytecodeRunner::CanContinue() const { return m_bCanContinue && m_InstructionPointer < m_Lines.size(); }
 
 TEString InkBytecodeRunner::Continue(NarrativeBlackboard *blackboard)
 {
@@ -131,4 +127,3 @@ void InkBytecodeRunner::Reset()
     m_KnotAddresses.Clear();
     m_VisitCounts.Clear();
 }
-

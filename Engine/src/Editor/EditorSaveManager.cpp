@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorSaveManager.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include <algorithm>
-
 
 static TEMap<TEString, TERef<ISavable>> &GetSavablesMap()
 {
@@ -73,15 +72,9 @@ TEArray<TERef<ISavable>> EditorSaveManager::GetDirtySavables()
     return list;
 }
 
-void EditorSaveManager::SetActiveSavable(TERef<ISavable> target)
-{
-    s_ActiveSavable = target;
-}
+void EditorSaveManager::SetActiveSavable(TERef<ISavable> target) { s_ActiveSavable = target; }
 
-TERef<ISavable> EditorSaveManager::GetActiveSavable()
-{
-    return s_ActiveSavable.lock();
-}
+TERef<ISavable> EditorSaveManager::GetActiveSavable() { return s_ActiveSavable.lock(); }
 
 bool EditorSaveManager::HasUnsavedChanges()
 {
@@ -144,7 +137,8 @@ bool EditorSaveManager::SaveAll()
 
     if (savedCount > 0)
     {
-        TE_CORE_INFO("EditorSaveManager: SaveAll completed. Total saved: " + TEString::FromInt64(static_cast<int64_t>(savedCount)));
+        TE_CORE_INFO("EditorSaveManager: SaveAll completed. Total saved: " +
+                     TEString::FromInt64(static_cast<int64_t>(savedCount)));
     }
     return allSuccess;
 }
@@ -182,24 +176,14 @@ void EditorSaveManager::OnUpdate(float dt)
     }
 }
 
-void EditorSaveManager::SetAutoSaveEnabled(bool enabled)
-{
-    s_AutoSaveEnabled = enabled;
-}
+void EditorSaveManager::SetAutoSaveEnabled(bool enabled) { s_AutoSaveEnabled = enabled; }
 
-void EditorSaveManager::SetAutoSaveInterval(float seconds)
-{
-    s_AutoSaveInterval = seconds;
-}
+void EditorSaveManager::SetAutoSaveInterval(float seconds) { s_AutoSaveInterval = seconds; }
 
-bool EditorSaveManager::IsAutoSaveEnabled()
-{
-    return s_AutoSaveEnabled;
-}
+bool EditorSaveManager::IsAutoSaveEnabled() { return s_AutoSaveEnabled; }
 
 void EditorSaveManager::Clear()
 {
     GetSavablesMap().clear();
     s_ActiveSavable.reset();
 }
-

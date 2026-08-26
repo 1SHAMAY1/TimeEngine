@@ -1,7 +1,6 @@
-﻿#pragma once
+#pragma once
 
 #include "Layers/Layer.hpp"
-
 
 class TE_API TimeGUILayer : public Layer
 {
@@ -14,9 +13,8 @@ public:
     virtual void OnTimeGUIRender() override;
 
     void Begin();
-    void End();
+    void *End();
 
 private:
     bool m_Initialized = false;
 };
-

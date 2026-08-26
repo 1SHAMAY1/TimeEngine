@@ -2,12 +2,10 @@
 #include "../Graph/Nodes/DSPNodes.hpp"
 #include "Core/Log.h"
 
-namespace SoundStudio {
-
-SoundGraphAsset::SoundGraphAsset()
+namespace SoundStudio
 {
-    m_Graph = CreateRef<SoundGraph>();
-}
+
+SoundGraphAsset::SoundGraphAsset() { m_Graph = CreateRef<SoundGraph>(); }
 
 TERef<Asset> SoundGraphAsset::Clone() const
 {
@@ -74,9 +72,6 @@ bool SoundGraphAsset::SaveToFile(const TEString &path)
     return true;
 }
 
-void SoundGraphAsset::OnContentBrowserCreate(const TEString &path)
-{
-    LoadFromFile(path);
-}
+void SoundGraphAsset::OnContentBrowserCreate(const TEString &path) { LoadFromFile(path); }
 
 } // namespace SoundStudio

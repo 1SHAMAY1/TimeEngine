@@ -10,7 +10,6 @@ struct ID3D11VertexShader;
 struct ID3D11PixelShader;
 struct ID3D11Buffer;
 
-
 // Per-draw constant buffer layout that mirrors GLSL uniforms.
 // All members must be aligned to 16 bytes as required by D3D11 constant buffers.
 struct DX11ConstantBufferData
@@ -50,4 +49,3 @@ private:
     mutable uint32_t m_NextOffset = 0;
     mutable bool m_Dirty = false;
 };
-

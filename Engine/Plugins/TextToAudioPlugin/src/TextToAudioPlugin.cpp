@@ -34,14 +34,9 @@ void TextToAudioPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min,
     dl.AddLine(TEVector2(min.x + 9.0f, min.y + 25.0f), TEVector2(min.x + 15.0f, min.y + 25.0f), 0xFFFFFFFF, 1.2f);
 
     // Acoustic speaker cone
-    TEVector2 spPts[6] = {
-        TEVector2(min.x + 23.0f, c.y - 4.0f),
-        TEVector2(min.x + 26.0f, c.y - 4.0f),
-        TEVector2(min.x + 31.0f, c.y - 8.0f),
-        TEVector2(min.x + 31.0f, c.y + 8.0f),
-        TEVector2(min.x + 26.0f, c.y + 4.0f),
-        TEVector2(min.x + 23.0f, c.y + 4.0f)
-    };
+    TEVector2 spPts[6] = {TEVector2(min.x + 23.0f, c.y - 4.0f), TEVector2(min.x + 26.0f, c.y - 4.0f),
+                          TEVector2(min.x + 31.0f, c.y - 8.0f), TEVector2(min.x + 31.0f, c.y + 8.0f),
+                          TEVector2(min.x + 26.0f, c.y + 4.0f), TEVector2(min.x + 23.0f, c.y + 4.0f)};
     dl.AddConvexPolyFilled(spPts, 6, 0xFF2ED573);
 
     // Soundwave ripples

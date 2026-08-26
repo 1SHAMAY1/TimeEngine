@@ -3,7 +3,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Layers/Layer.hpp"
 
-
 class EditorLayer;
 
 class TE_API IEditorPanel : public Layer
@@ -42,4 +41,3 @@ template <typename T> struct EditorPanelRegisterer
 };
 
 #define TE_REGISTER_EDITOR_PANEL(Type) inline EditorPanelRegisterer<Type> Type##_EditorPanelReg;
-

@@ -4,7 +4,6 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 class ProceduralSpriteComponent : public TComponent
 {
 public:
@@ -23,4 +22,3 @@ T_REGISTER_PROPERTY(ProceduralSpriteComponent, bool, bIsVisible, "Visible")
 T_REGISTER_PRESET(ProceduralSpriteComponent, "Procedural Sprite", "2D Rendering",
                   [](EntityID id, EntityManager *em) { em->AddComponent<ProceduralSpriteComponent>(id); })
 #endif
-

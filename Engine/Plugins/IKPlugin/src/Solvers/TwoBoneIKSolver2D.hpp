@@ -1,18 +1,18 @@
 #pragma once
 
-#include <cmath>
-#include <algorithm>
-#include "Utils/MathUtils.hpp"
 #include "IIKSolver.hpp"
+#include "Utils/MathUtils.hpp"
+#include <algorithm>
+#include <cmath>
 
-namespace IK {
+namespace IK
+{
 
 class TwoBoneIKSolver2D
 {
 public:
-    static bool Solve(const TEVector2& rootPos, float lengthA, float lengthB,
-                      const TEVector2& targetPos, bool bendPositive,
-                      TEVector2& outMidPos, float& outAngleA, float& outAngleB)
+    static bool Solve(const TEVector2 &rootPos, float lengthA, float lengthB, const TEVector2 &targetPos,
+                      bool bendPositive, TEVector2 &outMidPos, float &outAngleA, float &outAngleB)
     {
         TEVector2 toTarget = targetPos - rootPos;
         float dist = toTarget.Length();
@@ -26,11 +26,13 @@ public:
         float clampedDist = std::clamp(dist, minDist + 0.0001f, maxDist - 0.0001f);
 
         // Law of Cosines: c^2 = a^2 + b^2 - 2ab * cos(gamma)
-        float cosAngleA = (lengthA * lengthA + clampedDist * clampedDist - lengthB * lengthB) / (2.0f * lengthA * clampedDist);
+        float cosAngleA =
+            (lengthA * lengthA + clampedDist * clampedDist - lengthB * lengthB) / (2.0f * lengthA * clampedDist);
         cosAngleA = std::clamp(cosAngleA, -1.0f, 1.0f);
         float angleOffsetA = std::acos(cosAngleA);
 
-        float cosAngleB = (lengthA * lengthA + lengthB * lengthB - clampedDist * clampedDist) / (2.0f * lengthA * lengthB);
+        float cosAngleB =
+            (lengthA * lengthA + lengthB * lengthB - clampedDist * clampedDist) / (2.0f * lengthA * lengthB);
         cosAngleB = std::clamp(cosAngleB, -1.0f, 1.0f);
         float angleB = std::acos(cosAngleB);
 

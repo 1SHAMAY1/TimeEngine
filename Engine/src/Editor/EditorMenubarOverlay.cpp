@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorMenubarOverlay.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/EditorLayoutManager.hpp"
@@ -10,7 +10,6 @@
 #include "Editor/EditorUtils.hpp"
 #include "Editor/Panels/IEditorPanel.hpp"
 #include "Layers/EditorLayer.hpp"
-
 
 static TEArray<TERef<IEditorMenubarOverlay>> s_MenubarOverlays;
 
@@ -22,15 +21,9 @@ void EditorMenubarOverlayRegistry::RegisterOverlay(TERef<IEditorMenubarOverlay> 
     }
 }
 
-TEArray<TERef<IEditorMenubarOverlay>> EditorMenubarOverlayRegistry::GetOverlays()
-{
-    return s_MenubarOverlays;
-}
+TEArray<TERef<IEditorMenubarOverlay>> EditorMenubarOverlayRegistry::GetOverlays() { return s_MenubarOverlays; }
 
-void EditorMenubarOverlayRegistry::Clear()
-{
-    s_MenubarOverlays.Clear();
-}
+void EditorMenubarOverlayRegistry::Clear() { s_MenubarOverlays.Clear(); }
 
 // ── FileMenubarOverlay ───────────────────────────────────────────────────────
 
@@ -45,21 +38,24 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     newItem.label = "New Scene";
     newItem.shortcut = "Ctrl+N";
     newItem.priority = 0;
-    newItem.onClick = [editor]() {
-        auto createScenePrompt = [editor]() {
+    newItem.onClick = [editor]()
+    {
+        auto createScenePrompt = [editor]()
+        {
             EditorUtils::OpenFileBrowser("Create New Scene", "Create", "NewScene", ".tescene", true,
-                [editor](const TEString &chosenPath) {
-                    auto newScene = CreateRef<Scene>();
-                    newScene->SetName(chosenPath.GetStem());
-                    newScene->SetAssetPath(chosenPath);
-                    newScene->CreateEntity("Main Camera");
-                    SceneSerializer serializer(newScene);
-                    serializer.Serialize(chosenPath);
-                    editor->SetActiveScene(newScene);
-                    editor->ClearSelection();
-                    EditorSaveManager::RegisterSavable(newScene);
-                    TE_CORE_INFO("Created and Loaded New Scene: {0}", chosenPath);
-                });
+                                         [editor](const TEString &chosenPath)
+                                         {
+                                             auto newScene = CreateRef<Scene>();
+                                             newScene->SetName(chosenPath.GetStem());
+                                             newScene->SetAssetPath(chosenPath);
+                                             newScene->CreateEntity("Main Camera");
+                                             SceneSerializer serializer(newScene);
+                                             serializer.Serialize(chosenPath);
+                                             editor->SetActiveScene(newScene);
+                                             editor->ClearSelection();
+                                             EditorSaveManager::RegisterSavable(newScene);
+                                             TE_CORE_INFO("Created and Loaded New Scene: {0}", chosenPath);
+                                         });
         };
 
         auto activeScene = editor->GetActiveScene();
@@ -80,9 +76,7 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     saveAllItem.label = "Save All";
     saveAllItem.shortcut = "Ctrl+S";
     saveAllItem.priority = 1;
-    saveAllItem.onClick = [editor]() {
-        SaveAllToolbarOverlay::OpenSaveModal();
-    };
+    saveAllItem.onClick = [editor]() { SaveAllToolbarOverlay::OpenSaveModal(); };
     editor->RegisterMenubarItem(saveAllItem);
 
     EditorMenubarItem saveAsItem;
@@ -91,19 +85,21 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     saveAsItem.label = "Save Scene As...";
     saveAsItem.shortcut = "Ctrl+Shift+S";
     saveAsItem.priority = 2;
-    saveAsItem.onClick = [editor]() {
+    saveAsItem.onClick = [editor]()
+    {
         auto scene = editor->GetActiveScene();
         if (scene)
         {
             EditorUtils::OpenFileBrowser("Save Scene As", "Save", scene->GetName(), ".tescene", true,
-                [scene](const TEString &chosenPath) {
-                    scene->SetAssetPath(chosenPath);
-                    scene->SetName(chosenPath.GetStem());
-                    SceneSerializer serializer(scene);
-                    serializer.Serialize(chosenPath);
-                    scene->MarkDirty(false);
-                    TE_CORE_INFO("Scene saved to: {0}", chosenPath);
-                });
+                                         [scene](const TEString &chosenPath)
+                                         {
+                                             scene->SetAssetPath(chosenPath);
+                                             scene->SetName(chosenPath.GetStem());
+                                             SceneSerializer serializer(scene);
+                                             serializer.Serialize(chosenPath);
+                                             scene->MarkDirty(false);
+                                             TE_CORE_INFO("Scene saved to: {0}", chosenPath);
+                                         });
         }
     };
     editor->RegisterMenubarItem(saveAsItem);
@@ -113,7 +109,8 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     exitItem.category = "File";
     exitItem.label = "Exit";
     exitItem.priority = 10;
-    exitItem.onClick = []() {
+    exitItem.onClick = []()
+    {
         if (EditorSaveManager::HasUnsavedChanges())
         {
             SaveAllToolbarOverlay::OpenSaveModal(true);
@@ -139,9 +136,7 @@ void EditMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     delItem.label = "Delete Selection";
     delItem.shortcut = "Del";
     delItem.priority = 0;
-    delItem.onClick = [editor]() {
-        editor->TriggerDeleteSelectedEntities();
-    };
+    delItem.onClick = [editor]() { editor->TriggerDeleteSelectedEntities(); };
     editor->RegisterMenubarItem(delItem);
 
     EditorMenubarItem editorSettingsItem;
@@ -149,11 +144,13 @@ void EditMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     editorSettingsItem.category = "Edit";
     editorSettingsItem.label = "Editor Settings...";
     editorSettingsItem.priority = 50;
-    editorSettingsItem.isChecked = [editor]() -> bool {
+    editorSettingsItem.isChecked = [editor]() -> bool
+    {
         auto panel = editor->GetPanelByID("EditorSettings");
         return panel && panel->IsVisible();
     };
-    editorSettingsItem.onClick = [editor]() {
+    editorSettingsItem.onClick = [editor]()
+    {
         auto panel = editor->GetPanelByID("EditorSettings");
         if (panel)
             panel->SetVisible(!panel->IsVisible());
@@ -165,11 +162,13 @@ void EditMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     projSettingsItem.category = "Edit";
     projSettingsItem.label = "Project Settings...";
     projSettingsItem.priority = 51;
-    projSettingsItem.isChecked = [editor]() -> bool {
+    projSettingsItem.isChecked = [editor]() -> bool
+    {
         auto panel = editor->GetPanelByID("ProjectSettings");
         return panel && panel->IsVisible();
     };
-    projSettingsItem.onClick = [editor]() {
+    projSettingsItem.onClick = [editor]()
+    {
         auto panel = editor->GetPanelByID("ProjectSettings");
         if (panel)
             panel->SetVisible(!panel->IsVisible());
@@ -181,11 +180,13 @@ void EditMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     pluginsItem.category = "Edit";
     pluginsItem.label = "Plugins...";
     pluginsItem.priority = 52;
-    pluginsItem.isChecked = [editor]() -> bool {
+    pluginsItem.isChecked = [editor]() -> bool
+    {
         auto panel = editor->GetPanelByID("Plugins");
         return panel && panel->IsVisible();
     };
-    pluginsItem.onClick = [editor]() {
+    pluginsItem.onClick = [editor]()
+    {
         auto panel = editor->GetPanelByID("Plugins");
         if (panel)
             panel->SetVisible(!panel->IsVisible());
@@ -198,13 +199,10 @@ void EditMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     resetLayoutItem.category = "Edit";
     resetLayoutItem.label = "Reset Layout to Default";
     resetLayoutItem.priority = 60;
-    resetLayoutItem.onClick = [editor]() {
-        EditorLayoutManager::Get().ResetToDefaultLayout(editor);
-    };
+    resetLayoutItem.onClick = [editor]() { EditorLayoutManager::Get().ResetToDefaultLayout(editor); };
     editor->RegisterMenubarItem(resetLayoutItem);
 }
 
 // Auto-register menubar overlays
 TE_REGISTER_MENUBAR_OVERLAY(FileMenubarOverlay);
 TE_REGISTER_MENUBAR_OVERLAY(EditMenubarOverlay);
-

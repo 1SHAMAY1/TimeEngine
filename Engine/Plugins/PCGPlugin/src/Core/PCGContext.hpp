@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/PCGPointData.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include <atomic>
 #include <glm/glm.hpp>
@@ -30,10 +30,7 @@ struct PCGExecutionContext
     {
     }
 
-    void SetPinData(uint64_t pinId, PCGPointDataRef data)
-    {
-        PinDataCache[pinId] = data;
-    }
+    void SetPinData(uint64_t pinId, PCGPointDataRef data) { PinDataCache[pinId] = data; }
 
     PCGPointDataRef GetPinData(uint64_t pinId) const
     {
@@ -43,10 +40,7 @@ struct PCGExecutionContext
         return nullptr;
     }
 
-    void ClearCache()
-    {
-        PinDataCache.Clear();
-    }
+    void ClearCache() { PinDataCache.Clear(); }
 
     float RandomFloat(float minVal = 0.0f, float maxVal = 1.0f)
     {

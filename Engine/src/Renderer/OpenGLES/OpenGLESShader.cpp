@@ -1,10 +1,9 @@
-#include "Core/PreRequisites.h"
-#include "Core/Log.h"
 #include "Renderer/OpenGLES/OpenGLESShader.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-
 
 static uint32_t CompileGLESShader(uint32_t type, const TEString &source)
 {
@@ -81,10 +80,6 @@ void OpenGLESShader::SetUniform2f(const TEString &name, const glm::vec2 &value)
     glUniform2f(GetUniformLocation(name), value.x, value.y);
 }
 
-void OpenGLESShader::SetUniform1f(const TEString &name, float value)
-{
-    glUniform1f(GetUniformLocation(name), value);
-}
+void OpenGLESShader::SetUniform1f(const TEString &name, float value) { glUniform1f(GetUniformLocation(name), value); }
 
 void OpenGLESShader::SetUniform1i(const TEString &name, int value) { glUniform1i(GetUniformLocation(name), value); }
-

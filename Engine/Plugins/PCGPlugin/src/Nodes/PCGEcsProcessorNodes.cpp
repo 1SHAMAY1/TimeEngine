@@ -31,10 +31,8 @@ bool PCGVoronoiPartitionNode::Execute(PCGExecutionContext &ctx)
     TEArray<glm::vec2> sites;
     for (int s = 0; s < siteCount; ++s)
     {
-        sites.emplace_back(
-            ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
-            ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y)
-        );
+        sites.emplace_back(ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
+                           ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y));
     }
 
     auto outData = CreateRef<PCGPointData>();

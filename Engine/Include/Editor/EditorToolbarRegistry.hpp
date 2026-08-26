@@ -4,7 +4,6 @@
 #include "Renderer/Texture.hpp"
 #include <functional>
 
-
 enum class EditorToolbarAlignment
 {
     Left,
@@ -42,4 +41,3 @@ public:
     static TEArray<EditorToolbarItem> GetItems(EditorToolbarAlignment alignment);
     static void Clear();
 };
-

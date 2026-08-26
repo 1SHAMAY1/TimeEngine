@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLShaderLibrary.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #include "Renderer/OpenGL/OpenGLShader.hpp"
 #include "Renderer/RendererContext.hpp"
@@ -7,48 +7,43 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-
 // ===== OpenGL-Specific Shader Creation =====
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLBasicShader()
 {
-    return CreateRef<OpenGLShader>(ShaderLibrary::GetBasicVertexShader(),
-                                  ShaderLibrary::GetBasicFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetBasicVertexShader(), ShaderLibrary::GetBasicFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLTextureShader()
 {
-    return CreateRef<OpenGLShader>(ShaderLibrary::GetTextureVertexShader(),
-                                  ShaderLibrary::GetTextureFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetTextureVertexShader(), ShaderLibrary::GetTextureFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLColorShader()
 {
-    return CreateRef<OpenGLShader>(ShaderLibrary::GetColorVertexShader(),
-                                  ShaderLibrary::GetColorFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetColorVertexShader(), ShaderLibrary::GetColorFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLStandardShader()
 {
-    return CreateRef<OpenGLShader>(ShaderLibrary::GetColorVertexShader(),
-                                  ShaderLibrary::GetStandardFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetColorVertexShader(), ShaderLibrary::GetStandardFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLightingShader()
 {
     return CreateRef<OpenGLShader>(ShaderLibrary::GetLightingVertexShader(),
-                                  ShaderLibrary::GetLightingFragmentShader());
+                                   ShaderLibrary::GetLightingFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLParticleShader()
 {
     return CreateRef<OpenGLShader>(ShaderLibrary::GetParticleVertexShader(),
-                                  ShaderLibrary::GetParticleFragmentShader());
+                                   ShaderLibrary::GetParticleFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLPostProcessShader()
 {
     return CreateRef<OpenGLShader>(ShaderLibrary::GetPostProcessVertexShader(),
-                                  ShaderLibrary::GetPostProcessFragmentShader());
+                                   ShaderLibrary::GetPostProcessFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLUIShader()
@@ -58,8 +53,7 @@ TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLUIShader()
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLLight2DShader()
 {
-    return CreateRef<OpenGLShader>(ShaderLibrary::GetLight2DVertexShader(),
-                                  ShaderLibrary::GetLight2DFragmentShader());
+    return CreateRef<OpenGLShader>(ShaderLibrary::GetLight2DVertexShader(), ShaderLibrary::GetLight2DFragmentShader());
 }
 
 TERef<OpenGLShader> OpenGLShaderLibrary::CreateOpenGLComputeShader(const TEString &computeSource)
@@ -305,8 +299,7 @@ void OpenGLShaderLibrary::UpdateUniformBuffer(unsigned int uboID, const void *da
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
 }
 
-void OpenGLShaderLibrary::BindUniformBlock(OpenGLShader *shader, const TEString &blockName,
-                                           unsigned int bindingPoint)
+void OpenGLShaderLibrary::BindUniformBlock(OpenGLShader *shader, const TEString &blockName, unsigned int bindingPoint)
 {
     unsigned int blockIndex = glGetUniformBlockIndex(shader->GetRendererID(), blockName.c_str());
     if (blockIndex != GL_INVALID_INDEX)
@@ -467,4 +460,3 @@ void GLAPIENTRY OpenGLShaderLibrary::DebugCallback(GLenum source, GLenum type, u
     std::cout << "OpenGL Debug [" << sourceStr << "][" << typeStr << "][" << severityStr << "] " << id << ": "
               << message << std::endl;
 }
-

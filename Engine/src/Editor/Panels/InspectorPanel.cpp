@@ -1,20 +1,20 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/InspectorPanel.hpp"
+#include "Core/Asset/AssetManager.hpp"
+#include "Core/PreRequisites.h"
+#include "Core/Project/Project.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
+#include "Core/Scripting/TScriptAsset.hpp"
 #include "Editor/EditorSaveManager.hpp"
 #include "Editor/EditorUtils.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "UI/Widgets/UISearchBar.hpp"
-#include "Utils/TimeGUI.hpp"
-#include "Core/Asset/AssetManager.hpp"
-#include "Core/Project/Project.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include "Core/Scripting/TScriptAsset.hpp"
+#include "Utils/TimeGUI.hpp"
 
 static void DrawTScriptSlots(TComponent *comp, Ref<Scene> activeScene)
 {
@@ -33,7 +33,8 @@ static void DrawTScriptSlots(TComponent *comp, Ref<Scene> activeScene)
     {
         auto &slot = scripts[i];
         auto asset = AssetManager::GetAsset<TScriptAsset>(slot.ScriptHandle);
-        TEString scriptName = asset ? asset->GetName() : ("Script #" + TEString::FromInt64(static_cast<int64_t>(slot.ScriptHandle)));
+        TEString scriptName =
+            asset ? asset->GetName() : ("Script #" + TEString::FromInt64(static_cast<int64_t>(slot.ScriptHandle)));
 
         TimeGUI::PushID(i);
         if (TimeGUI::Checkbox("##Enabled", &slot.Enabled))
@@ -119,8 +120,7 @@ static void DrawTScriptSlots(TComponent *comp, Ref<Scene> activeScene)
     TimeGUI::PopID();
 }
 
-InspectorPanel::InspectorPanel()
-    : IEditorPanel("Inspector")
+InspectorPanel::InspectorPanel() : IEditorPanel("Inspector")
 {
     m_SearchBar = CreateRef<UISearchBar>("Search properties...", "##InspectorSearchBar");
 }
@@ -205,8 +205,8 @@ void InspectorPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
                     if (prop.DrawFunc)
                     {
-                        prop.DrawFunc(comp, prop.DisplayName);
-                        if (TimeGUI::IsItemDeactivatedAfterEdit() || TimeGUI::IsItemActive())
+                        bool edited = prop.DrawFunc(comp, prop.DisplayName);
+                        if (edited || TimeGUI::IsItemDeactivatedAfterEdit() || TimeGUI::IsItemActive())
                         {
                             activeScene->MarkDirty(true);
                         }
@@ -254,4 +254,3 @@ void InspectorPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 }
 
 TE_REGISTER_EDITOR_PANEL(InspectorPanel);
-

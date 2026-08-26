@@ -3,11 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-
-SpriteScriptRuntime::SpriteScriptRuntime()
-{
-    RegisterBuiltins();
-}
+SpriteScriptRuntime::SpriteScriptRuntime() { RegisterBuiltins(); }
 
 bool SpriteScriptRuntime::Compile(const TEString &sourceCode)
 {
@@ -184,741 +180,831 @@ void SpriteScriptRuntime::RegisterBuiltins()
     // ==========================================
     // 1. Math & Utility Functions
     // ==========================================
-    RegisterFunction("sin", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 1) ? TScriptValue::Number(std::sin(a[0].AsNumber())) : TScriptValue::Number(0.0);
-    });
+    RegisterFunction(
+        "sin", [](const TEArray<TScriptValue> &a) -> TScriptValue
+        { return (a.size() >= 1) ? TScriptValue::Number(std::sin(a[0].AsNumber())) : TScriptValue::Number(0.0); });
 
-    RegisterFunction("cos", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 1) ? TScriptValue::Number(std::cos(a[0].AsNumber())) : TScriptValue::Number(0.0);
-    });
+    RegisterFunction(
+        "cos", [](const TEArray<TScriptValue> &a) -> TScriptValue
+        { return (a.size() >= 1) ? TScriptValue::Number(std::cos(a[0].AsNumber())) : TScriptValue::Number(0.0); });
 
-    RegisterFunction("tan", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 1) ? TScriptValue::Number(std::tan(a[0].AsNumber())) : TScriptValue::Number(0.0);
-    });
+    RegisterFunction(
+        "tan", [](const TEArray<TScriptValue> &a) -> TScriptValue
+        { return (a.size() >= 1) ? TScriptValue::Number(std::tan(a[0].AsNumber())) : TScriptValue::Number(0.0); });
 
-    RegisterFunction("atan2", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 2) ? TScriptValue::Number(std::atan2(a[0].AsNumber(), a[1].AsNumber()))
-                               : TScriptValue::Number(0.0);
-    });
+    RegisterFunction("atan2",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         return (a.size() >= 2) ? TScriptValue::Number(std::atan2(a[0].AsNumber(), a[1].AsNumber()))
+                                                : TScriptValue::Number(0.0);
+                     });
 
-    RegisterFunction("sqrt", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 1) ? TScriptValue::Number(std::sqrt(std::max(0.0, a[0].AsNumber())))
-                               : TScriptValue::Number(0.0);
-    });
+    RegisterFunction("sqrt",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         return (a.size() >= 1) ? TScriptValue::Number(std::sqrt(std::max(0.0, a[0].AsNumber())))
+                                                : TScriptValue::Number(0.0);
+                     });
 
-    RegisterFunction("abs", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 1) ? TScriptValue::Number(std::abs(a[0].AsNumber())) : TScriptValue::Number(0.0);
-    });
+    RegisterFunction(
+        "abs", [](const TEArray<TScriptValue> &a) -> TScriptValue
+        { return (a.size() >= 1) ? TScriptValue::Number(std::abs(a[0].AsNumber())) : TScriptValue::Number(0.0); });
 
-    RegisterFunction("min", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 2) ? TScriptValue::Number(std::min(a[0].AsNumber(), a[1].AsNumber()))
-                               : TScriptValue::Number(0.0);
-    });
+    RegisterFunction("min",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         return (a.size() >= 2) ? TScriptValue::Number(std::min(a[0].AsNumber(), a[1].AsNumber()))
+                                                : TScriptValue::Number(0.0);
+                     });
 
-    RegisterFunction("max", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return (a.size() >= 2) ? TScriptValue::Number(std::max(a[0].AsNumber(), a[1].AsNumber()))
-                               : TScriptValue::Number(0.0);
-    });
+    RegisterFunction("max",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         return (a.size() >= 2) ? TScriptValue::Number(std::max(a[0].AsNumber(), a[1].AsNumber()))
+                                                : TScriptValue::Number(0.0);
+                     });
 
-    RegisterFunction("clamp", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 3)
-            return TScriptValue::Number(0.0);
-        return TScriptValue::Number(std::clamp(a[0].AsNumber(), a[1].AsNumber(), a[2].AsNumber()));
-    });
+    RegisterFunction("clamp",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::Number(0.0);
+                         return TScriptValue::Number(std::clamp(a[0].AsNumber(), a[1].AsNumber(), a[2].AsNumber()));
+                     });
 
-    RegisterFunction("lerp", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 3)
-            return TScriptValue::Number(0.0);
-        double start = a[0].AsNumber();
-        double end = a[1].AsNumber();
-        double t = std::clamp(a[2].AsNumber(), 0.0, 1.0);
-        return TScriptValue::Number(start + (end - start) * t);
-    });
+    RegisterFunction("lerp",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::Number(0.0);
+                         double start = a[0].AsNumber();
+                         double end = a[1].AsNumber();
+                         double t = std::clamp(a[2].AsNumber(), 0.0, 1.0);
+                         return TScriptValue::Number(start + (end - start) * t);
+                     });
 
-    RegisterFunction("random", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        double mn = (a.size() > 0) ? a[0].AsNumber() : 0.0;
-        double mx = (a.size() > 1) ? a[1].AsNumber() : 1.0;
-        double r = (double)rand() / (double)RAND_MAX;
-        return TScriptValue::Number(mn + (mx - mn) * r);
-    });
+    RegisterFunction("random",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         double mn = (a.size() > 0) ? a[0].AsNumber() : 0.0;
+                         double mx = (a.size() > 1) ? a[1].AsNumber() : 1.0;
+                         double r = (double)rand() / (double)RAND_MAX;
+                         return TScriptValue::Number(mn + (mx - mn) * r);
+                     });
 
-    RegisterFunction("noise", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.empty())
-            return TScriptValue::Number(0.0);
-        float x = (float)a[0].AsNumber();
-        auto hash = [](int n) {
-            n = (n << 13) ^ n;
-            return (1.0f - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0f);
-        };
-        int i = (int)std::floor(x);
-        float f = x - (float)i;
-        return TScriptValue::Number(hash(i) * (1.0f - f) + hash(i + 1) * f);
-    });
+    RegisterFunction("noise",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.empty())
+                             return TScriptValue::Number(0.0);
+                         float x = (float)a[0].AsNumber();
+                         auto hash = [](int n)
+                         {
+                             n = (n << 13) ^ n;
+                             return (1.0f - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0f);
+                         };
+                         int i = (int)std::floor(x);
+                         float f = x - (float)i;
+                         return TScriptValue::Number(hash(i) * (1.0f - f) + hash(i + 1) * f);
+                     });
 
     // ==========================================
     // 2. Animation & Timeline Functions
     // ==========================================
-    RegisterFunction("time", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.Time);
-    });
+    RegisterFunction("time", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.Time); });
 
-    RegisterFunction("dt", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.DeltaTime);
-    });
+    RegisterFunction("dt", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.DeltaTime); });
 
-    RegisterFunction("frame", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.FrameIndex);
-    });
+    RegisterFunction("frame", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.FrameIndex); });
 
-    RegisterFunction("total_frames", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.TotalFrames);
-    });
+    RegisterFunction("total_frames", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.TotalFrames); });
 
-    RegisterFunction("frame_progress", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.FrameProgress);
-    });
+    RegisterFunction("frame_progress", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.FrameProgress); });
 
-    RegisterFunction("animate_wave", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        double speed = (a.size() > 0) ? a[0].AsNumber() : 1.0;
-        double mn = (a.size() > 1) ? a[1].AsNumber() : 0.0;
-        double mx = (a.size() > 2) ? a[2].AsNumber() : 1.0;
-        double s = std::sin(m_Context.Time * speed) * 0.5 + 0.5;
-        return TScriptValue::Number(mn + (mx - mn) * s);
-    });
+    RegisterFunction("animate_wave",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         double speed = (a.size() > 0) ? a[0].AsNumber() : 1.0;
+                         double mn = (a.size() > 1) ? a[1].AsNumber() : 0.0;
+                         double mx = (a.size() > 2) ? a[2].AsNumber() : 1.0;
+                         double s = std::sin(m_Context.Time * speed) * 0.5 + 0.5;
+                         return TScriptValue::Number(mn + (mx - mn) * s);
+                     });
 
-    RegisterFunction("animate_pingpong", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        double speed = (a.size() > 0) ? a[0].AsNumber() : 1.0;
-        double mn = (a.size() > 1) ? a[1].AsNumber() : 0.0;
-        double mx = (a.size() > 2) ? a[2].AsNumber() : 1.0;
-        double t = std::fmod(m_Context.Time * speed, 2.0);
-        if (t > 1.0)
-            t = 2.0 - t;
-        return TScriptValue::Number(mn + (mx - mn) * t);
-    });
+    RegisterFunction("animate_pingpong",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         double speed = (a.size() > 0) ? a[0].AsNumber() : 1.0;
+                         double mn = (a.size() > 1) ? a[1].AsNumber() : 0.0;
+                         double mx = (a.size() > 2) ? a[2].AsNumber() : 1.0;
+                         double t = std::fmod(m_Context.Time * speed, 2.0);
+                         if (t > 1.0)
+                             t = 2.0 - t;
+                         return TScriptValue::Number(mn + (mx - mn) * t);
+                     });
 
-    RegisterFunction("animate_rotate", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        double speed = (a.size() > 0) ? a[0].AsNumber() : 1.0;
-        return TScriptValue::Number(std::fmod(m_Context.Time * speed, 6.283185307179586));
-    });
+    RegisterFunction("animate_rotate",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         double speed = (a.size() > 0) ? a[0].AsNumber() : 1.0;
+                         return TScriptValue::Number(std::fmod(m_Context.Time * speed, 6.283185307179586));
+                     });
 
-    RegisterFunction("animate_lerp", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 3)
-            return TScriptValue::Number(0.0);
-        double start = a[0].AsNumber();
-        double end = a[1].AsNumber();
-        double t = std::clamp(a[2].AsNumber(), 0.0, 1.0);
-        return TScriptValue::Number(start + (end - start) * t);
-    });
+    RegisterFunction("animate_lerp",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::Number(0.0);
+                         double start = a[0].AsNumber();
+                         double end = a[1].AsNumber();
+                         double t = std::clamp(a[2].AsNumber(), 0.0, 1.0);
+                         return TScriptValue::Number(start + (end - start) * t);
+                     });
 
     // ==========================================
     // 3. Canvas & Context Queries
     // ==========================================
-    RegisterFunction("get_width", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.CanvasSize.x);
-    });
+    RegisterFunction("get_width", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.CanvasSize.x); });
 
-    RegisterFunction("get_height", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.CanvasSize.y);
-    });
+    RegisterFunction("get_height", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.CanvasSize.y); });
 
-    RegisterFunction("get_center_x", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.CanvasSize.x * 0.5f);
-    });
+    RegisterFunction("get_center_x", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.CanvasSize.x * 0.5f); });
 
-    RegisterFunction("get_center_y", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Number(m_Context.CanvasSize.y * 0.5f);
-    });
+    RegisterFunction("get_center_y", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     { return TScriptValue::Number(m_Context.CanvasSize.y * 0.5f); });
 
-    RegisterFunction("get_center", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        return TScriptValue::Vec2(TEVector2(m_Context.CanvasSize.x * 0.5f, m_Context.CanvasSize.y * 0.5f));
-    });
+    RegisterFunction(
+        "get_center", [this](const TEArray<TScriptValue> &a) -> TScriptValue
+        { return TScriptValue::Vec2(TEVector2(m_Context.CanvasSize.x * 0.5f, m_Context.CanvasSize.y * 0.5f)); });
 
-    RegisterFunction("get_mouse_pos", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        TEVector2 m = TimeGUI::GetMousePos();
-        return TScriptValue::Vec2(TEVector2(m.x - m_Context.Origin.x, m.y - m_Context.Origin.y));
-    });
+    RegisterFunction("get_mouse_pos",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         TEVector2 m = TimeGUI::GetMousePos();
+                         return TScriptValue::Vec2(TEVector2(m.x - m_Context.Origin.x, m.y - m_Context.Origin.y));
+                     });
 
-    RegisterFunction("is_mouse_down", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        int btn = (a.size() > 0) ? (int)a[0].AsNumber() : 0;
-        return TScriptValue::Bool(TimeGUI::IsMouseDown(btn));
-    });
+    RegisterFunction("is_mouse_down",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         int btn = (a.size() > 0) ? (int)a[0].AsNumber() : 0;
+                         return TScriptValue::Bool(TimeGUI::IsMouseDown(btn));
+                     });
 
     // ==========================================
     // 4. Color Constructors & Conversions
     // ==========================================
-    RegisterFunction("rgb", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        float r = (a.size() > 0) ? (float)a[0].AsNumber() : 1.0f;
-        float g = (a.size() > 1) ? (float)a[1].AsNumber() : 1.0f;
-        float b = (a.size() > 2) ? (float)a[2].AsNumber() : 1.0f;
-        if (r > 1.0f || g > 1.0f || b > 1.0f)
-        {
-            r /= 255.0f;
-            g /= 255.0f;
-            b /= 255.0f;
-        }
-        return TScriptValue::String(
-            TEString::Format("#%02X%02X%02X", (int)(r * 255.0f), (int)(g * 255.0f), (int)(b * 255.0f)));
-    });
+    RegisterFunction("rgb",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         float r = (a.size() > 0) ? (float)a[0].AsNumber() : 1.0f;
+                         float g = (a.size() > 1) ? (float)a[1].AsNumber() : 1.0f;
+                         float b = (a.size() > 2) ? (float)a[2].AsNumber() : 1.0f;
+                         if (r > 1.0f || g > 1.0f || b > 1.0f)
+                         {
+                             r /= 255.0f;
+                             g /= 255.0f;
+                             b /= 255.0f;
+                         }
+                         return TScriptValue::String(TEString::Format("#%02X%02X%02X", (int)(r * 255.0f),
+                                                                      (int)(g * 255.0f), (int)(b * 255.0f)));
+                     });
 
-    RegisterFunction("rgba", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        float r = (a.size() > 0) ? (float)a[0].AsNumber() : 1.0f;
-        float g = (a.size() > 1) ? (float)a[1].AsNumber() : 1.0f;
-        float b = (a.size() > 2) ? (float)a[2].AsNumber() : 1.0f;
-        float alpha = (a.size() > 3) ? (float)a[3].AsNumber() : 1.0f;
-        if (r > 1.0f || g > 1.0f || b > 1.0f)
-        {
-            r /= 255.0f;
-            g /= 255.0f;
-            b /= 255.0f;
-        }
-        if (alpha > 1.0f)
-            alpha /= 255.0f;
-        return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(r * 255.0f), (int)(g * 255.0f),
-                                                     (int)(b * 255.0f), (int)(alpha * 255.0f)));
-    });
+    RegisterFunction("rgba",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         float r = (a.size() > 0) ? (float)a[0].AsNumber() : 1.0f;
+                         float g = (a.size() > 1) ? (float)a[1].AsNumber() : 1.0f;
+                         float b = (a.size() > 2) ? (float)a[2].AsNumber() : 1.0f;
+                         float alpha = (a.size() > 3) ? (float)a[3].AsNumber() : 1.0f;
+                         if (r > 1.0f || g > 1.0f || b > 1.0f)
+                         {
+                             r /= 255.0f;
+                             g /= 255.0f;
+                             b /= 255.0f;
+                         }
+                         if (alpha > 1.0f)
+                             alpha /= 255.0f;
+                         return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(r * 255.0f),
+                                                                      (int)(g * 255.0f), (int)(b * 255.0f),
+                                                                      (int)(alpha * 255.0f)));
+                     });
 
-    RegisterFunction("hsv", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        float h = (a.size() > 0) ? (float)a[0].AsNumber() : 0.0f;
-        float s = (a.size() > 1) ? (float)a[1].AsNumber() : 1.0f;
-        float v = (a.size() > 2) ? (float)a[2].AsNumber() : 1.0f;
-        float alpha = (a.size() > 3) ? (float)a[3].AsNumber() : 1.0f;
-        float r, g, b;
-        TimeGUI::ColorConvertHSVtoRGB(h, s, v, r, g, b);
-        return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(r * 255.0f), (int)(g * 255.0f),
-                                                     (int)(b * 255.0f), (int)(alpha * 255.0f)));
-    });
+    RegisterFunction("hsv",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         float h = (a.size() > 0) ? (float)a[0].AsNumber() : 0.0f;
+                         float s = (a.size() > 1) ? (float)a[1].AsNumber() : 1.0f;
+                         float v = (a.size() > 2) ? (float)a[2].AsNumber() : 1.0f;
+                         float alpha = (a.size() > 3) ? (float)a[3].AsNumber() : 1.0f;
+                         float r, g, b;
+                         TimeGUI::ColorConvertHSVtoRGB(h, s, v, r, g, b);
+                         return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(r * 255.0f),
+                                                                      (int)(g * 255.0f), (int)(b * 255.0f),
+                                                                      (int)(alpha * 255.0f)));
+                     });
 
-    RegisterFunction("hex", [](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.empty())
-            return TScriptValue::String("#FFFFFFFF");
-        return TScriptValue::String(a[0].ToString());
-    });
+    RegisterFunction("hex",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.empty())
+                             return TScriptValue::String("#FFFFFFFF");
+                         return TScriptValue::String(a[0].ToString());
+                     });
 
-    RegisterFunction("lerp_color", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 3)
-            return TScriptValue::String("#FFFFFFFF");
-        TEVector4 c1 = ValueToColorVec4(a[0]);
-        TEVector4 c2 = ValueToColorVec4(a[1]);
-        float t = std::clamp((float)a[2].AsNumber(), 0.0f, 1.0f);
-        TEVector4 res = c1 + (c2 - c1) * t;
-        return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(res.x * 255.0f), (int)(res.y * 255.0f),
-                                                     (int)(res.z * 255.0f), (int)(res.w * 255.0f)));
-    });
+    RegisterFunction("lerp_color",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::String("#FFFFFFFF");
+                         TEVector4 c1 = ValueToColorVec4(a[0]);
+                         TEVector4 c2 = ValueToColorVec4(a[1]);
+                         float t = std::clamp((float)a[2].AsNumber(), 0.0f, 1.0f);
+                         TEVector4 res = c1 + (c2 - c1) * t;
+                         return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(res.x * 255.0f),
+                                                                      (int)(res.y * 255.0f), (int)(res.z * 255.0f),
+                                                                      (int)(res.w * 255.0f)));
+                     });
 
     // ==========================================
     // 5. TimeGUI Vector Drawing Commands
     // ==========================================
-    RegisterFunction("draw_rect", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float w = (float)a[2].AsNumber();
-        float h = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
-        float rounding = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
-        float thickness = (a.size() > 6) ? (float)a[6].AsNumber() : 1.0f;
+    RegisterFunction("draw_rect",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float w = (float)a[2].AsNumber();
+                         float h = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float rounding = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
+                         float thickness = (a.size() > 6) ? (float)a[6].AsNumber() : 1.0f;
 
-        TEVector2 p1 = ToScreenPos(x, y);
-        TEVector2 p2 = ToScreenPos(x + w, y + h);
-        if (thickness <= 0.0f)
-            m_Context.DrawList.AddRectFilled(p1, p2, col, rounding);
-        else
-            m_Context.DrawList.AddRect(p1, p2, col, rounding, 0, thickness);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 p1 = ToScreenPos(x, y);
+                         TEVector2 p2 = ToScreenPos(x + w, y + h);
+                         if (thickness <= 0.0f)
+                             m_Context.DrawList.AddRectFilled(p1, p2, col, rounding);
+                         else
+                             m_Context.DrawList.AddRect(p1, p2, col, rounding, 0, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_rect_filled", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float w = (float)a[2].AsNumber();
-        float h = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
-        float rounding = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
+    RegisterFunction("draw_rect_filled",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float w = (float)a[2].AsNumber();
+                         float h = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float rounding = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
 
-        TEVector2 p1 = ToScreenPos(x, y);
-        TEVector2 p2 = ToScreenPos(x + w, y + h);
-        m_Context.DrawList.AddRectFilled(p1, p2, col, rounding);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 p1 = ToScreenPos(x, y);
+                         TEVector2 p2 = ToScreenPos(x + w, y + h);
+                         m_Context.DrawList.AddRectFilled(p1, p2, col, rounding);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_rect_outline", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float w = (float)a[2].AsNumber();
-        float h = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
-        float thickness = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
-        float rounding = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
+    RegisterFunction("draw_rect_outline",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float w = (float)a[2].AsNumber();
+                         float h = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float thickness = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
+                         float rounding = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
 
-        TEVector2 p1 = ToScreenPos(x, y);
-        TEVector2 p2 = ToScreenPos(x + w, y + h);
-        m_Context.DrawList.AddRect(p1, p2, col, rounding, 0, thickness);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 p1 = ToScreenPos(x, y);
+                         TEVector2 p2 = ToScreenPos(x + w, y + h);
+                         m_Context.DrawList.AddRect(p1, p2, col, rounding, 0, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_circle", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 4)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float r = (float)a[2].AsNumber();
-        unsigned int col = ValueToColorU32(a[3]);
-        float thickness = (a.size() > 4) ? (float)a[4].AsNumber() : 0.0f;
+    RegisterFunction("draw_circle",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 4)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float r = (float)a[2].AsNumber();
+                         unsigned int col = ValueToColorU32(a[3]);
+                         float thickness = (a.size() > 4) ? (float)a[4].AsNumber() : 0.0f;
 
-        TEVector2 c = ToScreenPos(x, y);
-        if (thickness <= 0.0f)
-            m_Context.DrawList.AddCircleFilled(c, r, col, 64);
-        else
-            m_Context.DrawList.AddCircle(c, r, col, 64, thickness);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 c = ToScreenPos(x, y);
+                         if (thickness <= 0.0f)
+                             m_Context.DrawList.AddCircleFilled(c, r, col, 64);
+                         else
+                             m_Context.DrawList.AddCircle(c, r, col, 64, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_circle_filled", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 4)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float r = (float)a[2].AsNumber();
-        unsigned int col = ValueToColorU32(a[3]);
+    RegisterFunction("draw_circle_filled",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 4)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float r = (float)a[2].AsNumber();
+                         unsigned int col = ValueToColorU32(a[3]);
 
-        TEVector2 c = ToScreenPos(x, y);
-        m_Context.DrawList.AddCircleFilled(c, r, col, 64);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 c = ToScreenPos(x, y);
+                         m_Context.DrawList.AddCircleFilled(c, r, col, 64);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_circle_outline", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 4)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float r = (float)a[2].AsNumber();
-        unsigned int col = ValueToColorU32(a[3]);
-        float thickness = (a.size() > 4) ? (float)a[4].AsNumber() : 1.0f;
+    RegisterFunction("draw_circle_outline",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 4)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float r = (float)a[2].AsNumber();
+                         unsigned int col = ValueToColorU32(a[3]);
+                         float thickness = (a.size() > 4) ? (float)a[4].AsNumber() : 1.0f;
 
-        TEVector2 c = ToScreenPos(x, y);
-        m_Context.DrawList.AddCircle(c, r, col, 64, thickness);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 c = ToScreenPos(x, y);
+                         m_Context.DrawList.AddCircle(c, r, col, 64, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_ring", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        float outer_r = (float)a[2].AsNumber();
-        float inner_r = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
+    RegisterFunction("draw_ring",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         float outer_r = (float)a[2].AsNumber();
+                         float inner_r = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
 
-        float thickness = outer_r - inner_r;
-        float mid_r = inner_r + thickness * 0.5f;
-        TEVector2 c = ToScreenPos(x, y);
-        m_Context.DrawList.AddCircle(c, mid_r, col, 64, thickness);
-        return TScriptValue::Nil();
-    });
+                         float thickness = outer_r - inner_r;
+                         float mid_r = inner_r + thickness * 0.5f;
+                         TEVector2 c = ToScreenPos(x, y);
+                         m_Context.DrawList.AddCircle(c, mid_r, col, 64, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_line", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x1 = (float)a[0].AsNumber();
-        float y1 = (float)a[1].AsNumber();
-        float x2 = (float)a[2].AsNumber();
-        float y2 = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
-        float thickness = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
+    RegisterFunction("draw_line",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x1 = (float)a[0].AsNumber();
+                         float y1 = (float)a[1].AsNumber();
+                         float x2 = (float)a[2].AsNumber();
+                         float y2 = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float thickness = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
 
-        TEVector2 p1 = ToScreenPos(x1, y1);
-        TEVector2 p2 = ToScreenPos(x2, y2);
-        m_Context.DrawList.AddLine(p1, p2, col, thickness);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 p1 = ToScreenPos(x1, y1);
+                         TEVector2 p2 = ToScreenPos(x2, y2);
+                         m_Context.DrawList.AddLine(p1, p2, col, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_triangle", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 7)
-            return TScriptValue::Nil();
-        TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
-        TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
-        TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
-        unsigned int col = ValueToColorU32(a[6]);
-        float thickness = (a.size() > 7) ? (float)a[7].AsNumber() : 0.0f;
+    RegisterFunction("draw_triangle",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 7)
+                             return TScriptValue::Nil();
+                         TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
+                         TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
+                         TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
+                         unsigned int col = ValueToColorU32(a[6]);
+                         float thickness = (a.size() > 7) ? (float)a[7].AsNumber() : 0.0f;
 
-        if (thickness <= 0.0f)
-        {
-            m_Context.DrawList.AddTriangleFilled(p1, p2, p3, col);
-        }
-        else
-        {
-            TEVector2 pts[3] = {p1, p2, p3};
-            m_Context.DrawList.AddPolyline(pts, 3, col, TimeGUIDrawFlags_Closed, thickness);
-        }
-        return TScriptValue::Nil();
-    });
+                         if (thickness <= 0.0f)
+                         {
+                             m_Context.DrawList.AddTriangleFilled(p1, p2, p3, col);
+                         }
+                         else
+                         {
+                             TEVector2 pts[3] = {p1, p2, p3};
+                             m_Context.DrawList.AddPolyline(pts, 3, col, TimeGUIDrawFlags_Closed, thickness);
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_triangle_filled", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 7)
-            return TScriptValue::Nil();
-        TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
-        TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
-        TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
-        unsigned int col = ValueToColorU32(a[6]);
-        m_Context.DrawList.AddTriangleFilled(p1, p2, p3, col);
-        return TScriptValue::Nil();
-    });
+    RegisterFunction("draw_triangle_filled",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 7)
+                             return TScriptValue::Nil();
+                         TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
+                         TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
+                         TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
+                         unsigned int col = ValueToColorU32(a[6]);
+                         m_Context.DrawList.AddTriangleFilled(p1, p2, p3, col);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_quad", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 9)
-            return TScriptValue::Nil();
-        TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
-        TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
-        TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
-        TEVector2 p4 = ToScreenPos((float)a[6].AsNumber(), (float)a[7].AsNumber());
-        unsigned int col = ValueToColorU32(a[8]);
-        m_Context.DrawList.AddQuadFilled(p1, p2, p3, p4, col);
-        return TScriptValue::Nil();
-    });
+    RegisterFunction("draw_quad",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 9)
+                             return TScriptValue::Nil();
+                         TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
+                         TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
+                         TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
+                         TEVector2 p4 = ToScreenPos((float)a[6].AsNumber(), (float)a[7].AsNumber());
+                         unsigned int col = ValueToColorU32(a[8]);
+                         m_Context.DrawList.AddQuadFilled(p1, p2, p3, p4, col);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_ellipse", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float cx = (float)a[0].AsNumber();
-        float cy = (float)a[1].AsNumber();
-        float rx = (float)a[2].AsNumber();
-        float ry = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
-        float rot = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
-        float thickness = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
+    RegisterFunction("draw_ellipse",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float cx = (float)a[0].AsNumber();
+                         float cy = (float)a[1].AsNumber();
+                         float rx = (float)a[2].AsNumber();
+                         float ry = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float rot = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
+                         float thickness = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
 
-        const int segments = 64;
-        TEVector2 pts[segments];
-        TEVector2 center = ToScreenPos(cx, cy);
-        float cosR = std::cos(rot), sinR = std::sin(rot);
+                         const int segments = 64;
+                         TEVector2 pts[segments];
+                         TEVector2 center = ToScreenPos(cx, cy);
+                         float cosR = std::cos(rot), sinR = std::sin(rot);
 
-        for (int i = 0; i < segments; i++)
-        {
-            float t = (float)i * 6.2831853f / (float)segments;
-            float lx = rx * std::cos(t), ly = ry * std::sin(t);
-            pts[i] = TEVector2(center.x + lx * cosR - ly * sinR, center.y + lx * sinR + ly * cosR);
-        }
+                         for (int i = 0; i < segments; i++)
+                         {
+                             float t = (float)i * 6.2831853f / (float)segments;
+                             float lx = rx * std::cos(t), ly = ry * std::sin(t);
+                             pts[i] = TEVector2(center.x + lx * cosR - ly * sinR, center.y + lx * sinR + ly * cosR);
+                         }
 
-        if (thickness <= 0.0f)
-            m_Context.DrawList.AddConvexPolyFilled(pts, segments, col);
-        else
-            m_Context.DrawList.AddPolyline(pts, segments, col, TimeGUIDrawFlags_Closed, thickness);
-        return TScriptValue::Nil();
-    });
+                         if (thickness <= 0.0f)
+                             m_Context.DrawList.AddConvexPolyFilled(pts, segments, col);
+                         else
+                             m_Context.DrawList.AddPolyline(pts, segments, col, TimeGUIDrawFlags_Closed, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_ellipse_filled", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float cx = (float)a[0].AsNumber();
-        float cy = (float)a[1].AsNumber();
-        float rx = (float)a[2].AsNumber();
-        float ry = (float)a[3].AsNumber();
-        unsigned int col = ValueToColorU32(a[4]);
-        float rot = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
+    RegisterFunction("draw_ellipse_filled",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float cx = (float)a[0].AsNumber();
+                         float cy = (float)a[1].AsNumber();
+                         float rx = (float)a[2].AsNumber();
+                         float ry = (float)a[3].AsNumber();
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float rot = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
 
-        const int segments = 64;
-        TEVector2 pts[segments];
-        TEVector2 center = ToScreenPos(cx, cy);
-        float cosR = std::cos(rot), sinR = std::sin(rot);
+                         const int segments = 64;
+                         TEVector2 pts[segments];
+                         TEVector2 center = ToScreenPos(cx, cy);
+                         float cosR = std::cos(rot), sinR = std::sin(rot);
 
-        for (int i = 0; i < segments; i++)
-        {
-            float t = (float)i * 6.2831853f / (float)segments;
-            float lx = rx * std::cos(t), ly = ry * std::sin(t);
-            pts[i] = TEVector2(center.x + lx * cosR - ly * sinR, center.y + lx * sinR + ly * cosR);
-        }
-        m_Context.DrawList.AddConvexPolyFilled(pts, segments, col);
-        return TScriptValue::Nil();
-    });
+                         for (int i = 0; i < segments; i++)
+                         {
+                             float t = (float)i * 6.2831853f / (float)segments;
+                             float lx = rx * std::cos(t), ly = ry * std::sin(t);
+                             pts[i] = TEVector2(center.x + lx * cosR - ly * sinR, center.y + lx * sinR + ly * cosR);
+                         }
+                         m_Context.DrawList.AddConvexPolyFilled(pts, segments, col);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_bezier", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 9)
-            return TScriptValue::Nil();
-        TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
-        TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
-        TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
-        TEVector2 p4 = ToScreenPos((float)a[6].AsNumber(), (float)a[7].AsNumber());
-        unsigned int col = ValueToColorU32(a[8]);
-        float thickness = (a.size() > 9) ? (float)a[9].AsNumber() : 1.0f;
-        m_Context.DrawList.AddBezierCubic(p1, p2, p3, p4, col, thickness);
-        return TScriptValue::Nil();
-    });
+    RegisterFunction("draw_bezier",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 9)
+                             return TScriptValue::Nil();
+                         TEVector2 p1 = ToScreenPos((float)a[0].AsNumber(), (float)a[1].AsNumber());
+                         TEVector2 p2 = ToScreenPos((float)a[2].AsNumber(), (float)a[3].AsNumber());
+                         TEVector2 p3 = ToScreenPos((float)a[4].AsNumber(), (float)a[5].AsNumber());
+                         TEVector2 p4 = ToScreenPos((float)a[6].AsNumber(), (float)a[7].AsNumber());
+                         unsigned int col = ValueToColorU32(a[8]);
+                         float thickness = (a.size() > 9) ? (float)a[9].AsNumber() : 1.0f;
+                         m_Context.DrawList.AddBezierCubic(p1, p2, p3, p4, col, thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_star", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 6)
-            return TScriptValue::Nil();
-        float cx = (float)a[0].AsNumber();
-        float cy = (float)a[1].AsNumber();
-        int spikes = std::max(3, (int)a[2].AsNumber());
-        float outer_r = (float)a[3].AsNumber();
-        float inner_r = (float)a[4].AsNumber();
-        unsigned int col = ValueToColorU32(a[5]);
-        float rot = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
-        float thickness = (a.size() > 7) ? (float)a[7].AsNumber() : 0.0f;
+    RegisterFunction("draw_star",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 6)
+                             return TScriptValue::Nil();
+                         float cx = (float)a[0].AsNumber();
+                         float cy = (float)a[1].AsNumber();
+                         int spikes = std::max(3, (int)a[2].AsNumber());
+                         float outer_r = (float)a[3].AsNumber();
+                         float inner_r = (float)a[4].AsNumber();
+                         unsigned int col = ValueToColorU32(a[5]);
+                         float rot = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
+                         float thickness = (a.size() > 7) ? (float)a[7].AsNumber() : 0.0f;
 
-        int totalPts = spikes * 2;
-        TEArray<TEVector2> pts;
-        pts.reserve(totalPts);
-        TEVector2 center = ToScreenPos(cx, cy);
+                         int totalPts = spikes * 2;
+                         TEArray<TEVector2> pts;
+                         pts.reserve(totalPts);
+                         TEVector2 center = ToScreenPos(cx, cy);
 
-        for (int i = 0; i < totalPts; i++)
-        {
-            float r = (i % 2 == 0) ? outer_r : inner_r;
-            float angle = rot + (float)i * 3.14159265f / (float)spikes;
-            pts.push_back(TEVector2(center.x + std::cos(angle) * r, center.y + std::sin(angle) * r));
-        }
+                         for (int i = 0; i < totalPts; i++)
+                         {
+                             float r = (i % 2 == 0) ? outer_r : inner_r;
+                             float angle = rot + (float)i * 3.14159265f / (float)spikes;
+                             pts.push_back(TEVector2(center.x + std::cos(angle) * r, center.y + std::sin(angle) * r));
+                         }
 
-        if (thickness <= 0.0f)
-            m_Context.DrawList.AddConvexPolyFilled(pts.data(), totalPts, col);
-        else
-            m_Context.DrawList.AddPolyline(pts.data(), totalPts, col, TimeGUIDrawFlags_Closed, thickness);
-        return TScriptValue::Nil();
-    });
+                         if (thickness <= 0.0f)
+                             m_Context.DrawList.AddConvexPolyFilled(pts.data(), totalPts, col);
+                         else
+                             m_Context.DrawList.AddPolyline(pts.data(), totalPts, col, TimeGUIDrawFlags_Closed,
+                                                            thickness);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_polygon", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float cx = (float)a[0].AsNumber();
-        float cy = (float)a[1].AsNumber();
-        float r = (float)a[2].AsNumber();
-        int sides = std::max(3, (int)a[3].AsNumber());
-        unsigned int col = ValueToColorU32(a[4]);
-        float rot = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
-        float thickness = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
+    RegisterFunction("draw_polygon",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float cx = (float)a[0].AsNumber();
+                         float cy = (float)a[1].AsNumber();
+                         float r = (float)a[2].AsNumber();
+                         int sides = std::max(3, (int)a[3].AsNumber());
+                         unsigned int col = ValueToColorU32(a[4]);
+                         float rot = (a.size() > 5) ? (float)a[5].AsNumber() : 0.0f;
+                         float thickness = (a.size() > 6) ? (float)a[6].AsNumber() : 0.0f;
 
-        TEArray<TEVector2> pts;
-        pts.reserve(sides);
-        TEVector2 center = ToScreenPos(cx, cy);
+                         TEArray<TEVector2> pts;
+                         pts.reserve(sides);
+                         TEVector2 center = ToScreenPos(cx, cy);
 
-        for (int i = 0; i < sides; i++)
-        {
-            float angle = rot + (float)i * 6.2831853f / (float)sides;
-            pts.push_back(TEVector2(center.x + std::cos(angle) * r, center.y + std::sin(angle) * r));
-        }
+                         for (int i = 0; i < sides; i++)
+                         {
+                             float angle = rot + (float)i * 6.2831853f / (float)sides;
+                             pts.push_back(TEVector2(center.x + std::cos(angle) * r, center.y + std::sin(angle) * r));
+                         }
 
-        if (thickness <= 0.0f)
-            m_Context.DrawList.AddConvexPolyFilled(pts.data(), sides, col);
-        else
-            m_Context.DrawList.AddPolyline(pts.data(), sides, col, TimeGUIDrawFlags_Closed, thickness);
-        return TScriptValue::Nil();
-    });
+                         if (thickness <= 0.0f)
+                             m_Context.DrawList.AddConvexPolyFilled(pts.data(), sides, col);
+                         else
+                             m_Context.DrawList.AddPolyline(pts.data(), sides, col, TimeGUIDrawFlags_Closed, thickness);
+                         return TScriptValue::Nil();
+                     });
 
     // ==========================================
     // 6. Typography & Text Rendering
     // ==========================================
-    RegisterFunction("draw_text", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 4)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        TEString text = a[2].ToString();
-        unsigned int col = ValueToColorU32(a[3]);
+    RegisterFunction("draw_text",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 4)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         TEString text = a[2].ToString();
+                         unsigned int col = ValueToColorU32(a[3]);
 
-        TEVector2 pos = ToScreenPos(x, y);
-        m_Context.DrawList.AddText(pos, col, text);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 pos = ToScreenPos(x, y);
+                         m_Context.DrawList.AddText(pos, col, text);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_text_outlined", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        TEString text = a[2].ToString();
-        unsigned int col = ValueToColorU32(a[3]);
-        unsigned int outlineCol = ValueToColorU32(a[4]);
-        float thickness = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
+    RegisterFunction("draw_text_outlined",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         TEString text = a[2].ToString();
+                         unsigned int col = ValueToColorU32(a[3]);
+                         unsigned int outlineCol = ValueToColorU32(a[4]);
+                         float thickness = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
 
-        TEVector2 pos = ToScreenPos(x, y);
-        for (float dx = -thickness; dx <= thickness; dx += thickness)
-        {
-            for (float dy = -thickness; dy <= thickness; dy += thickness)
-            {
-                if (dx == 0.0f && dy == 0.0f)
-                    continue;
-                m_Context.DrawList.AddText(TEVector2(pos.x + dx, pos.y + dy), outlineCol, text);
-            }
-        }
-        m_Context.DrawList.AddText(pos, col, text);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 pos = ToScreenPos(x, y);
+                         for (float dx = -thickness; dx <= thickness; dx += thickness)
+                         {
+                             for (float dy = -thickness; dy <= thickness; dy += thickness)
+                             {
+                                 if (dx == 0.0f && dy == 0.0f)
+                                     continue;
+                                 m_Context.DrawList.AddText(TEVector2(pos.x + dx, pos.y + dy), outlineCol, text);
+                             }
+                         }
+                         m_Context.DrawList.AddText(pos, col, text);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_text_shadowed", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        float x = (float)a[0].AsNumber();
-        float y = (float)a[1].AsNumber();
-        TEString text = a[2].ToString();
-        unsigned int col = ValueToColorU32(a[3]);
-        unsigned int shadowCol = ValueToColorU32(a[4]);
-        float offX = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
-        float offY = (a.size() > 6) ? (float)a[6].AsNumber() : 1.0f;
+    RegisterFunction("draw_text_shadowed",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         float x = (float)a[0].AsNumber();
+                         float y = (float)a[1].AsNumber();
+                         TEString text = a[2].ToString();
+                         unsigned int col = ValueToColorU32(a[3]);
+                         unsigned int shadowCol = ValueToColorU32(a[4]);
+                         float offX = (a.size() > 5) ? (float)a[5].AsNumber() : 1.0f;
+                         float offY = (a.size() > 6) ? (float)a[6].AsNumber() : 1.0f;
 
-        TEVector2 pos = ToScreenPos(x, y);
-        m_Context.DrawList.AddText(TEVector2(pos.x + offX, pos.y + offY), shadowCol, text);
-        m_Context.DrawList.AddText(pos, col, text);
-        return TScriptValue::Nil();
-    });
+                         TEVector2 pos = ToScreenPos(x, y);
+                         m_Context.DrawList.AddText(TEVector2(pos.x + offX, pos.y + offY), shadowCol, text);
+                         m_Context.DrawList.AddText(pos, col, text);
+                         return TScriptValue::Nil();
+                     });
 
     // ==========================================
     // 7. Pixel Art Operations
     // ==========================================
-    RegisterFunction("set_grid_size", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() >= 2)
-        {
-            m_Context.PixelWidth = std::max(1, (int)a[0].AsNumber());
-            m_Context.PixelHeight = std::max(1, (int)a[1].AsNumber());
-            size_t req = (size_t)(m_Context.PixelWidth * m_Context.PixelHeight);
-            if (m_Context.PixelBuffer.size() != req)
-                m_Context.PixelBuffer.Resize(req, TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
-        }
-        return TScriptValue::Nil();
-    });
+    RegisterFunction("set_grid_size",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() >= 2)
+                         {
+                             m_Context.PixelWidth = std::max(1, (int)a[0].AsNumber());
+                             m_Context.PixelHeight = std::max(1, (int)a[1].AsNumber());
+                             size_t req = (size_t)(m_Context.PixelWidth * m_Context.PixelHeight);
+                             if (m_Context.PixelBuffer.size() != req)
+                                 m_Context.PixelBuffer.Resize(req, TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("set_pixel", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 3)
-            return TScriptValue::Nil();
-        int px = (int)a[0].AsNumber();
-        int py = (int)a[1].AsNumber();
-        TEVector4 col = ValueToColorVec4(a[2]);
+    RegisterFunction("set_pixel",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::Nil();
+                         int px = (int)a[0].AsNumber();
+                         int py = (int)a[1].AsNumber();
+                         TEVector4 col = ValueToColorVec4(a[2]);
 
-        if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
-        {
-            m_Context.PixelBuffer[py * m_Context.PixelWidth + px] = col;
-        }
-        return TScriptValue::Nil();
-    });
+                         if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
+                         {
+                             m_Context.PixelBuffer[py * m_Context.PixelWidth + px] = col;
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("pixel", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 3)
-            return TScriptValue::Nil();
-        int px = (int)a[0].AsNumber();
-        int py = (int)a[1].AsNumber();
-        TEVector4 col = ValueToColorVec4(a[2]);
+    RegisterFunction("pixel",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::Nil();
+                         int px = (int)a[0].AsNumber();
+                         int py = (int)a[1].AsNumber();
+                         TEVector4 col = ValueToColorVec4(a[2]);
 
-        if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
-        {
-            m_Context.PixelBuffer[py * m_Context.PixelWidth + px] = col;
-        }
-        return TScriptValue::Nil();
-    });
+                         if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
+                         {
+                             m_Context.PixelBuffer[py * m_Context.PixelWidth + px] = col;
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("get_pixel", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 2)
-            return TScriptValue::String("#00000000");
-        int px = (int)a[0].AsNumber();
-        int py = (int)a[1].AsNumber();
+    RegisterFunction("get_pixel",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 2)
+                             return TScriptValue::String("#00000000");
+                         int px = (int)a[0].AsNumber();
+                         int py = (int)a[1].AsNumber();
 
-        if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
-        {
-            TEVector4 col = m_Context.PixelBuffer[py * m_Context.PixelWidth + px];
-            return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(col.x * 255.0f),
-                                                         (int)(col.y * 255.0f), (int)(col.z * 255.0f),
-                                                         (int)(col.w * 255.0f)));
-        }
-        return TScriptValue::String("#00000000");
-    });
+                         if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
+                         {
+                             TEVector4 col = m_Context.PixelBuffer[py * m_Context.PixelWidth + px];
+                             return TScriptValue::String(TEString::Format("#%02X%02X%02X%02X", (int)(col.x * 255.0f),
+                                                                          (int)(col.y * 255.0f), (int)(col.z * 255.0f),
+                                                                          (int)(col.w * 255.0f)));
+                         }
+                         return TScriptValue::String("#00000000");
+                     });
 
-    RegisterFunction("draw_pixel_rect", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        int rx = (int)a[0].AsNumber();
-        int ry = (int)a[1].AsNumber();
-        int rw = (int)a[2].AsNumber();
-        int rh = (int)a[3].AsNumber();
-        TEVector4 col = ValueToColorVec4(a[4]);
+    RegisterFunction("draw_pixel_rect",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         int rx = (int)a[0].AsNumber();
+                         int ry = (int)a[1].AsNumber();
+                         int rw = (int)a[2].AsNumber();
+                         int rh = (int)a[3].AsNumber();
+                         TEVector4 col = ValueToColorVec4(a[4]);
 
-        for (int y = ry; y < ry + rh; ++y)
-        {
-            for (int x = rx; x < rx + rw; ++x)
-            {
-                if (x >= 0 && x < m_Context.PixelWidth && y >= 0 && y < m_Context.PixelHeight)
-                {
-                    m_Context.PixelBuffer[y * m_Context.PixelWidth + x] = col;
-                }
-            }
-        }
-        return TScriptValue::Nil();
-    });
+                         for (int y = ry; y < ry + rh; ++y)
+                         {
+                             for (int x = rx; x < rx + rw; ++x)
+                             {
+                                 if (x >= 0 && x < m_Context.PixelWidth && y >= 0 && y < m_Context.PixelHeight)
+                                 {
+                                     m_Context.PixelBuffer[y * m_Context.PixelWidth + x] = col;
+                                 }
+                             }
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_pixel_line", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 5)
-            return TScriptValue::Nil();
-        int x0 = (int)a[0].AsNumber();
-        int y0 = (int)a[1].AsNumber();
-        int x1 = (int)a[2].AsNumber();
-        int y1 = (int)a[3].AsNumber();
-        TEVector4 col = ValueToColorVec4(a[4]);
+    RegisterFunction("draw_pixel_line",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 5)
+                             return TScriptValue::Nil();
+                         int x0 = (int)a[0].AsNumber();
+                         int y0 = (int)a[1].AsNumber();
+                         int x1 = (int)a[2].AsNumber();
+                         int y1 = (int)a[3].AsNumber();
+                         TEVector4 col = ValueToColorVec4(a[4]);
 
-        int dx = std::abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-        int dy = -std::abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-        int err = dx + dy;
+                         int dx = std::abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+                         int dy = -std::abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+                         int err = dx + dy;
 
-        while (true)
-        {
-            if (x0 >= 0 && x0 < m_Context.PixelWidth && y0 >= 0 && y0 < m_Context.PixelHeight)
-            {
-                m_Context.PixelBuffer[y0 * m_Context.PixelWidth + x0] = col;
-            }
-            if (x0 == x1 && y0 == y1)
-                break;
-            int e2 = 2 * err;
-            if (e2 >= dy)
-            {
-                err += dy;
-                x0 += sx;
-            }
-            if (e2 <= dx)
-            {
-                err += dx;
-                y0 += sy;
-            }
-        }
-        return TScriptValue::Nil();
-    });
+                         while (true)
+                         {
+                             if (x0 >= 0 && x0 < m_Context.PixelWidth && y0 >= 0 && y0 < m_Context.PixelHeight)
+                             {
+                                 m_Context.PixelBuffer[y0 * m_Context.PixelWidth + x0] = col;
+                             }
+                             if (x0 == x1 && y0 == y1)
+                                 break;
+                             int e2 = 2 * err;
+                             if (e2 >= dy)
+                             {
+                                 err += dy;
+                                 x0 += sx;
+                             }
+                             if (e2 <= dx)
+                             {
+                                 err += dx;
+                                 y0 += sy;
+                             }
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("draw_pixel_circle", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        if (a.size() < 4)
-            return TScriptValue::Nil();
-        int cx = (int)a[0].AsNumber();
-        int cy = (int)a[1].AsNumber();
-        int r = (int)a[2].AsNumber();
-        TEVector4 col = ValueToColorVec4(a[3]);
+    RegisterFunction("draw_pixel_circle",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 4)
+                             return TScriptValue::Nil();
+                         int cx = (int)a[0].AsNumber();
+                         int cy = (int)a[1].AsNumber();
+                         int r = (int)a[2].AsNumber();
+                         TEVector4 col = ValueToColorVec4(a[3]);
 
-        for (int y = -r; y <= r; ++y)
-        {
-            for (int x = -r; x <= r; ++x)
-            {
-                if (x * x + y * y <= r * r)
-                {
-                    int px = cx + x;
-                    int py = cy + y;
-                    if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
-                    {
-                        m_Context.PixelBuffer[py * m_Context.PixelWidth + px] = col;
-                    }
-                }
-            }
-        }
-        return TScriptValue::Nil();
-    });
+                         for (int y = -r; y <= r; ++y)
+                         {
+                             for (int x = -r; x <= r; ++x)
+                             {
+                                 if (x * x + y * y <= r * r)
+                                 {
+                                     int px = cx + x;
+                                     int py = cy + y;
+                                     if (px >= 0 && px < m_Context.PixelWidth && py >= 0 && py < m_Context.PixelHeight)
+                                     {
+                                         m_Context.PixelBuffer[py * m_Context.PixelWidth + px] = col;
+                                     }
+                                 }
+                             }
+                         }
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("clear_pixels", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        TEVector4 col = (a.size() > 0) ? ValueToColorVec4(a[0]) : TEVector4(0.0f, 0.0f, 0.0f, 0.0f);
-        m_Context.PixelBuffer.Assign(m_Context.PixelBuffer.size(), col);
-        return TScriptValue::Nil();
-    });
+    RegisterFunction("clear_pixels",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         TEVector4 col = (a.size() > 0) ? ValueToColorVec4(a[0]) : TEVector4(0.0f, 0.0f, 0.0f, 0.0f);
+                         m_Context.PixelBuffer.Assign(m_Context.PixelBuffer.size(), col);
+                         return TScriptValue::Nil();
+                     });
 
-    RegisterFunction("fill_pixels", [this](const TEArray<TScriptValue> &a) -> TScriptValue {
-        TEVector4 col = (a.size() > 0) ? ValueToColorVec4(a[0]) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
-        m_Context.PixelBuffer.Assign(m_Context.PixelBuffer.size(), col);
-        return TScriptValue::Nil();
-    });
+    RegisterFunction("fill_pixels",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         TEVector4 col = (a.size() > 0) ? ValueToColorVec4(a[0]) : TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                         m_Context.PixelBuffer.Assign(m_Context.PixelBuffer.size(), col);
+                         return TScriptValue::Nil();
+                     });
 }
 
 TScriptValue SpriteScriptRuntime::EvalExpr(const ExprNode &node)
@@ -928,18 +1014,21 @@ TScriptValue SpriteScriptRuntime::EvalExpr(const ExprNode &node)
 
     switch (node->type)
     {
-    case ASTNodeType::Literal: {
+    case ASTNodeType::Literal:
+    {
         auto lit = std::static_pointer_cast<LiteralNode>(node);
         return lit->value;
     }
-    case ASTNodeType::Variable: {
+    case ASTNodeType::Variable:
+    {
         auto varNode = std::static_pointer_cast<VariableNode>(node);
         auto it = m_Globals.find(varNode->name);
         if (it != m_Globals.end())
             return it->second;
         return TScriptValue::Nil();
     }
-    case ASTNodeType::Assign: {
+    case ASTNodeType::Assign:
+    {
         auto assign = std::static_pointer_cast<AssignNode>(node);
         TScriptValue rhs = EvalExpr(assign->value);
         if (assign->op == "=")
@@ -954,7 +1043,8 @@ TScriptValue SpriteScriptRuntime::EvalExpr(const ExprNode &node)
             m_Globals[assign->name] = TScriptValue::Number(m_Globals[assign->name].AsNumber() / rhs.AsNumber());
         return m_Globals[assign->name];
     }
-    case ASTNodeType::BinaryOp: {
+    case ASTNodeType::BinaryOp:
+    {
         auto bin = std::static_pointer_cast<BinaryOpNode>(node);
         TScriptValue lhs = EvalExpr(bin->left);
         TScriptValue rhs = EvalExpr(bin->right);
@@ -993,7 +1083,8 @@ TScriptValue SpriteScriptRuntime::EvalExpr(const ExprNode &node)
             return TScriptValue::Bool(lhs.IsTruthy() || rhs.IsTruthy());
         return TScriptValue::Nil();
     }
-    case ASTNodeType::UnaryOp: {
+    case ASTNodeType::UnaryOp:
+    {
         auto un = std::static_pointer_cast<UnaryOpNode>(node);
         TScriptValue val = EvalExpr(un->operand);
         if (un->op == "-" && val.IsNumber())
@@ -1002,7 +1093,8 @@ TScriptValue SpriteScriptRuntime::EvalExpr(const ExprNode &node)
             return TScriptValue::Bool(!val.IsTruthy());
         return TScriptValue::Nil();
     }
-    case ASTNodeType::Call: {
+    case ASTNodeType::Call:
+    {
         auto call = std::static_pointer_cast<CallNode>(node);
         TEArray<TScriptValue> args;
         for (const auto &a : call->args)
@@ -1022,12 +1114,14 @@ void SpriteScriptRuntime::ExecStmt(const StmtNode &node)
 
     switch (node->type)
     {
-    case ASTNodeType::Block: {
+    case ASTNodeType::Block:
+    {
         auto block = std::static_pointer_cast<BlockNode>(node);
         ExecBlock(*block);
         break;
     }
-    case ASTNodeType::VarDecl: {
+    case ASTNodeType::VarDecl:
+    {
         auto varDecl = std::static_pointer_cast<VarDeclNode>(node);
         if (varDecl->init)
             m_Globals[varDecl->name] = EvalExpr(varDecl->init);
@@ -1035,7 +1129,8 @@ void SpriteScriptRuntime::ExecStmt(const StmtNode &node)
             m_Globals[varDecl->name] = TScriptValue::Nil();
         break;
     }
-    case ASTNodeType::If: {
+    case ASTNodeType::If:
+    {
         auto ifNode = std::static_pointer_cast<IfNode>(node);
         if (EvalExpr(ifNode->condition).IsTruthy())
         {
@@ -1048,7 +1143,8 @@ void SpriteScriptRuntime::ExecStmt(const StmtNode &node)
         }
         break;
     }
-    case ASTNodeType::While: {
+    case ASTNodeType::While:
+    {
         auto whileNode = std::static_pointer_cast<WhileNode>(node);
         int maxIter = 10000;
         while (EvalExpr(whileNode->condition).IsTruthy() && --maxIter > 0)
@@ -1058,7 +1154,8 @@ void SpriteScriptRuntime::ExecStmt(const StmtNode &node)
         }
         break;
     }
-    case ASTNodeType::ForRange: {
+    case ASTNodeType::ForRange:
+    {
         auto forNode = std::static_pointer_cast<ForRangeNode>(node);
         TScriptValue collVal = EvalExpr(forNode->collection);
         if (collVal.IsNumber())
@@ -1074,7 +1171,8 @@ void SpriteScriptRuntime::ExecStmt(const StmtNode &node)
         }
         break;
     }
-    case ASTNodeType::ForCStyle: {
+    case ASTNodeType::ForCStyle:
+    {
         auto forNode = std::static_pointer_cast<ForCStyleNode>(node);
         if (forNode->init)
             ExecStmt(forNode->init);
@@ -1183,10 +1281,7 @@ TEVector2 SpriteScriptRuntime::ToScreenPos(float x, float y) const
     return TEVector2(m_Context.Origin.x + x, m_Context.Origin.y + y);
 }
 
-TEVector2 SpriteScriptRuntime::ToScreenSize(float w, float h) const
-{
-    return TEVector2(w, h);
-}
+TEVector2 SpriteScriptRuntime::ToScreenSize(float w, float h) const { return TEVector2(w, h); }
 
 TEString SpriteScriptRuntime::GetApiDocumentationMarkdown()
 {

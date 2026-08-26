@@ -1,7 +1,6 @@
 #include "NarrativeBlackboard.hpp"
 #include <sstream>
 
-
 void NarrativeBlackboard::Set(const TEString &name, const NarrativeValue &value)
 {
     m_Variables[name] = value;
@@ -20,20 +19,11 @@ NarrativeValue NarrativeBlackboard::Get(const TEString &name) const
     return NarrativeValue();
 }
 
-bool NarrativeBlackboard::Has(const TEString &name) const
-{
-    return m_Variables.Find(name) != nullptr;
-}
+bool NarrativeBlackboard::Has(const TEString &name) const { return m_Variables.Find(name) != nullptr; }
 
-void NarrativeBlackboard::Remove(const TEString &name)
-{
-    m_Variables.Remove(name);
-}
+void NarrativeBlackboard::Remove(const TEString &name) { m_Variables.Remove(name); }
 
-void NarrativeBlackboard::Clear()
-{
-    m_Variables.Clear();
-}
+void NarrativeBlackboard::Clear() { m_Variables.Clear(); }
 
 bool NarrativeBlackboard::EvaluateCondition(const TEString &varName, ComparisonOp op,
                                             const NarrativeValue &targetVal) const
@@ -81,15 +71,9 @@ void NarrativeBlackboard::ApplyMutation(const TEString &varName, MutationOp op, 
     }
 }
 
-void NarrativeBlackboard::AddObserver(VariableChangeCallback callback)
-{
-    m_Observers.push_back(callback);
-}
+void NarrativeBlackboard::AddObserver(VariableChangeCallback callback) { m_Observers.push_back(callback); }
 
-void NarrativeBlackboard::ClearObservers()
-{
-    m_Observers.clear();
-}
+void NarrativeBlackboard::ClearObservers() { m_Observers.clear(); }
 
 TEString NarrativeBlackboard::SerializeNativeText() const
 {
@@ -126,4 +110,3 @@ bool NarrativeBlackboard::DeserializeNativeText(const TEString &text)
     }
     return true;
 }
-

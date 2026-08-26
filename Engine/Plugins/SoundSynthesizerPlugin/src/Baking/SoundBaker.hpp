@@ -3,7 +3,8 @@
 #include "../Graph/SoundGraphEvaluator.hpp"
 #include "Utils/TEString.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 struct SoundBakeOptions
 {

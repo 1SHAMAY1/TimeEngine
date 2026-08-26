@@ -1,11 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/TilemapComponent.hpp"
 #include "Core/Collision/BoxColliderComponent.hpp"
+#include "Core/PreRequisites.h"
 
-TilemapComponent::TilemapComponent()
-{
-    Resize(GridWidth, GridHeight);
-}
+TilemapComponent::TilemapComponent() { Resize(GridWidth, GridHeight); }
 
 void TilemapComponent::OnAttach()
 {
@@ -59,10 +56,7 @@ TileData TilemapComponent::GetTile(int x, int y) const
     return TileData{};
 }
 
-void TilemapComponent::ClearTile(int x, int y)
-{
-    SetTile(x, y, -1);
-}
+void TilemapComponent::ClearTile(int x, int y) { SetTile(x, y, -1); }
 
 void TilemapComponent::ClearAll()
 {

@@ -2,7 +2,6 @@
 
 #include "Utils/TimeGUI.hpp"
 
-
 class SpriteEditorLayer;
 class SpriteMode;
 
@@ -18,4 +17,3 @@ public:
     virtual TEString GetName() const = 0;
     virtual TEString GetIcon() const = 0;
 };
-

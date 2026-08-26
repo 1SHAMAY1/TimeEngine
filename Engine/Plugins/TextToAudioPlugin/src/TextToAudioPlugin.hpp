@@ -13,7 +13,8 @@ public:
     virtual TEString GetAuthor() const override { return "TimeEngine Team"; }
     virtual TEString GetDescription() const override
     {
-        return "Offline Text-to-Audio and Speech Synthesis plugin with Acoustic RichText, GameplayTags, and MCP support.";
+        return "Offline Text-to-Audio and Speech Synthesis plugin with Acoustic RichText, GameplayTags, and MCP "
+               "support.";
     }
 
     virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Settings/ProjectPhysicsSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,14 +7,14 @@ TE_REGISTER_PROJECT_SETTINGS(ProjectPhysicsSettings);
 
 namespace
 {
-    static float s_Gravity[2] = { 0.0f, -9.81f };
-    static int s_VelocityIterations = 6;
-    static int s_PositionIterations = 2;
-    static bool s_AllowSleep = true;
-    static bool s_ContinuousCollision = false;
-    static float s_DefaultFriction = 0.3f;
-    static float s_DefaultRestitution = 0.0f;
-}
+static float s_Gravity[2] = {0.0f, -9.81f};
+static int s_VelocityIterations = 6;
+static int s_PositionIterations = 2;
+static bool s_AllowSleep = true;
+static bool s_ContinuousCollision = false;
+static float s_DefaultFriction = 0.3f;
+static float s_DefaultRestitution = 0.0f;
+} // namespace
 
 void ProjectPhysicsSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {

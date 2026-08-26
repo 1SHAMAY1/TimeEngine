@@ -5,8 +5,8 @@
 #include "Core/Scripting/TScriptLexer.hpp"
 #include "Core/Scripting/TScriptParser.hpp"
 
-
-class TScriptAsset : public Asset {
+class TScriptAsset : public Asset
+{
 public:
     TScriptAsset() = default;
     TScriptAsset(TEString sourceText);
@@ -25,26 +25,25 @@ public:
     virtual AssetHandle GetHandle() const override { return m_Handle; }
     void SetHandle(AssetHandle handle) { m_Handle = handle; }
 
-    virtual const TEString& GetType() const override {
+    virtual const TEString &GetType() const override
+    {
         static TEString t = "TScript";
         return t;
     }
 
-    virtual const TEString& GetName() const override { return m_Name; }
+    virtual const TEString &GetName() const override { return m_Name; }
     void SetName(const TEString &name) { m_Name = name; }
 
-    virtual const TEString& GetHoverDescription() const override {
+    virtual const TEString &GetHoverDescription() const override
+    {
         static TEString desc;
         desc = "TimeEngine Script: " + m_Name;
         return desc;
     }
 
-    virtual TEString GetDefaultExtension() const override {
-        return ".tscript";
-    }
+    virtual TEString GetDefaultExtension() const override { return ".tscript"; }
 
 private:
     AssetHandle m_Handle = 0;
     TEString m_Name = "New Script";
 };
-

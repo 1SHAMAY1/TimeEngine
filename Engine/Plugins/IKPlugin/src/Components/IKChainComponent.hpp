@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../Solvers/IIKSolver.hpp"
 #include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Utils/MathUtils.hpp"
-#include "../Solvers/IIKSolver.hpp"
 
 class IKChain2DComponent : public TComponent
 {
@@ -27,7 +27,7 @@ public:
 
     IK::IKSolverType SolverType = IK::IKSolverType::TwoBone2D;
 
-    void SetTargetPosition(const TEVector2& pos) { m_TargetPosition = pos; }
+    void SetTargetPosition(const TEVector2 &pos) { m_TargetPosition = pos; }
     TEVector2 GetTargetPosition() const { return m_TargetPosition; }
 
 private:

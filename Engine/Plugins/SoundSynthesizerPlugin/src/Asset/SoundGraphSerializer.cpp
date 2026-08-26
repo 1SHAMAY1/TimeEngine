@@ -3,8 +3,8 @@
 #include "Core/Log.h"
 #include <fstream>
 
-
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 bool SoundGraphSerializer::Serialize(TERef<SoundGraph> graph, const TEString &filepath)
 {

@@ -1,17 +1,17 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/UIAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
-UIAssetEditor::UIAssetEditor()
-{
-}
+UIAssetEditor::UIAssetEditor() {}
 
 TEString UIAssetEditor::CreateDefaultTemplate(const TEString &name) const
 {
     return "{\n"
-           "  \"Name\": \"" + name + "\",\n"
+           "  \"Name\": \"" +
+           name +
+           "\",\n"
            "  \"AssetType\": \"UIAsset\",\n"
            "  \"Description\": \"TimeEngine UI Layout Asset\",\n"
            "  \"Nodes\": [\n"
@@ -265,11 +265,10 @@ void UIAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) const
     // UI Buttons
     float btnY = cMin.y + headerH + 4.0f;
     float btnH = (cMax.y - btnY - 4.0f) * 0.40f;
-    dl.AddRectFilled(TEVector2(cMin.x + 4.0f, btnY), TEVector2(cMax.x - 4.0f, btnY + btnH),
-                     IM_COL32(70, 140, 90, 255), 2.0f);
+    dl.AddRectFilled(TEVector2(cMin.x + 4.0f, btnY), TEVector2(cMax.x - 4.0f, btnY + btnH), IM_COL32(70, 140, 90, 255),
+                     2.0f);
     dl.AddRectFilled(TEVector2(cMin.x + 4.0f, btnY + btnH + 3.0f), TEVector2(cMax.x - 4.0f, btnY + btnH * 2.0f + 3.0f),
                      IM_COL32(180, 100, 40, 255), 2.0f);
 }
 
 TE_REGISTER_ASSET_EDITOR(UIAssetEditor);
-

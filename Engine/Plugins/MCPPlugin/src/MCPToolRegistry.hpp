@@ -6,7 +6,6 @@
 #include <map>
 #include <mutex>
 
-
 struct MCPToolDefinition
 {
     TEString Name;
@@ -100,10 +99,6 @@ private:
     {                                                                                                                  \
     struct MCPToolAutoReg_##name                                                                                       \
     {                                                                                                                  \
-        MCPToolAutoReg_##name()                                                                                        \
-        {                                                                                                              \
-            MCPToolRegistry::RegisterTool({#name, description, schemaJson, handlerFn});                          \
-        }                                                                                                              \
+        MCPToolAutoReg_##name() { MCPToolRegistry::RegisterTool({#name, description, schemaJson, handlerFn}); }        \
     } s_MCPToolAutoReg_##name;                                                                                         \
     }
-

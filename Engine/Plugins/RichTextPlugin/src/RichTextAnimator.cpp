@@ -2,7 +2,6 @@
 #include <cmath>
 #include <cstdlib>
 
-
 static TEColor HSLToRGB(float h, float s, float l)
 {
     float c = (1.0f - std::abs(2.0f * l - 1.0f)) * s;
@@ -10,20 +9,51 @@ static TEColor HSLToRGB(float h, float s, float l)
     float m = l - c / 2.0f;
 
     float r = 0, g = 0, b = 0;
-    if (h < 60.0f) { r = c; g = x; b = 0; }
-    else if (h < 120.0f) { r = x; g = c; b = 0; }
-    else if (h < 180.0f) { r = 0; g = c; b = x; }
-    else if (h < 240.0f) { r = 0; g = x; b = c; }
-    else if (h < 300.0f) { r = x; g = 0; b = c; }
-    else { r = c; g = 0; b = x; }
+    if (h < 60.0f)
+    {
+        r = c;
+        g = x;
+        b = 0;
+    }
+    else if (h < 120.0f)
+    {
+        r = x;
+        g = c;
+        b = 0;
+    }
+    else if (h < 180.0f)
+    {
+        r = 0;
+        g = c;
+        b = x;
+    }
+    else if (h < 240.0f)
+    {
+        r = 0;
+        g = x;
+        b = c;
+    }
+    else if (h < 300.0f)
+    {
+        r = x;
+        g = 0;
+        b = c;
+    }
+    else
+    {
+        r = c;
+        g = 0;
+        b = x;
+    }
 
     return TEColor(r + m, g + m, b + m, 1.0f);
 }
 
 void RichTextAnimator::AnimateLayout(RichTextLayoutResult &layout, float totalTime, float deltaTime,
-                                    float typewriterProgress)
+                                     float typewriterProgress)
 {
-    size_t visibleCharLimit = static_cast<size_t>(layout.TotalCharacterCount * std::clamp(typewriterProgress, 0.0f, 1.0f));
+    size_t visibleCharLimit =
+        static_cast<size_t>(layout.TotalCharacterCount * std::clamp(typewriterProgress, 0.0f, 1.0f));
 
     for (auto &glyph : layout.GlyphQuads)
     {
@@ -65,4 +95,3 @@ void RichTextAnimator::AnimateLayout(RichTextLayoutResult &layout, float totalTi
         }
     }
 }
-

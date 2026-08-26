@@ -2,7 +2,6 @@
 #include "Core/Scene/Scene.hpp"
 #include <memory>
 
-
 class SceneSerializer
 {
 public:
@@ -14,4 +13,3 @@ public:
 private:
     TERef<Scene> m_Scene;
 };
-

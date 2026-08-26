@@ -2,7 +2,6 @@
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 
-
 Entity ParticleSystemGameplayLib::SpawnEmitterAtLocation(EntityManager &em, const TEVector &location,
                                                          const TEString &preset, float autoDestroyDuration)
 {
@@ -37,7 +36,7 @@ Entity ParticleSystemGameplayLib::SpawnEmitterAttached(EntityManager &em, Entity
 {
     Entity entity = em.CreateEntity();
     entity.AddComponent<TagComponent>("ParticleEmitter_Attached");
-    
+
     auto *trans = entity.AddComponent<TransformComponent>(relativeOffset);
     if (trans && parentEntity.IsValid())
     {
@@ -93,9 +92,8 @@ Entity ParticleSystemGameplayLib::SpawnHitImpactSparks(EntityManager &em, const 
     return entity;
 }
 
-Entity ParticleSystemGameplayLib::SpawnExplosion(EntityManager &em, const TEVector &location,
-                                                 uint32_t burstCount, float speed,
-                                                 const TEColor &coreColor)
+Entity ParticleSystemGameplayLib::SpawnExplosion(EntityManager &em, const TEVector &location, uint32_t burstCount,
+                                                 float speed, const TEColor &coreColor)
 {
     Entity entity = em.CreateEntity();
     entity.AddComponent<TagComponent>("Explosion_FX");
@@ -115,9 +113,8 @@ Entity ParticleSystemGameplayLib::SpawnExplosion(EntityManager &em, const TEVect
     return entity;
 }
 
-Entity ParticleSystemGameplayLib::SpawnSmokePuff(EntityManager &em, const TEVector &location,
-                                                 float size, float lifetime,
-                                                 const TEColor &smokeColor)
+Entity ParticleSystemGameplayLib::SpawnSmokePuff(EntityManager &em, const TEVector &location, float size,
+                                                 float lifetime, const TEColor &smokeColor)
 {
     Entity entity = em.CreateEntity();
     entity.AddComponent<TagComponent>("SmokePuff_FX");
@@ -139,8 +136,8 @@ Entity ParticleSystemGameplayLib::SpawnSmokePuff(EntityManager &em, const TEVect
     return entity;
 }
 
-Entity ParticleSystemGameplayLib::SpawnRainWeather(EntityManager &em, const TEVector &topCenter,
-                                                   float width, float rate)
+Entity ParticleSystemGameplayLib::SpawnRainWeather(EntityManager &em, const TEVector &topCenter, float width,
+                                                   float rate)
 {
     Entity entity = em.CreateEntity();
     entity.AddComponent<TagComponent>("Weather_Rain");
@@ -208,4 +205,3 @@ bool ParticleSystemGameplayLib::StopAndDestroyEmitter(EntityManager &em, Entity 
     em.DestroyEntity(emitterEntity);
     return true;
 }
-

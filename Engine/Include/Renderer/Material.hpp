@@ -8,7 +8,6 @@
 #include "Renderer/Texture.hpp"
 #include <glm/glm.hpp>
 
-
 enum class MaterialPassNodeType
 {
     BaseSurfaceSlab = 0,
@@ -125,4 +124,3 @@ private:
     AssetHandle m_Handle = 0;
     TEString m_Name = "Unnamed Material";
 };
-

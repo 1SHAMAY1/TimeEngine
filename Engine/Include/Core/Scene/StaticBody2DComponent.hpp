@@ -32,9 +32,14 @@ public:
 T_REGISTER_COMPONENT(StaticBody2DComponent, "StaticBody 2D Component")
 T_REGISTER_PROPERTY(StaticBody2DComponent, bool, Enabled, "Enabled")
 T_REGISTER_PRESET(StaticBody2DComponent, "Static Body 2D", "Physics & Collisions",
-                  [](EntityID id, EntityManager *em) {
+                  [](EntityID id, EntityManager *em)
+                  {
                       em->AddComponent<StaticBody2DComponent>(id);
                       auto *rb = em->AddComponent<RigidBody2DComponent>(id);
-                      if (rb) { rb->SetRigidBodyType(ERigidBodyType2D::Static); rb->Mass = 0.0f; }
+                      if (rb)
+                      {
+                          rb->SetRigidBodyType(ERigidBodyType2D::Static);
+                          rb->Mass = 0.0f;
+                      }
                   })
 #endif

@@ -1,9 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Input/Input.hpp"
+#include "Core/PreRequisites.h"
 
 #include "Utils/TimeGUI.hpp"
-#include <imgui.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
 
 void *Input::s_Window = nullptr;
 TEMap<KeyCode, InputState> Input::s_KeyStates;
@@ -253,4 +253,3 @@ int Input::ToImGuiKey(KeyCode key)
     }
     return ImGuiKey_None;
 }
-

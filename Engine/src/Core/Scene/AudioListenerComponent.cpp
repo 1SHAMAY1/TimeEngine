@@ -1,26 +1,15 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/AudioListenerComponent.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 
-AudioListenerComponent::~AudioListenerComponent()
-{
-}
+AudioListenerComponent::~AudioListenerComponent() {}
 
-void AudioListenerComponent::OnInitialize()
-{
-    TComponent::OnInitialize();
-}
+void AudioListenerComponent::OnInitialize() { TComponent::OnInitialize(); }
 
-void AudioListenerComponent::OnAttach()
-{
-    TComponent::OnAttach();
-}
+void AudioListenerComponent::OnAttach() { TComponent::OnAttach(); }
 
-void AudioListenerComponent::OnDetach()
-{
-    TComponent::OnDetach();
-}
+void AudioListenerComponent::OnDetach() { TComponent::OnDetach(); }
 
 void AudioListenerComponent::Tick(float deltaTime)
 {

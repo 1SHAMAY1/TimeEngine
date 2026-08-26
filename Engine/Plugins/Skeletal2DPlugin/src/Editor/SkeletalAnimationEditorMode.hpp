@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
-#include "Editor/EditorMode.hpp"
-#include "Utils/TimeGUI.hpp"
-#include "SkeletalEditorTypes.hpp"
 #include "../Assets/SkeletalDataAsset.hpp"
 #include "../Core/SkeletalPoseEvaluator.hpp"
+#include "Core/PreRequisites.h"
+#include "Editor/EditorMode.hpp"
+#include "SkeletalEditorTypes.hpp"
+#include "Utils/TimeGUI.hpp"
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 class SkeletalAnimationEditorMode : public EditorMode
 {

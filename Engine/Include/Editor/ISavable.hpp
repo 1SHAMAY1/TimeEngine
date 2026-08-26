@@ -2,7 +2,6 @@
 #include "Core/PreRequisites.h"
 #include <functional>
 
-
 class TE_API ISavable
 {
 public:
@@ -44,4 +43,3 @@ public:
 protected:
     bool m_IsDirty = false;
 };
-

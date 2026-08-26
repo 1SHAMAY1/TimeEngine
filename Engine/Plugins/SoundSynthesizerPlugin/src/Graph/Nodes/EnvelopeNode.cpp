@@ -1,6 +1,7 @@
 #include "EnvelopeNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 ADSREnvelopeNode::ADSREnvelopeNode()
 {

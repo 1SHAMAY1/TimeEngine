@@ -2,22 +2,21 @@
 #include "Core/PreRequisites.h"
 #include "GameFrameWork/TFunctionLibrary.hpp"
 #include "Utils/MathUtils.hpp"
-#include <vector>
-#include <unordered_map>
 #include <algorithm>
 #include <functional>
-#include <stdexcept>
-#include <type_traits>
-#include <string>
-#include <string_view>
 #include <initializer_list>
 #include <optional>
 #include <span>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
 #include <variant>
+#include <vector>
 #if __has_include(<expected>)
 #include <expected>
 #endif
-
 
 class Scene;
 class Entity;
@@ -29,30 +28,24 @@ class TObject;
 // Modern Type Utilities & Safe Views
 // ==========================================
 
-template <typename T>
-using TEOption = std::optional<T>;
+template <typename T> using TEOption = std::optional<T>;
 inline constexpr auto TENone = std::nullopt;
 
-template <typename T>
-using TESpan = std::span<T>;
+template <typename T> using TESpan = std::span<T>;
 
 using TEStringView = std::string_view;
 
 #if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
-template <typename T, typename E = TEString>
-using TEResult = std::expected<T, E>;
-template <typename E>
-using TEUnexpected = std::unexpected<E>;
+template <typename T, typename E = TEString> using TEResult = std::expected<T, E>;
+template <typename E> using TEUnexpected = std::unexpected<E>;
 #else
-template <typename E>
-struct TEUnexpected
+template <typename E> struct TEUnexpected
 {
     E error;
     explicit TEUnexpected(E err) : error(std::move(err)) {}
 };
 
-template <typename T, typename E = TEString>
-class TEResult
+template <typename T, typename E = TEString> class TEResult
 {
 private:
     std::variant<T, E> m_Storage;
@@ -78,18 +71,14 @@ public:
     E &Error() { return std::get<1>(m_Storage); }
     const E &Error() const { return std::get<1>(m_Storage); }
 
-    T ValueOr(T &&fallback) const
-    {
-        return m_HasValue ? std::get<0>(m_Storage) : std::forward<T>(fallback);
-    }
+    T ValueOr(T &&fallback) const { return m_HasValue ? std::get<0>(m_Storage) : std::forward<T>(fallback); }
 };
 #endif
 
 // ==========================================
 // TEArray - Dynamic Engine Container Template
 // ==========================================
-template <typename T>
-class TEArray
+template <typename T> class TEArray
 {
 private:
     std::vector<T> m_Elements;
@@ -112,16 +101,23 @@ public:
     explicit TEArray(size_t count) : m_Elements(count) {}
     TEArray(size_t count, const T &value) : m_Elements(count, value) {}
 
-    template <typename InputIt>
-    TEArray(InputIt first, InputIt last) : m_Elements(first, last) {}
+    template <typename InputIt> TEArray(InputIt first, InputIt last) : m_Elements(first, last) {}
 
     // Implicit conversion / construction from std::vector
     TEArray(const std::vector<T> &vec) : m_Elements(vec) {}
     TEArray(std::vector<T> &&vec) : m_Elements(std::move(vec)) {}
-    TEArray &operator=(const std::vector<T> &vec) { m_Elements = vec; return *this; }
-    TEArray &operator=(std::vector<T> &&vec) { m_Elements = std::move(vec); return *this; }
-    operator std::vector<T>&() { return m_Elements; }
-    operator const std::vector<T>&() const { return m_Elements; }
+    TEArray &operator=(const std::vector<T> &vec)
+    {
+        m_Elements = vec;
+        return *this;
+    }
+    TEArray &operator=(std::vector<T> &&vec)
+    {
+        m_Elements = std::move(vec);
+        return *this;
+    }
+    operator std::vector<T> &() { return m_Elements; }
+    operator const std::vector<T> &() const { return m_Elements; }
 
     // Capacity & Size
     size_t Num() const { return m_Elements.size(); }
@@ -136,12 +132,10 @@ public:
 
     // Assignment & Modification
     void Assign(size_t count, const T &value) { m_Elements.assign(count, value); }
-    template <typename InputIt>
-    void Assign(InputIt first, InputIt last) { m_Elements.assign(first, last); }
+    template <typename InputIt> void Assign(InputIt first, InputIt last) { m_Elements.assign(first, last); }
     void Assign(std::initializer_list<T> ilist) { m_Elements.assign(ilist); }
     void assign(size_t count, const T &value) { m_Elements.assign(count, value); }
-    template <typename InputIt>
-    void assign(InputIt first, InputIt last) { m_Elements.assign(first, last); }
+    template <typename InputIt> void assign(InputIt first, InputIt last) { m_Elements.assign(first, last); }
     void assign(std::initializer_list<T> ilist) { m_Elements.assign(ilist); }
 
     // Add & Insert
@@ -151,14 +145,12 @@ public:
     void push_back(T &&element) { m_Elements.push_back(std::move(element)); }
     void pop_back() { m_Elements.pop_back(); }
 
-    template <typename... Args>
-    reference Emplace(Args &&...args)
+    template <typename... Args> reference Emplace(Args &&...args)
     {
         return m_Elements.emplace_back(std::forward<Args>(args)...);
     }
 
-    template <typename... Args>
-    reference emplace_back(Args &&...args)
+    template <typename... Args> reference emplace_back(Args &&...args)
     {
         return m_Elements.emplace_back(std::forward<Args>(args)...);
     }
@@ -208,8 +200,7 @@ public:
         return std::find(m_Elements.begin(), m_Elements.end(), element) != m_Elements.end();
     }
 
-    template <typename Predicate>
-    bool ContainsBy(Predicate pred) const
+    template <typename Predicate> bool ContainsBy(Predicate pred) const
     {
         return std::any_of(m_Elements.begin(), m_Elements.end(), pred);
     }
@@ -222,15 +213,13 @@ public:
         return -1;
     }
 
-    template <typename Predicate>
-    T *FindBy(Predicate pred)
+    template <typename Predicate> T *FindBy(Predicate pred)
     {
         auto it = std::find_if(m_Elements.begin(), m_Elements.end(), pred);
         return (it != m_Elements.end()) ? &(*it) : nullptr;
     }
 
-    template <typename Predicate>
-    const T *FindBy(Predicate pred) const
+    template <typename Predicate> const T *FindBy(Predicate pred) const
     {
         auto it = std::find_if(m_Elements.begin(), m_Elements.end(), pred);
         return (it != m_Elements.end()) ? &(*it) : nullptr;
@@ -254,8 +243,7 @@ public:
             m_Elements.erase(m_Elements.begin() + index);
     }
 
-    template <typename Predicate>
-    size_t RemoveBy(Predicate pred)
+    template <typename Predicate> size_t RemoveBy(Predicate pred)
     {
         auto oldSize = m_Elements.size();
         m_Elements.erase(std::remove_if(m_Elements.begin(), m_Elements.end(), pred), m_Elements.end());
@@ -294,8 +282,7 @@ public:
 // ==========================================
 // TEMap - Engine Hash Map Template
 // ==========================================
-template <typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
-class TEMap
+template <typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>> class TEMap
 {
 private:
     std::unordered_map<KeyType, ValueType, Hasher> m_Map;
@@ -318,10 +305,18 @@ public:
     // Implicit conversion / assignment with std::unordered_map
     TEMap(const std::unordered_map<KeyType, ValueType, Hasher> &other) : m_Map(other) {}
     TEMap(std::unordered_map<KeyType, ValueType, Hasher> &&other) : m_Map(std::move(other)) {}
-    TEMap &operator=(const std::unordered_map<KeyType, ValueType, Hasher> &other) { m_Map = other; return *this; }
-    TEMap &operator=(std::unordered_map<KeyType, ValueType, Hasher> &&other) { m_Map = std::move(other); return *this; }
-    operator std::unordered_map<KeyType, ValueType, Hasher>&() { return m_Map; }
-    operator const std::unordered_map<KeyType, ValueType, Hasher>&() const { return m_Map; }
+    TEMap &operator=(const std::unordered_map<KeyType, ValueType, Hasher> &other)
+    {
+        m_Map = other;
+        return *this;
+    }
+    TEMap &operator=(std::unordered_map<KeyType, ValueType, Hasher> &&other)
+    {
+        m_Map = std::move(other);
+        return *this;
+    }
+    operator std::unordered_map<KeyType, ValueType, Hasher> &() { return m_Map; }
+    operator const std::unordered_map<KeyType, ValueType, Hasher> &() const { return m_Map; }
 
     size_t Num() const { return m_Map.size(); }
     size_t Size() const { return m_Map.size(); }
@@ -335,25 +330,13 @@ public:
     ValueType &operator[](const KeyType &key) { return m_Map[key]; }
     ValueType &operator[](KeyType &&key) { return m_Map[std::move(key)]; }
 
-    bool Contains(const KeyType &key) const
-    {
-        return m_Map.find(key) != m_Map.end();
-    }
+    bool Contains(const KeyType &key) const { return m_Map.find(key) != m_Map.end(); }
 
-    size_t count(const KeyType &key) const
-    {
-        return m_Map.count(key);
-    }
+    size_t count(const KeyType &key) const { return m_Map.count(key); }
 
-    ValueType &at(const KeyType &key)
-    {
-        return m_Map.at(key);
-    }
+    ValueType &at(const KeyType &key) { return m_Map.at(key); }
 
-    const ValueType &at(const KeyType &key) const
-    {
-        return m_Map.at(key);
-    }
+    const ValueType &at(const KeyType &key) const { return m_Map.at(key); }
 
     ValueType *Find(const KeyType &key)
     {
@@ -370,15 +353,9 @@ public:
     iterator find(const KeyType &key) { return m_Map.find(key); }
     const_iterator find(const KeyType &key) const { return m_Map.find(key); }
 
-    bool Remove(const KeyType &key)
-    {
-        return m_Map.erase(key) > 0;
-    }
+    bool Remove(const KeyType &key) { return m_Map.erase(key) > 0; }
 
-    bool Erase(const KeyType &key)
-    {
-        return m_Map.erase(key) > 0;
-    }
+    bool Erase(const KeyType &key) { return m_Map.erase(key) > 0; }
 
     size_t erase(const KeyType &key) { return m_Map.erase(key); }
     iterator erase(const_iterator pos) { return m_Map.erase(pos); }
@@ -417,8 +394,7 @@ public:
 // ==========================================
 // TESet - Engine Hash Set Template
 // ==========================================
-template <typename KeyType, typename Hasher = std::hash<KeyType>>
-class TESet
+template <typename KeyType, typename Hasher = std::hash<KeyType>> class TESet
 {
 private:
     std::unordered_set<KeyType, Hasher> m_Set;
@@ -439,10 +415,18 @@ public:
 
     TESet(const std::unordered_set<KeyType, Hasher> &other) : m_Set(other) {}
     TESet(std::unordered_set<KeyType, Hasher> &&other) : m_Set(std::move(other)) {}
-    TESet &operator=(const std::unordered_set<KeyType, Hasher> &other) { m_Set = other; return *this; }
-    TESet &operator=(std::unordered_set<KeyType, Hasher> &&other) { m_Set = std::move(other); return *this; }
-    operator std::unordered_set<KeyType, Hasher>&() { return m_Set; }
-    operator const std::unordered_set<KeyType, Hasher>&() const { return m_Set; }
+    TESet &operator=(const std::unordered_set<KeyType, Hasher> &other)
+    {
+        m_Set = other;
+        return *this;
+    }
+    TESet &operator=(std::unordered_set<KeyType, Hasher> &&other)
+    {
+        m_Set = std::move(other);
+        return *this;
+    }
+    operator std::unordered_set<KeyType, Hasher> &() { return m_Set; }
+    operator const std::unordered_set<KeyType, Hasher> &() const { return m_Set; }
 
     size_t Num() const { return m_Set.size(); }
     size_t Size() const { return m_Set.size(); }
@@ -483,8 +467,7 @@ public:
 // ==========================================
 // TEMatch (Pattern Matching over Algebraic Data Types / std::variant)
 // ==========================================
-template <typename Variant, typename... Handlers>
-decltype(auto) TEMatch(Variant &&v, Handlers &&...handlers)
+template <typename Variant, typename... Handlers> decltype(auto) TEMatch(Variant &&v, Handlers &&...handlers)
 {
     struct Overloaded : Handlers...
     {
@@ -498,17 +481,15 @@ decltype(auto) TEMatch(Variant &&v, Handlers &&...handlers)
 // ==========================================
 namespace Memory
 {
-    template <typename T, typename... Args>
-    inline Scope<T> NewScope(Args &&...args)
-    {
-        return CreateScope<T>(std::forward<Args>(args)...);
-    }
+template <typename T, typename... Args> inline Scope<T> NewScope(Args &&...args)
+{
+    return CreateScope<T>(std::forward<Args>(args)...);
+}
 
-    template <typename T, typename... Args>
-    inline Ref<T> NewRef(Args &&...args)
-    {
-        return CreateRef<T>(std::forward<Args>(args)...);
-    }
+template <typename T, typename... Args> inline Ref<T> NewRef(Args &&...args)
+{
+    return CreateRef<T>(std::forward<Args>(args)...);
+}
 } // namespace Memory
 
 // ==========================================
@@ -531,23 +512,25 @@ public:
         return nullptr;
     }
 
-    template <typename T>
-    static bool Equals(const T &a, const T &b) { return a == b; }
+    template <typename T> static bool Equals(const T &a, const T &b) { return a == b; }
 
     // ── Entity helpers ──────────────────────────────────────────────────
     static TEString GetEntityDisplayName(class EntityManager &mgr, Entity entity);
     static bool EntityContainsPoint(class EntityManager &mgr, Entity entity, const TEVector2 &worldPoint);
     static TEMatrix4 ResolveWorldTransform(class EntityManager &mgr, Entity entity, class TComponent *comp);
     static Entity PickEntity(Scene &scene, const TEVector2 &worldPoint);
-    static TEVector2 ViewportPixelToWorld(TEVector2 pixelPos, TEVector2 viewportSize, TEVector2 cameraPos, float cameraZoom);
-    static TEVector2 WorldToViewportPixel(TEVector2 worldPos, TEVector2 viewportSize, TEVector2 cameraPos, float cameraZoom);
+    static TEVector2 ViewportPixelToWorld(TEVector2 pixelPos, TEVector2 viewportSize, TEVector2 cameraPos,
+                                          float cameraZoom);
+    static TEVector2 WorldToViewportPixel(TEVector2 worldPos, TEVector2 viewportSize, TEVector2 cameraPos,
+                                          float cameraZoom);
 
     // ── Spawning & UI helpers ───────────────────────────────────────────
-    static Entity SpawnControllableGameObject(Scene &scene, const TEString &name = "ControllableObject", const TEVector2 &position = {0.0f, 0.0f});
+    static Entity SpawnControllableGameObject(Scene &scene, const TEString &name = "ControllableObject",
+                                              const TEVector2 &position = {0.0f, 0.0f});
     static TERef<class UIWidget> CreateWidget(const TEString &uiAssetPath);
 };
 
-
-#define TE_PLUGIN_ENABLED(PluginName)    (defined(TE_PLUGIN_##PluginName##_ENABLED) && (TE_PLUGIN_##PluginName##_ENABLED == 1))
-#define TE_IS_PLUGIN_ENABLED(PluginName) (defined(TE_PLUGIN_##PluginName##_ENABLED) && (TE_PLUGIN_##PluginName##_ENABLED == 1))
-
+#define TE_PLUGIN_ENABLED(PluginName)                                                                                  \
+    (defined(TE_PLUGIN_##PluginName##_ENABLED) && (TE_PLUGIN_##PluginName##_ENABLED == 1))
+#define TE_IS_PLUGIN_ENABLED(PluginName)                                                                               \
+    (defined(TE_PLUGIN_##PluginName##_ENABLED) && (TE_PLUGIN_##PluginName##_ENABLED == 1))

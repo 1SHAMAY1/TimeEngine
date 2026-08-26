@@ -2,11 +2,11 @@
 #include "UI/UIWidget.hpp"
 #include <functional>
 
-
 class TE_API UIToggleSwitch : public UIWidget
 {
 public:
-    UIToggleSwitch(bool initialState = false, const TEVector2 &size = TEVector2(52.0f, 28.0f), const TEString &id = "##UIToggleSwitch");
+    UIToggleSwitch(bool initialState = false, const TEVector2 &size = TEVector2(52.0f, 28.0f),
+                   const TEString &id = "##UIToggleSwitch");
 
     void DrawSelf() override;
 

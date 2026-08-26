@@ -38,19 +38,12 @@ bool PCGVolumeComponent::Generate(Ref<Scene> scene)
     float halfW = BoundsWidth * 0.5f;
     float halfH = BoundsHeight * 0.5f;
 
-    PCGExecutionContext ctx(
-        static_cast<uint32_t>(Seed),
-        glm::vec3(-halfW, -halfH, 0.0f),
-        glm::vec3(halfW, halfH, 0.0f),
-        scene ? scene.get() : nullptr
-    );
+    PCGExecutionContext ctx(static_cast<uint32_t>(Seed), glm::vec3(-halfW, -halfH, 0.0f), glm::vec3(halfW, halfH, 0.0f),
+                            scene ? scene.get() : nullptr);
 
     bool ok = m_RuntimeGraph.Execute(ctx);
     m_HasGenerated = ok;
     return ok;
 }
 
-void PCGVolumeComponent::ClearGenerated()
-{
-    m_HasGenerated = false;
-}
+void PCGVolumeComponent::ClearGenerated() { m_HasGenerated = false; }

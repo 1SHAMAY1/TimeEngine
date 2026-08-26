@@ -1,7 +1,6 @@
 #include "Graph/ParticleGraphNodeRegistry.hpp"
 #include "Graph/ParticleGraphNodes.hpp"
 
-
 void ParticleGraphNodeRegistry::RegisterAllNodes(NodePalettePopup &palette)
 {
     palette.Clear();
@@ -26,8 +25,7 @@ void ParticleGraphNodeRegistry::RegisterAllNodes(NodePalettePopup &palette)
                          "Animates particle RGBA color and opacity curves over lifetime",
                          []() { return CreateRef<ParticleColorOverLifeNode>(); });
 
-    palette.RegisterNode("Size Over Life", "Update", "ParticleSizeOverLife",
-                         "Animates particle scale over lifetime",
+    palette.RegisterNode("Size Over Life", "Update", "ParticleSizeOverLife", "Animates particle scale over lifetime",
                          []() { return CreateRef<ParticleSizeOverLifeNode>(); });
 
     palette.RegisterNode("Turbulence Force", "Forces", "ParticleTurbulence",
@@ -41,14 +39,22 @@ void ParticleGraphNodeRegistry::RegisterAllNodes(NodePalettePopup &palette)
 
 TERef<GraphNode> ParticleGraphNodeRegistry::CreateNodeByType(const TEString &nodeType)
 {
-    if (nodeType == "ParticleEmitterRoot") return CreateRef<ParticleEmitterRootNode>();
-    if (nodeType == "ParticleSpawnRate") return CreateRef<ParticleSpawnRateNode>();
-    if (nodeType == "ParticleSpawnLocation") return CreateRef<ParticleSpawnLocationNode>();
-    if (nodeType == "ParticleVelocity") return CreateRef<ParticleVelocityNode>();
-    if (nodeType == "ParticleColorOverLife") return CreateRef<ParticleColorOverLifeNode>();
-    if (nodeType == "ParticleSizeOverLife") return CreateRef<ParticleSizeOverLifeNode>();
-    if (nodeType == "ParticleTurbulence") return CreateRef<ParticleTurbulenceForceNode>();
-    if (nodeType == "ParticleCollision") return CreateRef<ParticlePhysicsCollisionNode>();
+    if (nodeType == "ParticleEmitterRoot")
+        return CreateRef<ParticleEmitterRootNode>();
+    if (nodeType == "ParticleSpawnRate")
+        return CreateRef<ParticleSpawnRateNode>();
+    if (nodeType == "ParticleSpawnLocation")
+        return CreateRef<ParticleSpawnLocationNode>();
+    if (nodeType == "ParticleVelocity")
+        return CreateRef<ParticleVelocityNode>();
+    if (nodeType == "ParticleColorOverLife")
+        return CreateRef<ParticleColorOverLifeNode>();
+    if (nodeType == "ParticleSizeOverLife")
+        return CreateRef<ParticleSizeOverLifeNode>();
+    if (nodeType == "ParticleTurbulence")
+        return CreateRef<ParticleTurbulenceForceNode>();
+    if (nodeType == "ParticleCollision")
+        return CreateRef<ParticlePhysicsCollisionNode>();
 
     return CreateRef<GraphNode>();
 }

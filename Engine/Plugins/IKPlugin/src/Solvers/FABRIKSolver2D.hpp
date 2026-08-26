@@ -1,23 +1,25 @@
 #pragma once
 
-#include <cmath>
-#include "Utils/MathUtils.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/MathUtils.hpp"
+#include <cmath>
 
-namespace IK {
+namespace IK
+{
 
 class FABRIKSolver2D
 {
 public:
-    static bool Solve(TEArray<TEVector2>& points, const TEArray<float>& lengths,
-                      const TEVector2& target, int maxIterations = 15, float tolerance = 0.5f)
+    static bool Solve(TEArray<TEVector2> &points, const TEArray<float> &lengths, const TEVector2 &target,
+                      int maxIterations = 15, float tolerance = 0.5f)
     {
         if (points.size() < 2 || lengths.size() != points.size() - 1)
             return false;
 
         TEVector2 origin = points[0];
         float totalLength = 0.0f;
-        for (float l : lengths) totalLength += l;
+        for (float l : lengths)
+            totalLength += l;
 
         float distToTarget = Distance(origin, target);
 

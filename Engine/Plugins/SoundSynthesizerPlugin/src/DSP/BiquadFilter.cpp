@@ -2,7 +2,8 @@
 #include "AudioDSPUtils.hpp"
 #include <cmath>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 void BiquadFilter::SetParameters(EFilterType type, float cutoffHz, float q, float sampleRate)
 {

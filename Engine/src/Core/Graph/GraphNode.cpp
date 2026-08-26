@@ -1,6 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphNode.hpp"
-
+#include "Core/PreRequisites.h"
 
 GraphPin *GraphNode::FindInputPin(uint64_t pinId)
 {
@@ -64,10 +63,7 @@ const GraphPin *GraphNode::FindPinByName(const TEString &name, PinDirection dire
     return nullptr;
 }
 
-void GraphNode::SetProperty(const TEString &key, const TEString &value)
-{
-    Properties[key] = value;
-}
+void GraphNode::SetProperty(const TEString &key, const TEString &value) { Properties[key] = value; }
 
 TEString GraphNode::GetProperty(const TEString &key, const TEString &defaultValue) const
 {
@@ -77,10 +73,7 @@ TEString GraphNode::GetProperty(const TEString &key, const TEString &defaultValu
     return defaultValue;
 }
 
-bool GraphNode::HasProperty(const TEString &key) const
-{
-    return Properties.find(key) != Properties.end();
-}
+bool GraphNode::HasProperty(const TEString &key) const { return Properties.find(key) != Properties.end(); }
 
 TERef<GraphNode> GraphNode::Clone() const
 {

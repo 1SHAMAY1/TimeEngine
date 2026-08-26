@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/ContentBrowserPanel.hpp"
 #include "Core/Asset/AssetManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
@@ -13,21 +13,15 @@
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
 
-ContentBrowserPanel::ContentBrowserPanel()
-    : IEditorPanel("Content Browser")
+ContentBrowserPanel::ContentBrowserPanel() : IEditorPanel("Content Browser")
 {
     m_SearchBar = CreateRef<UISearchBar>("Search assets...", "##ContentBrowserSearchBar");
     m_TileView = CreateRef<UITileView>(TEVector2(96.0f, 110.0f), "##ContentBrowserTileView");
 }
 
-void ContentBrowserPanel::OnAttach()
-{
-}
+void ContentBrowserPanel::OnAttach() {}
 
-TEString ContentBrowserPanel::GetProjectAssetsDirectory() const
-{
-    return Project::GetAssetDirectory();
-}
+TEString ContentBrowserPanel::GetProjectAssetsDirectory() const { return Project::GetAssetDirectory(); }
 
 TEString ContentBrowserPanel::GetEngineResourcesDirectory() const
 {
@@ -100,7 +94,8 @@ void ContentBrowserPanel::NavigateBack()
     }
     else
     {
-        TEString rootDir = (m_ActiveRoot == ContentRoot::Assets) ? GetProjectAssetsDirectory() : GetEngineResourcesDirectory();
+        TEString rootDir =
+            (m_ActiveRoot == ContentRoot::Assets) ? GetProjectAssetsDirectory() : GetEngineResourcesDirectory();
         if (m_CurrentDirectory != rootDir)
         {
             NavigateTo(m_CurrentDirectory.GetParentPath(), true);
@@ -120,7 +115,8 @@ void ContentBrowserPanel::NavigateForward()
 void ContentBrowserPanel::SetActiveRoot(ContentRoot root)
 {
     m_ActiveRoot = root;
-    TEString targetDir = (m_ActiveRoot == ContentRoot::Assets) ? GetProjectAssetsDirectory() : GetEngineResourcesDirectory();
+    TEString targetDir =
+        (m_ActiveRoot == ContentRoot::Assets) ? GetProjectAssetsDirectory() : GetEngineResourcesDirectory();
     NavigateTo(targetDir, true);
 }
 
@@ -134,7 +130,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     m_Focused = TimeGUI::IsWindowFocused(TimeGUIFocusedFlags_RootAndChildWindows);
     m_Hovered = TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_RootAndChildWindows);
 
-    TEString rootDir = (m_ActiveRoot == ContentRoot::Assets) ? GetProjectAssetsDirectory() : GetEngineResourcesDirectory();
+    TEString rootDir =
+        (m_ActiveRoot == ContentRoot::Assets) ? GetProjectAssetsDirectory() : GetEngineResourcesDirectory();
     if (m_CurrentDirectory.empty() || !TEFileSystem::Exists(m_CurrentDirectory))
     {
         NavigateTo(rootDir, true);
@@ -252,7 +249,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             item.Subtitle = "Folder";
             item.BadgeText = "DIR";
             item.BadgeColor = TEVector4(0.95f, 0.75f, 0.20f, 1.0f);
-            item.CustomDrawIcon = [](TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) {
+            item.CustomDrawIcon = [](TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max)
+            {
                 dl.AddRectFilled(min, max, IM_COL32(230, 175, 45, 230), 4.0f);
                 float w = max.x - min.x;
                 dl.AddRectFilled(TEVector2(min.x, min.y), TEVector2(min.x + w * 0.45f, min.y + 4.0f),
@@ -279,7 +277,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
             if (m_ActiveCategoryFilter == "Scenes" && ext != ".tescene")
                 continue;
-            if (m_ActiveCategoryFilter == "Textures" && ext != ".tetexture" && ext != ".tesprite" && ext != ".tesheet" && ext != ".tespritesheet")
+            if (m_ActiveCategoryFilter == "Textures" && ext != ".tetexture" && ext != ".tesprite" &&
+                ext != ".tesheet" && ext != ".tespritesheet")
                 continue;
             if (m_ActiveCategoryFilter == "Materials" && ext != ".tematerial" && ext != ".temat" && ext != ".tematinst")
                 continue;
@@ -289,13 +288,15 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             UITileItem item;
             item.ID = filename;
             item.Title = stem;
-            item.Subtitle = registeredEditor ? registeredEditor->GetAssetType() : EditorUtils::GetAssetTypeLabel(filePath);
+            item.Subtitle =
+                registeredEditor ? registeredEditor->GetAssetType() : EditorUtils::GetAssetTypeLabel(filePath);
             item.BadgeText = ext.IsEmpty() ? "FILE" : ext.Mid(1);
 
             if (ext == ".tescene")
             {
                 item.BadgeColor = TEVector4(0.25f, 0.55f, 0.90f, 1.0f);
-                item.CustomDrawIcon = [filePath](TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) {
+                item.CustomDrawIcon = [filePath](TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max)
+                {
                     dl.AddRectFilled(min, max, IM_COL32(40, 110, 220, 230), 4.0f);
                     float cx = (min.x + max.x) * 0.5f;
                     float cy = (min.y + max.y) * 0.5f;
@@ -316,12 +317,12 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             }
             else
             {
-                item.BadgeColor = registeredEditor
-                    ? TEVector4(0.25f, 0.75f, 0.55f, 1.0f)
-                    : TEVector4(0.45f, 0.48f, 0.55f, 1.0f);
+                item.BadgeColor =
+                    registeredEditor ? TEVector4(0.25f, 0.75f, 0.55f, 1.0f) : TEVector4(0.45f, 0.48f, 0.55f, 1.0f);
 
                 item.CustomDrawIcon = [assetType = item.Subtitle, filePath](TimeGUIDrawList &dl, const TEVector2 &min,
-                                                                  const TEVector2 &max) {
+                                                                            const TEVector2 &max)
+                {
                     if (!AssetEditorRegistry::DrawAssetIcon(assetType, min, max))
                     {
                         dl.AddRectFilled(min, max, IM_COL32(40, 45, 58, 230), 4.0f);
@@ -348,7 +349,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     if (m_TileView)
     {
         m_TileView->SetItems(tileItems);
-        m_TileView->OnItemClicked = [this](const UITileItem &item) {
+        m_TileView->OnItemClicked = [this](const UITileItem &item)
+        {
             m_SelectedPaths.Clear();
             if (m_TileView)
             {
@@ -359,7 +361,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             }
             m_SelectedPath = m_SelectedPaths.IsEmpty() ? "" : m_SelectedPaths[0];
         };
-        m_TileView->OnItemDoubleClicked = [this, editor](const UITileItem &item) {
+        m_TileView->OnItemDoubleClicked = [this, editor](const UITileItem &item)
+        {
             TEString fullPath = m_CurrentDirectory / item.ID;
             if (TEFileSystem::IsDirectory(fullPath))
             {
@@ -367,7 +370,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             }
             else if (fullPath.EndsWith(".tescene"))
             {
-                auto loadSceneAction = [editor, fullPath]() {
+                auto loadSceneAction = [editor, fullPath]()
+                {
                     auto newScene = CreateRef<Scene>();
                     SceneSerializer serializer(newScene);
                     if (serializer.Deserialize(fullPath))
@@ -394,7 +398,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 AssetEditorRegistry::OpenAsset(fullPath);
             }
         };
-        m_TileView->OnItemContextMenu = [this](const UITileItem &item) {
+        m_TileView->OnItemContextMenu = [this](const UITileItem &item)
+        {
             if (m_TileView && !m_TileView->IsItemSelected(item.ID))
             {
                 m_TileView->SetSelectedItem(item.ID);
@@ -412,8 +417,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     }
 
     // Left Click in empty space clears selection
-    if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_RootAndChildWindows) &&
-        TimeGUI::IsMouseClicked(0) && !TimeGUI::IsAnyItemHovered())
+    if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_RootAndChildWindows) && TimeGUI::IsMouseClicked(0) &&
+        !TimeGUI::IsAnyItemHovered())
     {
         if (m_TileView)
             m_TileView->ClearSelection();
@@ -422,8 +427,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     }
 
     // Right Click in empty space opens context menu
-    if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_RootAndChildWindows) &&
-        TimeGUI::IsMouseClicked(1) && !TimeGUI::IsAnyItemHovered())
+    if (TimeGUI::IsWindowHovered(TimeGUIHoveredFlags_RootAndChildWindows) && TimeGUI::IsMouseClicked(1) &&
+        !TimeGUI::IsAnyItemHovered())
     {
         m_SelectedPath = "";
         m_SelectedPaths.Clear();
@@ -451,7 +456,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 else if (m_SelectedPath.EndsWith(".tescene"))
                 {
                     TEString pathToOpen = m_SelectedPath;
-                    auto loadSceneAction = [editor, pathToOpen]() {
+                    auto loadSceneAction = [editor, pathToOpen]()
+                    {
                         auto newScene = CreateRef<Scene>();
                         SceneSerializer serializer(newScene);
                         if (serializer.Deserialize(pathToOpen))
@@ -505,7 +511,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 m_ClipboardIsCut = false;
             }
 
-            TEString dupLabel = isSingleItem ? "Duplicate" : ("Duplicate (" + TEString::FromInt((int)selectCount) + " items)");
+            TEString dupLabel =
+                isSingleItem ? "Duplicate" : ("Duplicate (" + TEString::FromInt((int)selectCount) + " items)");
             if (TimeGUI::MenuItem(dupLabel, "Ctrl+D"))
             {
                 if (m_TileView)
@@ -521,7 +528,9 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                             int counter = 1;
                             do
                             {
-                                dest = m_CurrentDirectory / (stem + " - Copy" + (counter > 1 ? (" " + TEString::FromInt(counter)) : "") + ext);
+                                dest =
+                                    m_CurrentDirectory /
+                                    (stem + " - Copy" + (counter > 1 ? (" " + TEString::FromInt(counter)) : "") + ext);
                                 counter++;
                             } while (TEFileSystem::Exists(dest));
 
@@ -531,10 +540,12 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 }
             }
 
-            TEString deleteLabel = isSingleItem ? "Delete" : ("Delete (" + TEString::FromInt((int)selectCount) + " items)");
+            TEString deleteLabel =
+                isSingleItem ? "Delete" : ("Delete (" + TEString::FromInt((int)selectCount) + " items)");
             if (TimeGUI::MenuItem(deleteLabel, "Delete"))
             {
-                TEString activeScenePath = (editor && editor->GetActiveScene()) ? editor->GetActiveScene()->GetAssetPath() : "";
+                TEString activeScenePath =
+                    (editor && editor->GetActiveScene()) ? editor->GetActiveScene()->GetAssetPath() : "";
 
                 if (m_TileView)
                 {
@@ -543,7 +554,9 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                         TEString target = m_CurrentDirectory / id;
                         if (!activeScenePath.empty() && target.Equals(activeScenePath, ESearchCase::IgnoreCase))
                         {
-                            TE_CORE_WARN("Cannot remove the currently opened active scene: '{0}'. Please switch to another scene first.", target);
+                            TE_CORE_WARN("Cannot remove the currently opened active scene: '{0}'. Please switch to "
+                                         "another scene first.",
+                                         target);
                             continue;
                         }
 
@@ -589,15 +602,17 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 config.AllowFilenameInput = true;
                 config.InitialDirectory = m_CurrentDirectory;
 
-                EditorUtils::OpenFileBrowser(config, [this, editor](const TEString &chosenPath) {
-                    auto newScene = CreateRef<Scene>();
-                    newScene->SetName(chosenPath.GetStem());
-                    newScene->SetAssetPath(chosenPath);
-                    newScene->CreateEntity("Main Camera");
-                    SceneSerializer serializer(newScene);
-                    serializer.Serialize(chosenPath);
-                    TE_CORE_INFO("Created New Scene: {0}", chosenPath);
-                });
+                EditorUtils::OpenFileBrowser(config,
+                                             [this, editor](const TEString &chosenPath)
+                                             {
+                                                 auto newScene = CreateRef<Scene>();
+                                                 newScene->SetName(chosenPath.GetStem());
+                                                 newScene->SetAssetPath(chosenPath);
+                                                 newScene->CreateEntity("Main Camera");
+                                                 SceneSerializer serializer(newScene);
+                                                 serializer.Serialize(chosenPath);
+                                                 TE_CORE_INFO("Created New Scene: {0}", chosenPath);
+                                             });
             }
 
             if (TimeGUI::MenuItem("Material (.tematerial)"))
@@ -637,7 +652,8 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             AssetEditorRegistry::OpenAssetPicker(m_CurrentDirectory);
         }
 
-        bool canPaste = !m_ClipboardPaths.IsEmpty() || (!m_ClipboardPath.empty() && TEFileSystem::Exists(m_ClipboardPath));
+        bool canPaste =
+            !m_ClipboardPaths.IsEmpty() || (!m_ClipboardPath.empty() && TEFileSystem::Exists(m_ClipboardPath));
         if (TimeGUI::MenuItem("Paste", "Ctrl+V", false, canPaste))
         {
             PasteClipboard(m_CurrentDirectory);
@@ -662,10 +678,10 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         {
             TEString pathToOpen = hasSelection ? m_SelectedPath : m_CurrentDirectory;
             TEString absPath = TEFileSystem::GetAbsolutePath(pathToOpen);
-            #if defined(TE_PLATFORM_WINDOWS)
+#if defined(TE_PLATFORM_WINDOWS)
             TEString cmd = "explorer.exe /select,\"" + absPath + "\"";
             system(cmd.c_str());
-            #endif
+#endif
         }
 
         TimeGUI::EndPopup();
@@ -698,7 +714,8 @@ void ContentBrowserPanel::PasteClipboard(const TEString &targetFolder)
             int counter = 1;
             do
             {
-                destPath = targetFolder / (stem + " - Copy" + (counter > 1 ? (" " + TEString::FromInt(counter)) : "") + ext);
+                destPath =
+                    targetFolder / (stem + " - Copy" + (counter > 1 ? (" " + TEString::FromInt(counter)) : "") + ext);
                 counter++;
             } while (TEFileSystem::Exists(destPath));
         }
@@ -828,7 +845,8 @@ bool ContentBrowserPanel::OnShortcut(const TEString &shortcutId, Ref<EditorLayer
                 int counter = 1;
                 do
                 {
-                    dest = m_CurrentDirectory / (stem + " - Copy" + (counter > 1 ? (" " + TEString::FromInt(counter)) : "") + ext);
+                    dest = m_CurrentDirectory /
+                           (stem + " - Copy" + (counter > 1 ? (" " + TEString::FromInt(counter)) : "") + ext);
                     counter++;
                 } while (TEFileSystem::Exists(dest));
 
@@ -854,7 +872,9 @@ bool ContentBrowserPanel::OnShortcut(const TEString &shortcutId, Ref<EditorLayer
             TEString targetPath = m_CurrentDirectory / id;
             if (!activeScenePath.empty() && targetPath.Equals(activeScenePath, ESearchCase::IgnoreCase))
             {
-                TE_CORE_WARN("Cannot remove the currently opened active scene: '{0}'. Please switch to another scene first.", targetPath);
+                TE_CORE_WARN(
+                    "Cannot remove the currently opened active scene: '{0}'. Please switch to another scene first.",
+                    targetPath);
                 continue;
             }
 
@@ -878,4 +898,3 @@ bool ContentBrowserPanel::OnShortcut(const TEString &shortcutId, Ref<EditorLayer
 }
 
 TE_REGISTER_EDITOR_PANEL(ContentBrowserPanel);
-

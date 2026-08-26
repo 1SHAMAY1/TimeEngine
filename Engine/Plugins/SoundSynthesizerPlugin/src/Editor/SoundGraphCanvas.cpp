@@ -1,7 +1,8 @@
 #include "SoundGraphCanvas.hpp"
 #include "../Graph/SoundNodeRegistry.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 static inline unsigned int ColorToU32(const TEColor &c)
 {
@@ -12,16 +13,15 @@ static inline unsigned int ColorToU32(const TEColor &c)
     return (a << 24) | (b << 16) | (g << 8) | r;
 }
 
-SoundGraphCanvas::SoundGraphCanvas()
-{
-}
+SoundGraphCanvas::SoundGraphCanvas() {}
 
 void SoundGraphCanvas::Draw(TERef<SoundGraph> graph, float width, float height)
 {
     if (!graph)
         return;
 
-    TimeGUI::BeginChild("SoundGraphCanvasRegion", TEVector2(width, height), true, TimeGUIWindowFlags_NoScrollbar | TimeGUIWindowFlags_NoMove);
+    TimeGUI::BeginChild("SoundGraphCanvasRegion", TEVector2(width, height), true,
+                        TimeGUIWindowFlags_NoScrollbar | TimeGUIWindowFlags_NoMove);
 
     // Canvas Background
     TEVector2 canvasP0 = TimeGUI::GetCursorScreenPos();
@@ -31,9 +31,11 @@ void SoundGraphCanvas::Draw(TERef<SoundGraph> graph, float width, float height)
     TimeGUIDrawList drawList = TimeGUI::GetWindowDrawList();
     float GRID_STEP = 32.0f;
     for (float x = std::fmod(m_Scrolling.x, GRID_STEP); x < width; x += GRID_STEP)
-        drawList.AddLine({canvasP0.x + x, canvasP0.y}, {canvasP0.x + x, canvasP1.y}, ColorToU32(TEColor(0.2f, 0.22f, 0.26f, 0.5f)));
+        drawList.AddLine({canvasP0.x + x, canvasP0.y}, {canvasP0.x + x, canvasP1.y},
+                         ColorToU32(TEColor(0.2f, 0.22f, 0.26f, 0.5f)));
     for (float y = std::fmod(m_Scrolling.y, GRID_STEP); y < height; y += GRID_STEP)
-        drawList.AddLine({canvasP0.x, canvasP0.y + y}, {canvasP1.x, canvasP0.y + y}, ColorToU32(TEColor(0.2f, 0.22f, 0.26f, 0.5f)));
+        drawList.AddLine({canvasP0.x, canvasP0.y + y}, {canvasP1.x, canvasP0.y + y},
+                         ColorToU32(TEColor(0.2f, 0.22f, 0.26f, 0.5f)));
 
     DrawConnections(graph);
     DrawNodes(graph);
@@ -59,7 +61,8 @@ void SoundGraphCanvas::DrawConnections(TERef<SoundGraph> graph)
 
             if (nodeOut && nodeIn)
             {
-                TEVector2 posOut = {origin.x + nodeOut->GetPosition().x + 160.0f, origin.y + nodeOut->GetPosition().y + 35.0f};
+                TEVector2 posOut = {origin.x + nodeOut->GetPosition().x + 160.0f,
+                                    origin.y + nodeOut->GetPosition().y + 35.0f};
                 TEVector2 posIn = {origin.x + nodeIn->GetPosition().x, origin.y + nodeIn->GetPosition().y + 35.0f};
 
                 TEVector2 cp1 = {posOut.x + 50.0f, posOut.y};
@@ -88,7 +91,8 @@ void SoundGraphCanvas::DrawNodes(TERef<SoundGraph> graph)
         drawList.AddRectFilled(nodePos, {nodePos.x + nodeSize.x, nodePos.y + nodeSize.y},
                                ColorToU32(TEColor(0.16f, 0.18f, 0.22f, 0.95f)), 6.0f);
         drawList.AddRect(nodePos, {nodePos.x + nodeSize.x, nodePos.y + nodeSize.y},
-                         ColorToU32((m_SelectedNodeId == node->GetID()) ? TEColor(0.3f, 0.7f, 1.0f, 1.0f) : TEColor(0.28f, 0.3f, 0.35f, 1.0f)),
+                         ColorToU32((m_SelectedNodeId == node->GetID()) ? TEColor(0.3f, 0.7f, 1.0f, 1.0f)
+                                                                        : TEColor(0.28f, 0.3f, 0.35f, 1.0f)),
                          6.0f, 0, (m_SelectedNodeId == node->GetID()) ? 2.5f : 1.0f);
 
         // Header bar
@@ -109,7 +113,8 @@ void SoundGraphCanvas::DrawNodes(TERef<SoundGraph> graph)
         for (auto &pin : node->GetOutputs())
         {
             drawList.AddCircleFilled({nodePos.x + nodeSize.x - 6.0f, outY + 6.0f}, 4.5f, ColorToU32(pin.GetPinColor()));
-            drawList.AddText({nodePos.x + nodeSize.x - 65.0f, outY}, ColorToU32(TEColor(0.85f, 0.85f, 0.85f, 1.0f)), pin.Name);
+            drawList.AddText({nodePos.x + nodeSize.x - 65.0f, outY}, ColorToU32(TEColor(0.85f, 0.85f, 0.85f, 1.0f)),
+                             pin.Name);
             outY += 18.0f;
         }
 

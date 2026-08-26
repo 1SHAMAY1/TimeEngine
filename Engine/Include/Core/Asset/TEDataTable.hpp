@@ -5,7 +5,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TEString.hpp"
 
-
 class TE_API TEDataTable : public TETable
 {
 public:
@@ -45,8 +44,7 @@ public:
     void AddRow(const TEString &rowName, const TERef<DataAsset> &rowData);
     TERef<DataAsset> GetRow(const TEString &rowName) const;
 
-    template <typename T>
-    TERef<T> GetRowAs(const TEString &rowName) const
+    template <typename T> TERef<T> GetRowAs(const TEString &rowName) const
     {
         static_assert(std::is_base_of<DataAsset, T>::value, "T must inherit from DataAsset");
         auto row = GetRow(rowName);
@@ -68,4 +66,3 @@ protected:
     TEArray<TEString> m_RowOrder;
     TEMap<TEString, TERef<DataAsset>> m_Rows;
 };
-

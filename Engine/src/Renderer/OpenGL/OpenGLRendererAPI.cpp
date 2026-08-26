@@ -1,11 +1,10 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLRendererAPI.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 #include <glad/glad.h>
 
 // NOTE: RendererAPI::GetAPI() and RendererAPI::Create() are defined in
 // DirectX11RendererAPI.cpp so that all backends are visible in one place.
-
 
 void OpenGLRendererAPI::Init()
 {
@@ -106,4 +105,3 @@ void OpenGLRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dst
     glBlendFuncSeparate(GetGLBlendFactor(srcRGB), GetGLBlendFactor(dstRGB), GetGLBlendFactor(srcAlpha),
                         GetGLBlendFactor(dstAlpha));
 }
-

@@ -9,19 +9,11 @@
 #include <fstream>
 #include <iomanip>
 
+SpriteExportLayer::SpriteExportLayer(SpriteMode *mode) : Layer("SpriteExportLayer"), m_SpriteMode(mode) {}
 
-SpriteExportLayer::SpriteExportLayer(SpriteMode *mode)
-    : Layer("SpriteExportLayer"), m_SpriteMode(mode)
-{
-}
+void SpriteExportLayer::OnAttach() {}
 
-void SpriteExportLayer::OnAttach()
-{
-}
-
-void SpriteExportLayer::OnDetach()
-{
-}
+void SpriteExportLayer::OnDetach() {}
 
 void SpriteExportLayer::OnUpdate()
 {
@@ -375,8 +367,7 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
 
     TEVector2 canvasCenter = TEVector2(previewPos.x + previewSize.x * 0.5f + m_SinglePreviewPan.x,
                                        previewPos.y + previewSize.y * 0.5f + m_SinglePreviewPan.y);
-    TEVector2 origin = TEVector2(canvasCenter.x - (gridW * cellDim) * 0.5f,
-                                 canvasCenter.y - (gridH * cellDim) * 0.5f);
+    TEVector2 origin = TEVector2(canvasCenter.x - (gridW * cellDim) * 0.5f, canvasCenter.y - (gridH * cellDim) * 0.5f);
 
     // 2. Checkerboard pattern inside frame bounds
     RenderCheckerboard(dl, origin, TEVector2(gridW * cellDim, gridH * cellDim), std::max(6.0f, cellDim));
@@ -408,8 +399,8 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
     }
 
     // 4. Outer Sprite Frame Border
-    dl.AddRect(origin, TEVector2(origin.x + gridW * cellDim, origin.y + gridH * cellDim),
-               IM_COL32(90, 90, 110, 255), 0.0f, 0, 1.5f);
+    dl.AddRect(origin, TEVector2(origin.x + gridW * cellDim, origin.y + gridH * cellDim), IM_COL32(90, 90, 110, 255),
+               0.0f, 0, 1.5f);
 
     // 5. Interactive Crop Region Overlay
     if (m_EnableCrop)
@@ -445,7 +436,8 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
 
         // Corner & Edge Handles
         float handleSize = 7.0f;
-        auto drawHandle = [&](const TEVector2 &center) {
+        auto drawHandle = [&](const TEVector2 &center)
+        {
             dl.AddRectFilled(TEVector2(center.x - handleSize * 0.5f, center.y - handleSize * 0.5f),
                              TEVector2(center.x + handleSize * 0.5f, center.y + handleSize * 0.5f),
                              IM_COL32(255, 255, 255, 255), 1.0f);
@@ -454,14 +446,14 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
                        IM_COL32(0, 150, 220, 255), 1.0f, 0, 1.5f);
         };
 
-        drawHandle(cropP1);                                                       // TL (1)
-        drawHandle(TEVector2(cropP2.x, cropP1.y));                               // TR (2)
-        drawHandle(TEVector2(cropP1.x, cropP2.y));                               // BL (3)
-        drawHandle(cropP2);                                                       // BR (4)
-        drawHandle(TEVector2(cropP1.x, (cropP1.y + cropP2.y) * 0.5f));           // L (5)
-        drawHandle(TEVector2(cropP2.x, (cropP1.y + cropP2.y) * 0.5f));           // R (6)
-        drawHandle(TEVector2((cropP1.x + cropP2.x) * 0.5f, cropP1.y));           // T (7)
-        drawHandle(TEVector2((cropP1.x + cropP2.x) * 0.5f, cropP2.y));           // B (8)
+        drawHandle(cropP1);                                            // TL (1)
+        drawHandle(TEVector2(cropP2.x, cropP1.y));                     // TR (2)
+        drawHandle(TEVector2(cropP1.x, cropP2.y));                     // BL (3)
+        drawHandle(cropP2);                                            // BR (4)
+        drawHandle(TEVector2(cropP1.x, (cropP1.y + cropP2.y) * 0.5f)); // L (5)
+        drawHandle(TEVector2(cropP2.x, (cropP1.y + cropP2.y) * 0.5f)); // R (6)
+        drawHandle(TEVector2((cropP1.x + cropP2.x) * 0.5f, cropP1.y)); // T (7)
+        drawHandle(TEVector2((cropP1.x + cropP2.x) * 0.5f, cropP2.y)); // B (8)
 
         // Text Dimensions overlay
         TEString dimText = TEString::Format("%d x %d", m_CropW, m_CropH);
@@ -498,27 +490,40 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
             TEVector2 cropP2 = TEVector2(cropP1.x + m_CropW * cellDim, cropP1.y + m_CropH * cellDim);
             float hitRadius = 9.0f;
 
-            auto isNear = [&](const TEVector2 &pt) {
-                return std::abs(mousePos.x - pt.x) <= hitRadius && std::abs(mousePos.y - pt.y) <= hitRadius;
-            };
+            auto isNear = [&](const TEVector2 &pt)
+            { return std::abs(mousePos.x - pt.x) <= hitRadius && std::abs(mousePos.y - pt.y) <= hitRadius; };
 
             int hoveredHandle = -1;
-            if (isNear(cropP1)) hoveredHandle = 1; // TL
-            else if (isNear(TEVector2(cropP2.x, cropP1.y))) hoveredHandle = 2; // TR
-            else if (isNear(TEVector2(cropP1.x, cropP2.y))) hoveredHandle = 3; // BL
-            else if (isNear(cropP2)) hoveredHandle = 4; // BR
-            else if (std::abs(mousePos.x - cropP1.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y) hoveredHandle = 5; // L
-            else if (std::abs(mousePos.x - cropP2.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y) hoveredHandle = 6; // R
-            else if (std::abs(mousePos.y - cropP1.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x) hoveredHandle = 7; // T
-            else if (std::abs(mousePos.y - cropP2.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x) hoveredHandle = 8; // B
-            else if (mousePos.x > cropP1.x && mousePos.x < cropP2.x && mousePos.y > cropP1.y && mousePos.y < cropP2.y) hoveredHandle = 0; // Interior Move
+            if (isNear(cropP1))
+                hoveredHandle = 1; // TL
+            else if (isNear(TEVector2(cropP2.x, cropP1.y)))
+                hoveredHandle = 2; // TR
+            else if (isNear(TEVector2(cropP1.x, cropP2.y)))
+                hoveredHandle = 3; // BL
+            else if (isNear(cropP2))
+                hoveredHandle = 4; // BR
+            else if (std::abs(mousePos.x - cropP1.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y)
+                hoveredHandle = 5; // L
+            else if (std::abs(mousePos.x - cropP2.x) <= hitRadius && mousePos.y >= cropP1.y && mousePos.y <= cropP2.y)
+                hoveredHandle = 6; // R
+            else if (std::abs(mousePos.y - cropP1.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x)
+                hoveredHandle = 7; // T
+            else if (std::abs(mousePos.y - cropP2.y) <= hitRadius && mousePos.x >= cropP1.x && mousePos.x <= cropP2.x)
+                hoveredHandle = 8; // B
+            else if (mousePos.x > cropP1.x && mousePos.x < cropP2.x && mousePos.y > cropP1.y && mousePos.y < cropP2.y)
+                hoveredHandle = 0; // Interior Move
 
             // Mouse Cursor Feedback
-            if (hoveredHandle == 1 || hoveredHandle == 4) TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeNWSE);
-            else if (hoveredHandle == 2 || hoveredHandle == 3) TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeNESW);
-            else if (hoveredHandle == 5 || hoveredHandle == 6) TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeEW);
-            else if (hoveredHandle == 7 || hoveredHandle == 8) TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeNS);
-            else if (hoveredHandle == 0) TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeAll);
+            if (hoveredHandle == 1 || hoveredHandle == 4)
+                TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeNWSE);
+            else if (hoveredHandle == 2 || hoveredHandle == 3)
+                TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeNESW);
+            else if (hoveredHandle == 5 || hoveredHandle == 6)
+                TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeEW);
+            else if (hoveredHandle == 7 || hoveredHandle == 8)
+                TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeNS);
+            else if (hoveredHandle == 0)
+                TimeGUI::SetMouseCursor(TimeGUIMouseCursor_ResizeAll);
 
             // Handle Click Initiation
             if (TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left) && hoveredHandle >= 0)
@@ -794,10 +799,11 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
         // Live Single-Frame Animation Preview
         float baseCellDim = std::min((previewSize.x - 30.0f) / gridW, (previewSize.y - 30.0f) / gridH);
         TEVector2 canvasCenter = TEVector2(previewPos.x + previewSize.x * 0.5f, previewPos.y + previewSize.y * 0.5f);
-        TEVector2 origin = TEVector2(canvasCenter.x - (gridW * baseCellDim) * 0.5f,
-                                     canvasCenter.y - (gridH * baseCellDim) * 0.5f);
+        TEVector2 origin =
+            TEVector2(canvasCenter.x - (gridW * baseCellDim) * 0.5f, canvasCenter.y - (gridH * baseCellDim) * 0.5f);
 
-        RenderCheckerboard(dl, origin, TEVector2(gridW * baseCellDim, gridH * baseCellDim), std::max(6.0f, baseCellDim));
+        RenderCheckerboard(dl, origin, TEVector2(gridW * baseCellDim, gridH * baseCellDim),
+                           std::max(6.0f, baseCellDim));
 
         if (m_AnimFrameIndex >= 0 && m_AnimFrameIndex < frameCount)
         {
@@ -903,7 +909,8 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
 
         if (isHovered)
         {
-            if (TimeGUI::IsMouseDragging(TimeGUIMouseButton_Right) || TimeGUI::IsMouseDragging(TimeGUIMouseButton_Middle))
+            if (TimeGUI::IsMouseDragging(TimeGUIMouseButton_Right) ||
+                TimeGUI::IsMouseDragging(TimeGUIMouseButton_Middle))
             {
                 m_SheetPreviewPan.x += TimeGUI::GetIO().MouseDelta.x;
                 m_SheetPreviewPan.y += TimeGUI::GetIO().MouseDelta.y;
@@ -918,7 +925,8 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
     }
 }
 
-void SpriteExportLayer::RenderCheckerboard(TimeGUI::TimeGUIDrawList &dl, const TEVector2 &pos, const TEVector2 &size, float checkSize)
+void SpriteExportLayer::RenderCheckerboard(TimeGUI::TimeGUIDrawList &dl, const TEVector2 &pos, const TEVector2 &size,
+                                           float checkSize)
 {
     if (checkSize <= 1.0f)
         checkSize = 8.0f;
@@ -930,15 +938,15 @@ void SpriteExportLayer::RenderCheckerboard(TimeGUI::TimeGUIDrawList &dl, const T
             int ix = (int)(x / checkSize);
             int iy = (int)(y / checkSize);
             unsigned int col = ((ix + iy) % 2 == 0) ? IM_COL32(28, 28, 34, 255) : IM_COL32(38, 38, 46, 255);
-            dl.AddRectFilled(TEVector2(pos.x + x, pos.y + y),
-                             TEVector2(pos.x + std::min(x + checkSize, size.x),
-                                       pos.y + std::min(y + checkSize, size.y)),
-                             col);
+            dl.AddRectFilled(
+                TEVector2(pos.x + x, pos.y + y),
+                TEVector2(pos.x + std::min(x + checkSize, size.x), pos.y + std::min(y + checkSize, size.y)), col);
         }
     }
 }
 
-void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int height, TEArray<unsigned char> &outPixels) const
+void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int height,
+                                             TEArray<unsigned char> &outPixels) const
 {
     outPixels.Resize(width * height * 4, 0);
 
@@ -1064,8 +1072,8 @@ void SpriteExportLayer::ExecuteSingleFrameExport()
         TEFileSystem::CreateDirectories(exportDir);
 
     AssetManager::ExportImagePNG(m_ExportPath, finalW, finalH, 4, exportBuffer.GetData());
-    TE_CORE_INFO("[SpriteExportLayer] Single Frame exported successfully ({0}x{1} px, Scale: {2}x) to: {3}",
-                 finalW, finalH, scale, m_ExportPath);
+    TE_CORE_INFO("[SpriteExportLayer] Single Frame exported successfully ({0}x{1} px, Scale: {2}x) to: {3}", finalW,
+                 finalH, scale, m_ExportPath);
 }
 
 void SpriteExportLayer::ExecuteSpritesheetExport()
@@ -1149,12 +1157,14 @@ void SpriteExportLayer::ExecuteSpritesheetExport()
 
         if (m_MetadataFormat == SpriteMetadataFormat::TESheet || m_MetadataFormat == SpriteMetadataFormat::Both)
         {
-            ExportMetadataTESheet(basePath + ".tesheet", m_ExportPath, sheetW, sheetH, cellW, cellH, cols, rows, frameCount);
+            ExportMetadataTESheet(basePath + ".tesheet", m_ExportPath, sheetW, sheetH, cellW, cellH, cols, rows,
+                                  frameCount);
         }
     }
 }
 
-void SpriteExportLayer::ExportMetadataJson(const TEString &jsonPath, int sheetW, int sheetH, int cellW, int cellH, int cols, int rows, int frameCount)
+void SpriteExportLayer::ExportMetadataJson(const TEString &jsonPath, int sheetW, int sheetH, int cellW, int cellH,
+                                           int cols, int rows, int frameCount)
 {
     std::ofstream out(jsonPath.c_str());
     if (!out.is_open())
@@ -1193,7 +1203,8 @@ void SpriteExportLayer::ExportMetadataJson(const TEString &jsonPath, int sheetW,
 
         out << "    {\n";
         out << "      \"filename\": \"frame_" << f << "\",\n";
-        out << "      \"frame\": {\"x\": " << cellX << ", \"y\": " << cellY << ", \"w\": " << cellW << ", \"h\": " << cellH << "},\n";
+        out << "      \"frame\": {\"x\": " << cellX << ", \"y\": " << cellY << ", \"w\": " << cellW
+            << ", \"h\": " << cellH << "},\n";
         out << "      \"rotated\": false,\n";
         out << "      \"trimmed\": false,\n";
         out << "      \"spriteSourceSize\": {\"x\": 0, \"y\": 0, \"w\": " << cellW << ", \"h\": " << cellH << "},\n";
@@ -1209,7 +1220,8 @@ void SpriteExportLayer::ExportMetadataJson(const TEString &jsonPath, int sheetW,
     TE_CORE_INFO("[SpriteExportLayer] Metadata JSON exported successfully to: {0}", jsonPath);
 }
 
-void SpriteExportLayer::ExportMetadataTESheet(const TEString &tesheetPath, const TEString &texturePath, int sheetW, int sheetH, int cellW, int cellH, int cols, int rows, int frameCount)
+void SpriteExportLayer::ExportMetadataTESheet(const TEString &tesheetPath, const TEString &texturePath, int sheetW,
+                                              int sheetH, int cellW, int cellH, int cols, int rows, int frameCount)
 {
     std::ofstream out(tesheetPath.c_str());
     if (!out.is_open())
@@ -1242,8 +1254,8 @@ void SpriteExportLayer::ExportMetadataTESheet(const TEString &tesheetPath, const
         float u1 = (sheetW > 0) ? ((float)(cellX + cellW) / (float)sheetW) : 1.0f;
         float v1 = (sheetH > 0) ? ((float)(cellY + cellH) / (float)sheetH) : 1.0f;
 
-        out << "SubFrame: Frame_" << f << "," << f << "," << cellX << "," << cellY << ","
-            << cellW << "," << cellH << "," << u0 << "," << v0 << "," << u1 << "," << v1 << "\n";
+        out << "SubFrame: Frame_" << f << "," << f << "," << cellX << "," << cellY << "," << cellW << "," << cellH
+            << "," << u0 << "," << v0 << "," << u1 << "," << v1 << "\n";
     }
 
     out << "AnimCount: 1\n";

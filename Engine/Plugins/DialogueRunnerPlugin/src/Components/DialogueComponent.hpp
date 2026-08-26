@@ -3,7 +3,6 @@
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
-
 class DialogueComponent : public TComponent
 {
 public:
@@ -28,4 +27,3 @@ T_REGISTER_PROPERTY(DialogueComponent, bool, bAutoTrigger, "Auto Trigger On Prox
 T_REGISTER_PROPERTY(DialogueComponent, float, InteractionDistance, "Interaction Distance")
 T_REGISTER_PROPERTY(DialogueComponent, bool, bIsActive, "Is Active")
 #endif
-

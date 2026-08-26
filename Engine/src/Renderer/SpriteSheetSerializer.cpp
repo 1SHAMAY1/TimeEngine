@@ -1,15 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/SpriteSheetSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
-
-SpriteSheetSerializer::SpriteSheetSerializer(const TERef<SpriteSheet> &spriteSheet)
-    : m_SpriteSheet(spriteSheet)
-{
-}
+SpriteSheetSerializer::SpriteSheetSerializer(const TERef<SpriteSheet> &spriteSheet) : m_SpriteSheet(spriteSheet) {}
 
 bool SpriteSheetSerializer::Serialize(const TEString &filepath)
 {
@@ -63,70 +59,72 @@ bool SpriteSheetSerializer::Deserialize(const TEString &filepath)
     TEArray<SubFrame> subFrames;
     TEArray<AnimSequence> anims;
 
-    TEFileSystem::ForEachLine(filepath, [&](const TEString &line) {
-        int colon = line.Find(":");
-        if (colon < 0)
-            return true;
+    TEFileSystem::ForEachLine(filepath,
+                              [&](const TEString &line)
+                              {
+                                  int colon = line.Find(":");
+                                  if (colon < 0)
+                                      return true;
 
-        TEString key = line.Left(colon).Trim();
-        TEString value = line.Mid(colon + 1).Trim();
+                                  TEString key = line.Left(colon).Trim();
+                                  TEString value = line.Mid(colon + 1).Trim();
 
-        if (key == "TexturePath")
-            texPath = value;
-        else if (key == "CellWidth")
-            cellW = (uint32_t)std::stoul(value.c_str());
-        else if (key == "CellHeight")
-            cellH = (uint32_t)std::stoul(value.c_str());
-        else if (key == "PaddingX")
-            padX = (uint32_t)std::stoul(value.c_str());
-        else if (key == "PaddingY")
-            padY = (uint32_t)std::stoul(value.c_str());
-        else if (key == "OffsetX")
-            offX = (uint32_t)std::stoul(value.c_str());
-        else if (key == "OffsetY")
-            offY = (uint32_t)std::stoul(value.c_str());
-        else if (key == "SubFrame")
-        {
-            auto parts = value.Split(",");
-            if (parts.Num() >= 10)
-            {
-                SubFrame f;
-                f.Name = parts[0];
-                f.Index = (uint32_t)std::stoul(parts[1].c_str());
-                f.X = (uint32_t)std::stoul(parts[2].c_str());
-                f.Y = (uint32_t)std::stoul(parts[3].c_str());
-                f.Width = (uint32_t)std::stoul(parts[4].c_str());
-                f.Height = (uint32_t)std::stoul(parts[5].c_str());
-                f.U0 = std::stof(parts[6].c_str());
-                f.V0 = std::stof(parts[7].c_str());
-                f.U1 = std::stof(parts[8].c_str());
-                f.V1 = std::stof(parts[9].c_str());
-                subFrames.Add(f);
-            }
-        }
-        else if (key == "Anim")
-        {
-            auto parts = value.Split(",");
-            if (parts.Num() >= 3)
-            {
-                AnimSequence a;
-                a.Name = parts[0];
-                a.FPS = std::stof(parts[1].c_str());
-                a.Loop = (parts[2] == "1" || parts[2] == "true");
-                if (parts.Num() >= 4)
-                {
-                    auto frameIndices = parts[3].Split(";");
-                    for (const auto &fIdxStr : frameIndices)
-                    {
-                        if (!fIdxStr.IsEmpty())
-                            a.FrameIndices.Add((uint32_t)std::stoul(fIdxStr.c_str()));
-                    }
-                }
-                anims.Add(a);
-            }
-        }
-        return true;
-    });
+                                  if (key == "TexturePath")
+                                      texPath = value;
+                                  else if (key == "CellWidth")
+                                      cellW = (uint32_t)std::stoul(value.c_str());
+                                  else if (key == "CellHeight")
+                                      cellH = (uint32_t)std::stoul(value.c_str());
+                                  else if (key == "PaddingX")
+                                      padX = (uint32_t)std::stoul(value.c_str());
+                                  else if (key == "PaddingY")
+                                      padY = (uint32_t)std::stoul(value.c_str());
+                                  else if (key == "OffsetX")
+                                      offX = (uint32_t)std::stoul(value.c_str());
+                                  else if (key == "OffsetY")
+                                      offY = (uint32_t)std::stoul(value.c_str());
+                                  else if (key == "SubFrame")
+                                  {
+                                      auto parts = value.Split(",");
+                                      if (parts.Num() >= 10)
+                                      {
+                                          SubFrame f;
+                                          f.Name = parts[0];
+                                          f.Index = (uint32_t)std::stoul(parts[1].c_str());
+                                          f.X = (uint32_t)std::stoul(parts[2].c_str());
+                                          f.Y = (uint32_t)std::stoul(parts[3].c_str());
+                                          f.Width = (uint32_t)std::stoul(parts[4].c_str());
+                                          f.Height = (uint32_t)std::stoul(parts[5].c_str());
+                                          f.U0 = std::stof(parts[6].c_str());
+                                          f.V0 = std::stof(parts[7].c_str());
+                                          f.U1 = std::stof(parts[8].c_str());
+                                          f.V1 = std::stof(parts[9].c_str());
+                                          subFrames.Add(f);
+                                      }
+                                  }
+                                  else if (key == "Anim")
+                                  {
+                                      auto parts = value.Split(",");
+                                      if (parts.Num() >= 3)
+                                      {
+                                          AnimSequence a;
+                                          a.Name = parts[0];
+                                          a.FPS = std::stof(parts[1].c_str());
+                                          a.Loop = (parts[2] == "1" || parts[2] == "true");
+                                          if (parts.Num() >= 4)
+                                          {
+                                              auto frameIndices = parts[3].Split(";");
+                                              for (const auto &fIdxStr : frameIndices)
+                                              {
+                                                  if (!fIdxStr.IsEmpty())
+                                                      a.FrameIndices.Add((uint32_t)std::stoul(fIdxStr.c_str()));
+                                              }
+                                          }
+                                          anims.Add(a);
+                                      }
+                                  }
+                                  return true;
+                              });
 
     m_SpriteSheet->SetGridSettings(cellW, cellH, padX, padY, offX, offY);
 

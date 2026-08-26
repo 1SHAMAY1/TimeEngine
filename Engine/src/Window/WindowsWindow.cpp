@@ -24,17 +24,17 @@
 
 // Engine headers (windows.h already in scope — no macro surprise)
 #include "Core/Asset/AssetManager.hpp"
-#include "Core/Settings/EngineSettings.hpp"
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Log.h"
+#include "Core/Settings/EngineSettings.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/RendererContext.hpp"
-#include "Window/WindowsWindow.hpp"
 #include "Utils/TEFileSystem.hpp"
+#include "Window/WindowsWindow.hpp"
 
 static bool s_GLFWInitialized = false;
 
@@ -100,8 +100,10 @@ void WindowsWindow::Init(const WindowProps &props)
         HWND hWnd = glfwGetWin32Window(m_Window);
         if (hWnd)
         {
-            HICON hIconBig = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 48, 48, LR_SHARED);
-            HICON hIconSmall = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 16, 16, LR_SHARED);
+            HICON hIconBig =
+                (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 48, 48, LR_SHARED);
+            HICON hIconSmall =
+                (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 16, 16, LR_SHARED);
 
             if (hIconBig || hIconSmall)
             {
@@ -333,14 +335,10 @@ void IWindow::Terminate() { glfwTerminate(); }
 
 void *IWindow::GetCurrentContext() { return glfwGetCurrentContext(); }
 
-void IWindow::MakeContextCurrent(void *context)
-{
-    glfwMakeContextCurrent(static_cast<GLFWwindow *>(context));
-}
+void IWindow::MakeContextCurrent(void *context) { glfwMakeContextCurrent(static_cast<GLFWwindow *>(context)); }
 
 void IWindow::SwapBuffers(void *nativeWindow)
 {
     if (nativeWindow)
         glfwSwapBuffers(static_cast<GLFWwindow *>(nativeWindow));
 }
-

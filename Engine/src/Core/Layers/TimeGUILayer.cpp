@@ -1,9 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Layers/TimeGUILayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
-
 
 TimeGUILayer::TimeGUILayer(const TEString &name) : Layer(name) {}
 
@@ -44,14 +43,14 @@ void TimeGUILayer::OnDetach()
 
 void TimeGUILayer::Begin()
 {
-    TimeGUI::BeginFrame();
+    Application &app = Application::Get();
+    TimeGUI::BeginFrame(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 }
 
-void TimeGUILayer::End()
+void *TimeGUILayer::End()
 {
     Application &app = Application::Get();
-    TimeGUI::EndFrame(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
+    return TimeGUI::EndFrame(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 }
 
 void TimeGUILayer::OnTimeGUIRender() {}
-

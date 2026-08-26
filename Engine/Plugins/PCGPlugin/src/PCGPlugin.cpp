@@ -35,21 +35,13 @@ void PCGPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const T
     dl.AddRect(min, max, borderCol, 6.0f, 0, 1.0f);
 
     // Mountain terrain contour
-    TEVector2 m1[4] = {
-        TEVector2(min.x + 8.0f, max.y - 10.0f),
-        TEVector2(min.x + 20.0f, min.y + 14.0f),
-        TEVector2(min.x + 32.0f, max.y - 10.0f),
-        TEVector2(min.x + 8.0f, max.y - 10.0f)
-    };
+    TEVector2 m1[4] = {TEVector2(min.x + 8.0f, max.y - 10.0f), TEVector2(min.x + 20.0f, min.y + 14.0f),
+                       TEVector2(min.x + 32.0f, max.y - 10.0f), TEVector2(min.x + 8.0f, max.y - 10.0f)};
     dl.AddConvexPolyFilled(m1, 3, 0xFF1B6E44);
     dl.AddPolyline(m1, 3, 0xFF2ECC71, 0, 1.5f);
 
-    TEVector2 m2[4] = {
-        TEVector2(min.x + 22.0f, max.y - 10.0f),
-        TEVector2(min.x + 33.0f, min.y + 18.0f),
-        TEVector2(max.x - 6.0f, max.y - 10.0f),
-        TEVector2(min.x + 22.0f, max.y - 10.0f)
-    };
+    TEVector2 m2[4] = {TEVector2(min.x + 22.0f, max.y - 10.0f), TEVector2(min.x + 33.0f, min.y + 18.0f),
+                       TEVector2(max.x - 6.0f, max.y - 10.0f), TEVector2(min.x + 22.0f, max.y - 10.0f)};
     dl.AddConvexPolyFilled(m2, 3, 0xFF218C53);
     dl.AddPolyline(m2, 3, 0xFF55EFC4, 0, 1.5f);
 

@@ -69,9 +69,8 @@ bool MaterialAssetSerializer::DeserializeMaterial(MaterialAsset &asset, const TE
     if (inGraph)
     {
         GraphSerializer graphSer(asset.GetGraph());
-        graphSer.DeserializeFromString(graphSection, [](const TEString &type) {
-            return MaterialNodeRegistry::CreateNodeByType(type);
-        });
+        graphSer.DeserializeFromString(graphSection, [](const TEString &type)
+                                       { return MaterialNodeRegistry::CreateNodeByType(type); });
     }
 
     asset.Recompile();

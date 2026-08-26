@@ -3,7 +3,6 @@
 #include "Utils/MathUtils.hpp"
 #include <variant>
 
-
 enum class EInputActionValueType
 {
     Digital, // bool
@@ -29,4 +28,3 @@ public:
     InputAction() = default;
     InputAction(const TEString &name, EInputActionValueType type) : Name(name), ValueType(type) {}
 };
-

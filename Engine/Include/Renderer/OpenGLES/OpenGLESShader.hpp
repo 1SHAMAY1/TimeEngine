@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Renderer/Shader.hpp"
 
-
 class OpenGLESShader : public Shader
 {
 public:
@@ -25,4 +24,3 @@ public:
 private:
     uint32_t m_RendererID;
 };
-

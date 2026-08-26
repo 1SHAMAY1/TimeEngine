@@ -6,7 +6,6 @@
 #include "GameFrameWork/TFunctionLibrary.hpp"
 #include "Utils/TEString.hpp"
 
-
 class TE_API FontFunctionLibrary : public TFunctionLibrary
 {
 public:
@@ -22,4 +21,3 @@ public:
     static AssetHandle ImportFontFromTTF(const TEString &ttfPath, const TEString &saveAssetPath,
                                          float pixelSize = 32.0f, uint32_t atlasSize = 512);
 };
-

@@ -10,38 +10,66 @@
 
 static TERef<GraphNode> CreateNodeByType(const TEString &type)
 {
-    if (type == "PCGGridGenerator") return CreateRef<PCGGridGeneratorNode>();
-    if (type == "PCGRandomScatter") return CreateRef<PCGRandomScatterNode>();
-    if (type == "PCGPoissonDisk") return CreateRef<PCGPoissonDiskNode>();
-    if (type == "PCGSplinePath") return CreateRef<PCGSplinePathNode>();
+    if (type == "PCGGridGenerator")
+        return CreateRef<PCGGridGeneratorNode>();
+    if (type == "PCGRandomScatter")
+        return CreateRef<PCGRandomScatterNode>();
+    if (type == "PCGPoissonDisk")
+        return CreateRef<PCGPoissonDiskNode>();
+    if (type == "PCGSplinePath")
+        return CreateRef<PCGSplinePathNode>();
 
-    if (type == "PCGPerlinNoise") return CreateRef<PCGPerlinNoiseNode>();
-    if (type == "PCGSimplexNoise") return CreateRef<PCGSimplexNoiseNode>();
-    if (type == "PCGWorleyNoise") return CreateRef<PCGWorleyNoiseNode>();
-    if (type == "PCGElevationSlope") return CreateRef<PCGElevationSlopeNode>();
+    if (type == "PCGPerlinNoise")
+        return CreateRef<PCGPerlinNoiseNode>();
+    if (type == "PCGSimplexNoise")
+        return CreateRef<PCGSimplexNoiseNode>();
+    if (type == "PCGWorleyNoise")
+        return CreateRef<PCGWorleyNoiseNode>();
+    if (type == "PCGElevationSlope")
+        return CreateRef<PCGElevationSlopeNode>();
 
-    if (type == "PCGWilsonMaze") return CreateRef<PCGWilsonMazeNode>();
-    if (type == "PCGCellularAutomata") return CreateRef<PCGCellularAutomataNode>();
-    if (type == "PCGBSPRoom") return CreateRef<PCGBSPRoomNode>();
-    if (type == "PCGDrunkardWalk") return CreateRef<PCGDrunkardWalkNode>();
-    if (type == "PCGWaveFunctionCollapse") return CreateRef<PCGWaveFunctionCollapseNode>();
+    if (type == "PCGWilsonMaze")
+        return CreateRef<PCGWilsonMazeNode>();
+    if (type == "PCGCellularAutomata")
+        return CreateRef<PCGCellularAutomataNode>();
+    if (type == "PCGBSPRoom")
+        return CreateRef<PCGBSPRoomNode>();
+    if (type == "PCGDrunkardWalk")
+        return CreateRef<PCGDrunkardWalkNode>();
+    if (type == "PCGWaveFunctionCollapse")
+        return CreateRef<PCGWaveFunctionCollapseNode>();
 
-    if (type == "PCGVoronoiPartition") return CreateRef<PCGVoronoiPartitionNode>();
-    if (type == "PCGDelaunayTriangulation") return CreateRef<PCGDelaunayTriangulationNode>();
-    if (type == "PCGPhysicsPointRelaxer") return CreateRef<PCGPhysicsPointRelaxerNode>();
-    if (type == "PCGRaycastProjection") return CreateRef<PCGRaycastProjectionNode>();
-    if (type == "PCGBoundsExclusion") return CreateRef<PCGBoundsExclusionNode>();
-    if (type == "PCGComponentAttributeInjector") return CreateRef<PCGComponentAttributeInjectorNode>();
-    if (type == "PCGEntityHierarchyLinker") return CreateRef<PCGEntityHierarchyLinkerNode>();
-    if (type == "PCGLSystemGenerator") return CreateRef<PCGLSystemGeneratorNode>();
-    if (type == "PCGEdgeExtractor") return CreateRef<PCGEdgeExtractorNode>();
-    if (type == "PCGKMeansClustering") return CreateRef<PCGKMeansClusteringNode>();
-    if (type == "PCGAStarTraversal") return CreateRef<PCGAStarTraversalNode>();
-    if (type == "PCGComponentProximityMutator") return CreateRef<PCGComponentProximityMutatorNode>();
+    if (type == "PCGVoronoiPartition")
+        return CreateRef<PCGVoronoiPartitionNode>();
+    if (type == "PCGDelaunayTriangulation")
+        return CreateRef<PCGDelaunayTriangulationNode>();
+    if (type == "PCGPhysicsPointRelaxer")
+        return CreateRef<PCGPhysicsPointRelaxerNode>();
+    if (type == "PCGRaycastProjection")
+        return CreateRef<PCGRaycastProjectionNode>();
+    if (type == "PCGBoundsExclusion")
+        return CreateRef<PCGBoundsExclusionNode>();
+    if (type == "PCGComponentAttributeInjector")
+        return CreateRef<PCGComponentAttributeInjectorNode>();
+    if (type == "PCGEntityHierarchyLinker")
+        return CreateRef<PCGEntityHierarchyLinkerNode>();
+    if (type == "PCGLSystemGenerator")
+        return CreateRef<PCGLSystemGeneratorNode>();
+    if (type == "PCGEdgeExtractor")
+        return CreateRef<PCGEdgeExtractorNode>();
+    if (type == "PCGKMeansClustering")
+        return CreateRef<PCGKMeansClusteringNode>();
+    if (type == "PCGAStarTraversal")
+        return CreateRef<PCGAStarTraversalNode>();
+    if (type == "PCGComponentProximityMutator")
+        return CreateRef<PCGComponentProximityMutatorNode>();
 
-    if (type == "PCGEntitySpawner") return CreateRef<PCGEntitySpawnerNode>();
-    if (type == "PCGTilemapSpawner") return CreateRef<PCGTilemapSpawnerNode>();
-    if (type == "PCGPrototypeAssembler") return CreateRef<PCGPrototypeAssemblerNode>();
+    if (type == "PCGEntitySpawner")
+        return CreateRef<PCGEntitySpawnerNode>();
+    if (type == "PCGTilemapSpawner")
+        return CreateRef<PCGTilemapSpawnerNode>();
+    if (type == "PCGPrototypeAssembler")
+        return CreateRef<PCGPrototypeAssemblerNode>();
 
     return nullptr;
 }
@@ -69,8 +97,8 @@ bool PCGGraphSerializer::SaveToFile(const PCGGraph &graph, const TEString &path)
         if (!node)
             continue;
 
-        file << "Node: " << node->ID << " | " << node->NodeType.c_str() << " | "
-             << node->Position.x << " " << node->Position.y << " | " << node->Title.c_str() << "\n";
+        file << "Node: " << node->ID << " | " << node->NodeType.c_str() << " | " << node->Position.x << " "
+             << node->Position.y << " | " << node->Title.c_str() << "\n";
 
         // Properties
         for (auto it = node->Properties.begin(); it != node->Properties.end(); ++it)

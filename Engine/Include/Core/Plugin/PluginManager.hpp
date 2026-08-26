@@ -10,7 +10,6 @@
 #endif
 #endif
 
-
 struct PluginInfo
 {
     TEString Name;

@@ -29,4 +29,3 @@ private:
     VkShaderModule m_FragmentModule = VK_NULL_HANDLE;
     VkShaderModule m_ComputeModule = VK_NULL_HANDLE;
 };
-

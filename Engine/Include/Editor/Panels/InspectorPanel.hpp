@@ -1,8 +1,7 @@
 #pragma once
-#include "Editor/Panels/IEditorPanel.hpp"
 #include "Core/Scene/EntityManager.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include <memory>
-
 
 class TE_API InspectorPanel : public IEditorPanel
 {
@@ -21,4 +20,3 @@ private:
     class TComponent *m_RenamingComponent = nullptr;
     bool m_FocusedRenamingInput = false;
 };
-

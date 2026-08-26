@@ -1,10 +1,11 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "../SoundStudioTypes.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class DelayLine
 {

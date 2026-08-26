@@ -4,7 +4,6 @@
 #include "GameplayTagContainer.hpp"
 #include "GameplayTagWidgets.hpp"
 
-
 class GameplayTagComponent : public TComponent
 {
 public:
@@ -27,9 +26,5 @@ public:
 
     void RemoveTag(const TEString &tagString) { Container.RemoveTag(tagString); }
 
-    virtual void OnDrawInspector() override
-    {
-        DrawGameplayTagContainerWidget("Gameplay Tags", Container);
-    }
+    virtual void OnDrawInspector() override { DrawGameplayTagContainerWidget("Gameplay Tags", Container); }
 };
-

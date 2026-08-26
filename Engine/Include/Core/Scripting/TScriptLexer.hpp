@@ -4,42 +4,95 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TEString.hpp"
 
-
-enum class TScriptTokenType {
+enum class TScriptTokenType
+{
     // Literals
-    Number, String, True, False, Nil,
+    Number,
+    String,
+    True,
+    False,
+    Nil,
 
     // Keywords
-    Identifier, Var, FloatKw, IntKw, StringKw, BoolKw, Vec2Kw,
-    If, Else, While, For, Return, And, Or, Not,
-    PublicKw, PrivateKw, ProtectedKw, ClassKw,
+    Identifier,
+    Var,
+    FloatKw,
+    IntKw,
+    StringKw,
+    BoolKw,
+    Vec2Kw,
+    If,
+    Else,
+    While,
+    For,
+    Return,
+    And,
+    Or,
+    Not,
+    PublicKw,
+    PrivateKw,
+    ProtectedKw,
+    ClassKw,
     TRegisterPropertyKw,
 
     // Events
-    OnReady, OnUpdate, OnCollision, OnInput, OnTimer, OnDestroy,
+    OnReady,
+    OnUpdate,
+    OnCollision,
+    OnInput,
+    OnTimer,
+    OnDestroy,
 
     // Operators
-    Plus, Minus, Star, Slash, Percent, StarStar,
-    PlusEq, MinusEq, StarEq, SlashEq,
-    Eq, Neq, Lt, Gt, Leq, Geq,
-    Assign, AndAnd, PipePipe, Bang,
+    Plus,
+    Minus,
+    Star,
+    Slash,
+    Percent,
+    StarStar,
+    PlusEq,
+    MinusEq,
+    StarEq,
+    SlashEq,
+    Eq,
+    Neq,
+    Lt,
+    Gt,
+    Leq,
+    Geq,
+    Assign,
+    AndAnd,
+    PipePipe,
+    Bang,
 
     // Punctuation
-    LParen, RParen, LBrace, RBrace, LBracket, RBracket,
-    Dot, Comma, Colon, Semicolon, Newline,
+    LParen,
+    RParen,
+    LBrace,
+    RBrace,
+    LBracket,
+    RBracket,
+    Dot,
+    Comma,
+    Colon,
+    Semicolon,
+    Newline,
 
     // Meta
-    EndOfFile, Error
+    EndOfFile,
+    Error
 };
 
-struct TScriptToken {
+struct TScriptToken
+{
     TScriptTokenType type;
     TEString lexeme;
     int line = 1;
     int column = 1;
 };
 
-class TE_API TScriptLexer {
+class TE_API TScriptLexer
+{
 public:
     TScriptLexer(TEString source);
 
@@ -54,7 +107,7 @@ private:
 
     void SkipWhitespaceAndComments();
     TScriptToken MakeToken(TScriptTokenType type);
-    TScriptToken MakeErrorToken(const TEString& message);
+    TScriptToken MakeErrorToken(const TEString &message);
 
     TScriptToken LexNumber();
     TScriptToken LexString();
@@ -66,4 +119,3 @@ private:
     int m_Line = 1;
     int m_Column = 1;
 };
-

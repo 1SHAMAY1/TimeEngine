@@ -1,11 +1,10 @@
 #pragma once
-#include "GameFrameWork/TComponent.hpp"
+#include "Core/Scene/2DPlayerController.hpp"
 #include "Core/Scene/PlayerBase.hpp"
 #include "Core/Scene/PlayerControllerBase.hpp"
-#include "Core/Scene/2DPlayerController.hpp"
+#include "GameFrameWork/TComponent.hpp"
 
 #include "Core/Scene/ComponentRegistry.hpp"
-
 
 class TE_API GameManager
 {
@@ -39,4 +38,3 @@ T_REGISTER_COMPONENT(GameManagerComponent, "Game Manager")
 T_REGISTER_PRESET(GameManagerComponent, "Game Manager", "Gameplay & Managers",
                   [](EntityID id, EntityManager *em) { em->AddComponent<GameManagerComponent>(id); })
 #endif
-

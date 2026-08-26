@@ -2,7 +2,8 @@
 
 #include <functional>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundTransportBar
 {

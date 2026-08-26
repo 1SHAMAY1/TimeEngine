@@ -1,7 +1,6 @@
 #include "RichTextComponent.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 void RichTextComponent::OnInitialize()
 {
     TComponent::OnInitialize();
@@ -97,8 +96,6 @@ void RichTextComponent::OnDrawInspector()
         RecomputeLayout();
     }
 
-    TimeGUI::TextDisabled("Glyphs: %zu | Links: %zu | Bounds: %.0f x %.0f",
-                          m_Layout.GlyphQuads.Num(), m_Layout.LinkHitboxes.Num(),
-                          m_Layout.Bounds.x, m_Layout.Bounds.y);
+    TimeGUI::TextDisabled("Glyphs: %zu | Links: %zu | Bounds: %.0f x %.0f", m_Layout.GlyphQuads.Num(),
+                          m_Layout.LinkHitboxes.Num(), m_Layout.Bounds.x, m_Layout.Bounds.y);
 }
-

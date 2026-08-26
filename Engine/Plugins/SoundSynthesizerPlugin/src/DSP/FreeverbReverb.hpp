@@ -1,11 +1,12 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "../SoundStudioTypes.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include <algorithm>
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 struct CombFilter
 {
@@ -61,10 +62,7 @@ struct AllPassFilter
         return output;
     }
 
-    void Mute()
-    {
-        std::fill(Buffer.begin(), Buffer.end(), 0.0f);
-    }
+    void Mute() { std::fill(Buffer.begin(), Buffer.end(), 0.0f); }
 };
 
 class FreeverbReverb

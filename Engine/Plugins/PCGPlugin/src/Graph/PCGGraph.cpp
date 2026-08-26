@@ -1,15 +1,9 @@
 #include "Graph/PCGGraph.hpp"
 #include "Core/Log.h"
 
-PCGGraph::PCGGraph(const TEString &name)
-    : Graph(name)
-{
-}
+PCGGraph::PCGGraph(const TEString &name) : Graph(name) {}
 
-void PCGGraph::ResetToDefault()
-{
-    Clear();
-}
+void PCGGraph::ResetToDefault() { Clear(); }
 
 bool PCGGraph::Execute(PCGExecutionContext &ctx)
 {

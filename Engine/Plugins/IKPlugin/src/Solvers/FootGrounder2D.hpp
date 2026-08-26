@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cmath>
-#include <algorithm>
 #include "Utils/MathUtils.hpp"
+#include <algorithm>
+#include <cmath>
 
-namespace IK {
+namespace IK
+{
 
 struct FootPlacement2DResult
 {
@@ -17,8 +18,9 @@ struct FootPlacement2DResult
 class FootGrounder2D
 {
 public:
-    static FootPlacement2DResult Evaluate(const TEVector2& defaultFootPos, float raycastHitY,
-                                          const TEVector2& groundNormal, float maxStepUp = 30.0f, float maxStepDown = 50.0f)
+    static FootPlacement2DResult Evaluate(const TEVector2 &defaultFootPos, float raycastHitY,
+                                          const TEVector2 &groundNormal, float maxStepUp = 30.0f,
+                                          float maxStepDown = 50.0f)
     {
         FootPlacement2DResult result;
         float heightDiff = raycastHitY - defaultFootPos.y;

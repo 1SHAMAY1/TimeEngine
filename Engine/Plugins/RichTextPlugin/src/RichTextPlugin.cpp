@@ -51,4 +51,3 @@ void RichTextPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, co
 }
 
 TE_REGISTER_PLUGIN(RichTextPlugin)
-

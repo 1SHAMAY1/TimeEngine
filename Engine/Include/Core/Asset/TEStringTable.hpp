@@ -4,7 +4,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TEString.hpp"
 
-
 struct StringTableEntry
 {
     TEString Namespace;
@@ -51,8 +50,8 @@ public:
     void SetDefaultCulture(const TEString &culture) { m_DefaultCulture = culture; }
     const TEString &GetDefaultCulture() const { return m_DefaultCulture; }
 
-    void SetEntry(const TEString &ns, const TEString &key, const TEString &culture,
-                  const TEString &translation, const TEString &comment = "");
+    void SetEntry(const TEString &ns, const TEString &key, const TEString &culture, const TEString &translation,
+                  const TEString &comment = "");
     TEString GetEntry(const TEString &ns, const TEString &key, const TEString &culture) const;
     bool RemoveEntry(const TEString &ns, const TEString &key, const TEString &culture);
 
@@ -71,4 +70,3 @@ protected:
 
     TEArray<StringTableEntry> m_Entries;
 };
-

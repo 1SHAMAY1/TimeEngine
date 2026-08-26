@@ -2,16 +2,12 @@
 #include <algorithm>
 #include <set>
 
-namespace SoundStudio {
-
-SoundGraph::SoundGraph()
+namespace SoundStudio
 {
-}
 
-SoundGraph::~SoundGraph()
-{
-    Clear();
-}
+SoundGraph::SoundGraph() {}
+
+SoundGraph::~SoundGraph() { Clear(); }
 
 void SoundGraph::Clear()
 {
@@ -70,18 +66,16 @@ uint64_t SoundGraph::ConnectPins(uint64_t outputPinId, uint64_t inputPinId)
 
 void SoundGraph::DisconnectPins(uint64_t connectionId)
 {
-    m_Connections.erase(
-        std::remove_if(m_Connections.begin(), m_Connections.end(),
-                       [connectionId](const SoundConnection &c) { return c.ID == connectionId; }),
-        m_Connections.end());
+    m_Connections.erase(std::remove_if(m_Connections.begin(), m_Connections.end(),
+                                       [connectionId](const SoundConnection &c) { return c.ID == connectionId; }),
+                        m_Connections.end());
 }
 
 void SoundGraph::DisconnectPin(uint64_t pinId)
 {
-    m_Connections.erase(
-        std::remove_if(m_Connections.begin(), m_Connections.end(),
-                       [pinId](const SoundConnection &c) { return c.InputPinID == pinId || c.OutputPinID == pinId; }),
-        m_Connections.end());
+    m_Connections.erase(std::remove_if(m_Connections.begin(), m_Connections.end(), [pinId](const SoundConnection &c)
+                                       { return c.InputPinID == pinId || c.OutputPinID == pinId; }),
+                        m_Connections.end());
 }
 
 SoundPin *SoundGraph::FindPin(uint64_t pinId)
@@ -108,10 +102,7 @@ TEArray<TERef<SoundGraphNode>> SoundGraph::GetExecutionOrder()
     return order;
 }
 
-void SoundGraph::SetParameterFloat(const TEString &paramName, float value)
-{
-    m_Parameters[paramName] = value;
-}
+void SoundGraph::SetParameterFloat(const TEString &paramName, float value) { m_Parameters[paramName] = value; }
 
 float SoundGraph::GetParameterFloat(const TEString &paramName) const
 {

@@ -1,6 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Collision/BroadPhase.hpp"
-
+#include "Core/PreRequisites.h"
 
 TEArray<CollisionPair> BroadPhase::BruteForce(TESpan<CollisionComponent *> colliders)
 {
@@ -16,4 +15,3 @@ TEArray<CollisionPair> BroadPhase::BruteForce(TESpan<CollisionComponent *> colli
 
     return pairs;
 }
-

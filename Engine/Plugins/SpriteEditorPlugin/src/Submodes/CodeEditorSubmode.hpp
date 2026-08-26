@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ISubmode.hpp"
 #include "../SpriteEditorTypes.hpp"
-
+#include "ISubmode.hpp"
 
 class CodeEditorSubmode : public ISubmode
 {

@@ -6,7 +6,6 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
 
-
 enum class EDataPropertyType
 {
     Int,
@@ -117,4 +116,3 @@ protected:
     TEString m_Description = "Universal TimeEngine structured data asset";
     TEMap<TEString, DataPropertyValue> m_Properties;
 };
-

@@ -13,7 +13,8 @@ public:
     virtual TEString GetAuthor() const override { return "TimeEngine Team"; }
     virtual TEString GetDescription() const override
     {
-        return "Native 2D Skeletal Animation & Deformable Skinning Engine with Spine JSON Import, Sockets, and Editor Rigging Mode";
+        return "Native 2D Skeletal Animation & Deformable Skinning Engine with Spine JSON Import, Sockets, and Editor "
+               "Rigging Mode";
     }
 
     virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;

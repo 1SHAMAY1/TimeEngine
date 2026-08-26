@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Renderer/Framebuffer.hpp"
 
-
 class OpenGLESFramebuffer : public Framebuffer
 {
 public:
@@ -23,4 +22,3 @@ private:
     uint32_t m_DepthAttachment = 0;
     FramebufferSpecification m_Specification;
 };
-

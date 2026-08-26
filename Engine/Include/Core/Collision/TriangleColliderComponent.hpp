@@ -2,7 +2,6 @@
 #include "CollisionComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 
-
 class TriangleColliderComponent : public CollisionComponent
 {
 public:
@@ -39,4 +38,3 @@ T_REGISTER_PROPERTY(TriangleColliderComponent, bool, isTrigger, "Is Trigger")
 T_REGISTER_PRESET(TriangleColliderComponent, "Triangle Collider 2D", "Physics & Collisions",
                   [](EntityID id, EntityManager *em) { em->AddComponent<TriangleColliderComponent>(id); })
 #endif
-

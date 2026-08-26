@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/ShaderLibrary.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLShader.hpp"
@@ -17,7 +17,6 @@
 #include "Renderer/Shader.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 
 TEMap<TEString, TERef<Shader>> ShaderLibrary::s_ShaderCache;
 
@@ -1073,4 +1072,3 @@ TEString ShaderLibrary::GetLightBlendFragmentShader()
             }
         )";
 }
-

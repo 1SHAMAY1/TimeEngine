@@ -1,22 +1,18 @@
-#include "Core/PreRequisites.h"
 #include "Editor/ViewportContextMenu.hpp"
+#include "Core/PreRequisites.h"
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/Scene.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 #include "Editor/EditorSaveManager.hpp"
 #include "Layers/EditorLayer.hpp"
 #include <map>
-
 
 bool ViewportContextMenu::s_IsOpen = false;
 bool ViewportContextMenu::s_ShouldOpen = false;
 TEVector2 ViewportContextMenu::s_SpawnPos = {0, 0};
 Entity ViewportContextMenu::s_TargetEntity = Entity();
 
-ViewportContextMenu::ViewportContextMenu(EditorLayer *editor)
-    : Layer("ViewportContextMenu"), m_Editor(editor)
-{
-}
+ViewportContextMenu::ViewportContextMenu(EditorLayer *editor) : Layer("ViewportContextMenu"), m_Editor(editor) {}
 
 void ViewportContextMenu::OpenAt(const TEVector2 &screenPos, Entity hoveredEntity)
 {
@@ -27,10 +23,7 @@ void ViewportContextMenu::OpenAt(const TEVector2 &screenPos, Entity hoveredEntit
     TimeGUI::OpenPopup("##ViewportFloatingContextMenu");
 }
 
-bool ViewportContextMenu::IsOpen()
-{
-    return s_IsOpen;
-}
+bool ViewportContextMenu::IsOpen() { return s_IsOpen; }
 
 void ViewportContextMenu::Close()
 {
@@ -257,4 +250,3 @@ void ViewportContextMenu::OnTimeGUIRender(EditorLayer *editor)
     TimeGUI::PopStyleColor(2);
     TimeGUI::PopStyleVar(3);
 }
-

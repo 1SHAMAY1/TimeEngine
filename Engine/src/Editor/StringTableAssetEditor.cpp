@@ -1,10 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Editor/StringTableAssetEditor.hpp"
 #include "Core/Asset/TEStringTable.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 void StringTableAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -20,7 +19,8 @@ void StringTableAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::TextColored(TEColor(0.2f, 0.8f, 1.0f, 1.0f), "StringTable: %s", stringTable->GetName().c_str());
     TimeGUI::SameLine();
-    TimeGUI::TextDisabled("(Default Culture: %s | Total Entries: %zu)", stringTable->GetDefaultCulture().c_str(), stringTable->GetAllEntries().Num());
+    TimeGUI::TextDisabled("(Default Culture: %s | Total Entries: %zu)", stringTable->GetDefaultCulture().c_str(),
+                          stringTable->GetAllEntries().Num());
 
     TimeGUI::Separator();
 
@@ -98,7 +98,9 @@ void StringTableAssetEditor::DrawEditor(EditorTab &tab)
     auto &entries = stringTable->GetAllEntries();
     int entryToDelete = -1;
 
-    if (TimeGUI::BeginTable("StringTableGrid", 6, TimeGUITableFlags_Borders | TimeGUITableFlags_RowBg | TimeGUITableFlags_Resizable | TimeGUITableFlags_ScrollY))
+    if (TimeGUI::BeginTable("StringTableGrid", 6,
+                            TimeGUITableFlags_Borders | TimeGUITableFlags_RowBg | TimeGUITableFlags_Resizable |
+                                TimeGUITableFlags_ScrollY))
     {
         TimeGUI::TableSetupColumn("Namespace", TimeGUITableColumnFlags_WidthFixed, 100.0f);
         TimeGUI::TableSetupColumn("Key", TimeGUITableColumnFlags_WidthFixed, 120.0f);
@@ -181,10 +183,10 @@ void StringTableAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max
     // Localization Quote / Speech Tag
     float cx = (iMin.x + iMax.x) * 0.5f;
     float cy = (iMin.y + iMax.y) * 0.5f;
-    dl.AddRectFilled(TEVector2(cx - 8.0f, cy - 6.0f), TEVector2(cx + 8.0f, cy + 4.0f), IM_COL32(60, 220, 180, 255), 2.0f);
-    dl.AddTriangleFilled(TEVector2(cx - 4.0f, cy + 4.0f), TEVector2(cx + 2.0f, cy + 4.0f), TEVector2(cx - 4.0f, cy + 8.0f),
-                         IM_COL32(60, 220, 180, 255));
+    dl.AddRectFilled(TEVector2(cx - 8.0f, cy - 6.0f), TEVector2(cx + 8.0f, cy + 4.0f), IM_COL32(60, 220, 180, 255),
+                     2.0f);
+    dl.AddTriangleFilled(TEVector2(cx - 4.0f, cy + 4.0f), TEVector2(cx + 2.0f, cy + 4.0f),
+                         TEVector2(cx - 4.0f, cy + 8.0f), IM_COL32(60, 220, 180, 255));
 }
 
 TE_REGISTER_ASSET_EDITOR(StringTableAssetEditor);
-

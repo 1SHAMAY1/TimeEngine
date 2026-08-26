@@ -1,17 +1,10 @@
-#include "Core/PreRequisites.h"
 #include "Core/Audio/TEAudioClipAsset.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 
-TEAudioClipAsset::TEAudioClipAsset()
-{
-    m_Handle = 0;
-}
+TEAudioClipAsset::TEAudioClipAsset() { m_Handle = 0; }
 
-TEAudioClipAsset::TEAudioClipAsset(const TEString &filePath)
-    : m_SourceFilePath(filePath)
-{
-    LoadFromFile(filePath);
-}
+TEAudioClipAsset::TEAudioClipAsset(const TEString &filePath) : m_SourceFilePath(filePath) { LoadFromFile(filePath); }
 
 TEAudioClipAsset::~TEAudioClipAsset()
 {
@@ -46,7 +39,4 @@ bool TEAudioClipAsset::LoadFromFile(const TEString &path)
     return false;
 }
 
-void TEAudioClipAsset::OnContentBrowserCreate(const TEString &path)
-{
-    LoadFromFile(path);
-}
+void TEAudioClipAsset::OnContentBrowserCreate(const TEString &path) { LoadFromFile(path); }

@@ -2,7 +2,6 @@
 
 #include "Core/Plugin/IPlugin.hpp"
 
-
 class RichTextPlugin : public IPlugin
 {
 public:
@@ -20,4 +19,3 @@ public:
 
     virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;
 };
-

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Lighting2DProjectSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,13 +7,13 @@ TE_REGISTER_PROJECT_SETTINGS(Lighting2DProjectSettings);
 
 namespace
 {
-    static float s_AmbientColor[4] = { 0.05f, 0.05f, 0.08f, 1.0f };
-    static float s_AmbientIntensity = 0.2f;
-    static int s_ShadowRaySteps = 64;
-    static float s_SoftShadowRadius = 2.0f;
-    static bool s_EnableVolumetricLight = false;
-    static float s_DefaultFalloffExponent = 2.0f;
-}
+static float s_AmbientColor[4] = {0.05f, 0.05f, 0.08f, 1.0f};
+static float s_AmbientIntensity = 0.2f;
+static int s_ShadowRaySteps = 64;
+static float s_SoftShadowRadius = 2.0f;
+static bool s_EnableVolumetricLight = false;
+static float s_DefaultFalloffExponent = 2.0f;
+} // namespace
 
 void Lighting2DProjectSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {

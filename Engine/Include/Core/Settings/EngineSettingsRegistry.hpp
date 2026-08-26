@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Core/PreRequisites.h"
-#include "GameFrameWork/GameplayUtils.hpp"
-#include <typeindex>
-#include <functional>
 #include "Core/Settings/EngineSettings.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
+#include <functional>
+#include <typeindex>
 
 // ====================================================================================
 // EngineSettingsRegistry (Master Registry for all Developer & Engine Settings classes)
@@ -18,8 +18,7 @@ public:
         return instance;
     }
 
-    template <typename T>
-    void RegisterSettingsClass()
+    template <typename T> void RegisterSettingsClass()
     {
         std::type_index typeIdx = std::type_index(typeid(T));
         if (m_SettingsInstances.Find(typeIdx) == nullptr)
@@ -36,8 +35,7 @@ public:
         }
     }
 
-    template <typename T>
-    static TERef<T> GetSettings()
+    template <typename T> static TERef<T> GetSettings()
     {
         std::type_index typeIdx = std::type_index(typeid(T));
         auto *found = Get().m_SettingsInstances.Find(typeIdx);
@@ -48,8 +46,7 @@ public:
         return nullptr;
     }
 
-    template <typename T>
-    static T &GetMutable()
+    template <typename T> static T &GetMutable()
     {
         auto ptr = GetSettings<T>();
         if (!ptr)
@@ -116,10 +113,7 @@ public:
         m_Categories.Clear();
     }
 
-    static void ClearAll()
-    {
-        Get().Clear();
-    }
+    static void ClearAll() { Get().Clear(); }
 
 private:
     EngineSettingsRegistry() = default;
@@ -131,21 +125,15 @@ private:
 
 namespace Internal
 {
-    template <typename T>
-    struct SettingsClassAutoRegistrar
-    {
-        SettingsClassAutoRegistrar()
-        {
-            EngineSettingsRegistry::Get().RegisterSettingsClass<T>();
-        }
-    };
+template <typename T> struct SettingsClassAutoRegistrar
+{
+    SettingsClassAutoRegistrar() { EngineSettingsRegistry::Get().RegisterSettingsClass<T>(); }
+};
 } // namespace Internal
-
 
 // ====================================================================================
 // TE_REGISTER_SETTINGS Macro
 // Automatically registers any derived EngineSettings subclass at static initialization.
 // ====================================================================================
-#define TE_REGISTER_SETTINGS(SettingsClass) \
+#define TE_REGISTER_SETTINGS(SettingsClass)                                                                            \
     static Internal::SettingsClassAutoRegistrar<SettingsClass> _reg_settings_class_##SettingsClass;
-

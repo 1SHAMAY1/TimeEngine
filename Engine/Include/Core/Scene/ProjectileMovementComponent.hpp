@@ -1,7 +1,6 @@
 #pragma once
-#include "MovementComponentBase.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
-
+#include "MovementComponentBase.hpp"
 
 TE_CLASS()
 class TE_API ProjectileMovementComponent : public MovementComponentBase
@@ -40,8 +39,6 @@ T_REGISTER_COMPONENT(ProjectileMovementComponent, "Projectile Movement Component
 T_REGISTER_PROPERTY(ProjectileMovementComponent, float, InitialSpeed, "Initial Speed")
 T_REGISTER_PROPERTY(ProjectileMovementComponent, float, GravityScale, "Gravity Scale")
 T_REGISTER_PROPERTY(ProjectileMovementComponent, float, Lifespan, "Lifespan")
-T_REGISTER_PRESET(ProjectileMovement, "Projectile Movement", "Gameplay", [](EntityID id, EntityManager *em) {
-    em->AddComponent<ProjectileMovementComponent>(id);
-})
+T_REGISTER_PRESET(ProjectileMovement, "Projectile Movement", "Gameplay",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<ProjectileMovementComponent>(id); })
 #endif
-

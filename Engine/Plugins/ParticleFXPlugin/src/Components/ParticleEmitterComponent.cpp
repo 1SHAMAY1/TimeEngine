@@ -1,9 +1,7 @@
 #include "ParticleEmitterComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 
-
-ParticleEmitterComponent::ParticleEmitterComponent()
-    : m_Pool(2000)
+ParticleEmitterComponent::ParticleEmitterComponent() : m_Pool(2000)
 {
     m_RateModule = CreateRef<SpawnRateModule>();
     m_BurstModule = CreateRef<BurstSpawnModule>();
@@ -235,34 +233,43 @@ void ParticleEmitterComponent::ApplyRainPreset()
 
 #ifdef TE_EDITOR
 // Register Presets in Entity Creation menu
-T_REGISTER_PRESET(FireEmitter, "Fire Emitter", "Particles & FX", [](EntityID id, EntityManager *em) {
-    auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
-    if (emitter)
-        emitter->ApplyFirePreset();
-})
+T_REGISTER_PRESET(FireEmitter, "Fire Emitter", "Particles & FX",
+                  [](EntityID id, EntityManager *em)
+                  {
+                      auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
+                      if (emitter)
+                          emitter->ApplyFirePreset();
+                  })
 
-T_REGISTER_PRESET(SparksEmitter, "Sparks Emitter", "Particles & FX", [](EntityID id, EntityManager *em) {
-    auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
-    if (emitter)
-        emitter->ApplySparksPreset();
-})
+T_REGISTER_PRESET(SparksEmitter, "Sparks Emitter", "Particles & FX",
+                  [](EntityID id, EntityManager *em)
+                  {
+                      auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
+                      if (emitter)
+                          emitter->ApplySparksPreset();
+                  })
 
-T_REGISTER_PRESET(ExplosionEmitter, "Explosion Emitter", "Particles & FX", [](EntityID id, EntityManager *em) {
-    auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
-    if (emitter)
-        emitter->ApplyExplosionPreset();
-})
+T_REGISTER_PRESET(ExplosionEmitter, "Explosion Emitter", "Particles & FX",
+                  [](EntityID id, EntityManager *em)
+                  {
+                      auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
+                      if (emitter)
+                          emitter->ApplyExplosionPreset();
+                  })
 
-T_REGISTER_PRESET(SmokeEmitter, "Smoke Emitter", "Particles & FX", [](EntityID id, EntityManager *em) {
-    auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
-    if (emitter)
-        emitter->ApplySmokePreset();
-})
+T_REGISTER_PRESET(SmokeEmitter, "Smoke Emitter", "Particles & FX",
+                  [](EntityID id, EntityManager *em)
+                  {
+                      auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
+                      if (emitter)
+                          emitter->ApplySmokePreset();
+                  })
 
-T_REGISTER_PRESET(RainEmitter, "Rain / Weather Emitter", "Particles & FX", [](EntityID id, EntityManager *em) {
-    auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
-    if (emitter)
-        emitter->ApplyRainPreset();
-})
+T_REGISTER_PRESET(RainEmitter, "Rain / Weather Emitter", "Particles & FX",
+                  [](EntityID id, EntityManager *em)
+                  {
+                      auto *emitter = em->AddComponent<ParticleEmitterComponent>(id);
+                      if (emitter)
+                          emitter->ApplyRainPreset();
+                  })
 #endif
-

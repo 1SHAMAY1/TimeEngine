@@ -1,14 +1,13 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorUtils.hpp"
-#include "Editor/AssetEditorRegistry.hpp"
-#include "Editor/EditorPanel.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
+#include "Editor/AssetEditorRegistry.hpp"
+#include "Editor/EditorPanel.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 // ── Panel helpers ────────────────────────────────────────────────────────────
 
@@ -34,7 +33,7 @@ bool EditorUtils::IsPanelVisible(Ref<EditorLayer> editor, const TEString &id)
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
 
-void EditorUtils::DrawSectionHeader(const TEString& label)
+void EditorUtils::DrawSectionHeader(const TEString &label)
 {
     TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4(0.85f, 0.85f, 0.85f, 1.0f));
     TimeGUI::Separator();
@@ -43,7 +42,7 @@ void EditorUtils::DrawSectionHeader(const TEString& label)
     TimeGUI::PopStyleColor();
 }
 
-void EditorUtils::DrawCenteredText(const TEString& label)
+void EditorUtils::DrawCenteredText(const TEString &label)
 {
     float winW = TimeGUI::GetContentRegionAvail().x;
     float textW = TimeGUI::CalcTextSize(label).x;
@@ -52,7 +51,7 @@ void EditorUtils::DrawCenteredText(const TEString& label)
     TimeGUI::TextUnformatted(label);
 }
 
-void EditorUtils::DrawHelpMarker(const TEString& text)
+void EditorUtils::DrawHelpMarker(const TEString &text)
 {
     TimeGUI::TextDisabled("(?)");
     if (TimeGUI::IsItemHovered())
@@ -61,11 +60,11 @@ void EditorUtils::DrawHelpMarker(const TEString& text)
     }
 }
 
-void EditorUtils::DrawBadge(const TEString& label, float r, float g, float b, float a)
+void EditorUtils::DrawBadge(const TEString &label, float r, float g, float b, float a)
 {
     TEVector2 pos = TimeGUI::GetCursorScreenPos();
     TEVector2 textSz = TimeGUI::CalcTextSize(label);
-    TEVector2 pad    = {6.0f, 2.0f};
+    TEVector2 pad = {6.0f, 2.0f};
     TEVector2 rectMin = pos;
     TEVector2 rectMax = {pos.x + textSz.x + pad.x * 2.0f, pos.y + textSz.y + pad.y * 2.0f};
 
@@ -190,8 +189,7 @@ bool EditorUtils::IsKnownAssetExtension(const TEString &path)
     return AssetEditorRegistry::GetEditorForPath(path) != nullptr;
 }
 
-TEString EditorUtils::MakeProjectRelative(const TEString &absPath,
-                                          const TEString &projectDir)
+TEString EditorUtils::MakeProjectRelative(const TEString &absPath, const TEString &projectDir)
 {
     TEString normAbs = absPath.Replace("\\", "/");
     TEString normProj = projectDir.Replace("\\", "/");
@@ -215,9 +213,12 @@ const char *EditorUtils::SceneStateLabel(Ref<EditorLayer> editor)
         return "Edit";
     switch (editor->GetSceneState())
     {
-        case EditorLayer::SceneState::Play:  return "Play";
-        case EditorLayer::SceneState::Pause: return "Pause";
-        default:                             return "Edit";
+    case EditorLayer::SceneState::Play:
+        return "Play";
+    case EditorLayer::SceneState::Pause:
+        return "Pause";
+    default:
+        return "Edit";
     }
 }
 
@@ -332,12 +333,8 @@ void EditorUtils::SetEditorThemeColors()
     colors[TimeGUICol_DockingEmptyBg] = TEVector4(0.08f, 0.09f, 0.10f, 1.0f);
 }
 
-void EditorUtils::DrawInfinite2DGrid(TimeGUIDrawList &dl,
-                                     const TEVector2 &viewportMin,
-                                     const TEVector2 &viewportSize,
-                                     const TEVector2 &cameraPos,
-                                     float zoom,
-                                     float primaryGridStep,
+void EditorUtils::DrawInfinite2DGrid(TimeGUIDrawList &dl, const TEVector2 &viewportMin, const TEVector2 &viewportSize,
+                                     const TEVector2 &cameraPos, float zoom, float primaryGridStep,
                                      float subGridDivisions)
 {
     if (viewportSize.x <= 0.0f || viewportSize.y <= 0.0f || zoom <= 0.0001f)
@@ -377,11 +374,10 @@ void EditorUtils::DrawInfinite2DGrid(TimeGUIDrawList &dl,
     unsigned int xAxisColor = 0x884040E0;       // Soft Red (X-Axis)
     unsigned int yAxisColor = 0x8840E040;       // Soft Green (Y-Axis)
 
-    auto WorldToScreen = [&](const TEVector2 &world) -> TEVector2 {
-        return TEVector2(
-            center.x + (world.x - cameraPos.x) * pixelsPerUnit,
-            center.y - (world.y - cameraPos.y) * pixelsPerUnit
-        );
+    auto WorldToScreen = [&](const TEVector2 &world) -> TEVector2
+    {
+        return TEVector2(center.x + (world.x - cameraPos.x) * pixelsPerUnit,
+                         center.y - (world.y - cameraPos.y) * pixelsPerUnit);
     };
 
     if (subStep * pixelsPerUnit > 8.0f)
@@ -430,10 +426,7 @@ void EditorUtils::DrawInfinite2DGrid(TimeGUIDrawList &dl,
     dl.PopClipRect();
 }
 
-void EditorUtils::DrawTransformGizmo(TimeGUIDrawList &dl,
-                                     const TEVector2 &screenPos,
-                                     int gizmoType,
-                                     bool isHovered,
+void EditorUtils::DrawTransformGizmo(TimeGUIDrawList &dl, const TEVector2 &screenPos, int gizmoType, bool isHovered,
                                      bool isDragging)
 {
     float armLength = 48.0f;
@@ -449,19 +442,15 @@ void EditorUtils::DrawTransformGizmo(TimeGUIDrawList &dl,
     {
         TEVector2 xEnd = TEVector2(screenPos.x + armLength, screenPos.y);
         dl.AddLine(screenPos, xEnd, redCol, 2.5f);
-        dl.AddTriangleFilled(
-            TEVector2(xEnd.x + arrowHeadSize, xEnd.y),
-            TEVector2(xEnd.x, xEnd.y - arrowHeadSize * 0.5f),
-            TEVector2(xEnd.x, xEnd.y + arrowHeadSize * 0.5f),
-            redCol);
+        dl.AddTriangleFilled(TEVector2(xEnd.x + arrowHeadSize, xEnd.y),
+                             TEVector2(xEnd.x, xEnd.y - arrowHeadSize * 0.5f),
+                             TEVector2(xEnd.x, xEnd.y + arrowHeadSize * 0.5f), redCol);
 
         TEVector2 yEnd = TEVector2(screenPos.x, screenPos.y - armLength);
         dl.AddLine(screenPos, yEnd, greenCol, 2.5f);
-        dl.AddTriangleFilled(
-            TEVector2(yEnd.x, yEnd.y - arrowHeadSize),
-            TEVector2(yEnd.x - arrowHeadSize * 0.5f, yEnd.y),
-            TEVector2(yEnd.x + arrowHeadSize * 0.5f, yEnd.y),
-            greenCol);
+        dl.AddTriangleFilled(TEVector2(yEnd.x, yEnd.y - arrowHeadSize),
+                             TEVector2(yEnd.x - arrowHeadSize * 0.5f, yEnd.y),
+                             TEVector2(yEnd.x + arrowHeadSize * 0.5f, yEnd.y), greenCol);
     }
     else if (gizmoType == 2) // Rotate Mode (E)
     {
@@ -471,16 +460,12 @@ void EditorUtils::DrawTransformGizmo(TimeGUIDrawList &dl,
     {
         TEVector2 xEnd = TEVector2(screenPos.x + armLength, screenPos.y);
         dl.AddLine(screenPos, xEnd, redCol, 2.5f);
-        dl.AddRectFilled(
-            TEVector2(xEnd.x - 4.0f, xEnd.y - 4.0f),
-            TEVector2(xEnd.x + 4.0f, xEnd.y + 4.0f),
-            redCol);
+        dl.AddRectFilled(TEVector2(xEnd.x - 4.0f, xEnd.y - 4.0f), TEVector2(xEnd.x + 4.0f, xEnd.y + 4.0f), redCol);
 
         TEVector2 yEnd = TEVector2(screenPos.x, screenPos.y - armLength);
         dl.AddLine(screenPos, yEnd, greenCol, 2.5f);
         dl.AddRectFilled(TEVector2(screenPos.x - 4.0f, screenPos.y - 4.0f),
-                         TEVector2(screenPos.x + 4.0f, screenPos.y + 4.0f),
-                         0xFF4A88E8, 1.0f);
+                         TEVector2(screenPos.x + 4.0f, screenPos.y + 4.0f), 0xFF4A88E8, 1.0f);
     }
 }
 
@@ -501,11 +486,9 @@ void EditorUtils::DrawHamburgerIcon(TimeGUIDrawList &dl, const TEVector2 &center
 void EditorUtils::DrawPlayIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
 {
     float half = size * 0.4f;
-    dl.AddTriangleFilled(
-        TEVector2(center.x - half * 0.6f, center.y - half),
-        TEVector2(center.x - half * 0.6f, center.y + half),
-        TEVector2(center.x + half * 0.9f, center.y),
-        color);
+    dl.AddTriangleFilled(TEVector2(center.x - half * 0.6f, center.y - half),
+                         TEVector2(center.x - half * 0.6f, center.y + half),
+                         TEVector2(center.x + half * 0.9f, center.y), color);
 }
 
 void EditorUtils::DrawPauseIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
@@ -525,8 +508,8 @@ void EditorUtils::DrawPauseIcon(TimeGUIDrawList &dl, const TEVector2 &center, fl
 void EditorUtils::DrawStopIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
 {
     float half = size * 0.35f;
-    dl.AddRectFilled(TEVector2(center.x - half, center.y - half),
-                     TEVector2(center.x + half, center.y + half), color, 2.0f);
+    dl.AddRectFilled(TEVector2(center.x - half, center.y - half), TEVector2(center.x + half, center.y + half), color,
+                     2.0f);
 }
 
 void EditorUtils::DrawRestartIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
@@ -579,17 +562,13 @@ void EditorUtils::DrawTranslateIcon(TimeGUIDrawList &dl, const TEVector2 &center
     dl.AddLine(TEVector2(center.x - h, center.y), TEVector2(center.x + h, center.y), color, 2.0f);
     dl.AddLine(TEVector2(center.x, center.y - h), TEVector2(center.x, center.y + h), color, 2.0f);
 
-    dl.AddTriangleFilled(TEVector2(center.x - h - 1.0f, center.y),
-                         TEVector2(center.x - h + arr, center.y - arr * 0.6f),
+    dl.AddTriangleFilled(TEVector2(center.x - h - 1.0f, center.y), TEVector2(center.x - h + arr, center.y - arr * 0.6f),
                          TEVector2(center.x - h + arr, center.y + arr * 0.6f), color);
-    dl.AddTriangleFilled(TEVector2(center.x + h + 1.0f, center.y),
-                         TEVector2(center.x + h - arr, center.y - arr * 0.6f),
+    dl.AddTriangleFilled(TEVector2(center.x + h + 1.0f, center.y), TEVector2(center.x + h - arr, center.y - arr * 0.6f),
                          TEVector2(center.x + h - arr, center.y + arr * 0.6f), color);
-    dl.AddTriangleFilled(TEVector2(center.x, center.y - h - 1.0f),
-                         TEVector2(center.x - arr * 0.6f, center.y - h + arr),
+    dl.AddTriangleFilled(TEVector2(center.x, center.y - h - 1.0f), TEVector2(center.x - arr * 0.6f, center.y - h + arr),
                          TEVector2(center.x + arr * 0.6f, center.y - h + arr), color);
-    dl.AddTriangleFilled(TEVector2(center.x, center.y + h + 1.0f),
-                         TEVector2(center.x - arr * 0.6f, center.y + h - arr),
+    dl.AddTriangleFilled(TEVector2(center.x, center.y + h + 1.0f), TEVector2(center.x - arr * 0.6f, center.y + h - arr),
                          TEVector2(center.x + arr * 0.6f, center.y + h - arr), color);
 }
 
@@ -636,11 +615,8 @@ void EditorUtils::DrawChevronLeftIcon(TimeGUIDrawList &dl, const TEVector2 &cent
 {
     float halfH = size * 0.30f;
     float halfW = size * 0.18f;
-    TEVector2 pts[3] = {
-        TEVector2(center.x + halfW, center.y - halfH),
-        TEVector2(center.x - halfW, center.y),
-        TEVector2(center.x + halfW, center.y + halfH)
-    };
+    TEVector2 pts[3] = {TEVector2(center.x + halfW, center.y - halfH), TEVector2(center.x - halfW, center.y),
+                        TEVector2(center.x + halfW, center.y + halfH)};
     dl.AddPolyline(pts, 3, color, 0, 2.0f);
 }
 
@@ -648,11 +624,8 @@ void EditorUtils::DrawChevronRightIcon(TimeGUIDrawList &dl, const TEVector2 &cen
 {
     float halfH = size * 0.30f;
     float halfW = size * 0.18f;
-    TEVector2 pts[3] = {
-        TEVector2(center.x - halfW, center.y - halfH),
-        TEVector2(center.x + halfW, center.y),
-        TEVector2(center.x - halfW, center.y + halfH)
-    };
+    TEVector2 pts[3] = {TEVector2(center.x - halfW, center.y - halfH), TEVector2(center.x + halfW, center.y),
+                        TEVector2(center.x - halfW, center.y + halfH)};
     dl.AddPolyline(pts, 3, color, 0, 2.0f);
 }
 
@@ -660,8 +633,10 @@ bool EditorUtils::DrawNavIconButton(const char *strID, bool isForward, bool enab
 {
     TimeGUI::PushID(strID);
     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
-    TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, enabled ? TEVector4(1.0f, 1.0f, 1.0f, 0.12f) : TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
-    TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, enabled ? TEVector4(1.0f, 1.0f, 1.0f, 0.22f) : TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered,
+                            enabled ? TEVector4(1.0f, 1.0f, 1.0f, 0.12f) : TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
+    TimeGUI::PushStyleColor(TimeGUICol_ButtonActive,
+                            enabled ? TEVector4(1.0f, 1.0f, 1.0f, 0.22f) : TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
 
     bool clicked = TimeGUI::Button("##nav", btnSize) && enabled;
 
@@ -672,9 +647,8 @@ bool EditorUtils::DrawNavIconButton(const char *strID, bool isForward, bool enab
     TEVector2 center = TEVector2((bMin.x + bMax.x) * 0.5f, (bMin.y + bMax.y) * 0.5f);
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
 
-    unsigned int iconColor = enabled
-        ? (TimeGUI::IsItemHovered() ? 0xFFFFFFFF : 0xDDFFFFFF)
-        : 0x38FFFFFF; // Disabled: subtle transparent white
+    unsigned int iconColor = enabled ? (TimeGUI::IsItemHovered() ? 0xFFFFFFFF : 0xDDFFFFFF)
+                                     : 0x38FFFFFF; // Disabled: subtle transparent white
 
     if (!isForward)
         DrawChevronLeftIcon(dl, center, btnSize.y, iconColor);
@@ -695,7 +669,8 @@ static TEString s_BrowserCurrentDir = "";
 static TEString s_BrowserFilenameInput = "";
 static TEString s_BrowserSelectedFile = "";
 
-void EditorUtils::OpenFileBrowser(const FileBrowserConfig &config, std::function<void(const TEString &selectedPath)> onConfirm)
+void EditorUtils::OpenFileBrowser(const FileBrowserConfig &config,
+                                  std::function<void(const TEString &selectedPath)> onConfirm)
 {
     s_CurrentBrowserConfig = config;
     s_BrowserCallback = onConfirm;
@@ -716,7 +691,8 @@ void EditorUtils::OpenFileBrowser(const FileBrowserConfig &config, std::function
         startDir = TEFileSystem::GetCurrentWorkingDirectory();
 
     TEString scenesDir = startDir / "Scenes";
-    if (s_CurrentBrowserConfig.FilterExtension.Equals(".tescene", ESearchCase::IgnoreCase) && TEFileSystem::Exists(scenesDir))
+    if (s_CurrentBrowserConfig.FilterExtension.Equals(".tescene", ESearchCase::IgnoreCase) &&
+        TEFileSystem::Exists(scenesDir))
         s_BrowserCurrentDir = scenesDir;
     else
         s_BrowserCurrentDir = startDir;
@@ -726,12 +702,9 @@ void EditorUtils::OpenFileBrowser(const FileBrowserConfig &config, std::function
     s_FileBrowserOpenTrigger = true;
 }
 
-void EditorUtils::OpenFileBrowser(const TEString &title,
-                                const TEString &actionButtonText,
-                                const TEString &defaultFilename,
-                                const TEString &filterExtension,
-                                bool allowFilenameInput,
-                                std::function<void(const TEString &selectedPath)> onConfirm)
+void EditorUtils::OpenFileBrowser(const TEString &title, const TEString &actionButtonText,
+                                  const TEString &defaultFilename, const TEString &filterExtension,
+                                  bool allowFilenameInput, std::function<void(const TEString &selectedPath)> onConfirm)
 {
     FileBrowserConfig config;
     config.Title = title;
@@ -742,10 +715,7 @@ void EditorUtils::OpenFileBrowser(const TEString &title,
     OpenFileBrowser(config, onConfirm);
 }
 
-bool EditorUtils::IsFileBrowserOpen()
-{
-    return s_FileBrowserOpen;
-}
+bool EditorUtils::IsFileBrowserOpen() { return s_FileBrowserOpen; }
 
 void EditorUtils::DrawFileBrowserModal()
 {
@@ -762,7 +732,8 @@ void EditorUtils::DrawFileBrowserModal()
     TEVector2 centerPos = TEVector2(displaySize.x * 0.5f, displaySize.y * 0.5f);
     TimeGUI::SetNextWindowPos(centerPos, TimeGUICond_Appearing, TEVector2(0.5f, 0.5f));
     TimeGUI::SetNextWindowSize(TEVector2(850.0f, 560.0f), TimeGUICond_Appearing);
-    if (TimeGUI::BeginPopupModal(s_CurrentBrowserConfig.Title.c_str(), &s_FileBrowserOpen, TimeGUIWindowFlags_NoCollapse))
+    if (TimeGUI::BeginPopupModal(s_CurrentBrowserConfig.Title.c_str(), &s_FileBrowserOpen,
+                                 TimeGUIWindowFlags_NoCollapse))
     {
         // 1. Top Navigation Bar
         TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(6.0f, 4.0f));
@@ -861,7 +832,8 @@ void EditorUtils::DrawFileBrowserModal()
             for (const auto &file : files)
             {
                 TEString ext = file.GetExtension();
-                if (!s_CurrentBrowserConfig.FilterExtension.empty() && !ext.Equals(s_CurrentBrowserConfig.FilterExtension, ESearchCase::IgnoreCase))
+                if (!s_CurrentBrowserConfig.FilterExtension.empty() &&
+                    !ext.Equals(s_CurrentBrowserConfig.FilterExtension, ESearchCase::IgnoreCase))
                     continue;
 
                 TEString fileName = file.GetFilename();
@@ -920,7 +892,8 @@ void EditorUtils::DrawFileBrowserModal()
         TimeGUI::Spacing();
         TimeGUI::SetCursorPosX(TimeGUI::GetWindowWidth() - 220.0f);
 
-        TEString actionText = s_CurrentBrowserConfig.ActionButtonText.empty() ? "Select" : s_CurrentBrowserConfig.ActionButtonText;
+        TEString actionText =
+            s_CurrentBrowserConfig.ActionButtonText.empty() ? "Select" : s_CurrentBrowserConfig.ActionButtonText;
         TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.18f, 0.50f, 0.85f, 0.95f));
         TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(0.24f, 0.60f, 0.95f, 1.0f));
 
@@ -932,7 +905,8 @@ void EditorUtils::DrawFileBrowserModal()
                 if (!s_BrowserFilenameInput.empty())
                 {
                     TEString finalName = s_BrowserFilenameInput;
-                    if (!s_CurrentBrowserConfig.FilterExtension.empty() && !finalName.EndsWith(s_CurrentBrowserConfig.FilterExtension, ESearchCase::IgnoreCase))
+                    if (!s_CurrentBrowserConfig.FilterExtension.empty() &&
+                        !finalName.EndsWith(s_CurrentBrowserConfig.FilterExtension, ESearchCase::IgnoreCase))
                     {
                         finalName += s_CurrentBrowserConfig.FilterExtension;
                     }
@@ -965,5 +939,3 @@ void EditorUtils::DrawFileBrowserModal()
         TimeGUI::EndPopup();
     }
 }
-
-

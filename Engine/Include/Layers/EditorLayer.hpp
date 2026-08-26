@@ -19,13 +19,25 @@ public:
     virtual void OnAttach() override;
     virtual void OnDetach() override;
     virtual void OnUpdate() override;
+    virtual void OnRender() override;
     virtual void OnTimeGUIRender() override;
     virtual void OnEvent(Event &event) override;
 
     Ref<EditorLayer> GetShared() { return std::static_pointer_cast<EditorLayer>(shared_from_this()); }
 
-    enum class SceneState { Edit = 0, Play = 1, Pause = 2 };
-    enum class GizmoType  { None = -1, Translate = 0, Rotate = 1, Scale = 2 };
+    enum class SceneState
+    {
+        Edit = 0,
+        Play = 1,
+        Pause = 2
+    };
+    enum class GizmoType
+    {
+        None = -1,
+        Translate = 0,
+        Rotate = 1,
+        Scale = 2
+    };
 
     // Scene lifecycle
     void OnScenePlay();
@@ -87,12 +99,13 @@ public:
 
     // Queries
     TEArray<struct EditorToolbarItem> GetToolbarItemsByAlignment(enum class EditorToolbarAlignment align) const;
-    TEArray<struct ViewportOverlayItem> GetViewportItemsByCornerAndAlignment(enum class ViewportOverlayCorner corner, enum class ViewportOverlayAlignment align) const;
+    TEArray<struct ViewportOverlayItem>
+    GetViewportItemsByCornerAndAlignment(enum class ViewportOverlayCorner corner,
+                                         enum class ViewportOverlayAlignment align) const;
     TEArray<TERef<class IEditorPanel>> GetRegisteredPanels() const;
     TERef<class IEditorPanel> GetPanelByID(const TEString &id) const;
 
-    template <typename T>
-    TERef<T> GetPanel() const
+    template <typename T> TERef<T> GetPanel() const
     {
         for (auto &panel : m_Panels)
         {
@@ -157,4 +170,3 @@ private:
     TEArray<Entity> m_EntitiesToDelete;
     TEArray<std::pair<EntityID, class TComponent *>> m_ComponentsToDelete;
 };
-

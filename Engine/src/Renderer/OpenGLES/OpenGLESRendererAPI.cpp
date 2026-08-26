@@ -1,12 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESRendererAPI.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 #include <glad/glad.h>
 #include <iostream>
 
 // NOTE: RendererAPI::GetAPI() and RendererAPI::Create() are defined in
 // DirectX11RendererAPI.cpp so that all backends are visible in one place.
-
 
 // ---------------------------------------------------------------------------
 // OpenGLESRendererAPI implementation
@@ -115,4 +114,3 @@ void OpenGLESRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor d
     glBlendFuncSeparate(GetGLESBlendFactor(srcRGB), GetGLESBlendFactor(dstRGB), GetGLESBlendFactor(srcAlpha),
                         GetGLESBlendFactor(dstAlpha));
 }
-

@@ -1,9 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/CanvasLayerComponent.hpp"
+#include "Core/PreRequisites.h"
 
-void CanvasLayerComponent::OnAttach()
-{
-}
+void CanvasLayerComponent::OnAttach() {}
 
 void CanvasLayerComponent::Tick(float deltaTime)
 {
@@ -56,7 +54,4 @@ void CanvasLayerComponent::RemoveWidget(TERef<UIWidget> widget)
     }
 }
 
-void CanvasLayerComponent::ClearWidgets()
-{
-    m_Widgets.Clear();
-}
+void CanvasLayerComponent::ClearWidgets() { m_Widgets.Clear(); }

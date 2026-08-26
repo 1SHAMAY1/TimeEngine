@@ -3,7 +3,6 @@
 #include "Layers/Layer.hpp"
 #include <memory>
 
-
 class SpriteMode;
 
 class SpriteEditorLayer : public Layer
@@ -25,4 +24,3 @@ public:
 private:
     TEScope<SpriteMode> m_SpriteMode;
 };
-

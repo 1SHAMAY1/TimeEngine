@@ -1,6 +1,7 @@
 #include "SoundNodeRegistry.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 static TEMap<TEString, SoundNodeInfo> s_Registry;
 
@@ -20,10 +21,7 @@ TERef<SoundGraphNode> SoundNodeRegistry::CreateNode(const TEString &typeName)
     return nullptr;
 }
 
-const TEMap<TEString, SoundNodeInfo> &SoundNodeRegistry::GetRegisteredNodes()
-{
-    return s_Registry;
-}
+const TEMap<TEString, SoundNodeInfo> &SoundNodeRegistry::GetRegisteredNodes() { return s_Registry; }
 
 void SoundNodeRegistry::InitializeDefaults()
 {

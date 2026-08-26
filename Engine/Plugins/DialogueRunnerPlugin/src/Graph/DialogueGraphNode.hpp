@@ -5,7 +5,6 @@
 #include "NarrativeTypes.hpp"
 #include "Runtime/NarrativeValue.hpp"
 
-
 struct DialogueGraphNode : public GraphNode
 {
     NarrativeNodeType Type = NarrativeNodeType::Dialogue;
@@ -39,8 +38,5 @@ struct DialogueGraphNode : public GraphNode
     // Divert / Knot Jump
     TEString DivertTargetKnot;
 
-    DialogueGraphNode()
-    {
-        NodeType = "DialogueNode";
-    }
+    DialogueGraphNode() { NodeType = "DialogueNode"; }
 };

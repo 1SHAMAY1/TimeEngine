@@ -1,7 +1,6 @@
 #pragma once
-#include "Editor/Panels/IEditorPanel.hpp"
 #include "Core/Log.h"
-
+#include "Editor/Panels/IEditorPanel.hpp"
 
 enum class ETerminalViewMode
 {

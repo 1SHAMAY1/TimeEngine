@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstring>
 
-
 SpriteMode::SpriteMode()
 {
     m_ExportLayer = CreateScope<SpriteExportLayer>(this);
@@ -52,9 +51,7 @@ SpriteMode::SpriteMode()
     SaveUndoState();
 }
 
-SpriteMode::~SpriteMode()
-{
-}
+SpriteMode::~SpriteMode() {}
 
 void SpriteMode::OnEnter()
 {
@@ -192,10 +189,12 @@ void SpriteMode::AddColorToHistory(TEVector4 color)
 {
     if (color.w < 0.001f)
         return;
-    m_ColorHistory.RemoveBy([&](const TEVector4 &c) {
-        return std::abs(c.x - color.x) < 0.001f && std::abs(c.y - color.y) < 0.001f &&
-               std::abs(c.z - color.z) < 0.001f && std::abs(c.w - color.w) < 0.001f;
-    });
+    m_ColorHistory.RemoveBy(
+        [&](const TEVector4 &c)
+        {
+            return std::abs(c.x - color.x) < 0.001f && std::abs(c.y - color.y) < 0.001f &&
+                   std::abs(c.z - color.z) < 0.001f && std::abs(c.w - color.w) < 0.001f;
+        });
     m_ColorHistory.Insert(0, color);
     if (m_ColorHistory.Size() > 16)
         m_ColorHistory.RemoveAt(m_ColorHistory.Size() - 1);
@@ -271,13 +270,9 @@ void SpriteMode::Redo()
     m_IsUndoingRedoing = false;
 }
 
-void SpriteMode::RefreshPreview()
-{
-}
+void SpriteMode::RefreshPreview() {}
 
-void SpriteMode::PerformExport()
-{
-}
+void SpriteMode::PerformExport() {}
 
 void SpriteMode::ExecuteProceduralCode(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float dt)
 {

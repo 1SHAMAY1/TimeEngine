@@ -5,7 +5,6 @@
 #include "Utils/TEString.hpp"
 #include <cstdint>
 
-
 enum class GraphPinKind : uint8_t
 {
     Flow = 0,
@@ -84,11 +83,26 @@ public:
     static GraphPinType Bool() { return GraphPinType(GraphPinKind::Bool, "Bool", TEColor(0.85f, 0.25f, 0.25f, 1.0f)); }
     static GraphPinType Int() { return GraphPinType(GraphPinKind::Int, "Int", TEColor(0.25f, 0.85f, 0.65f, 1.0f)); }
     static GraphPinType Float() { return GraphPinType(GraphPinKind::Float, "Float", TEColor(0.4f, 0.8f, 0.3f, 1.0f)); }
-    static GraphPinType Float2() { return GraphPinType(GraphPinKind::Float2, "Float2", TEColor(0.95f, 0.85f, 0.25f, 1.0f)); }
-    static GraphPinType Float3() { return GraphPinType(GraphPinKind::Float3, "Float3", TEColor(0.35f, 0.75f, 0.95f, 1.0f)); }
-    static GraphPinType Float4() { return GraphPinType(GraphPinKind::Float4, "Float4", TEColor(0.85f, 0.45f, 0.95f, 1.0f)); }
-    static GraphPinType Texture() { return GraphPinType(GraphPinKind::Texture, "Texture", TEColor(0.95f, 0.5f, 0.2f, 1.0f)); }
-    static GraphPinType Slab() { return GraphPinType(GraphPinKind::Slab, "MaterialSlab", TEColor(0.2f, 0.85f, 0.9f, 1.0f)); }
+    static GraphPinType Float2()
+    {
+        return GraphPinType(GraphPinKind::Float2, "Float2", TEColor(0.95f, 0.85f, 0.25f, 1.0f));
+    }
+    static GraphPinType Float3()
+    {
+        return GraphPinType(GraphPinKind::Float3, "Float3", TEColor(0.35f, 0.75f, 0.95f, 1.0f));
+    }
+    static GraphPinType Float4()
+    {
+        return GraphPinType(GraphPinKind::Float4, "Float4", TEColor(0.85f, 0.45f, 0.95f, 1.0f));
+    }
+    static GraphPinType Texture()
+    {
+        return GraphPinType(GraphPinKind::Texture, "Texture", TEColor(0.95f, 0.5f, 0.2f, 1.0f));
+    }
+    static GraphPinType Slab()
+    {
+        return GraphPinType(GraphPinKind::Slab, "MaterialSlab", TEColor(0.2f, 0.85f, 0.9f, 1.0f));
+    }
     static GraphPinType Custom(const TEString &typeName, const TEColor &color = TEColor(0.7f, 0.7f, 0.75f, 1.0f))
     {
         return GraphPinType(GraphPinKind::Custom, typeName, color);
@@ -111,10 +125,9 @@ struct TE_API GraphPin
     TEString DefaultValue = "0.0";
 
     GraphPin() = default;
-    GraphPin(uint64_t id, uint64_t nodeId, const TEString &name, const GraphPinType &type,
-             PinDirection direction, const TEString &defaultValue = "")
-        : ID(id), NodeID(nodeId), Name(name), Type(type),
-          Direction(direction), DefaultValue(defaultValue)
+    GraphPin(uint64_t id, uint64_t nodeId, const TEString &name, const GraphPinType &type, PinDirection direction,
+             const TEString &defaultValue = "")
+        : ID(id), NodeID(nodeId), Name(name), Type(type), Direction(direction), DefaultValue(defaultValue)
     {
     }
 

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorToolbarRegistry.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 
@@ -28,10 +28,7 @@ void EditorToolbarRegistry::RegisterItem(const EditorToolbarItem &item)
     }
 }
 
-void EditorToolbarRegistry::UnregisterItem(const TEString &id)
-{
-    GetItemsMap().Remove(id);
-}
+void EditorToolbarRegistry::UnregisterItem(const TEString &id) { GetItemsMap().Remove(id); }
 
 TEArray<EditorToolbarItem> EditorToolbarRegistry::GetItems(EditorToolbarAlignment alignment)
 {
@@ -47,15 +44,10 @@ TEArray<EditorToolbarItem> EditorToolbarRegistry::GetItems(EditorToolbarAlignmen
         }
     }
 
-    std::sort(result.begin(), result.end(), [](const EditorToolbarItem &a, const EditorToolbarItem &b) {
-        return a.priority < b.priority;
-    });
+    std::sort(result.begin(), result.end(),
+              [](const EditorToolbarItem &a, const EditorToolbarItem &b) { return a.priority < b.priority; });
 
     return result;
 }
 
-void EditorToolbarRegistry::Clear()
-{
-    GetItemsMap().Clear();
-}
-
+void EditorToolbarRegistry::Clear() { GetItemsMap().Clear(); }

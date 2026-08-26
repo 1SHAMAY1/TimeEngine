@@ -4,7 +4,8 @@
 #include <fstream>
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 #pragma pack(push, 1)
 struct WAVHeader

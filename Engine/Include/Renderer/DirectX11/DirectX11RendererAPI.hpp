@@ -11,7 +11,6 @@ struct ID3D11DepthStencilView;
 struct ID3D11Texture2D;
 struct ID3D11BlendState;
 
-
 // Central D3D11 device context shared by all DX11 resource classes.
 // Populated by DirectX11RendererAPI::InitWithWindow().
 struct DX11Context
@@ -71,4 +70,3 @@ private:
     uint32_t m_ViewportH = 0;
     TEString m_GPUDescription;
 };
-

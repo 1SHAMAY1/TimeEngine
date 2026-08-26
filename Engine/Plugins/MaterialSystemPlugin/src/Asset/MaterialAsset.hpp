@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
-#include "Core/Asset/Asset.hpp"
 #include "Compiler/MaterialShaderCompiler.hpp"
+#include "Core/Asset/Asset.hpp"
 #include "Core/Graph/Graph.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/Shader.hpp"
-
 
 class MaterialAsset : public Asset
 {

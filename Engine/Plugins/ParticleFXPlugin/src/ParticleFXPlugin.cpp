@@ -1,10 +1,9 @@
 #include "ParticleFXPlugin.hpp"
-#include "Core/Log.h"
 #include "Components/ParticleEmitterComponent.hpp"
+#include "Core/Log.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Editor/ParticleGraphAssetEditor.hpp"
 #include "Editor/ParticleStackEditorPanel.hpp"
-
 
 void ParticleFXPlugin::OnLoad()
 {
@@ -42,7 +41,8 @@ void ParticleFXPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, 
     dl.AddLine(TEVector2(min.x + 16.0f, max.y - 13.0f), TEVector2(min.x + 36.0f, min.y + 26.0f), 0x88FDCB6E, 1.2f);
 
     // Glowing 4-point star particles
-    auto DrawStar = [&](const TEVector2 &p, float s, unsigned int col) {
+    auto DrawStar = [&](const TEVector2 &p, float s, unsigned int col)
+    {
         dl.AddLine(TEVector2(p.x - s, p.y), TEVector2(p.x + s, p.y), col, 1.5f);
         dl.AddLine(TEVector2(p.x, p.y - s), TEVector2(p.x, p.y + s), col, 1.5f);
         dl.AddCircleFilled(p, 1.5f, 0xFFFFFFFF);

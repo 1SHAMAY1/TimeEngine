@@ -14,4 +14,3 @@ public:
 private:
     uint32_t m_RendererID;
 };
-

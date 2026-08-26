@@ -2,7 +2,6 @@
 
 #include "Renderer/Framebuffer.hpp"
 
-
 class MetalFramebuffer : public Framebuffer
 {
 public:
@@ -25,4 +24,3 @@ private:
     void *m_DepthTexture = nullptr;
     FramebufferSpecification m_Specification;
 };
-

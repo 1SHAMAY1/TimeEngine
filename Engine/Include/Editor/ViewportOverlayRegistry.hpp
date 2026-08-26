@@ -4,7 +4,6 @@
 #include "Renderer/Texture.hpp"
 #include <functional>
 
-
 enum class ViewportOverlayCorner
 {
     TopLeft,
@@ -82,7 +81,6 @@ public:
     static void RegisterItem(const ViewportOverlayItem &item);
     static void UnregisterItem(const TEString &id);
     static TEArray<ViewportOverlayItem> GetItems(ViewportOverlayCorner corner,
-                                                  ViewportOverlayAlignment align = ViewportOverlayAlignment::Right);
+                                                 ViewportOverlayAlignment align = ViewportOverlayAlignment::Right);
     static void Clear();
 };
-

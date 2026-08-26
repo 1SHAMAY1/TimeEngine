@@ -7,7 +7,6 @@
 
 struct TEVector2;
 
-
 // Declare a dynamic delegate
 DECLARE_MULTICAST_DELEGATE(OnLogoFinished)
 
@@ -17,8 +16,9 @@ public:
     LogoLayer(const TEString &name = "Logo Layer");
     virtual ~LogoLayer();
 
-    virtual void OnTimeGUIRender() override;
+    virtual void OnAttach() override;
     virtual void OnDetach() override;
+    virtual void OnTimeGUIRender() override;
 
     OnLogoFinished LogoFinishedDelegate;
 

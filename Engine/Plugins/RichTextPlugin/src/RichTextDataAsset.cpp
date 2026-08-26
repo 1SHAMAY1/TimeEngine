@@ -1,16 +1,13 @@
 #include "RichTextDataAsset.hpp"
 #include <sstream>
 
-
-RichTextDataAsset::RichTextDataAsset()
-    : DataAsset("NewRichTextStyle", "RichTextDataAsset")
+RichTextDataAsset::RichTextDataAsset() : DataAsset("NewRichTextStyle", "RichTextDataAsset")
 {
     m_AssetTypeName = "RichTextDataAsset";
     m_Style.StyleName = "NewRichTextStyle";
 }
 
-RichTextDataAsset::RichTextDataAsset(const TEString &styleName)
-    : DataAsset(styleName, "RichTextDataAsset")
+RichTextDataAsset::RichTextDataAsset(const TEString &styleName) : DataAsset(styleName, "RichTextDataAsset")
 {
     m_AssetTypeName = "RichTextDataAsset";
     m_Style.StyleName = TEString(styleName);
@@ -24,10 +21,7 @@ TERef<Asset> RichTextDataAsset::Clone() const
     return copy;
 }
 
-RichTextStyle RichTextDataAsset::ToStyle() const
-{
-    return m_Style;
-}
+RichTextStyle RichTextDataAsset::ToStyle() const { return m_Style; }
 
 void RichTextDataAsset::FromStyle(const RichTextStyle &style)
 {
@@ -40,23 +34,17 @@ TEString RichTextDataAsset::SerializeRowString() const
     auto color = m_Style.TextColor.GetValue();
     auto grad = m_Style.GradientTo.GetValue();
 
-    return TEString(std::to_string(m_Style.FontAsset).c_str()) + "|"
-        + TEString::FromFloat(m_Style.FontSize) + "|"
-        + TEString::FromFloat(m_Style.Scale) + "|"
-        + TEString::FromFloat(color.r) + " " + TEString::FromFloat(color.g) + " " + TEString::FromFloat(color.b) + " " + TEString::FromFloat(color.a) + "|"
-        + (m_Style.IsGradient ? "1|" : "0|")
-        + TEString::FromFloat(grad.r) + " " + TEString::FromFloat(grad.g) + " " + TEString::FromFloat(grad.b) + " " + TEString::FromFloat(grad.a) + "|"
-        + TEString::FromInt(m_Style.GradientDirection) + "|"
-        + (m_Style.Bold ? "1|" : "0|")
-        + (m_Style.Italic ? "1|" : "0|")
-        + (m_Style.Underline ? "1|" : "0|")
-        + (m_Style.Strikethrough ? "1|" : "0|")
-        + TEString::FromInt(static_cast<int>(m_Style.Effect)) + "|"
-        + TEString::FromFloat(m_Style.EffectParams.x) + " " + TEString::FromFloat(m_Style.EffectParams.y) + " "
-        + TEString::FromFloat(m_Style.EffectParams.z) + " " + TEString::FromFloat(m_Style.EffectParams.w) + "|"
-        + TEString(std::to_string(m_Style.IconTexture).c_str()) + "|"
-        + m_Style.SpriteName + "|"
-        + m_Style.LinkID;
+    return TEString(std::to_string(m_Style.FontAsset).c_str()) + "|" + TEString::FromFloat(m_Style.FontSize) + "|" +
+           TEString::FromFloat(m_Style.Scale) + "|" + TEString::FromFloat(color.r) + " " +
+           TEString::FromFloat(color.g) + " " + TEString::FromFloat(color.b) + " " + TEString::FromFloat(color.a) +
+           "|" + (m_Style.IsGradient ? "1|" : "0|") + TEString::FromFloat(grad.r) + " " + TEString::FromFloat(grad.g) +
+           " " + TEString::FromFloat(grad.b) + " " + TEString::FromFloat(grad.a) + "|" +
+           TEString::FromInt(m_Style.GradientDirection) + "|" + (m_Style.Bold ? "1|" : "0|") +
+           (m_Style.Italic ? "1|" : "0|") + (m_Style.Underline ? "1|" : "0|") + (m_Style.Strikethrough ? "1|" : "0|") +
+           TEString::FromInt(static_cast<int>(m_Style.Effect)) + "|" + TEString::FromFloat(m_Style.EffectParams.x) +
+           " " + TEString::FromFloat(m_Style.EffectParams.y) + " " + TEString::FromFloat(m_Style.EffectParams.z) + " " +
+           TEString::FromFloat(m_Style.EffectParams.w) + "|" + TEString(std::to_string(m_Style.IconTexture).c_str()) +
+           "|" + m_Style.SpriteName + "|" + m_Style.LinkID;
 }
 
 bool RichTextDataAsset::DeserializeRowString(const TEString &rowStr)
@@ -71,7 +59,8 @@ bool RichTextDataAsset::DeserializeRowString(const TEString &rowStr)
         auto colParts = parts[3].Split(' ');
         if (colParts.Num() >= 4)
         {
-            m_Style.TextColor = TEColor(colParts[0].ToFloat(), colParts[1].ToFloat(), colParts[2].ToFloat(), colParts[3].ToFloat());
+            m_Style.TextColor =
+                TEColor(colParts[0].ToFloat(), colParts[1].ToFloat(), colParts[2].ToFloat(), colParts[3].ToFloat());
         }
 
         m_Style.IsGradient = (parts[4] == "1" || parts[4] == "true");
@@ -79,7 +68,8 @@ bool RichTextDataAsset::DeserializeRowString(const TEString &rowStr)
         auto gradParts = parts[5].Split(' ');
         if (gradParts.Num() >= 4)
         {
-            m_Style.GradientTo = TEColor(gradParts[0].ToFloat(), gradParts[1].ToFloat(), gradParts[2].ToFloat(), gradParts[3].ToFloat());
+            m_Style.GradientTo =
+                TEColor(gradParts[0].ToFloat(), gradParts[1].ToFloat(), gradParts[2].ToFloat(), gradParts[3].ToFloat());
         }
 
         m_Style.GradientDirection = std::stoi(parts[6]);
@@ -92,7 +82,8 @@ bool RichTextDataAsset::DeserializeRowString(const TEString &rowStr)
         auto effParts = parts[12].Split(' ');
         if (effParts.Num() >= 4)
         {
-            m_Style.EffectParams = TEVector4(effParts[0].ToFloat(), effParts[1].ToFloat(), effParts[2].ToFloat(), effParts[3].ToFloat());
+            m_Style.EffectParams =
+                TEVector4(effParts[0].ToFloat(), effParts[1].ToFloat(), effParts[2].ToFloat(), effParts[3].ToFloat());
         }
 
         m_Style.IconTexture = std::stoull(parts[13]);
@@ -104,4 +95,3 @@ bool RichTextDataAsset::DeserializeRowString(const TEString &rowStr)
 
     return false;
 }
-

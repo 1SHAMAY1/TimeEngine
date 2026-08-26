@@ -1,7 +1,6 @@
 #pragma once
 #include "Renderer/RendererAPI.hpp"
 
-
 class MetalRendererAPI : public RendererAPI
 {
 public:
@@ -26,4 +25,3 @@ public:
     virtual void SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dstRGB, BlendFactor srcAlpha,
                                       BlendFactor dstAlpha) override;
 };
-

@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanRendererAPI.hpp"
+#include "Core/PreRequisites.h"
 #include <iostream>
 #include <volk.h>
-
 
 void VulkanRendererAPI::Init() { std::cout << "[Vulkan] Initializing VulkanRendererAPI\n"; }
 
@@ -76,4 +75,3 @@ void VulkanRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dst
 {
     // Pipeline state
 }
-

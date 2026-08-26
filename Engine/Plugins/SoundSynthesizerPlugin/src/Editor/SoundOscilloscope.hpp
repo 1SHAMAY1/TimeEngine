@@ -1,11 +1,12 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "../SoundStudioTypes.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundOscilloscope
 {

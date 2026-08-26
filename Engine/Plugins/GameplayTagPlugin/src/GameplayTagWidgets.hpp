@@ -139,7 +139,7 @@ inline bool DrawGameplayTagWidget(const TEString &label, GameplayTag &tag)
 
 // Recursive helper to draw tag tree with checkboxes
 inline void DrawTagTreeNodeCheckboxes(const GameplayTagTreeNode &node, GameplayTagContainer &container,
-                                     const TEString &filter, bool &outChanged)
+                                      const TEString &filter, bool &outChanged)
 {
     for (const auto &pair : node.Children)
     {
@@ -349,4 +349,3 @@ template <> struct TEPropertyDrawer<GameplayTagContainer>
         }
     }
 };
-

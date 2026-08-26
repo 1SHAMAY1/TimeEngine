@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Core/Asset/AssetManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Editor/EditorSaveManager.hpp"
 #include "Editor/EditorUtils.hpp"
@@ -126,7 +126,10 @@ public:
     }
 
     TEString GetSavableID() const override { return m_Path; }
-    TEString GetSavableDisplayName() const override { return m_DisplayName.empty() ? m_Path.GetFilename() : m_DisplayName; }
+    TEString GetSavableDisplayName() const override
+    {
+        return m_DisplayName.empty() ? m_Path.GetFilename() : m_DisplayName;
+    }
     TEString GetSavableType() const override { return m_Type; }
     TEString GetSavablePath() const override { return m_Path; }
     bool IsDirty() const override { return m_IsDirty; }
@@ -358,14 +361,16 @@ void AssetEditorRegistry::OnTimeGUIRender()
             TimeGUI::Text("Target Folder:");
             TimeGUI::SameLine();
             TimeGUI::SetNextItemWidth(380.0f);
-            TimeGUI::InputTextWithHint("##AssetPickerTargetDirInput", "Enter destination folder path...", s_AssetPickerTargetDirectory);
+            TimeGUI::InputTextWithHint("##AssetPickerTargetDirInput", "Enter destination folder path...",
+                                       s_AssetPickerTargetDirectory);
 
             TimeGUI::SameLine();
             if (TimeGUI::Button("Active Folder", TEVector2(95.0f, 0.0f)))
             {
                 s_AssetPickerTargetDirectory = ContentBrowserPanel::GetActiveContentBrowserDirectory();
             }
-            if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Use current folder open in Content Browser");
+            if (TimeGUI::IsItemHovered())
+                TimeGUI::SetTooltip("Use current folder open in Content Browser");
 
             TimeGUI::SameLine();
             if (TimeGUI::Button("Browse...", TEVector2(75.0f, 0.0f)))
@@ -396,7 +401,8 @@ void AssetEditorRegistry::OnTimeGUIRender()
                     s_AssetPickerTargetDirectory = projDir;
                 }
 
-                if (TimeGUI::TreeNodeEx(" Assets", TimeGUITreeNodeFlags_DefaultOpen | TimeGUITreeNodeFlags_OpenOnArrow | TimeGUITreeNodeFlags_SpanAvailWidth))
+                if (TimeGUI::TreeNodeEx(" Assets", TimeGUITreeNodeFlags_DefaultOpen | TimeGUITreeNodeFlags_OpenOnArrow |
+                                                       TimeGUITreeNodeFlags_SpanAvailWidth))
                 {
                     if (TimeGUI::IsItemClicked())
                     {
@@ -438,8 +444,7 @@ void AssetEditorRegistry::OnTimeGUIRender()
             for (size_t i = 0; i < registeredEditors.Num(); ++i)
             {
                 const auto &ed = registeredEditors[i];
-                if (s_AssetPickerSearchBar &&
-                    !s_AssetPickerSearchBar->Matches(ed->GetAssetType()) &&
+                if (s_AssetPickerSearchBar && !s_AssetPickerSearchBar->Matches(ed->GetAssetType()) &&
                     !s_AssetPickerSearchBar->Matches(ed->GetAssetCategory()) &&
                     !s_AssetPickerSearchBar->Matches(ed->GetAssetExtension()))
                 {
@@ -551,4 +556,3 @@ void AssetEditorRegistry::Clear()
     GetOpenTabs().Clear();
     s_AssetPickerSearchBar.reset();
 }
-

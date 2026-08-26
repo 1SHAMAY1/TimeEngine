@@ -1,11 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "UI/Widgets/UITreeView.hpp"
+#include "Core/PreRequisites.h"
 
-
-UITreeView::UITreeView(const TEString &id)
-    : UIWidget(id)
-{
-}
+UITreeView::UITreeView(const TEString &id) : UIWidget(id) {}
 
 void UITreeView::DrawSelf()
 {
@@ -62,4 +58,3 @@ void UITreeView::RenderNodeRecursive(const UITreeNode &node)
 
     TimeGUI::PopID();
 }
-

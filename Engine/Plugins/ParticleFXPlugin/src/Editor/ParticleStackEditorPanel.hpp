@@ -1,8 +1,7 @@
 #pragma once
-#include "Editor/Panels/IEditorPanel.hpp"
 #include "../Components/ParticleEmitterComponent.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include <memory>
-
 
 class ParticleStackEditorPanel : public IEditorPanel
 {
@@ -32,4 +31,3 @@ private:
     ParticleEmitterComponent m_StandaloneEmitter; // Preview emitter if no scene entity selected
     bool m_UseStandalone = true;
 };
-

@@ -2,8 +2,6 @@
 #include "Layers/Layer.hpp"
 #include "Layers/ProfilingLayer.hpp"
 
-
-
 class ProfilingWindowManager : public Layer
 {
 public:
@@ -48,4 +46,3 @@ private:
     TEString GenerateUniqueTitle(const TEString &baseTitle);
     int m_WindowCounter = 0;
 };
-

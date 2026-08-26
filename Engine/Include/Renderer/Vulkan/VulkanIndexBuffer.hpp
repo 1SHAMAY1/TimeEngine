@@ -21,4 +21,3 @@ private:
     VkDeviceMemory m_Memory = VK_NULL_HANDLE;
     uint32_t m_Count;
 };
-

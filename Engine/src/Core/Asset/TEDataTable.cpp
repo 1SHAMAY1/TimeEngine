@@ -1,15 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/TEDataTable.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
-
-TEDataTable::TEDataTable()
-{
-}
+TEDataTable::TEDataTable() {}
 
 TEDataTable::TEDataTable(const TEString &name, const TEString &rowDataTypeName)
     : m_Name(name), m_RowDataTypeName(rowDataTypeName)
@@ -39,36 +36,39 @@ bool TEDataTable::LoadFromFile(const TEString &path)
     m_Handle = AssetRegistry::RegisterPath(path);
     ClearRows();
 
-    bool success = TEFileSystem::ForEachLine(path, [this](const TEString &line) {
-        if (line.StartsWith("DataTable: "))
-        {
-            m_Name = line.Mid(11).Trim();
-        }
-        else if (line.StartsWith("RowDataType: "))
-        {
-            m_RowDataTypeName = line.Mid(13).Trim();
-        }
-        else if (line.StartsWith("Row: "))
-        {
-            TEString content = line.Mid(5);
-            int pipePos = content.Find("|");
-            if (pipePos >= 0)
-            {
-                TEString rowName = content.Left(pipePos);
-                TEString rowDataStr = content.Mid(pipePos + 1);
+    bool success =
+        TEFileSystem::ForEachLine(path,
+                                  [this](const TEString &line)
+                                  {
+                                      if (line.StartsWith("DataTable: "))
+                                      {
+                                          m_Name = line.Mid(11).Trim();
+                                      }
+                                      else if (line.StartsWith("RowDataType: "))
+                                      {
+                                          m_RowDataTypeName = line.Mid(13).Trim();
+                                      }
+                                      else if (line.StartsWith("Row: "))
+                                      {
+                                          TEString content = line.Mid(5);
+                                          int pipePos = content.Find("|");
+                                          if (pipePos >= 0)
+                                          {
+                                              TEString rowName = content.Left(pipePos);
+                                              TEString rowDataStr = content.Mid(pipePos + 1);
 
-                auto dataAsset = CreateRef<DataAsset>(rowName, m_RowDataTypeName);
-                dataAsset->DeserializeRowString(rowDataStr);
-                AddRow(rowName, dataAsset);
-            }
-            else
-            {
-                auto dataAsset = CreateRef<DataAsset>(content, m_RowDataTypeName);
-                AddRow(content, dataAsset);
-            }
-        }
-        return true;
-    });
+                                              auto dataAsset = CreateRef<DataAsset>(rowName, m_RowDataTypeName);
+                                              dataAsset->DeserializeRowString(rowDataStr);
+                                              AddRow(rowName, dataAsset);
+                                          }
+                                          else
+                                          {
+                                              auto dataAsset = CreateRef<DataAsset>(content, m_RowDataTypeName);
+                                              AddRow(content, dataAsset);
+                                          }
+                                      }
+                                      return true;
+                                  });
 
     return success;
 }
@@ -109,10 +109,7 @@ void TEDataTable::OnContentBrowserCreate(const TEString &path)
     SaveToFile(path);
 }
 
-bool TEDataTable::ContainsRow(const TEString &rowName) const
-{
-    return m_Rows.Find(rowName) != nullptr;
-}
+bool TEDataTable::ContainsRow(const TEString &rowName) const { return m_Rows.Find(rowName) != nullptr; }
 
 TERef<DataAsset> TEDataTable::GetRow(const TEString &rowName) const
 {
@@ -211,29 +208,31 @@ bool TEDataTable::ImportFromCSV(const TEString &csvPath)
     TEArray<TEString> columns;
     bool isFirstLine = true;
 
-    TEFileSystem::ForEachLine(csvPath, [this, &columns, &isFirstLine](const TEString &line) {
-        auto parts = line.Split(",");
-        if (isFirstLine)
-        {
-            isFirstLine = false;
-            columns = parts;
-            return true;
-        }
+    TEFileSystem::ForEachLine(csvPath,
+                              [this, &columns, &isFirstLine](const TEString &line)
+                              {
+                                  auto parts = line.Split(",");
+                                  if (isFirstLine)
+                                  {
+                                      isFirstLine = false;
+                                      columns = parts;
+                                      return true;
+                                  }
 
-        if (parts.empty())
-            return true;
+                                  if (parts.empty())
+                                      return true;
 
-        TEString rowName = parts[0];
-        auto dataAsset = CreateRef<DataAsset>(rowName, m_RowDataTypeName);
+                                  TEString rowName = parts[0];
+                                  auto dataAsset = CreateRef<DataAsset>(rowName, m_RowDataTypeName);
 
-        for (size_t i = 1; i < parts.size() && i < columns.size(); ++i)
-        {
-            dataAsset->SetString(columns[i], parts[i]);
-        }
+                                  for (size_t i = 1; i < parts.size() && i < columns.size(); ++i)
+                                  {
+                                      dataAsset->SetString(columns[i], parts[i]);
+                                  }
 
-        AddRow(rowName, dataAsset);
-        return true;
-    });
+                                  AddRow(rowName, dataAsset);
+                                  return true;
+                              });
 
     return true;
 }

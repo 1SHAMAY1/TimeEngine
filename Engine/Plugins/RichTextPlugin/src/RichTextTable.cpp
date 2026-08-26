@@ -1,15 +1,12 @@
 ﻿#include "RichTextTable.hpp"
 
-
-RichTextTable::RichTextTable()
-    : TEDataTable("NewRichTextTable", "RichTextDataAsset")
+RichTextTable::RichTextTable() : TEDataTable("NewRichTextTable", "RichTextDataAsset")
 {
     m_AssetTypeName = "RichTextTable";
     m_Description = "TimeEngine Rich Text Style Sheet Table";
 }
 
-RichTextTable::RichTextTable(const TEString &name)
-    : TEDataTable(name, "RichTextDataAsset")
+RichTextTable::RichTextTable(const TEString &name) : TEDataTable(name, "RichTextDataAsset")
 {
     m_AssetTypeName = "RichTextTable";
     m_Description = "TimeEngine Rich Text Style Sheet Table";
@@ -46,8 +43,4 @@ void RichTextTable::SetStyle(const TEString &styleName, const RichTextStyle &sty
     AddRow(styleName, rtData);
 }
 
-bool RichTextTable::HasStyle(const TEString &styleName) const
-{
-    return ContainsRow(styleName);
-}
-
+bool RichTextTable::HasStyle(const TEString &styleName) const { return ContainsRow(styleName); }

@@ -5,16 +5,9 @@
 #include "Submodes/ISubmode.hpp"
 #include "Utils/TimeGUI.hpp"
 
+SpriteEditorLayer::SpriteEditorLayer(const TEString &name) : Layer(name) { m_SpriteMode = CreateScope<SpriteMode>(); }
 
-SpriteEditorLayer::SpriteEditorLayer(const TEString &name)
-    : Layer(name)
-{
-    m_SpriteMode = CreateScope<SpriteMode>();
-}
-
-SpriteEditorLayer::~SpriteEditorLayer()
-{
-}
+SpriteEditorLayer::~SpriteEditorLayer() {}
 
 void SpriteEditorLayer::OnAttach()
 {
@@ -24,9 +17,8 @@ void SpriteEditorLayer::OnAttach()
         m_SpriteMode->OnEnter();
     }
 
-    ShortcutManager::AddListener("SpriteEditorLayer", [this](const TEString &shortcutId) {
-        return OnShortcut(shortcutId);
-    });
+    ShortcutManager::AddListener("SpriteEditorLayer",
+                                 [this](const TEString &shortcutId) { return OnShortcut(shortcutId); });
 }
 
 void SpriteEditorLayer::OnDetach()
@@ -65,7 +57,7 @@ void SpriteEditorLayer::OnTimeGUIRender()
 
     // ── Top Submode Navigation Header ──────────────────────────────────────────
     TimeGUI::BeginChild("##SubmodeNavHeader", TEVector2(0, 38), false, TimeGUIWindowFlags_NoScrollbar);
-    
+
     TEVector4 activeCol(0.20f, 0.45f, 0.85f, 1.0f);
     TEVector4 inactiveCol(0.18f, 0.18f, 0.22f, 1.0f);
 
@@ -119,9 +111,7 @@ void SpriteEditorLayer::OnTimeGUIRender()
     TimeGUI::PopStyleVar(3);
 }
 
-void SpriteEditorLayer::OnEvent(Event &event)
-{
-}
+void SpriteEditorLayer::OnEvent(Event &event) {}
 
 bool SpriteEditorLayer::OnShortcut(const TEString &shortcutId)
 {
@@ -131,4 +121,3 @@ bool SpriteEditorLayer::OnShortcut(const TEString &shortcutId)
     }
     return false;
 }
-

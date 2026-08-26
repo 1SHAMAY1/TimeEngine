@@ -1,11 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeTasks.hpp"
-#include "Core/Scene/NavigationAgent2DComponent.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/AnimatedSpriteComponent.hpp"
 #include "Core/Scene/AudioSource2DComponent.hpp"
-#include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/EntityManager.hpp"
-#include "Core/Log.h"
+#include "Core/Scene/NavigationAgent2DComponent.hpp"
+#include "Core/Scene/TagComponent.hpp"
 
 // STMoveToPositionTask
 void STMoveToPositionTask::EnterState(Entity agent)
@@ -117,20 +117,12 @@ void STPlayAnimationTask::EnterState(Entity agent)
     }
 }
 
-StateTaskStatus STPlayAnimationTask::TickState(Entity agent, float dt)
-{
-    return StateTaskStatus::Running;
-}
+StateTaskStatus STPlayAnimationTask::TickState(Entity agent, float dt) { return StateTaskStatus::Running; }
 
-void STPlayAnimationTask::ExitState(Entity agent)
-{
-}
+void STPlayAnimationTask::ExitState(Entity agent) {}
 
 // STWaitTask
-void STWaitTask::EnterState(Entity agent)
-{
-    Elapsed = 0.0f;
-}
+void STWaitTask::EnterState(Entity agent) { Elapsed = 0.0f; }
 
 StateTaskStatus STWaitTask::TickState(Entity agent, float dt)
 {
@@ -140,15 +132,10 @@ StateTaskStatus STWaitTask::TickState(Entity agent, float dt)
     return StateTaskStatus::Running;
 }
 
-void STWaitTask::ExitState(Entity agent)
-{
-    Elapsed = 0.0f;
-}
+void STWaitTask::ExitState(Entity agent) { Elapsed = 0.0f; }
 
 // STLookAtTask
-void STLookAtTask::EnterState(Entity agent)
-{
-}
+void STLookAtTask::EnterState(Entity agent) {}
 
 StateTaskStatus STLookAtTask::TickState(Entity agent, float dt)
 {
@@ -170,9 +157,7 @@ StateTaskStatus STLookAtTask::TickState(Entity agent, float dt)
     return StateTaskStatus::Running;
 }
 
-void STLookAtTask::ExitState(Entity agent)
-{
-}
+void STLookAtTask::ExitState(Entity agent) {}
 
 // STPlaySoundTask
 void STPlaySoundTask::EnterState(Entity agent)
@@ -187,14 +172,9 @@ void STPlaySoundTask::EnterState(Entity agent)
     }
 }
 
-StateTaskStatus STPlaySoundTask::TickState(Entity agent, float dt)
-{
-    return StateTaskStatus::Succeeded;
-}
+StateTaskStatus STPlaySoundTask::TickState(Entity agent, float dt) { return StateTaskStatus::Succeeded; }
 
-void STPlaySoundTask::ExitState(Entity agent)
-{
-}
+void STPlaySoundTask::ExitState(Entity agent) {}
 
 // STExecuteTScriptTask
 void STExecuteTScriptTask::EnterState(Entity agent)
@@ -247,10 +227,7 @@ void STSetTagTask::EnterState(Entity agent)
 #endif
 }
 
-StateTaskStatus STSetTagTask::TickState(Entity agent, float dt)
-{
-    return StateTaskStatus::Succeeded;
-}
+StateTaskStatus STSetTagTask::TickState(Entity agent, float dt) { return StateTaskStatus::Succeeded; }
 
 void STSetTagTask::ExitState(Entity agent)
 {

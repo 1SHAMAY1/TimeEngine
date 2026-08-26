@@ -4,7 +4,6 @@
 #include "Runtime/StoryInstance.hpp"
 #include <cstdint>
 
-
 class DialogueLiveSimulator
 {
 public:
@@ -25,4 +24,3 @@ private:
     TEString m_LastText;
     TEString m_LastSpeaker;
 };
-

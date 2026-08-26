@@ -21,7 +21,6 @@
 // ID3DBlob is typedef'd as ID3D10Blob in d3dcommon.h — use ID3D10Blob throughout
 typedef ID3D10Blob ID3DBlob;
 
-
 // -------------------------------------------------------------------------
 //  Internal helper: compile HLSL source to bytecode
 // -------------------------------------------------------------------------
@@ -305,4 +304,3 @@ void DirectX11Shader::SetUniform1i(const TEString &name, int value)
         m_CBData.data[offset] = static_cast<float>(value);
     m_Dirty = true;
 }
-

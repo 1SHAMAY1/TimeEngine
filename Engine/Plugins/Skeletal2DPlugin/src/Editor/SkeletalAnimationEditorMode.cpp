@@ -10,11 +10,10 @@
 #include <algorithm>
 #include <cmath>
 
-namespace Skeletal2D {
-
-SkeletalAnimationEditorMode::SkeletalAnimationEditorMode()
+namespace Skeletal2D
 {
-}
+
+SkeletalAnimationEditorMode::SkeletalAnimationEditorMode() {}
 
 void SkeletalAnimationEditorMode::OnEnter()
 {
@@ -188,7 +187,7 @@ void SkeletalAnimationEditorMode::Redo()
 }
 
 void SkeletalAnimationEditorMode::CreateBone(const TEString &name, int parentIndex, const TEVector2 &startPos,
-                                            const TEVector2 &endPos)
+                                             const TEVector2 &endPos)
 {
     if (!m_ActiveAsset)
         return;
@@ -212,7 +211,8 @@ void SkeletalAnimationEditorMode::CreateBone(const TEString &name, int parentInd
 
     m_SelectedBoneIndex = newIdx;
     SaveUndoState();
-    TE_CORE_INFO("[SkeletalAnimationEditorMode] Created bone '{0}' (Index: {1}, Parent: {2})", name, newIdx, parentIndex);
+    TE_CORE_INFO("[SkeletalAnimationEditorMode] Created bone '{0}' (Index: {1}, Parent: {2})", name, newIdx,
+                 parentIndex);
 }
 
 void SkeletalAnimationEditorMode::DeleteBone(int boneIndex)
@@ -327,7 +327,8 @@ void SkeletalAnimationEditorMode::OnTimeGUIRender()
     TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(8, 8));
 
     TimeGUI::SetNextWindowDockID(TimeGUI::GetID("MyDockSpace"), TimeGUICond_FirstUseEver);
-    TimeGUI::Begin(GetWorkspaceWindowName().c_str(), nullptr, TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoMove);
+    TimeGUI::Begin(GetWorkspaceWindowName().c_str(), nullptr,
+                   TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoMove);
 
     DrawTopHeader();
     TimeGUI::Separator();
@@ -337,7 +338,8 @@ void SkeletalAnimationEditorMode::OnTimeGUIRender()
     float mainAreaHeight = std::max(200.0f, totalAvailHeight - timelineHeight - 12.0f);
 
     // 3-Column Studio Workspace: Left (Tools) | Center (Canvas) | Right (Inspector/Outliner)
-    if (TimeGUI::BeginTable("##StudioLayout", 3, TimeGUITableFlags_Resizable | TimeGUITableFlags_BordersInnerV, TEVector2(0, mainAreaHeight)))
+    if (TimeGUI::BeginTable("##StudioLayout", 3, TimeGUITableFlags_Resizable | TimeGUITableFlags_BordersInnerV,
+                            TEVector2(0, mainAreaHeight)))
     {
         TimeGUI::TableSetupColumn("Tools", TimeGUITableColumnFlags_WidthFixed, 150.0f);
         TimeGUI::TableSetupColumn("Canvas", TimeGUITableColumnFlags_WidthStretch, 0.6f);
@@ -447,7 +449,8 @@ void SkeletalAnimationEditorMode::DrawToolSidebar()
     };
 
     ToolButton("Select", "Select bones / objects in viewport", SkeletalEditorTool::Select);
-    ToolButton("Create Bone", "Click and drag on viewport to create parent-child bones", SkeletalEditorTool::CreateBone);
+    ToolButton("Create Bone", "Click and drag on viewport to create parent-child bones",
+               SkeletalEditorTool::CreateBone);
     ToolButton("Translate", "Translate active bone transform", SkeletalEditorTool::Translate);
     ToolButton("Rotate", "Rotate active bone", SkeletalEditorTool::Rotate);
     ToolButton("Scale", "Scale active bone length and transform", SkeletalEditorTool::Scale);
@@ -461,9 +464,10 @@ void SkeletalAnimationEditorMode::DrawToolSidebar()
     {
         TimeGUI::Text("Bones: %d", (int)m_ActiveAsset->GetHierarchy().GetBoneCount());
         TimeGUI::Text("Animations: %d", (int)m_ActiveAsset->GetAnimations().size());
-        TimeGUI::Text("Selected: %s", (m_SelectedBoneIndex >= 0 && m_ActiveAsset->GetHierarchy().GetBone(m_SelectedBoneIndex))
-                                          ? m_ActiveAsset->GetHierarchy().GetBone(m_SelectedBoneIndex)->Name.c_str()
-                                          : "None");
+        TimeGUI::Text("Selected: %s",
+                      (m_SelectedBoneIndex >= 0 && m_ActiveAsset->GetHierarchy().GetBone(m_SelectedBoneIndex))
+                          ? m_ActiveAsset->GetHierarchy().GetBone(m_SelectedBoneIndex)->Name.c_str()
+                          : "None");
     }
 
     TimeGUI::EndChild();
@@ -493,7 +497,8 @@ int SkeletalAnimationEditorMode::PickBoneAtPosition(const TEVector2 &canvasPos, 
     {
         const auto &bone = bones[i];
         TEVector2 bPos(bone.WorldMatrix[3][0], bone.WorldMatrix[3][1]);
-        float dist = std::sqrt((canvasPos.x - bPos.x) * (canvasPos.x - bPos.x) + (canvasPos.y - bPos.y) * (canvasPos.y - bPos.y));
+        float dist = std::sqrt((canvasPos.x - bPos.x) * (canvasPos.x - bPos.x) +
+                               (canvasPos.y - bPos.y) * (canvasPos.y - bPos.y));
         if (dist <= tolerance)
         {
             return (int)i;
@@ -537,8 +542,10 @@ void SkeletalAnimationEditorMode::DrawInteractiveCanvas()
 
     // Coordinate Origin Crosshair
     TEVector2 originScreen = CanvasToScreen(TEVector2(0, 0), canvasPos);
-    dl.AddLine(TEVector2(originScreen.x - 20.0f, originScreen.y), TEVector2(originScreen.x + 20.0f, originScreen.y), 0x8800CEC9, 1.5f);
-    dl.AddLine(TEVector2(originScreen.x, originScreen.y - 20.0f), TEVector2(originScreen.x, originScreen.y + 20.0f), 0x8800CEC9, 1.5f);
+    dl.AddLine(TEVector2(originScreen.x - 20.0f, originScreen.y), TEVector2(originScreen.x + 20.0f, originScreen.y),
+               0x8800CEC9, 1.5f);
+    dl.AddLine(TEVector2(originScreen.x, originScreen.y - 20.0f), TEVector2(originScreen.x, originScreen.y + 20.0f),
+               0x8800CEC9, 1.5f);
 
     // Handle Pan & Zoom
     bool hovered = TimeGUI::IsWindowHovered();
@@ -663,7 +670,8 @@ void SkeletalAnimationEditorMode::DrawOutlinerAndInspector()
             auto &bone = bones[i];
             bool isSelected = ((int)i == m_SelectedBoneIndex);
 
-            TEString treeLabel = bone.Name + " (Parent: " + (bone.ParentIndex >= 0 ? TEString::FromInt(bone.ParentIndex) : "None") + ")";
+            TEString treeLabel =
+                bone.Name + " (Parent: " + (bone.ParentIndex >= 0 ? TEString::FromInt(bone.ParentIndex) : "None") + ")";
             if (TimeGUI::Selectable(treeLabel.c_str(), isSelected))
             {
                 m_SelectedBoneIndex = (int)i;
@@ -678,7 +686,8 @@ void SkeletalAnimationEditorMode::DrawOutlinerAndInspector()
     TimeGUI::TextColored(TEVector4(0.2f, 0.8f, 0.9f, 1.0f), "BONE PROPERTIES");
     TimeGUI::Separator();
 
-    if (m_ActiveAsset && m_SelectedBoneIndex >= 0 && m_SelectedBoneIndex < (int)m_ActiveAsset->GetHierarchy().GetBoneCount())
+    if (m_ActiveAsset && m_SelectedBoneIndex >= 0 &&
+        m_SelectedBoneIndex < (int)m_ActiveAsset->GetHierarchy().GetBoneCount())
     {
         BoneNode *bone = m_ActiveAsset->GetHierarchy().GetBone(m_SelectedBoneIndex);
         if (bone)
@@ -735,9 +744,10 @@ void SkeletalAnimationEditorMode::DrawOutlinerAndInspector()
             }
             else
             {
-                TEString previewText = (m_SelectedTextureComboIndex >= 0 && m_SelectedTextureComboIndex < (int)m_CachedTexturePaths.Size())
-                                           ? m_CachedTexturePaths[m_SelectedTextureComboIndex].GetFilename()
-                                           : "Select .tetexture...";
+                TEString previewText =
+                    (m_SelectedTextureComboIndex >= 0 && m_SelectedTextureComboIndex < (int)m_CachedTexturePaths.Size())
+                        ? m_CachedTexturePaths[m_SelectedTextureComboIndex].GetFilename()
+                        : "Select .tetexture...";
 
                 if (TimeGUI::BeginCombo(".tetexture Asset##TexPicker", previewText.c_str()))
                 {
@@ -755,7 +765,8 @@ void SkeletalAnimationEditorMode::DrawOutlinerAndInspector()
 
                 if (TimeGUI::Button("Attach to Selected Bone##AttachBtn", TEVector2(-1, 26)))
                 {
-                    if (m_SelectedTextureComboIndex >= 0 && m_SelectedTextureComboIndex < (int)m_CachedTexturePaths.Size())
+                    if (m_SelectedTextureComboIndex >= 0 &&
+                        m_SelectedTextureComboIndex < (int)m_CachedTexturePaths.Size())
                     {
                         AttachTextureToSelectedBone(m_CachedTexturePaths[m_SelectedTextureComboIndex]);
                     }

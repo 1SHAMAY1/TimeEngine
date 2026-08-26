@@ -1,8 +1,7 @@
 #pragma once
 #include "ParticleModule.hpp"
-#include <random>
 #include <cmath>
-
+#include <random>
 
 inline float RandomFloat(float minVal, float maxVal)
 {
@@ -239,4 +238,3 @@ public:
         particle.AngularVelocity = RandomFloat(AngularVelocityMin, AngularVelocityMax) * (3.14159265f / 180.0f);
     }
 };
-

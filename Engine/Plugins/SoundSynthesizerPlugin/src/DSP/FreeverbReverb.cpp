@@ -1,10 +1,12 @@
 #include "FreeverbReverb.hpp"
 #include "AudioDSPUtils.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 static const int s_CombTuningsL[8] = {1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617};
-static const int s_CombTuningsR[8] = {1116 + 23, 1188 + 23, 1277 + 23, 1356 + 23, 1422 + 23, 1491 + 23, 1557 + 23, 1617 + 23};
+static const int s_CombTuningsR[8] = {1116 + 23, 1188 + 23, 1277 + 23, 1356 + 23,
+                                      1422 + 23, 1491 + 23, 1557 + 23, 1617 + 23};
 static const int s_AllPassTuningsL[4] = {556, 441, 341, 225};
 static const int s_AllPassTuningsR[4] = {556 + 23, 441 + 23, 341 + 23, 225 + 23};
 

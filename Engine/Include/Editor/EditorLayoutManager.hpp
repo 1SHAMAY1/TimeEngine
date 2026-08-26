@@ -2,7 +2,6 @@
 #include "Core/PreRequisites.h"
 #include "Editor/ISavable.hpp"
 
-
 class EditorLayer;
 
 class TE_API EditorLayoutManager : public ISavable
@@ -32,4 +31,3 @@ private:
     TEString m_LayoutIniPath;
     bool m_NeedsDefaultRebuild = false;
 };
-

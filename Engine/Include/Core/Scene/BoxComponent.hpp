@@ -6,7 +6,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 class BoxComponent : public ProceduralSpriteComponent
 {
 public:
@@ -45,12 +44,7 @@ public:
         if (!bIsVisible || !renderer)
             return;
 
-        TERef<Material> renderMat = material ? material : Material::GetDefault();
-        if (renderMat)
-        {
-            renderMat->SetColor(BaseColor);
-            renderer->SubmitQuad(TEMatrix4::Scale(worldModel, TEVector(Size.x, Size.y, 1.0f)), renderMat);
-        }
+        renderer->SubmitQuad(TEMatrix4::Scale(worldModel, TEVector(Size.x, Size.y, 1.0f)), BaseColor, material);
     }
 };
 
@@ -59,7 +53,5 @@ T_REGISTER_COMPONENT(BoxComponent, "Box Component")
 T_REGISTER_PROPERTY(BoxComponent, TEVector2, Size, "Size")
 T_REGISTER_PROPERTY(BoxComponent, TEColor, BaseColor, "Base Color")
 T_REGISTER_PROPERTY(BoxComponent, bool, bIsVisible, "Visible")
-T_REGISTER_PRESET(Box, "Box", "Shapes",
-                  ([](EntityID id, EntityManager *em) { em->AddComponent<BoxComponent>(id); }))
+T_REGISTER_PRESET(Box, "Box", "Shapes", ([](EntityID id, EntityManager *em) { em->AddComponent<BoxComponent>(id); }))
 #endif
-

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Framebuffer.hpp"
+#include "Core/PreRequisites.h"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLFramebuffer.hpp"
 #endif
@@ -16,7 +16,6 @@
 #ifdef TE_SUPPORT_METAL
 #include "Renderer/Metal/MetalFramebuffer.hpp"
 #endif
-
 
 TERef<Framebuffer> Framebuffer::Create(const FramebufferSpecification &spec)
 {
@@ -45,4 +44,3 @@ TERef<Framebuffer> Framebuffer::Create(const FramebufferSpecification &spec)
     }
     return nullptr;
 }
-

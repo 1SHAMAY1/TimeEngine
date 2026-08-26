@@ -4,7 +4,6 @@
 #include "Graph/DialogueGraphNode.hpp"
 #include <cstdint>
 
-
 class DialogueNodeInspector
 {
 public:
@@ -13,4 +12,3 @@ public:
 
     void DrawInspector(DialogueGraph &graph, uint64_t selectedNodeId);
 };
-

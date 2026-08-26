@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/TerminalPanel.hpp"
 #include "Core/Plugin/PluginManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
@@ -14,22 +14,19 @@
 #define TE_PCLOSE pclose
 #endif
 
-
-TerminalPanel::TerminalPanel()
-    : IEditorPanel("Console & Terminal")
+TerminalPanel::TerminalPanel() : IEditorPanel("Console & Terminal")
 {
     m_Visible = true;
     m_InputBuffer.Reserve(512);
 
     // Initial greeting in Terminal Shell
     m_History.Add("TimeEngine Developer Terminal [Version 1.0.0]");
-    m_History.Add("Type 'help' for engine commands or run any system CLI / shell command (e.g. dir, git status, cmake).");
+    m_History.Add(
+        "Type 'help' for engine commands or run any system CLI / shell command (e.g. dir, git status, cmake).");
     m_History.Add("");
 }
 
-void TerminalPanel::OnAttach()
-{
-}
+void TerminalPanel::OnAttach() {}
 
 void TerminalPanel::ExecuteSystemCLI(const TEString &cmd)
 {
@@ -100,10 +97,13 @@ void TerminalPanel::ExecuteTerminalCommand(const TEString &commandLine, Ref<Edit
         float dt = TimeGUI::GetIO().DeltaTime;
         float fps = dt > 0.0f ? (1.0f / dt) : 60.0f;
         float ms = dt * 1000.0f;
-        m_History.Add(TEString("Performance: ") + TEString::FromFloat(fps, 1) + " FPS (" + TEString::FromFloat(ms, 2) + " ms/frame)");
+        m_History.Add(TEString("Performance: ") + TEString::FromFloat(fps, 1) + " FPS (" + TEString::FromFloat(ms, 2) +
+                      " ms/frame)");
         if (editor && editor->GetActiveScene())
         {
-            m_History.Add(TEString("Active Entities: ") + TEString::FromInt((int)editor->GetActiveScene()->GetEntityManager().GetAliveEntities().size()));
+            m_History.Add(
+                TEString("Active Entities: ") +
+                TEString::FromInt((int)editor->GetActiveScene()->GetEntityManager().GetAliveEntities().size()));
         }
     }
     else if (lowerCmd == "scene")
@@ -111,7 +111,9 @@ void TerminalPanel::ExecuteTerminalCommand(const TEString &commandLine, Ref<Edit
         if (editor && editor->GetActiveScene())
         {
             m_History.Add("Active Scene: " + editor->GetActiveScene()->GetName());
-            m_History.Add("Total Entities: " + TEString::FromInt((int)editor->GetActiveScene()->GetEntityManager().GetAliveEntities().size()));
+            m_History.Add(
+                "Total Entities: " +
+                TEString::FromInt((int)editor->GetActiveScene()->GetEntityManager().GetAliveEntities().size()));
         }
         else
         {
@@ -227,7 +229,8 @@ void TerminalPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     // ── 1. FULL-PANEL VIEW: Console Logs ──────────────────────────────────────
     if (m_ViewMode == ETerminalViewMode::ConsoleLogs)
     {
-        TimeGUI::BeginChild("##ConsoleLogsScrollArea", TEVector2(0, 0), false, TimeGUIWindowFlags_AlwaysVerticalScrollbar);
+        TimeGUI::BeginChild("##ConsoleLogsScrollArea", TEVector2(0, 0), false,
+                            TimeGUIWindowFlags_AlwaysVerticalScrollbar);
 
         auto messages = Log::GetMessageBuffer();
         for (const auto &msg : messages)
@@ -246,7 +249,8 @@ void TerminalPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             TEVector4 logCol = Log::GetLogColor(msg.Category, msg.Level);
 
             // Render full log line matching console logger
-            TimeGUI::TextColored(logCol, "[%s] [%s] [%s] %s", msg.Timestamp.c_str(), msg.Category.c_str(), msg.Level.c_str(), msg.Message.c_str());
+            TimeGUI::TextColored(logCol, "[%s] [%s] [%s] %s", msg.Timestamp.c_str(), msg.Category.c_str(),
+                                 msg.Level.c_str(), msg.Message.c_str());
         }
 
         if (m_FirstLogsFrame || (m_AutoScrollLogs && messages.Size() > m_PreviousLogCount))
@@ -262,7 +266,8 @@ void TerminalPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     else
     {
         float footerHeight = 36.0f;
-        TimeGUI::BeginChild("##TerminalShellScrollArea", TEVector2(0, -footerHeight), false, TimeGUIWindowFlags_AlwaysVerticalScrollbar);
+        TimeGUI::BeginChild("##TerminalShellScrollArea", TEVector2(0, -footerHeight), false,
+                            TimeGUIWindowFlags_AlwaysVerticalScrollbar);
 
         for (const auto &line : m_History)
         {
@@ -309,7 +314,8 @@ void TerminalPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             m_ReclaimFocus = false;
         }
 
-        if (TimeGUI::InputTextWithHint("##TerminalInputLine", "Enter engine or system CLI command...", m_InputBuffer, TimeGUIInputTextFlags_EnterReturnsTrue))
+        if (TimeGUI::InputTextWithHint("##TerminalInputLine", "Enter engine or system CLI command...", m_InputBuffer,
+                                       TimeGUIInputTextFlags_EnterReturnsTrue))
         {
             executeSubmitted = true;
         }

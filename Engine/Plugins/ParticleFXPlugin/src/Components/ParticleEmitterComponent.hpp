@@ -1,17 +1,16 @@
 #pragma once
+#include "../Core/Modules/SpawnModules.hpp"
+#include "../Core/Modules/UpdateModules.hpp"
+#include "../Core/ParticlePool.hpp"
+#include "../Core/ParticleSpawner.hpp"
+#include "../Core/ParticleTypes.hpp"
+#include "../Core/ParticleUpdater.hpp"
 #include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
-#include "../Core/ParticleTypes.hpp"
-#include "../Core/ParticlePool.hpp"
-#include "../Core/ParticleSpawner.hpp"
-#include "../Core/ParticleUpdater.hpp"
-#include "../Core/Modules/SpawnModules.hpp"
-#include "../Core/Modules/UpdateModules.hpp"
 #include <memory>
-
 
 class ParticleEmitterComponent : public TComponent
 {
@@ -22,7 +21,7 @@ public:
     T_PROPERTY(bool, Playing, "Playing", true)
     T_PROPERTY(bool, Loop, "Loop", true)
     T_PROPERTY(float, MaxCapacity, "Max Capacity", 2000.0f)
-    
+
     // === Emitter Spawn ===
     T_PROPERTY(bool, EnableRate, "Enable Rate", true)
     T_PROPERTY(float, EmitRate, "Emit Rate", 60.0f)
@@ -101,23 +100,14 @@ private:
 };
 
 #ifdef TE_EDITOR
-T_ENUM(EEmissionShape,
-       {"Point", EEmissionShape::Point},
-       {"Circle 2D", EEmissionShape::Circle2D},
-       {"Box 2D", EEmissionShape::Box2D},
-       {"Cone 2D", EEmissionShape::Cone2D},
-       {"Sphere 3D", EEmissionShape::Sphere3D},
+T_ENUM(EEmissionShape, {"Point", EEmissionShape::Point}, {"Circle 2D", EEmissionShape::Circle2D},
+       {"Box 2D", EEmissionShape::Box2D}, {"Cone 2D", EEmissionShape::Cone2D}, {"Sphere 3D", EEmissionShape::Sphere3D},
        {"Box 3D", EEmissionShape::Box3D})
 
-T_ENUM(ESimulationSpace,
-       {"World", ESimulationSpace::World},
-       {"Local", ESimulationSpace::Local})
+T_ENUM(ESimulationSpace, {"World", ESimulationSpace::World}, {"Local", ESimulationSpace::Local})
 
-T_ENUM(EParticleBlendMode,
-       {"Alpha Blend", EParticleBlendMode::AlphaBlend},
-       {"Additive", EParticleBlendMode::Additive},
-       {"Multiply", EParticleBlendMode::Multiply},
-       {"Opaque", EParticleBlendMode::Opaque})
+T_ENUM(EParticleBlendMode, {"Alpha Blend", EParticleBlendMode::AlphaBlend}, {"Additive", EParticleBlendMode::Additive},
+       {"Multiply", EParticleBlendMode::Multiply}, {"Opaque", EParticleBlendMode::Opaque})
 
 T_REGISTER_COMPONENT(ParticleEmitterComponent, "Particle Emitter")
 T_REGISTER_PROPERTY(ParticleEmitterComponent, bool, Playing, "Playing")
@@ -160,4 +150,3 @@ T_REGISTER_PROPERTY(ParticleEmitterComponent, float, Bounciness, "Bounciness")
 T_REGISTER_PROPERTY(ParticleEmitterComponent, float, Friction, "Friction")
 
 #endif
-

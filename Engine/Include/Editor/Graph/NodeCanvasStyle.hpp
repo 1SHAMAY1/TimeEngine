@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphPin.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
-
 
 struct TE_API NodeCanvasStyle
 {
@@ -22,8 +21,5 @@ struct TE_API NodeCanvasStyle
     float WireThickness = 2.5f;
     float PinRadius = 5.5f;
 
-    static TEColor GetPinColor(const GraphPinType &type)
-    {
-        return type.GetColor();
-    }
+    static TEColor GetPinColor(const GraphPinType &type) { return type.GetColor(); }
 };

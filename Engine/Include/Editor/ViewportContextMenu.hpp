@@ -4,7 +4,6 @@
 #include "Layers/Layer.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 class EditorLayer;
 
 class TE_API ViewportContextMenu : public Layer
@@ -29,4 +28,3 @@ private:
     static TEVector2 s_SpawnPos;
     static Entity s_TargetEntity;
 };
-

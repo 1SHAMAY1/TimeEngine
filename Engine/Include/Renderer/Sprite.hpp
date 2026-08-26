@@ -2,7 +2,6 @@
 #include "Core/Asset/Asset.hpp"
 #include "Core/Asset/AssetManager.hpp"
 
-
 class Sprite : public Asset
 {
 public:
@@ -81,4 +80,3 @@ private:
 
     TEArray<TEVector2> m_CustomColliderPoints;
 };
-

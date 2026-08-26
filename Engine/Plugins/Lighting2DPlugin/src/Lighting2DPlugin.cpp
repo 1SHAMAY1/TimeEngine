@@ -1,7 +1,6 @@
 #include "Lighting2DPlugin.hpp"
 #include "Core/Log.h"
 
-
 void Lighting2DPlugin::OnLoad()
 {
     TE_CORE_INFO("[Lighting2DPlugin] 2D Dynamic Lighting & Ray Tracing Plugin Loaded Successfully.");
@@ -46,4 +45,3 @@ void Lighting2DPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, 
 }
 
 TE_REGISTER_PLUGIN(Lighting2DPlugin);
-

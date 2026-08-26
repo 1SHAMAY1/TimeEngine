@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Layers/ProfilingLayer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
@@ -14,7 +14,6 @@
 #include <windows.h>
 #pragma comment(lib, "pdh.lib")
 #endif
-
 
 ProfilingLayer *ProfilingLayer::s_Instance = nullptr;
 
@@ -869,10 +868,7 @@ TEString ProfilingLayer::FormatTime(float seconds)
     }
 }
 
-TEString ProfilingLayer::FormatPercentage(float percentage)
-{
-    return TEString::FromFloat(percentage, 1) + "%";
-}
+TEString ProfilingLayer::FormatPercentage(float percentage) { return TEString::FromFloat(percentage, 1) + "%"; }
 
 TEVector4 ProfilingLayer::GetColorForValue(float value, float warningThreshold, float criticalThreshold)
 {
@@ -891,4 +887,3 @@ TEVector4 ProfilingLayer::GetColorForValue(float value, float warningThreshold, 
 }
 
 TE_REGISTER_EDITOR_PANEL(ProfilingLayer);
-

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "../Graph/SoundGraph.hpp"
-#include "SoundGraphAssetEditor.hpp"
 #include "Layers/Layer.hpp"
+#include "SoundGraphAssetEditor.hpp"
 #include <memory>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class AudioStudioLayer : public Layer
 {

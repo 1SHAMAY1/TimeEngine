@@ -3,7 +3,6 @@
 #include "Core/Scene/ComponentRegistry.hpp"
 #include <vector>
 
-
 class PolygonColliderComponent : public CollisionComponent
 {
 public:
@@ -36,4 +35,3 @@ T_REGISTER_PROPERTY(PolygonColliderComponent, bool, isTrigger, "Is Trigger")
 T_REGISTER_PRESET(PolygonColliderComponent, "Polygon Collider 2D", "Physics & Collisions",
                   [](EntityID id, EntityManager *em) { em->AddComponent<PolygonColliderComponent>(id); })
 #endif
-

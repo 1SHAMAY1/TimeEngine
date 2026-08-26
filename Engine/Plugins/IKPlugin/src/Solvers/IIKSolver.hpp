@@ -3,7 +3,8 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
 
-namespace IK {
+namespace IK
+{
 
 enum class IKSolverType
 {

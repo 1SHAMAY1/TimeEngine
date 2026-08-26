@@ -1,7 +1,6 @@
 #include "DialogueNodeInspector.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 void DialogueNodeInspector::DrawInspector(DialogueGraph &graph, uint64_t selectedNodeId)
 {
     auto *node = graph.FindNode(selectedNodeId);
@@ -107,7 +106,8 @@ void DialogueNodeInspector::DrawInspector(DialogueGraph &graph, uint64_t selecte
         TimeGUI::InputText("Variable", node->ConditionVar);
 
         int opIdx = static_cast<int>(node->ConditionOp);
-        const char *ops[] = {"== (Equal)", "!= (Not Equal)", "> (Greater)", "< (Less)", ">= (Greater Equal)", "<= (Less Equal)"};
+        const char *ops[] = {"== (Equal)", "!= (Not Equal)",     "> (Greater)",
+                             "< (Less)",   ">= (Greater Equal)", "<= (Less Equal)"};
         if (TimeGUI::Combo("Comparison", &opIdx, ops, 6))
         {
             node->ConditionOp = static_cast<ComparisonOp>(opIdx);
@@ -159,4 +159,3 @@ void DialogueNodeInspector::DrawInspector(DialogueGraph &graph, uint64_t selecte
         TimeGUI::InputText("Target Knot", node->DivertTargetKnot);
     }
 }
-

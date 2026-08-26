@@ -1,22 +1,16 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/FontAsset.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Renderer/Texture.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
+FontAsset::FontAsset() {}
 
-FontAsset::FontAsset()
-{
-}
-
-FontAsset::FontAsset(const TEString &name, float pixelSize)
-    : m_Name(name), m_PixelSize(pixelSize)
-{
-}
+FontAsset::FontAsset(const TEString &name, float pixelSize) : m_Name(name), m_PixelSize(pixelSize) {}
 
 TERef<Asset> FontAsset::Clone() const
 {
@@ -35,8 +29,7 @@ TERef<Asset> FontAsset::Clone() const
     return copy;
 }
 
-bool FontAsset::BakeFromTTF(const TEString &ttfPath, float pixelSize,
-                           uint32_t atlasWidth, uint32_t atlasHeight)
+bool FontAsset::BakeFromTTF(const TEString &ttfPath, float pixelSize, uint32_t atlasWidth, uint32_t atlasHeight)
 {
     std::ifstream file(ttfPath.c_str(), std::ios::binary | std::ios::ate);
     if (!file.is_open())
@@ -62,9 +55,7 @@ bool FontAsset::BakeFromTTF(const TEString &ttfPath, float pixelSize,
     m_AtlasHeight = atlasHeight;
 
     TEArray<uint8_t> rgbaBitmap;
-    if (!AssetManager::BakeFontAtlas(ttfBuffer, pixelSize,
-                                     atlasWidth, atlasHeight,
-                                     m_Ascent, m_Descent, m_LineHeight,
+    if (!AssetManager::BakeFontAtlas(ttfBuffer, pixelSize, atlasWidth, atlasHeight, m_Ascent, m_Descent, m_LineHeight,
                                      m_Glyphs, rgbaBitmap))
     {
         TE_CORE_ERROR("FontAsset::BakeFromTTF - BakeFontAtlas failed for: {0}", ttfPath);
@@ -119,10 +110,7 @@ FontGlyph FontAsset::GetGlyph(const TEString &character) const
     return g;
 }
 
-bool FontAsset::HasGlyph(const TEString &character) const
-{
-    return m_Glyphs.find(character) != m_Glyphs.end();
-}
+bool FontAsset::HasGlyph(const TEString &character) const { return m_Glyphs.find(character) != m_Glyphs.end(); }
 
 float FontAsset::GetKerning(const TEString &first, const TEString &second) const
 {
@@ -183,79 +171,82 @@ bool FontAsset::LoadFromFile(const TEString &path)
     m_Glyphs.Clear();
     m_Kerning.clear();
 
-    bool success = TEFileSystem::ForEachLine(path, [this](const TEString &line) {
-        if (line.StartsWith("FontAsset: "))
-        {
-            m_Name = line.Mid(11).Trim();
-        }
-        else if (line.StartsWith("SourcePath: "))
-        {
-            m_SourcePath = line.Mid(12).Trim();
-        }
-        else if (line.StartsWith("AtlasTexturePath: "))
-        {
-            m_AtlasTexturePath = line.Mid(18).Trim();
-        }
-        else if (line.StartsWith("PixelSize: "))
-        {
-            m_PixelSize = std::stof(line.Mid(11).c_str());
-        }
-        else if (line.StartsWith("AtlasWidth: "))
-        {
-            m_AtlasWidth = static_cast<uint32_t>(std::stoul(line.Mid(12).c_str()));
-        }
-        else if (line.StartsWith("AtlasHeight: "))
-        {
-            m_AtlasHeight = static_cast<uint32_t>(std::stoul(line.Mid(13).c_str()));
-        }
-        else if (line.StartsWith("LineHeight: "))
-        {
-            m_LineHeight = std::stof(line.Mid(12).c_str());
-        }
-        else if (line.StartsWith("Ascent: "))
-        {
-            m_Ascent = std::stof(line.Mid(8).c_str());
-        }
-        else if (line.StartsWith("Descent: "))
-        {
-            m_Descent = std::stof(line.Mid(9).c_str());
-        }
-        else if (line.StartsWith("Glyph: "))
-        {
-            auto parts = line.Mid(7).Split("|");
-            if (parts.size() >= 7)
-            {
-                FontGlyph g;
-                g.Character = parts[0];
-                g.AdvanceX = parts[1].ToFloat();
-                g.BearingX = parts[2].ToFloat();
-                g.BearingY = parts[3].ToFloat();
-                g.Width = parts[4].ToFloat();
-                g.Height = parts[5].ToFloat();
+    bool success =
+        TEFileSystem::ForEachLine(path,
+                                  [this](const TEString &line)
+                                  {
+                                      if (line.StartsWith("FontAsset: "))
+                                      {
+                                          m_Name = line.Mid(11).Trim();
+                                      }
+                                      else if (line.StartsWith("SourcePath: "))
+                                      {
+                                          m_SourcePath = line.Mid(12).Trim();
+                                      }
+                                      else if (line.StartsWith("AtlasTexturePath: "))
+                                      {
+                                          m_AtlasTexturePath = line.Mid(18).Trim();
+                                      }
+                                      else if (line.StartsWith("PixelSize: "))
+                                      {
+                                          m_PixelSize = std::stof(line.Mid(11).c_str());
+                                      }
+                                      else if (line.StartsWith("AtlasWidth: "))
+                                      {
+                                          m_AtlasWidth = static_cast<uint32_t>(std::stoul(line.Mid(12).c_str()));
+                                      }
+                                      else if (line.StartsWith("AtlasHeight: "))
+                                      {
+                                          m_AtlasHeight = static_cast<uint32_t>(std::stoul(line.Mid(13).c_str()));
+                                      }
+                                      else if (line.StartsWith("LineHeight: "))
+                                      {
+                                          m_LineHeight = std::stof(line.Mid(12).c_str());
+                                      }
+                                      else if (line.StartsWith("Ascent: "))
+                                      {
+                                          m_Ascent = std::stof(line.Mid(8).c_str());
+                                      }
+                                      else if (line.StartsWith("Descent: "))
+                                      {
+                                          m_Descent = std::stof(line.Mid(9).c_str());
+                                      }
+                                      else if (line.StartsWith("Glyph: "))
+                                      {
+                                          auto parts = line.Mid(7).Split("|");
+                                          if (parts.size() >= 7)
+                                          {
+                                              FontGlyph g;
+                                              g.Character = parts[0];
+                                              g.AdvanceX = parts[1].ToFloat();
+                                              g.BearingX = parts[2].ToFloat();
+                                              g.BearingY = parts[3].ToFloat();
+                                              g.Width = parts[4].ToFloat();
+                                              g.Height = parts[5].ToFloat();
 
-                auto uvParts = parts[6].Split(" ");
-                if (uvParts.size() >= 4)
-                {
-                    g.UV.x = uvParts[0].ToFloat();
-                    g.UV.y = uvParts[1].ToFloat();
-                    g.UV.z = uvParts[2].ToFloat();
-                    g.UV.w = uvParts[3].ToFloat();
-                }
+                                              auto uvParts = parts[6].Split(" ");
+                                              if (uvParts.size() >= 4)
+                                              {
+                                                  g.UV.x = uvParts[0].ToFloat();
+                                                  g.UV.y = uvParts[1].ToFloat();
+                                                  g.UV.z = uvParts[2].ToFloat();
+                                                  g.UV.w = uvParts[3].ToFloat();
+                                              }
 
-                m_Glyphs[g.Character] = g;
-            }
-        }
-        else if (line.StartsWith("Kerning: "))
-        {
-            auto parts = line.Mid(9).Split("|");
-            if (parts.size() >= 3)
-            {
-                TEString key = parts[0] + "_" + parts[1];
-                m_Kerning[key] = parts[2].ToFloat();
-            }
-        }
-        return true;
-    });
+                                              m_Glyphs[g.Character] = g;
+                                          }
+                                      }
+                                      else if (line.StartsWith("Kerning: "))
+                                      {
+                                          auto parts = line.Mid(9).Split("|");
+                                          if (parts.size() >= 3)
+                                          {
+                                              TEString key = parts[0] + "_" + parts[1];
+                                              m_Kerning[key] = parts[2].ToFloat();
+                                          }
+                                      }
+                                      return true;
+                                  });
 
     // Load texture atlas
     if (!m_AtlasTexturePath.IsEmpty())
@@ -288,9 +279,8 @@ bool FontAsset::SaveToFile(const TEString &path)
 
     for (const auto &[ch, g] : m_Glyphs)
     {
-        hout << "Glyph: " << g.Character.c_str() << "|" << g.AdvanceX << "|"
-             << g.BearingX << "|" << g.BearingY << "|" << g.Width << "|" << g.Height << "|"
-             << g.UV.x << " " << g.UV.y << " " << g.UV.z << " " << g.UV.w << "\n";
+        hout << "Glyph: " << g.Character.c_str() << "|" << g.AdvanceX << "|" << g.BearingX << "|" << g.BearingY << "|"
+             << g.Width << "|" << g.Height << "|" << g.UV.x << " " << g.UV.y << " " << g.UV.z << " " << g.UV.w << "\n";
     }
 
     hout << "KerningCount: " << m_Kerning.size() << "\n";
@@ -313,7 +303,4 @@ void FontAsset::OnContentBrowserCreate(const TEString &path)
     SaveToFile(path);
 }
 
-float FontAsset::MeasureStringWidth(const TEString &text, float scale) const
-{
-    return MeasureString(text, scale).x;
-}
+float FontAsset::MeasureStringWidth(const TEString &text, float scale) const { return MeasureString(text, scale).x; }

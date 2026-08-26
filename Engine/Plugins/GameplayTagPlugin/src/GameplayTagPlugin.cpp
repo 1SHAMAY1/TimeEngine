@@ -3,7 +3,6 @@
 #include "GameplayTagManager.hpp"
 #include "GameplayTagManagerLayer.hpp"
 
-
 void GameplayTagPlugin::OnLoad()
 {
     TE_CORE_INFO("[GameplayTagPlugin] Initializing GameplayTagPlugin...");
@@ -30,13 +29,9 @@ void GameplayTagPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min,
     dl.AddRect(min, max, borderCol, 6.0f, 0, 1.0f);
 
     // Angled tag polygon
-    TEVector2 tagPts[5] = {
-        TEVector2(min.x + 10.0f, min.y + 18.0f),
-        TEVector2(min.x + 20.0f, min.y + 8.0f),
-        TEVector2(min.x + 38.0f, min.y + 8.0f),
-        TEVector2(min.x + 38.0f, min.y + 38.0f),
-        TEVector2(min.x + 10.0f, min.y + 38.0f)
-    };
+    TEVector2 tagPts[5] = {TEVector2(min.x + 10.0f, min.y + 18.0f), TEVector2(min.x + 20.0f, min.y + 8.0f),
+                           TEVector2(min.x + 38.0f, min.y + 8.0f), TEVector2(min.x + 38.0f, min.y + 38.0f),
+                           TEVector2(min.x + 10.0f, min.y + 38.0f)};
     dl.AddConvexPolyFilled(tagPts, 5, 0xFF4A3812);
     dl.AddPolyline(tagPts, 5, 0xFFFFBE76, 1, 1.5f);
 

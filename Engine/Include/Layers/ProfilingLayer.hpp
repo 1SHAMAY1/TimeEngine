@@ -4,8 +4,6 @@
 #include <chrono>
 #include <deque>
 
-
-
 struct MemoryAllocation
 {
     TEString className;
@@ -49,16 +47,17 @@ public:
     ProfilingLayer();
     virtual ~ProfilingLayer();
 
-    static ProfilingLayer *GetInstance()
-    {
-        return s_Instance;
-    }
+    static ProfilingLayer *GetInstance() { return s_Instance; }
 
     // IEditorPanel interface overrides
     TEString GetID() const override { return "ProfilerPanel"; }
     TEString GetTitle() const override { return "Profiling Tool"; }
     bool IsWindowMenuExposed() const override { return true; }
-    void OnTimeGUIRender(Ref<EditorLayer> editor) override { (void)editor; OnTimeGUIRender(); }
+    void OnTimeGUIRender(Ref<EditorLayer> editor) override
+    {
+        (void)editor;
+        OnTimeGUIRender();
+    }
 
     virtual void OnAttach() override;
     virtual void OnDetach() override;
@@ -99,7 +98,11 @@ public:
     void SetShowDetailedInfo(bool show) { m_ShowDetailedInfo = show; }
     void SetShowGraphs(bool show) { m_ShowGraphs = show; }
     void SetFloating(bool floating) { m_IsFloating = floating; }
-    void SetVisible(bool visible) override { m_Visible = visible; m_IsVisible = visible; }
+    void SetVisible(bool visible) override
+    {
+        m_Visible = visible;
+        m_IsVisible = visible;
+    }
     bool IsVisible() const override { return m_Visible || m_IsVisible; }
     void ToggleVisibility() { SetVisible(!IsVisible()); }
     void SetWindowTitle(const TEString &title) { m_WindowTitle = title; }
@@ -209,4 +212,3 @@ private:
 
     uint32_t m_LastResetFrame = 0;
 };
-

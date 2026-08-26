@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/VertexArray.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLVertexArray.hpp"
@@ -49,4 +49,3 @@ TERef<VertexArray> VertexArray::Create()
         return nullptr;
     }
 }
-

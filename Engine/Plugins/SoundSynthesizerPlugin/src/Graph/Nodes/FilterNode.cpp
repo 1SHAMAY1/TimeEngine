@@ -1,6 +1,7 @@
 #include "FilterNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 FilterNode::FilterNode()
 {

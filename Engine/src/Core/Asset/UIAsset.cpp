@@ -1,17 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/UIAsset.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 
-UIAsset::UIAsset()
-{
-}
+UIAsset::UIAsset() {}
 
-UIAsset::UIAsset(const TEString &name)
-    : m_Name(name)
-{
-}
+UIAsset::UIAsset(const TEString &name) : m_Name(name) {}
 
 TERef<Asset> UIAsset::Clone() const
 {
@@ -29,49 +24,51 @@ bool UIAsset::LoadFromFile(const TEString &path)
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Nodes.Clear();
 
-    return TEFileSystem::ForEachLine(path, [this](const TEString &line) {
-        TEString trimmed = line.Trim();
-        if (trimmed.empty() || trimmed.StartsWith("#"))
-            return true;
+    return TEFileSystem::ForEachLine(path,
+                                     [this](const TEString &line)
+                                     {
+                                         TEString trimmed = line.Trim();
+                                         if (trimmed.empty() || trimmed.StartsWith("#"))
+                                             return true;
 
-        if (trimmed.StartsWith("Node: "))
-        {
-            TEString content = trimmed.Mid(6);
-            auto parts = content.Split(" ");
-            if (parts.Num() >= 14)
-            {
-                UIWidgetNodeDef node;
-                node.Type = parts[0];
-                node.ID = parts[1];
-                node.Position.x = parts[2].ToFloat();
-                node.Position.y = parts[3].ToFloat();
-                node.Size.x = parts[4].ToFloat();
-                node.Size.y = parts[5].ToFloat();
-                node.Color.x = parts[6].ToFloat();
-                node.Color.y = parts[7].ToFloat();
-                node.Color.z = parts[8].ToFloat();
-                node.Color.w = parts[9].ToFloat();
-                node.Value = parts[10].ToFloat();
-                node.MinValue = parts[11].ToFloat();
-                node.MaxValue = parts[12].ToFloat();
-                node.ParentIndex = parts[13].ToInt();
+                                         if (trimmed.StartsWith("Node: "))
+                                         {
+                                             TEString content = trimmed.Mid(6);
+                                             auto parts = content.Split(" ");
+                                             if (parts.Num() >= 14)
+                                             {
+                                                 UIWidgetNodeDef node;
+                                                 node.Type = parts[0];
+                                                 node.ID = parts[1];
+                                                 node.Position.x = parts[2].ToFloat();
+                                                 node.Position.y = parts[3].ToFloat();
+                                                 node.Size.x = parts[4].ToFloat();
+                                                 node.Size.y = parts[5].ToFloat();
+                                                 node.Color.x = parts[6].ToFloat();
+                                                 node.Color.y = parts[7].ToFloat();
+                                                 node.Color.z = parts[8].ToFloat();
+                                                 node.Color.w = parts[9].ToFloat();
+                                                 node.Value = parts[10].ToFloat();
+                                                 node.MinValue = parts[11].ToFloat();
+                                                 node.MaxValue = parts[12].ToFloat();
+                                                 node.ParentIndex = parts[13].ToInt();
 
-                if (parts.Num() > 14)
-                {
-                    TEString textCombined;
-                    for (size_t p = 14; p < parts.Num(); ++p)
-                    {
-                        if (p > 14)
-                            textCombined += " ";
-                        textCombined += parts[p];
-                    }
-                    node.Text = textCombined;
-                }
-                m_Nodes.Add(node);
-            }
-        }
-        return true;
-    });
+                                                 if (parts.Num() > 14)
+                                                 {
+                                                     TEString textCombined;
+                                                     for (size_t p = 14; p < parts.Num(); ++p)
+                                                     {
+                                                         if (p > 14)
+                                                             textCombined += " ";
+                                                         textCombined += parts[p];
+                                                     }
+                                                     node.Text = textCombined;
+                                                 }
+                                                 m_Nodes.Add(node);
+                                             }
+                                         }
+                                         return true;
+                                     });
 }
 
 bool UIAsset::SaveToFile(const TEString &path)
@@ -85,8 +82,9 @@ bool UIAsset::SaveToFile(const TEString &path)
     {
         const auto &n = m_Nodes[i];
         file << "Node: " << n.Type.c_str() << " " << n.ID.c_str() << " " << n.Position.x << " " << n.Position.y << " "
-             << n.Size.x << " " << n.Size.y << " " << n.Color.x << " " << n.Color.y << " " << n.Color.z << " " << n.Color.w << " "
-             << n.Value << " " << n.MinValue << " " << n.MaxValue << " " << n.ParentIndex << " " << n.Text.c_str() << "\n";
+             << n.Size.x << " " << n.Size.y << " " << n.Color.x << " " << n.Color.y << " " << n.Color.z << " "
+             << n.Color.w << " " << n.Value << " " << n.MinValue << " " << n.MaxValue << " " << n.ParentIndex << " "
+             << n.Text.c_str() << "\n";
     }
     return true;
 }
@@ -183,4 +181,3 @@ TERef<UIWidget> UIAsset::InstantiateWidgetTree() const
 
     return rootWidget ? rootWidget : (createdWidgets.Num() > 0 ? createdWidgets[0] : nullptr);
 }
-

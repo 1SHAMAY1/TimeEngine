@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESShaderLibrary.hpp"
+#include "Core/PreRequisites.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-
 
 // ---------------------------------------------------------------------------
 // Shader Creation
@@ -496,7 +495,7 @@ void OpenGLESShaderLibrary::ObjectLabel(GLenum identifier, unsigned int name, co
     (void)label;
 }
 void GLAPIENTRY OpenGLESShaderLibrary::DebugCallback(GLenum source, GLenum type, unsigned int id, GLenum severity,
-                                                     GLsizei /*length*/, const TEString& message,
+                                                     GLsizei /*length*/, const TEString &message,
                                                      const void * /*userParam*/)
 {
     std::cerr << "[OpenGL ES Debug] source=0x" << std::hex << source << " type=0x" << type << " id=" << std::dec << id
@@ -539,4 +538,3 @@ GLenum OpenGLESShaderLibrary::ClientWaitSync(GLsync sync, GLbitfield flags, GLui
     return glClientWaitSync(sync, flags, timeout);
 }
 void OpenGLESShaderLibrary::DeleteSync(GLsync sync) { glDeleteSync(sync); }
-

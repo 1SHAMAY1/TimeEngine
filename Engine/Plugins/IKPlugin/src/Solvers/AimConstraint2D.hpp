@@ -1,16 +1,17 @@
 #pragma once
 
-#include <cmath>
-#include <algorithm>
 #include "Utils/MathUtils.hpp"
+#include <algorithm>
+#include <cmath>
 
-namespace IK {
+namespace IK
+{
 
 class AimConstraint2D
 {
 public:
-    static float Solve(const TEVector2& boneWorldPos, const TEVector2& targetWorldPos,
-                       float currentRotation, float minAngle, float maxAngle, float maxSpeed = 10.0f, float dt = 0.016f)
+    static float Solve(const TEVector2 &boneWorldPos, const TEVector2 &targetWorldPos, float currentRotation,
+                       float minAngle, float maxAngle, float maxSpeed = 10.0f, float dt = 0.016f)
     {
         TEVector2 diff = targetWorldPos - boneWorldPos;
         float targetAngle = std::atan2(diff.y, diff.x);
@@ -20,8 +21,10 @@ public:
 
         // Smooth angle step
         float diffAngle = targetAngle - currentRotation;
-        while (diffAngle > 3.14159265f) diffAngle -= 6.2831853f;
-        while (diffAngle < -3.14159265f) diffAngle += 6.2831853f;
+        while (diffAngle > 3.14159265f)
+            diffAngle -= 6.2831853f;
+        while (diffAngle < -3.14159265f)
+            diffAngle += 6.2831853f;
 
         float maxStep = maxSpeed * dt;
         diffAngle = std::clamp(diffAngle, -maxStep, maxStep);

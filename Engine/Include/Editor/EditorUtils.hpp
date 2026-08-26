@@ -5,8 +5,6 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
-
 class EditorLayer;
 class IEditorPanel;
 class Scene;
@@ -37,16 +35,16 @@ public:
     // -- UI helpers ---------------------------------------------------
 
     /// Draws a bold separator label (category header style).
-    static void DrawSectionHeader(const TEString& label);
+    static void DrawSectionHeader(const TEString &label);
 
     /// Draws a centered label inside the current window.
-    static void DrawCenteredText(const TEString& label);
+    static void DrawCenteredText(const TEString &label);
 
     /// Draws a tooltip icon "(?)" that reveals text on hover.
-    static void DrawHelpMarker(const TEString& text);
+    static void DrawHelpMarker(const TEString &text);
 
     /// Draws a color-coded badge label (small, rounded, filled).
-    static void DrawBadge(const TEString& label, float r, float g, float b, float a = 1.0f);
+    static void DrawBadge(const TEString &label, float r, float g, float b, float a = 1.0f);
 
     /// Begins a collapsible card-style group with a header. Returns true if expanded.
     static bool BeginCard(const char *id, const char *header);
@@ -55,7 +53,8 @@ public:
     static void EndCard();
 
     /// Draws a procedural engine-style save/floppy icon into a draw list at the specified rectangle.
-    static void DrawSaveIcon(const TEVector2 &min, const TEVector2 &max, bool isDirty = false, unsigned int tintColor = 0xFFFFFFFF);
+    static void DrawSaveIcon(const TEVector2 &min, const TEVector2 &max, bool isDirty = false,
+                             unsigned int tintColor = 0xFFFFFFFF);
 
     // -- Path / Asset helpers -----------------------------------------
 
@@ -69,8 +68,7 @@ public:
     static bool IsKnownAssetExtension(const TEString &path);
 
     /// Strips the project directory prefix to return a project-relative display path.
-    static TEString MakeProjectRelative(const TEString &absPath,
-                                           const TEString &projectDir);
+    static TEString MakeProjectRelative(const TEString &absPath, const TEString &projectDir);
 
     // -- Scene / State helpers ----------------------------------------
 
@@ -89,20 +87,13 @@ public:
     // -- Viewport Grid & Vector UI Drawing Helpers ---------------------
 
     /// Draws an infinite procedural 2D grid in world-space onto the Viewport's drawlist
-    static void DrawInfinite2DGrid(TimeGUIDrawList &dl,
-                                   const TEVector2 &viewportMin,
-                                   const TEVector2 &viewportSize,
-                                   const TEVector2 &cameraPos,
-                                   float zoom,
-                                   float primaryGridStep = 100.0f,
+    static void DrawInfinite2DGrid(TimeGUIDrawList &dl, const TEVector2 &viewportMin, const TEVector2 &viewportSize,
+                                   const TEVector2 &cameraPos, float zoom, float primaryGridStep = 100.0f,
                                    float subGridDivisions = 10.0f);
 
     /// Draws world-space transform vector handles (Translate arrows, Rotate ring, Scale box)
-    static void DrawTransformGizmo(TimeGUIDrawList &dl,
-                                   const TEVector2 &screenPos,
-                                   int gizmoType,
-                                   bool isHovered = false,
-                                   bool isDragging = false);
+    static void DrawTransformGizmo(TimeGUIDrawList &dl, const TEVector2 &screenPos, int gizmoType,
+                                   bool isHovered = false, bool isDragging = false);
 
     /// Vector Icon Drawing Helpers for UI Toolbars and Overlays
     static void DrawHamburgerIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
@@ -118,7 +109,8 @@ public:
     static void DrawCrossIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawChevronLeftIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawChevronRightIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
-    static bool DrawNavIconButton(const char *strID, bool isForward, bool enabled, const TEVector2 &btnSize = TEVector2(24.0f, 24.0f));
+    static bool DrawNavIconButton(const char *strID, bool isForward, bool enabled,
+                                  const TEVector2 &btnSize = TEVector2(24.0f, 24.0f));
 
     struct FileBrowserConfig
     {
@@ -131,34 +123,25 @@ public:
     };
 
     // -- In-Engine Visual File Browser Dialog ---------------------------
-    static void OpenFileBrowser(const FileBrowserConfig &config, std::function<void(const TEString &selectedPath)> onConfirm);
-    static void OpenFileBrowser(const TEString &title,
-                                const TEString &actionButtonText,
-                                const TEString &defaultFilename,
-                                const TEString &filterExtension,
-                                bool allowFilenameInput,
+    static void OpenFileBrowser(const FileBrowserConfig &config,
                                 std::function<void(const TEString &selectedPath)> onConfirm);
+    static void OpenFileBrowser(const TEString &title, const TEString &actionButtonText,
+                                const TEString &defaultFilename, const TEString &filterExtension,
+                                bool allowFilenameInput, std::function<void(const TEString &selectedPath)> onConfirm);
     static void DrawFileBrowserModal();
     static bool IsFileBrowserOpen();
 
     // -- Managed Allocation Helpers for Editor Resources -----------------
 
-    template <typename T, typename... Args>
-    static Ref<T> CreateEditorResource(Args &&...args)
+    template <typename T, typename... Args> static Ref<T> CreateEditorResource(Args &&...args)
     {
         return CreateRef<T>(std::forward<Args>(args)...);
     }
 
-    template <typename T, typename... Args>
-    static Scope<T> CreateEditorScope(Args &&...args)
+    template <typename T, typename... Args> static Scope<T> CreateEditorScope(Args &&...args)
     {
         return CreateScope<T>(std::forward<Args>(args)...);
     }
 
-    template <typename T>
-    static void DestroyEditorResource(Ref<T> &ptr)
-    {
-        ptr.Reset();
-    }
+    template <typename T> static void DestroyEditorResource(Ref<T> &ptr) { ptr.Reset(); }
 };
-

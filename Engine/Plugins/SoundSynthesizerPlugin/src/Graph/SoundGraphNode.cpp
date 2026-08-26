@@ -1,11 +1,9 @@
 #include "SoundGraphNode.hpp"
 
-namespace SoundStudio {
-
-void SoundGraphNode::Initialize(uint64_t id)
+namespace SoundStudio
 {
-    m_ID = id;
-}
+
+void SoundGraphNode::Initialize(uint64_t id) { m_ID = id; }
 
 uint64_t SoundGraphNode::AddInputPin(const TEString &name, EAudioPinType type, float defaultVal)
 {

@@ -1,8 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/VisibilityNotifierComponent.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
-#include "Core/Scene/Scene.hpp"
 #include "Core/Scene/PlayerCameraComponent.hpp"
+#include "Core/Scene/Scene.hpp"
 
 void VisibilityNotifierComponent::Tick(float deltaTime)
 {
@@ -11,7 +11,7 @@ void VisibilityNotifierComponent::Tick(float deltaTime)
 
     // Viewport camera visibility check
     TEVector2 currentPos = {Transform.Position.x, Transform.Position.y};
-    
+
     // Check against active camera if present
     bool onScreen = true; // default on screen if no camera bounds restrict
     auto cameras = Manager->GetAllComponents<PlayerCameraComponent>();
@@ -34,8 +34,7 @@ void VisibilityNotifierComponent::Tick(float deltaTime)
             float minY = camT.Position.y - halfH - BoundsSize.y * 0.5f;
             float maxY = camT.Position.y + halfH + BoundsSize.y * 0.5f;
 
-            onScreen = (currentPos.x >= minX && currentPos.x <= maxX &&
-                        currentPos.y >= minY && currentPos.y <= maxY);
+            onScreen = (currentPos.x >= minX && currentPos.x <= maxX && currentPos.y >= minY && currentPos.y <= maxY);
         }
     }
 

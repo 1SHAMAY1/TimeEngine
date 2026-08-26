@@ -2,7 +2,6 @@
 
 #include "Core/Plugin/IPlugin.hpp"
 
-
 class MaterialSystemPlugin : public IPlugin
 {
 public:

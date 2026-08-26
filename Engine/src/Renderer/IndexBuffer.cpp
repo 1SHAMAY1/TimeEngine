@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/IndexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLIndexBuffer.hpp"
@@ -49,4 +49,3 @@ TERef<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t Count)
         return nullptr;
     }
 }
-

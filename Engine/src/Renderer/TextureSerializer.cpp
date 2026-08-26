@@ -1,10 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/TextureSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
-
 
 TextureSerializer::TextureSerializer(const TERef<Texture> &texture) : m_Texture(texture) {}
 
@@ -49,41 +48,44 @@ bool TextureSerializer::Deserialize(const TEString &filepath)
     bool mipmaps = false;
     bool premultAlpha = false;
 
-    TEFileSystem::ForEachLine(filepath, [&](const TEString &line) {
-        int colon = line.Find(":");
-        if (colon < 0)
-            return true;
+    TEFileSystem::ForEachLine(filepath,
+                              [&](const TEString &line)
+                              {
+                                  int colon = line.Find(":");
+                                  if (colon < 0)
+                                      return true;
 
-        TEString key = line.Left(colon).Trim();
-        TEString value = line.Mid(colon + 1).Trim();
+                                  TEString key = line.Left(colon).Trim();
+                                  TEString value = line.Mid(colon + 1).Trim();
 
-        if (key == "ImagePath")
-        {
-            imagePath = value;
-        }
-        else if (key == "FilterMode")
-        {
-            filter = (value == "Nearest") ? TextureFilterMode::Nearest : TextureFilterMode::Linear;
-        }
-        else if (key == "WrapMode")
-        {
-            if (value == "ClampToEdge")
-                wrap = TextureWrapMode::ClampToEdge;
-            else if (value == "MirroredRepeat")
-                wrap = TextureWrapMode::MirroredRepeat;
-            else
-                wrap = TextureWrapMode::Repeat;
-        }
-        else if (key == "GenerateMipmaps")
-        {
-            mipmaps = (value == "true" || value == "1");
-        }
-        else if (key == "PremultipliedAlpha")
-        {
-            premultAlpha = (value == "true" || value == "1");
-        }
-        return true;
-    });
+                                  if (key == "ImagePath")
+                                  {
+                                      imagePath = value;
+                                  }
+                                  else if (key == "FilterMode")
+                                  {
+                                      filter =
+                                          (value == "Nearest") ? TextureFilterMode::Nearest : TextureFilterMode::Linear;
+                                  }
+                                  else if (key == "WrapMode")
+                                  {
+                                      if (value == "ClampToEdge")
+                                          wrap = TextureWrapMode::ClampToEdge;
+                                      else if (value == "MirroredRepeat")
+                                          wrap = TextureWrapMode::MirroredRepeat;
+                                      else
+                                          wrap = TextureWrapMode::Repeat;
+                                  }
+                                  else if (key == "GenerateMipmaps")
+                                  {
+                                      mipmaps = (value == "true" || value == "1");
+                                  }
+                                  else if (key == "PremultipliedAlpha")
+                                  {
+                                      premultAlpha = (value == "true" || value == "1");
+                                  }
+                                  return true;
+                              });
 
     if (!imagePath.IsEmpty())
     {

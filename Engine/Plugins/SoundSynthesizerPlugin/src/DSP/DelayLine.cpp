@@ -4,12 +4,10 @@
 #include <algorithm>
 #include <cmath>
 
-namespace SoundStudio {
-
-DelayLine::DelayLine(uint32_t maxDelaySamples)
+namespace SoundStudio
 {
-    m_Buffer.resize(maxDelaySamples, 0.0f);
-}
+
+DelayLine::DelayLine(uint32_t maxDelaySamples) { m_Buffer.resize(maxDelaySamples, 0.0f); }
 
 void DelayLine::SetParameters(float delayTimeMs, float feedback, float dryWet, float sampleRate)
 {

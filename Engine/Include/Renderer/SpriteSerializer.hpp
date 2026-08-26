@@ -11,4 +11,3 @@ public:
 private:
     TERef<Sprite> m_Sprite;
 };
-

@@ -1,19 +1,16 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Material.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Log.h"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/MaterialSerializer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Renderer/ShaderLibrary.hpp"
-
+#include "Utils/TEFileSystem.hpp"
 
 #include "Utils/TEFileSystem.hpp"
 TE_REGISTER_ASSET(Material)
 
 bool Material::LoadFromFile(const TEString &path)
 {
-    auto self = TERef<Material>(this, [](Material*){});
+    auto self = TERef<Material>(this, [](Material *) {});
     MaterialSerializer serializer(self);
     return serializer.Deserialize(path);
 }
@@ -130,4 +127,3 @@ void Material::OnContentBrowserCreate(const TEString &path)
         TE_CORE_ERROR("Failed to serialize and create Material at {0}", finalPath.c_str());
     }
 }
-

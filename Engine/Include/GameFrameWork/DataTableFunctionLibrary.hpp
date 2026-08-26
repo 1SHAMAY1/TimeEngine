@@ -7,7 +7,6 @@
 #include "GameFrameWork/TFunctionLibrary.hpp"
 #include "Utils/TEString.hpp"
 
-
 class TE_API DataTableFunctionLibrary : public TFunctionLibrary
 {
 public:
@@ -15,9 +14,8 @@ public:
 
     // ── Gameplay Static Methods ───────────────────────────────────────────
     static TERef<DataAsset> GetDataTableRow(AssetHandle tableHandle, const TEString &rowName);
-    
-    template <typename T>
-    static TERef<T> GetDataTableRowAs(AssetHandle tableHandle, const TEString &rowName)
+
+    template <typename T> static TERef<T> GetDataTableRowAs(AssetHandle tableHandle, const TEString &rowName)
     {
         static_assert(std::is_base_of<DataAsset, T>::value, "T must inherit from DataAsset");
         auto table = AssetManager::GetAsset<TEDataTable>(tableHandle);
@@ -37,4 +35,3 @@ public:
     static bool ExportDataTableToCSV(AssetHandle tableHandle, const TEString &csvFilePath);
     static bool ImportDataTableFromCSV(AssetHandle tableHandle, const TEString &csvFilePath);
 };
-

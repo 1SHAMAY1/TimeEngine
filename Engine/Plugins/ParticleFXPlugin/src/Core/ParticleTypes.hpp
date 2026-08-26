@@ -4,7 +4,6 @@
 #include "Utils/MathUtils.hpp"
 #include <algorithm>
 
-
 enum class EEmissionShape : uint8_t
 {
     Point = 0,
@@ -44,10 +43,7 @@ struct ColorGradientStop
 
 struct ColorGradient
 {
-    TEArray<ColorGradientStop> Stops = {
-        {0.0f, {1.0f, 1.0f, 1.0f, 1.0f}},
-        {1.0f, {1.0f, 1.0f, 1.0f, 0.0f}}
-    };
+    TEArray<ColorGradientStop> Stops = {{0.0f, {1.0f, 1.0f, 1.0f, 1.0f}}, {1.0f, {1.0f, 1.0f, 1.0f, 0.0f}}};
 
     TEVector4 Evaluate(float t) const
     {
@@ -75,16 +71,13 @@ struct ColorGradient
 
 struct FloatCurveKey
 {
-    float Time = 0.0f;  // 0.0 to 1.0
+    float Time = 0.0f; // 0.0 to 1.0
     float Value = 1.0f;
 };
 
 struct FloatCurve
 {
-    TEArray<FloatCurveKey> Keys = {
-        {0.0f, 1.0f},
-        {1.0f, 0.0f}
-    };
+    TEArray<FloatCurveKey> Keys = {{0.0f, 1.0f}, {1.0f, 0.0f}};
 
     float Evaluate(float t) const
     {
@@ -142,4 +135,3 @@ struct Particle
     bool Active = false;
     bool PhysicsCollidable = false;
 };
-

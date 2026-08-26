@@ -1,23 +1,25 @@
 #pragma once
 
-#include <vector>
 #include <cmath>
 #include <glm/glm.hpp>
+#include <vector>
 
-namespace IK {
+namespace IK
+{
 
 class FABRIKSolver3D
 {
 public:
-    static bool Solve(TEArray<glm::vec3>& points, const TEArray<float>& lengths,
-                      const glm::vec3& target, int maxIterations = 15, float tolerance = 0.5f)
+    static bool Solve(TEArray<glm::vec3> &points, const TEArray<float> &lengths, const glm::vec3 &target,
+                      int maxIterations = 15, float tolerance = 0.5f)
     {
         if (points.size() < 2 || lengths.size() != points.size() - 1)
             return false;
 
         glm::vec3 origin = points[0];
         float totalLength = 0.0f;
-        for (float l : lengths) totalLength += l;
+        for (float l : lengths)
+            totalLength += l;
 
         float distToTarget = glm::distance(origin, target);
 

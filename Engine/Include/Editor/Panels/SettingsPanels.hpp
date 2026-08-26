@@ -1,7 +1,6 @@
 #pragma once
 #include "Editor/Panels/IEditorPanel.hpp"
 
-
 class TE_API EditorSettingsPanel : public IEditorPanel
 {
 public:

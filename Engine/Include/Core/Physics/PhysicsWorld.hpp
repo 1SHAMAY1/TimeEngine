@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 
-
 struct RigidBody
 {
     TEVector2 Position;
@@ -94,4 +93,3 @@ private:
 
     void ResolveCollisions();
 };
-

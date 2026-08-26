@@ -1,15 +1,14 @@
 #pragma once
-#include "Utils/TimeGUI.hpp"
 #include "../Core/ParticleTypes.hpp"
-
+#include "Utils/TimeGUI.hpp"
 
 class ParticleWidgets
 {
 public:
-    static bool DrawModuleHeader(const TEString& title, bool *enabled, bool defaultOpen = true)
+    static bool DrawModuleHeader(const TEString &title, bool *enabled, bool defaultOpen = true)
     {
         TimeGUI::PushID(title);
-        
+
         bool checkVal = enabled ? *enabled : true;
         if (enabled)
         {
@@ -34,4 +33,3 @@ public:
         TimeGUI::TextDisabled("[Start -> End Life]");
     }
 };
-

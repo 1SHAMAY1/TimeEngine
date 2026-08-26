@@ -5,7 +5,6 @@
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Editor/DialogueGraphAssetEditor.hpp"
 
-
 void DialogueRunnerPlugin::OnLoad()
 {
     TE_CORE_INFO("[DialogueRunnerPlugin] Initializing...");
@@ -45,7 +44,8 @@ void DialogueRunnerPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &m
     dl.AddTriangleFilled(p1, p2, p3, 0xFF00D2D3);
     // Text lines in bubble 1
     dl.AddLine(TEVector2(b1Min.x + 4.0f, b1Min.y + 5.0f), TEVector2(b1Max.x - 4.0f, b1Min.y + 5.0f), 0xFFFFFFFF, 1.5f);
-    dl.AddLine(TEVector2(b1Min.x + 4.0f, b1Min.y + 10.0f), TEVector2(b1Max.x - 9.0f, b1Min.y + 10.0f), 0xFFB8E994, 1.5f);
+    dl.AddLine(TEVector2(b1Min.x + 4.0f, b1Min.y + 10.0f), TEVector2(b1Max.x - 9.0f, b1Min.y + 10.0f), 0xFFB8E994,
+               1.5f);
 
     // Right response bubble
     TEVector2 b2Min(min.x + 18.0f, min.y + 23.0f);
@@ -62,4 +62,3 @@ void DialogueRunnerPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &m
 }
 
 TE_REGISTER_PLUGIN(DialogueRunnerPlugin)
-

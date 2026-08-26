@@ -1,8 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/NavigationAgent2DComponent.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/Scene.hpp"
-#include "Core/Log.h"
 
 void NavigationAgent2DComponent::SetTarget(const TEVector2 &worldPos)
 {

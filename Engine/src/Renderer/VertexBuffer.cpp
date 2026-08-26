@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/VertexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLVertexBuffer.hpp"
@@ -50,4 +50,3 @@ TERef<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
     }
     return nullptr;
 }
-

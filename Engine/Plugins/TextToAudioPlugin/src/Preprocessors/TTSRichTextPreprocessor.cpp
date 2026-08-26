@@ -77,7 +77,8 @@ TEString TTSRichTextPreprocessor::CompileToSSML(const TEString &input)
                     ssml += "</prosody>";
                 }
                 // 3. Rate / Speed
-                else if ((tagContent.StartsWith("rate") || tagContent.StartsWith("speed")) && !tagContent.StartsWith("/"))
+                else if ((tagContent.StartsWith("rate") || tagContent.StartsWith("speed")) &&
+                         !tagContent.StartsWith("/"))
                 {
                     std::regex rateRegex(R"(value=["']?([^"']+)["']?)");
                     std::cmatch match;
@@ -114,7 +115,8 @@ TEString TTSRichTextPreprocessor::CompileToSSML(const TEString &input)
                     ssml += "</emph>";
                 }
                 // 6. Voice / Accent
-                else if ((tagContent.StartsWith("voice") || tagContent.StartsWith("accent")) && !tagContent.StartsWith("/"))
+                else if ((tagContent.StartsWith("voice") || tagContent.StartsWith("accent")) &&
+                         !tagContent.StartsWith("/"))
                 {
                     std::regex voiceRegex(R"((?:name|value)=["']?([^"']+)["']?)");
                     std::cmatch match;
@@ -145,12 +147,10 @@ TTSProcessedSpeech TTSRichTextPreprocessor::ProcessText(const TEString &input)
     TTSProcessedSpeech result;
     result.PlainText = StripAllTags(input);
 
-    bool hasAcoustic = (input.Contains("<pause") || input.Contains("<break") ||
-                        input.Contains("<stop") || input.Contains("<pitch") ||
-                        input.Contains("<rate") || input.Contains("<speed") ||
-                        input.Contains("<volume") || input.Contains("<accent") ||
-                        input.Contains("<voice") || input.Contains("<emphasis") ||
-                        input.Contains("<whisper"));
+    bool hasAcoustic = (input.Contains("<pause") || input.Contains("<break") || input.Contains("<stop") ||
+                        input.Contains("<pitch") || input.Contains("<rate") || input.Contains("<speed") ||
+                        input.Contains("<volume") || input.Contains("<accent") || input.Contains("<voice") ||
+                        input.Contains("<emphasis") || input.Contains("<whisper"));
 
     result.HasAcousticMarkup = hasAcoustic;
     if (hasAcoustic)

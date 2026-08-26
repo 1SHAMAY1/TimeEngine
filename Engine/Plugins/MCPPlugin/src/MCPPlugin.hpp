@@ -8,7 +8,6 @@
 #include <mutex>
 #include <thread>
 
-
 // Represents a connected SSE client waiting for server-sent events
 struct SSEClient
 {
@@ -25,7 +24,10 @@ public:
     virtual TEString GetName() const override { return "MCPPlugin"; }
     virtual TEString GetVersion() const override { return "1.0.0"; }
     virtual TEString GetAuthor() const override { return "TimeEngine Team"; }
-    virtual TEString GetDescription() const override { return "Model Context Protocol Integration & AI Automation Plugin"; }
+    virtual TEString GetDescription() const override
+    {
+        return "Model Context Protocol Integration & AI Automation Plugin";
+    }
 
     virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;
 
@@ -82,4 +84,3 @@ private:
     std::mutex m_SSEMutex;
     TEArray<SSEClient> m_SSEClients;
 };
-

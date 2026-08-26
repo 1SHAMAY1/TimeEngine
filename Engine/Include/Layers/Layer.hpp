@@ -3,7 +3,6 @@
 #include "Core/PreRequisites.h"
 #include "Utils/TEString.hpp"
 
-
 class TE_API Layer : public std::enable_shared_from_this<Layer>
 {
 public:
@@ -13,6 +12,7 @@ public:
     virtual void OnAttach();
     virtual void OnDetach();
     virtual void OnUpdate();
+    virtual void OnRender();
     virtual void OnTimeGUIRender();
     virtual void OnEvent(class Event &event);
 
@@ -23,4 +23,3 @@ public:
 protected:
     TEString m_DebugName;
 };
-

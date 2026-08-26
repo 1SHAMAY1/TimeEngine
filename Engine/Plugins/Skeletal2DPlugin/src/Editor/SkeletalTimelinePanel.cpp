@@ -1,18 +1,19 @@
 #include "SkeletalTimelinePanel.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Utils/TimeGUI.hpp"
 #include "Utils/TEFileSystem.hpp"
+#include "Utils/TimeGUI.hpp"
 
-namespace Skeletal2D {
-
-SkeletalAssetEditor::SkeletalAssetEditor()
+namespace Skeletal2D
 {
-}
+
+SkeletalAssetEditor::SkeletalAssetEditor() {}
 
 TEString SkeletalAssetEditor::CreateDefaultTemplate(const TEString &name) const
 {
     return "{\n"
-           "  \"Name\": \"" + name + "\",\n"
+           "  \"Name\": \"" +
+           name +
+           "\",\n"
            "  \"AssetType\": \"SkeletalDataAsset\",\n"
            "  \"Bones\": [\n"
            "    {\"Name\": \"root\", \"Parent\": -1, \"Length\": 40.0, \"Pos\": [0.0, 0.0], \"Rot\": 0.0},\n"
@@ -81,10 +82,10 @@ void SkeletalAssetEditor::DrawEditor(EditorTab &tab)
     // Animation Selector
     if (m_ActiveAsset)
     {
-        const auto& anims = m_ActiveAsset->GetAnimations();
+        const auto &anims = m_ActiveAsset->GetAnimations();
         if (TimeGUI::BeginCombo("Animation##SkelAnim", m_SelectedAnimation.c_str()))
         {
-            for (const auto& pair : anims)
+            for (const auto &pair : anims)
             {
                 bool isSelected = (m_SelectedAnimation == pair.first.c_str());
                 if (TimeGUI::Selectable(pair.first.c_str(), isSelected))
@@ -102,7 +103,7 @@ void SkeletalAssetEditor::DrawEditor(EditorTab &tab)
         // Timeline Scrubber
         auto clip = m_ActiveAsset->GetAnimation(m_SelectedAnimation);
         float duration = clip ? clip->Duration : 1.0f;
-        TrackEntry* track = m_Evaluator.GetTrack(0);
+        TrackEntry *track = m_Evaluator.GetTrack(0);
         if (track && m_IsPlaying)
         {
             m_CurrentTime = track->TrackTime;
@@ -115,10 +116,10 @@ void SkeletalAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::Text("Bone Hierarchy (%d bones):", (int)m_Evaluator.GetHierarchy().GetBoneCount());
 
     TimeGUI::BeginChild("BoneHierarchyTree", TEVector2(0, 180), true);
-    const auto& bones = m_Evaluator.GetHierarchy().GetBones();
+    const auto &bones = m_Evaluator.GetHierarchy().GetBones();
     for (size_t i = 0; i < bones.size(); ++i)
     {
-        const auto& bone = bones[i];
+        const auto &bone = bones[i];
         bool isSelected = (m_SelectedBoneIndex == (int)i);
         if (TimeGUI::Selectable(bone.Name.c_str(), isSelected))
         {
@@ -129,10 +130,11 @@ void SkeletalAssetEditor::DrawEditor(EditorTab &tab)
 
     if (m_SelectedBoneIndex >= 0 && m_SelectedBoneIndex < (int)bones.size())
     {
-        const auto& bone = bones[m_SelectedBoneIndex];
+        const auto &bone = bones[m_SelectedBoneIndex];
         TimeGUI::Text("Selected Bone: %s (Parent: %d)", bone.Name.c_str(), bone.ParentIndex);
         TimeGUI::Text("Length: %.1f px", bone.Length);
-        TimeGUI::Text("Rest Pose: (%.1f, %.1f) Rot: %.2f rad", bone.RestPose.Position.x, bone.RestPose.Position.y, bone.RestPose.Rotation);
+        TimeGUI::Text("Rest Pose: (%.1f, %.1f) Rot: %.2f rad", bone.RestPose.Position.x, bone.RestPose.Position.y,
+                      bone.RestPose.Rotation);
     }
 }
 
@@ -165,4 +167,3 @@ void SkeletalAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) c
 TE_REGISTER_ASSET_EDITOR(SkeletalAssetEditor);
 
 } // namespace Skeletal2D
-

@@ -5,12 +5,11 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#include "Renderer/DirectX11/DirectX11VertexArray.hpp"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include "Renderer/DirectX11/DirectX11VertexArray.hpp"
 #include <Windows.h>
 #include <d3d11.h>
 #include <iostream>
-
 
 DirectX11VertexArray::DirectX11VertexArray()
 {
@@ -81,4 +80,3 @@ void DirectX11VertexArray::SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer)
     if (m_IndexBuffer)
         m_IndexBuffer->Bind();
 }
-

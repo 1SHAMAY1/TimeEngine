@@ -2,7 +2,6 @@
 #include <vector>
 #include <volk.h>
 
-
 class VulkanContext
 {
 public:
@@ -29,4 +28,3 @@ private:
     inline static VkCommandPool s_CommandPool = VK_NULL_HANDLE;
     inline static void *s_WindowHandle = nullptr;
 };
-

@@ -5,7 +5,6 @@
 #include "GameplayTag.hpp"
 #include <algorithm>
 
-
 class GameplayTagContainer
 {
 public:
@@ -218,4 +217,3 @@ public:
 private:
     TESet<GameplayTag> m_Tags;
 };
-

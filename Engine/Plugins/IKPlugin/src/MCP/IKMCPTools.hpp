@@ -1,6 +1,7 @@
 #pragma once
 
-namespace IK {
+namespace IK
+{
 
 class IKMCPTools
 {

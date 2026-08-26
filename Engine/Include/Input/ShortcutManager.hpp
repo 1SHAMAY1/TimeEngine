@@ -6,13 +6,12 @@
 #include <cstdint>
 #include <functional>
 
-
 enum class KeyModifier : uint8_t
 {
-    None  = 0,
-    Ctrl  = 1 << 0,
+    None = 0,
+    Ctrl = 1 << 0,
     Shift = 1 << 1,
-    Alt   = 1 << 2,
+    Alt = 1 << 2,
     Super = 1 << 3
 };
 
@@ -39,15 +38,15 @@ inline bool HasModifier(KeyModifier mask, KeyModifier flag)
 
 struct TE_API Shortcut
 {
-    TEString ID;                               // Unique key, e.g. "Editor.SaveAll", "Editor.Undo"
-    TEString DisplayName;                      // Human-readable title: "Save All", "Undo"
-    TEString Category = "General";             // "File", "Edit", "Viewport", "PixelPaint", etc.
-    TEString Context = "Global";               // Context/Scope name ("Global", "Editor", "PixelPaint")
-    KeyCode Key = 0;                              // Primary key (e.g. Key::S, Key::Z)
-    KeyModifier Modifiers = KeyModifier::None;    // Modifier mask (Ctrl, Shift, Alt)
-    std::function<void()> Callback = nullptr;     // Optional direct callback
+    TEString ID;                                     // Unique key, e.g. "Editor.SaveAll", "Editor.Undo"
+    TEString DisplayName;                            // Human-readable title: "Save All", "Undo"
+    TEString Category = "General";                   // "File", "Edit", "Viewport", "PixelPaint", etc.
+    TEString Context = "Global";                     // Context/Scope name ("Global", "Editor", "PixelPaint")
+    KeyCode Key = 0;                                 // Primary key (e.g. Key::S, Key::Z)
+    KeyModifier Modifiers = KeyModifier::None;       // Modifier mask (Ctrl, Shift, Alt)
+    std::function<void()> Callback = nullptr;        // Optional direct callback
     std::function<bool()> IsContextActive = nullptr; // Optional predicate to check if context is active
-    bool Enabled = true;                          // Master toggle
+    bool Enabled = true;                             // Master toggle
 };
 
 // Shortcut listener delegate: returns true if the event was consumed
@@ -61,6 +60,7 @@ public:
     static bool UnregisterShortcut(const TEString &id);
     static bool RemapShortcut(const TEString &id, KeyCode newKey, KeyModifier newMods);
     static void Clear();
+    static void Shutdown();
 
     // --- Querying & Inspection ---
     static bool HasShortcut(const TEString &id);
@@ -94,10 +94,9 @@ private:
 // Declarative auto-registration template
 struct TE_API ShortcutAutoRegister
 {
-    ShortcutAutoRegister(const char *id, const TEString& name, const TEString& category, const char *context,
+    ShortcutAutoRegister(const char *id, const TEString &name, const TEString &category, const char *context,
                          KeyCode key, KeyModifier mods);
 };
 
-#define TE_REGISTER_SHORTCUT(ID, Name, Category, Context, Key, Mods) \
+#define TE_REGISTER_SHORTCUT(ID, Name, Category, Context, Key, Mods)                                                   \
     static ShortcutAutoRegister s_AutoRegister_Shortcut_##ID(#ID, Name, Category, Context, Key, Mods);
-

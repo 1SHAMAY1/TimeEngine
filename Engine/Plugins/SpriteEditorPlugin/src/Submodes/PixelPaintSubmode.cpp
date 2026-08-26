@@ -6,10 +6,7 @@
 #include <algorithm>
 #include <queue>
 
-
-PixelPaintSubmode::PixelPaintSubmode()
-{
-}
+PixelPaintSubmode::PixelPaintSubmode() {}
 
 void PixelPaintSubmode::OnEnter(SpriteMode *mode)
 {
@@ -44,9 +41,7 @@ void PixelPaintSubmode::OnUpdate(float dt, SpriteMode *mode)
     }
 }
 
-void PixelPaintSubmode::OnExit(SpriteMode *mode)
-{
-}
+void PixelPaintSubmode::OnExit(SpriteMode *mode) {}
 
 bool PixelPaintSubmode::OnShortcut(const TEString &shortcutId, SpriteMode *mode)
 {
@@ -149,7 +144,7 @@ void PixelPaintSubmode::DrawToolPalette(SpriteMode *mode)
     TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "TOOLS");
     TimeGUI::Separator();
 
-    auto ToolBtn = [&](const TEString& label, PixelToolType type, const char *tooltip)
+    auto ToolBtn = [&](const TEString &label, PixelToolType type, const char *tooltip)
     {
         bool active = (m_ActiveTool == type);
         if (active)
@@ -412,8 +407,8 @@ void PixelPaintSubmode::DrawCanvasViewport(SpriteMode *mode)
     if (m_ActiveTool == PixelToolType::MirrorPen)
     {
         float midX = origin.x + (gridW * 0.5f) * cellDim;
-        dl.AddLine(TEVector2(midX, origin.y), TEVector2(midX, origin.y + gridH * cellDim),
-                   IM_COL32(0, 200, 255, 180), 1.5f);
+        dl.AddLine(TEVector2(midX, origin.y), TEVector2(midX, origin.y + gridH * cellDim), IM_COL32(0, 200, 255, 180),
+                   1.5f);
     }
 
     // 6. Interactive Painting
@@ -466,23 +461,27 @@ void PixelPaintSubmode::DrawCanvasViewport(SpriteMode *mode)
                         }
                         else if (m_ActiveTool == PixelToolType::Eraser)
                         {
-                            DrawBrushPixel(layer.Pixels, gridW, gridH, cellX, cellY, TEVector4(0, 0, 0, 0), m_BrushSize);
+                            DrawBrushPixel(layer.Pixels, gridW, gridH, cellX, cellY, TEVector4(0, 0, 0, 0),
+                                           m_BrushSize);
                         }
-                        else if (m_ActiveTool == PixelToolType::PaintBucket && TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
+                        else if (m_ActiveTool == PixelToolType::PaintBucket &&
+                                 TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
                         {
                             TEVector4 target = layer.Pixels[cellY * gridW + cellX];
                             FloodFill(layer.Pixels, gridW, gridH, cellX, cellY, target, drawCol);
                             mode->AddColorToHistory(drawCol);
                             mode->SaveUndoState();
                         }
-                        else if (m_ActiveTool == PixelToolType::ColorReplaceBucket && TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
+                        else if (m_ActiveTool == PixelToolType::ColorReplaceBucket &&
+                                 TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
                         {
                             TEVector4 target = layer.Pixels[cellY * gridW + cellX];
                             ReplaceColor(layer.Pixels, gridW, gridH, target, drawCol);
                             mode->AddColorToHistory(drawCol);
                             mode->SaveUndoState();
                         }
-                        else if (m_ActiveTool == PixelToolType::ColorPicker && TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
+                        else if (m_ActiveTool == PixelToolType::ColorPicker &&
+                                 TimeGUI::IsMouseClicked(TimeGUIMouseButton_Left))
                         {
                             mode->m_PixelPaintColor = layer.Pixels[cellY * gridW + cellX];
                             m_ActiveTool = PixelToolType::Pencil;
@@ -773,7 +772,7 @@ void PixelPaintSubmode::DrawResizeModal(SpriteMode *mode)
 }
 
 void PixelPaintSubmode::DrawBrushPixel(TEArray<TEVector4> &pixels, int width, int height, int x, int y,
-                                      const TEVector4 &col, int size)
+                                       const TEVector4 &col, int size)
 {
     int half = size / 2;
     for (int dy = -half; dy < size - half; dy++)
@@ -791,7 +790,7 @@ void PixelPaintSubmode::DrawBrushPixel(TEArray<TEVector4> &pixels, int width, in
 }
 
 void PixelPaintSubmode::DrawDitherPixel(TEArray<TEVector4> &pixels, int width, int height, int x, int y,
-                                       const TEVector4 &col, int size)
+                                        const TEVector4 &col, int size)
 {
     int half = size / 2;
     for (int dy = -half; dy < size - half; dy++)
@@ -812,7 +811,7 @@ void PixelPaintSubmode::DrawDitherPixel(TEArray<TEVector4> &pixels, int width, i
 }
 
 void PixelPaintSubmode::FloodFill(TEArray<TEVector4> &pixels, int width, int height, int startX, int startY,
-                                 const TEVector4 &targetCol, const TEVector4 &fillCol)
+                                  const TEVector4 &targetCol, const TEVector4 &fillCol)
 {
     if (startX < 0 || startX >= width || startY < 0 || startY >= height)
         return;
@@ -861,8 +860,7 @@ void PixelPaintSubmode::ReplaceColor(TEArray<TEVector4> &pixels, int width, int 
     }
 }
 
-void PixelPaintSubmode::DrawBresenhamLine(TEArray<TEVector4> &pixels, int width, int height, int x0, int y0,
-                                         int x1, int y1, const TEVector4 &col, int size)
+void PixelPaintSubmode::DrawBresenhamLine(TEArray<TEVector4> &pixels, int width, int height, int x0, int y0, int x1,
+                                          int y1, const TEVector4 &col, int size)
 {
 }
-

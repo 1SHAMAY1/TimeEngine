@@ -3,8 +3,8 @@
 #include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
-#include "Utils/MathUtils.hpp"
 #include "SkeletalMesh2DComponent.hpp"
+#include "Utils/MathUtils.hpp"
 
 class BoneSocket2DComponent : public TComponent
 {
@@ -21,9 +21,9 @@ public:
 
     void OnUpdate(float dt);
 
-    void SetTargetSkeletalComponent(SkeletalMesh2DComponent* skeletalComp) { m_TargetSkeletalComp = skeletalComp; }
-    SkeletalMesh2DComponent* GetTargetSkeletalComponent() const { return m_TargetSkeletalComp; }
+    void SetTargetSkeletalComponent(SkeletalMesh2DComponent *skeletalComp) { m_TargetSkeletalComp = skeletalComp; }
+    SkeletalMesh2DComponent *GetTargetSkeletalComponent() const { return m_TargetSkeletalComp; }
 
 private:
-    SkeletalMesh2DComponent* m_TargetSkeletalComp = nullptr;
+    SkeletalMesh2DComponent *m_TargetSkeletalComp = nullptr;
 };

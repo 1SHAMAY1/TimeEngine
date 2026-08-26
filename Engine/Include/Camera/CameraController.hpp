@@ -2,7 +2,6 @@
 
 #include "Utils/MathUtils.hpp"
 
-
 class CameraController
 {
 public:
@@ -30,4 +29,3 @@ private:
     TEVector m_Position;
     TERotator m_Rotation;
 };
-

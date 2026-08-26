@@ -18,28 +18,29 @@ struct ImFont;
 typedef unsigned int ImU32;
 #ifndef IM_COL32_R_SHIFT
 #ifdef IMGUI_USE_BGRA_PACKED_COLOR
-#define IM_COL32_R_SHIFT    16
-#define IM_COL32_G_SHIFT    8
-#define IM_COL32_B_SHIFT    0
-#define IM_COL32_A_SHIFT    24
-#define IM_COL32_A_MASK     0xFF000000
+#define IM_COL32_R_SHIFT 16
+#define IM_COL32_G_SHIFT 8
+#define IM_COL32_B_SHIFT 0
+#define IM_COL32_A_SHIFT 24
+#define IM_COL32_A_MASK 0xFF000000
 #else
-#define IM_COL32_R_SHIFT    0
-#define IM_COL32_G_SHIFT    8
-#define IM_COL32_B_SHIFT    16
-#define IM_COL32_A_SHIFT    24
-#define IM_COL32_A_MASK     0xFF000000
+#define IM_COL32_R_SHIFT 0
+#define IM_COL32_G_SHIFT 8
+#define IM_COL32_B_SHIFT 16
+#define IM_COL32_A_SHIFT 24
+#define IM_COL32_A_MASK 0xFF000000
 #endif
 #endif
-#define IM_COL32(R,G,B,A)    (((ImU32)(A)<<IM_COL32_A_SHIFT) | ((ImU32)(B)<<IM_COL32_B_SHIFT) | ((ImU32)(G)<<IM_COL32_G_SHIFT) | ((ImU32)(R)<<IM_COL32_R_SHIFT))
-#define IM_COL32_WHITE       IM_COL32(255,255,255,255)
-#define IM_COL32_BLACK       IM_COL32(0,0,0,255)
-#define IM_COL32_BLACK_TRANS IM_COL32(0,0,0,0)
+#define IM_COL32(R, G, B, A)                                                                                           \
+    (((ImU32)(A) << IM_COL32_A_SHIFT) | ((ImU32)(B) << IM_COL32_B_SHIFT) | ((ImU32)(G) << IM_COL32_G_SHIFT) |          \
+     ((ImU32)(R) << IM_COL32_R_SHIFT))
+#define IM_COL32_WHITE IM_COL32(255, 255, 255, 255)
+#define IM_COL32_BLACK IM_COL32(0, 0, 0, 255)
+#define IM_COL32_BLACK_TRANS IM_COL32(0, 0, 0, 0)
 #endif
 
 // Convenience alias – matches ImU32 so LogoLayer / draw code can use unsigned int directly
 typedef unsigned int TimeGUIColor32;
-
 
 namespace TimeGUI
 {
@@ -677,8 +678,13 @@ struct TE_API TimeGUIDrawList
 // Lifecycle management (Context, Backends, Frame Flow)
 TE_API bool Init(void *nativeWindow);
 TE_API void Shutdown();
-TE_API void BeginFrame();
-TE_API void EndFrame(uint32_t width, uint32_t height);
+TE_API bool InitOpenGLBackend();
+TE_API void ShutdownOpenGLBackend();
+TE_API void BindWidgetThreadContext();
+TE_API void PrepareGLFWFrame();
+TE_API void BeginFrame(uint32_t width = 0, uint32_t height = 0);
+TE_API void *EndFrame(uint32_t width = 0, uint32_t height = 0);
+TE_API void RenderDrawData(void *drawData);
 
 // Getters for Synced clean wrappers
 TE_API TimeGUIIO &GetIO();
@@ -697,8 +703,7 @@ TE_API bool BeginMenuBar();
 TE_API void EndMenuBar();
 TE_API bool BeginMenu(const TEString &label, bool enabled = true);
 TE_API void EndMenu();
-TE_API bool MenuItem(const TEString &label, const TEString &shortcut = "", bool selected = false,
-                     bool enabled = true);
+TE_API bool MenuItem(const TEString &label, const TEString &shortcut = "", bool selected = false, bool enabled = true);
 TE_API bool MenuItem(const TEString &label, const TEString &shortcut, bool *p_selected, bool enabled = true);
 
 TE_API TEVector2 GetCursorPos();
@@ -713,8 +718,7 @@ TE_API bool Button(const TEString &label, const TEVector2 &size);
 TE_API bool InvisibleButton(const TEString &strId, const TEVector2 &size, int flags = 0);
 
 TE_API void Text(const TEString &text);
-template <typename... Args>
-inline void Text(const TEString &fmt, Args &&...args)
+template <typename... Args> inline void Text(const TEString &fmt, Args &&...args)
 {
     Text(TEString::Format(fmt, std::forward<Args>(args)...));
 }
@@ -723,29 +727,25 @@ TE_API void TextUnformatted(const TEString &text);
 TE_API void AlignTextToFramePadding();
 
 TE_API void TextDisabled(const TEString &text);
-template <typename... Args>
-inline void TextDisabled(const TEString &fmt, Args &&...args)
+template <typename... Args> inline void TextDisabled(const TEString &fmt, Args &&...args)
 {
     TextDisabled(TEString::Format(fmt, std::forward<Args>(args)...));
 }
 
 TE_API void TextColored(const TEColor &color, const TEString &text);
-template <typename... Args>
-inline void TextColored(const TEColor &color, const TEString &fmt, Args &&...args)
+template <typename... Args> inline void TextColored(const TEColor &color, const TEString &fmt, Args &&...args)
 {
     TextColored(color, TEString::Format(fmt, std::forward<Args>(args)...));
 }
 
 TE_API void TextColored(const TEVector4 &color, const TEString &text);
-template <typename... Args>
-inline void TextColored(const TEVector4 &color, const TEString &fmt, Args &&...args)
+template <typename... Args> inline void TextColored(const TEVector4 &color, const TEString &fmt, Args &&...args)
 {
     TextColored(color, TEString::Format(fmt, std::forward<Args>(args)...));
 }
 
 TE_API void TextWrapped(const TEString &text);
-template <typename... Args>
-inline void TextWrapped(const TEString &fmt, Args &&...args)
+template <typename... Args> inline void TextWrapped(const TEString &fmt, Args &&...args)
 {
     TextWrapped(TEString::Format(fmt, std::forward<Args>(args)...));
 }
@@ -762,8 +762,8 @@ TE_API bool DragFloat4(const TEString &label, float *v, float speed = 1.0f, floa
 TE_API bool DragInt(const TEString &label, int *v, float speed = 1.0f, int min = 0, int max = 0);
 TE_API bool InputInt(const TEString &label, int *v, int step = 1, int step_fast = 100, int flags = 0);
 
-TE_API bool SliderFloat(const TEString &label, float *v, float v_min, float v_max,
-                        const TEString &format = "%.3f", int flags = 0);
+TE_API bool SliderFloat(const TEString &label, float *v, float v_min, float v_max, const TEString &format = "%.3f",
+                        int flags = 0);
 TE_API bool SliderInt(const TEString &label, int *v, int v_min, int v_max, const TEString &format = "%d",
                       int flags = 0);
 
@@ -788,8 +788,7 @@ TE_API bool InputTextWithHint(const TEString &label, const TEString &hint, TEStr
                               TimeGUIInputTextFlags flags = 0);
 TE_API bool InputTextWithHint(const TEString &label, const char *hint, char *buf, size_t bufSize,
                               TimeGUIInputTextFlags flags = 0);
-TE_API bool InputTextMultiline(const TEString &label, TEString &value, const TEVector2 &size = {0, 0},
-                               int flags = 0);
+TE_API bool InputTextMultiline(const TEString &label, TEString &value, const TEVector2 &size = {0, 0}, int flags = 0);
 TE_API bool InputTextMultiline(const TEString &label, char *buf, size_t bufSize, const TEVector2 &size = {0, 0},
                                int flags = 0);
 
@@ -987,4 +986,3 @@ TE_API void LoadIniSettingsFromDisk(const char *ini_filename);
 using namespace TimeGUI;
 
 namespace UIUtils = TimeGUI;
-

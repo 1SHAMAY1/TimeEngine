@@ -3,7 +3,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include <functional>
 
-
 struct EditorMenubarItem
 {
     TEString id;
@@ -28,4 +27,3 @@ public:
     static void Clear();
     static void OnTimeGUIRender();
 };
-

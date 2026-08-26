@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Settings/GeneralEngineSettings.hpp"
 #include <chrono>
 #include <cstdio>
@@ -50,8 +50,8 @@ static TermCaps DetectTerminal()
     }
     caps.truecolor = caps.ansi;
 #if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable: 4996)
+#pragma warning(push)
+#pragma warning(disable : 4996)
 #endif
     const char *noColorEnv = std::getenv("NO_COLOR");
     if (noColorEnv && noColorEnv[0] != '\0')
@@ -60,15 +60,14 @@ static TermCaps DetectTerminal()
         caps.truecolor = false;
     }
 #if defined(_MSC_VER)
-    #pragma warning(pop)
+#pragma warning(pop)
 #endif
 #else
     caps.isTTY = (isatty(fileno(stdout)) != 0);
     const char *term = std::getenv("TERM");
     const char *colorterm = std::getenv("COLORTERM");
     caps.ansi = caps.isTTY && term && TEString(term) != "dumb";
-    caps.truecolor =
-        caps.ansi && colorterm && (TEString(colorterm) == "truecolor" || TEString(colorterm) == "24bit");
+    caps.truecolor = caps.ansi && colorterm && (TEString(colorterm) == "truecolor" || TEString(colorterm) == "24bit");
     if (std::getenv("NO_COLOR"))
     {
         caps.ansi = false;
@@ -121,19 +120,19 @@ static void PrintBanner(const TermCaps &caps)
     const char *reset = "\033[0m";
 
     TEArray<TEString> titleLines = {TEString(magenta) + "████████╗██╗███╗   ███╗███████╗ " + brightCyan +
-                                               "███████╗███╗   ██╗██████╗ ██╗███╗   ██╗███████╗" + reset,
-                                           TEString(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan +
-                                               "██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝" + reset,
-                                           TEString(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan +
-                                               "█████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗  " + reset,
-                                           TEString(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan +
-                                               "██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝  " + reset,
-                                           TEString(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan +
-                                               "███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗" + reset,
-                                           TEString(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan +
-                                               "╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝" + reset,
-                                           TEString(yellow) +
-                                               "                                 Welcome to TimeEngine" + reset};
+                                        "███████╗███╗   ██╗██████╗ ██╗███╗   ██╗███████╗" + reset,
+                                    TEString(magenta) + "╚══██╔══╝██║████╗ ████║██╔════╝ " + brightCyan +
+                                        "██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝" + reset,
+                                    TEString(magenta) + "   ██║   ██║██╔████╔██║█████╗   " + brightCyan +
+                                        "█████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗  " + reset,
+                                    TEString(magenta) + "   ██║   ██║██║╚██╔╝██║██╔══╝   " + brightCyan +
+                                        "██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝  " + reset,
+                                    TEString(magenta) + "   ██║   ██║██║ ╚═╝ ██║███████╗ " + brightCyan +
+                                        "███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗" + reset,
+                                    TEString(magenta) + "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ " + brightCyan +
+                                        "╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝" + reset,
+                                    TEString(yellow) + "                                 Welcome to TimeEngine" +
+                                        reset};
 
     std::printf("\n");
     for (size_t y = 0; y < 14; y += 2)
@@ -314,9 +313,8 @@ TEVector4 Log::GetLogColor(const TEString &category, const TEString &level)
         {
             return TEVector4(0.0f, 0.70f, 1.0f, 1.0f); // Bright Terminal Cyan (#00B0FF)
         }
-        return TEVector4(0.0f, 0.90f, 0.15f, 1.0f);     // Bright Terminal Green (#00E676)
+        return TEVector4(0.0f, 0.90f, 0.15f, 1.0f); // Bright Terminal Green (#00E676)
     }
 
     return TEVector4(0.85f, 0.90f, 0.95f, 1.0f);
 }
-

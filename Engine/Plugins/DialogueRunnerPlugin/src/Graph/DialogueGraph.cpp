@@ -1,19 +1,11 @@
 #include "DialogueGraph.hpp"
 #include <algorithm>
 
+DialogueGraph::DialogueGraph() { ResetToDefaultEntry(); }
 
-DialogueGraph::DialogueGraph()
-{
-    ResetToDefaultEntry();
-}
+uint64_t DialogueGraph::GenerateID() { return m_NextID++; }
 
-uint64_t DialogueGraph::GenerateID()
-{
-    return m_NextID++;
-}
-
-DialogueGraphNode *DialogueGraph::AddNode(NarrativeNodeType type, const TEVector2 &position,
-                                         const TEString &title)
+DialogueGraphNode *DialogueGraph::AddNode(NarrativeNodeType type, const TEVector2 &position, const TEString &title)
 {
     DialogueGraphNode node;
     node.ID = GenerateID();
@@ -39,7 +31,8 @@ DialogueGraphNode *DialogueGraph::AddNode(NarrativeNodeType type, const TEVector
         node.OutputPins.Add(DialogueGraphPin(GenerateID(), node.ID, "Out", PinType::Flow, PinDirection::Output));
         break;
 
-    case NarrativeNodeType::Choice: {
+    case NarrativeNodeType::Choice:
+    {
         node.Title = title.empty() ? "Branching Choices" : title;
         node.Speaker = "Player";
         node.Size = {250.0f, 170.0f};
@@ -291,4 +284,3 @@ void DialogueGraph::ResetToDefaultEntry()
         Connect(m_Nodes[0].ID, m_Nodes[0].OutputPins[0].ID, diag->ID, diag->InputPins[0].ID);
     }
 }
-

@@ -3,7 +3,6 @@
 #include "Core/Asset/TEDataTable.hpp"
 #include "RichTextDataAsset.hpp"
 
-
 class RichTextTable : public TEDataTable
 {
 public:
@@ -21,4 +20,3 @@ public:
     void SetStyle(const TEString &styleName, const RichTextStyle &style);
     bool HasStyle(const TEString &styleName) const;
 };
-

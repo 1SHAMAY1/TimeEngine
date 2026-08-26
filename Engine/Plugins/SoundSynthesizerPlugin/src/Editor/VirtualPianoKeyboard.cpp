@@ -2,7 +2,8 @@
 #include "Utils/TEString.hpp"
 #include "Utils/TimeGUI.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 static const char *s_NoteNames[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 static const bool s_IsBlackKey[12] = {false, true, false, true, false, false, true, false, true, false, true, false};

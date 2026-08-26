@@ -3,7 +3,6 @@
 #include "Renderer/Vulkan/VulkanShader.hpp"
 #include <volk.h>
 
-
 class VulkanShaderLibrary : public ShaderLibrary
 {
 public:
@@ -27,8 +26,7 @@ public:
     static void SetUniform4f(VulkanShader *shader, const TEString &name, const glm::vec4 &value);
     static void SetUniformMat3(VulkanShader *shader, const TEString &name, const glm::mat3 &value);
     static void SetUniformMat4(VulkanShader *shader, const TEString &name, const glm::mat4 &value);
-    static void SetUniformMat4Array(VulkanShader *shader, const TEString &name,
-                                    const TEArray<glm::mat4> &values);
+    static void SetUniformMat4Array(VulkanShader *shader, const TEString &name, const TEArray<glm::mat4> &values);
 
     // ===== Vulkan State Management =====
     static void EnableBlending();
@@ -101,4 +99,3 @@ public:
     static void ClientWaitSync(void *sync, uint32_t flags, uint64_t timeout);
     static void DeleteSync(void *sync);
 };
-

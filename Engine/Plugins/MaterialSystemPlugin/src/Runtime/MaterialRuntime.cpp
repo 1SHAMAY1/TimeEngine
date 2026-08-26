@@ -2,10 +2,8 @@
 #include "Renderer/Shader.hpp"
 #include "Renderer/Texture.hpp"
 
-
-void MaterialRuntime::BindMaterial(const TERef<MaterialAsset> &material, float time,
-                                   const TEVector2 &lightPos, const TEVector4 &lightColor,
-                                   float lightIntensity)
+void MaterialRuntime::BindMaterial(const TERef<MaterialAsset> &material, float time, const TEVector2 &lightPos,
+                                   const TEVector4 &lightColor, float lightIntensity)
 {
     if (!material)
         return;
@@ -35,9 +33,8 @@ void MaterialRuntime::BindMaterial(const TERef<MaterialAsset> &material, float t
 }
 
 void MaterialRuntime::BindMaterialInstance(const TERef<MaterialInstanceAsset> &instance,
-                                           const TERef<MaterialAsset> &parentMaterial,
-                                           float time, const TEVector2 &lightPos,
-                                           const TEVector4 &lightColor, float lightIntensity)
+                                           const TERef<MaterialAsset> &parentMaterial, float time,
+                                           const TEVector2 &lightPos, const TEVector4 &lightColor, float lightIntensity)
 {
     if (!instance || !parentMaterial)
         return;

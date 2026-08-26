@@ -26,7 +26,8 @@ TEString MaterialShaderCompiler::GenerateVertexShader()
 }
 
 TEString MaterialShaderCompiler::GenerateFragmentShader(const Graph &graph, MaterialUniformBlock &outUniforms,
-                                                        TEString &outBlendMode, TEString &outShadingModel, bool &outTwoSided)
+                                                        TEString &outBlendMode, TEString &outShadingModel,
+                                                        bool &outTwoSided)
 {
     outUniforms.Clear();
 
@@ -156,15 +157,18 @@ TEString MaterialShaderCompiler::GenerateFragmentShader(const Graph &graph, Mate
                         {
                             if (inPin->Name == "BaseColor" && srcNode->NodeType == "VectorParameter")
                             {
-                                ss += "    surfaceAlbedo = u_" + srcNode->GetProperty("ParamName", "Param_Color") + " * v_Color;\n";
+                                ss += "    surfaceAlbedo = u_" + srcNode->GetProperty("ParamName", "Param_Color") +
+                                      " * v_Color;\n";
                             }
                             else if (inPin->Name == "BaseColor" && srcNode->NodeType == "Texture2DParameter")
                             {
-                                ss += "    surfaceAlbedo = texture(u_" + srcNode->GetProperty("ParamName", "AlbedoTexture") + ", uv) * v_Color;\n";
+                                ss += "    surfaceAlbedo = texture(u_" +
+                                      srcNode->GetProperty("ParamName", "AlbedoTexture") + ", uv) * v_Color;\n";
                             }
                             else if (inPin->Name == "Normal" && srcNode->NodeType == "Texture2DParameter")
                             {
-                                ss += "    vec3 rawNorm = texture(u_" + srcNode->GetProperty("ParamName", "NormalTexture") + ", uv).xyz * 2.0 - 1.0;\n";
+                                ss += "    vec3 rawNorm = texture(u_" +
+                                      srcNode->GetProperty("ParamName", "NormalTexture") + ", uv).xyz * 2.0 - 1.0;\n";
                                 ss += "    normal = normalize(rawNorm);\n";
                             }
                         }
@@ -184,11 +188,13 @@ TEString MaterialShaderCompiler::GenerateFragmentShader(const Graph &graph, Mate
                         {
                             if (inPin->Name == "EmissiveColor" && srcNode->NodeType == "VectorParameter")
                             {
-                                ss += "    emissiveGlow += u_" + srcNode->GetProperty("ParamName", "Param_Color") + ";\n";
+                                ss +=
+                                    "    emissiveGlow += u_" + srcNode->GetProperty("ParamName", "Param_Color") + ";\n";
                             }
                             else if (inPin->Name == "EmissiveColor" && srcNode->NodeType == "Texture2DParameter")
                             {
-                                ss += "    emissiveGlow += texture(u_" + srcNode->GetProperty("ParamName", "AlbedoTexture") + ", uv);\n";
+                                ss += "    emissiveGlow += texture(u_" +
+                                      srcNode->GetProperty("ParamName", "AlbedoTexture") + ", uv);\n";
                             }
                         }
                     }
@@ -266,8 +272,8 @@ MaterialCompileResult MaterialShaderCompiler::Compile(const Graph &graph)
     }
 
     result.VertexShaderSource = GenerateVertexShader();
-    result.FragmentShaderSource = GenerateFragmentShader(graph, result.Uniforms,
-                                                         result.BlendMode, result.ShadingModel, result.TwoSided);
+    result.FragmentShaderSource =
+        GenerateFragmentShader(graph, result.Uniforms, result.BlendMode, result.ShadingModel, result.TwoSided);
 
     if (result.FragmentShaderSource.empty())
     {

@@ -2,7 +2,8 @@
 #include "AudioDSPUtils.hpp"
 #include <cmath>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 float WaveTableOscillator::ProcessSample(float sampleRate)
 {

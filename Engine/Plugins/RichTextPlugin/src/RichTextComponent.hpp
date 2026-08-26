@@ -10,7 +10,6 @@
 #include "RichTextTypes.hpp"
 #include "Utils/TEString.hpp"
 
-
 class RichTextComponent : public TComponent
 {
 public:
@@ -47,4 +46,3 @@ private:
     RichTextLayoutResult m_Layout;
     RichTextLayoutResult m_AnimatedLayout;
 };
-

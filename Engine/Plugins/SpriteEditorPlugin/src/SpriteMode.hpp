@@ -9,7 +9,6 @@
 #include "SpriteScriptRuntime.hpp"
 #include "Submodes/ISubmode.hpp"
 
-
 class SpriteEditorLayer;
 
 class SpriteMode : public EditorMode

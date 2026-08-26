@@ -1,7 +1,8 @@
 #include "TriggerSequencerNode.hpp"
 #include <algorithm>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 TriggerSequencerNode::TriggerSequencerNode()
 {

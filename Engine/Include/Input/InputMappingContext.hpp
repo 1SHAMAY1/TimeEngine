@@ -4,7 +4,6 @@
 #include "InputAction.hpp"
 #include "Utils/TEFileSystem.hpp"
 
-
 // Custom Input Binding codes including Keyboard, Mouse Buttons, and Mouse Axes
 enum class EInputBindingType : uint8_t
 {
@@ -40,14 +39,15 @@ public:
     TEArray<ActionKeyMapping> Mappings;
 
     void AddMapping(const ActionKeyMapping &mapping) { Mappings.Add(mapping); }
-    void RemoveMapping(size_t index)
-    {
-        Mappings.RemoveAt(index);
-    }
+    void RemoveMapping(size_t index) { Mappings.RemoveAt(index); }
 
     // Asset Interface Overrides
     virtual AssetHandle GetHandle() const override { return m_Handle; }
-    virtual const TEString &GetType() const override { static TEString type = "InputMappingContext"; return type; }
+    virtual const TEString &GetType() const override
+    {
+        static TEString type = "InputMappingContext";
+        return type;
+    }
     virtual const TEString &GetName() const override { return ContextName; }
     virtual const TEString &GetHoverDescription() const override { return ContextName; }
     virtual TEString GetDefaultExtension() const override { return ".teimc"; }
@@ -73,4 +73,3 @@ public:
 private:
     AssetHandle m_Handle = 0;
 };
-

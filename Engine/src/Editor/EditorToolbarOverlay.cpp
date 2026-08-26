@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorToolbarOverlay.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/EditorMode.hpp"
@@ -13,7 +13,6 @@
 #include "Utils/TimeGUI.hpp"
 #include <unordered_map>
 
-
 static TEArray<TERef<IEditorToolbarOverlay>> s_ToolbarOverlays;
 
 void EditorToolbarOverlayRegistry::RegisterOverlay(TERef<IEditorToolbarOverlay> overlay)
@@ -22,15 +21,9 @@ void EditorToolbarOverlayRegistry::RegisterOverlay(TERef<IEditorToolbarOverlay> 
         s_ToolbarOverlays.Add(overlay);
 }
 
-TEArray<TERef<IEditorToolbarOverlay>> EditorToolbarOverlayRegistry::GetOverlays()
-{
-    return s_ToolbarOverlays;
-}
+TEArray<TERef<IEditorToolbarOverlay>> EditorToolbarOverlayRegistry::GetOverlays() { return s_ToolbarOverlays; }
 
-void EditorToolbarOverlayRegistry::Clear()
-{
-    s_ToolbarOverlays.Clear();
-}
+void EditorToolbarOverlayRegistry::Clear() { s_ToolbarOverlays.Clear(); }
 
 TE_REGISTER_TOOLBAR_OVERLAY(SaveAllToolbarOverlay);
 TE_REGISTER_TOOLBAR_OVERLAY(EditorModeSelectorOverlay);
@@ -148,7 +141,9 @@ void SaveAllToolbarOverlay::OnCustomRender(const TEString &itemId, Ref<EditorLay
 
     if (hasDirty && TimeGUI::IsItemHovered())
     {
-        TimeGUI::SetTooltip(("Save All Modified Files (" + TEString::FromInt64(static_cast<int64_t>(dirtyCount)) + " unsaved)\nClick to review and save changes.").c_str());
+        TimeGUI::SetTooltip(("Save All Modified Files (" + TEString::FromInt64(static_cast<int64_t>(dirtyCount)) +
+                             " unsaved)\nClick to review and save changes.")
+                                .c_str());
     }
     else if (!hasDirty && TimeGUI::IsItemHovered())
     {
@@ -173,8 +168,7 @@ void SaveAllToolbarOverlay::OnCustomRender(const TEString &itemId, Ref<EditorLay
         // Header with Save Icon
         TEVector2 headerIconPos = TimeGUI::GetCursorScreenPos();
         EditorUtils::DrawSaveIcon(TEVector2(headerIconPos.x, headerIconPos.y + 2.0f),
-                                  TEVector2(headerIconPos.x + 18.0f, headerIconPos.y + 20.0f),
-                                  hasDirty);
+                                  TEVector2(headerIconPos.x + 18.0f, headerIconPos.y + 20.0f), hasDirty);
         TimeGUI::SetCursorPosX(TimeGUI::GetCursorPosX() + 24.0f);
         TimeGUI::TextColored(TEColor(0.95f, 0.95f, 0.95f, 1.0f), TEString("Save Content / Modified Files"));
         TimeGUI::TextDisabled("Select the files/assets you wish to save to disk.");
@@ -208,7 +202,8 @@ void SaveAllToolbarOverlay::OnCustomRender(const TEString &itemId, Ref<EditorLay
         TimeGUI::Spacing();
 
         // ── Scrollable Box for Modified Files & Git-Style Diff Summary ────────
-        if (TimeGUI::BeginChild("##SaveItemsScrollRegion", TEVector2(0, 260.0f), true, TimeGUI::TimeGUIWindowFlags_AlwaysVerticalScrollbar))
+        if (TimeGUI::BeginChild("##SaveItemsScrollRegion", TEVector2(0, 260.0f), true,
+                                TimeGUI::TimeGUIWindowFlags_AlwaysVerticalScrollbar))
         {
             if (dirtyList.IsEmpty())
             {
@@ -250,7 +245,9 @@ void SaveAllToolbarOverlay::OnCustomRender(const TEString &itemId, Ref<EditorLay
                     TimeGUI::TextDisabled("    Path: %s", pathStr.c_str());
 
                     // Diff / Change summary note
-                    TimeGUI::TextColored(TEColor(0.45f, 0.75f, 0.95f, 0.90f), TEString("    -> Changes: Asset modified in editor session (pending disk write)"));
+                    TimeGUI::TextColored(
+                        TEColor(0.45f, 0.75f, 0.95f, 0.90f),
+                        TEString("    -> Changes: Asset modified in editor session (pending disk write)"));
 
                     TimeGUI::Separator();
                     TimeGUI::PopID();
@@ -373,11 +370,13 @@ void SaveAllToolbarOverlay::OnCustomRender(const TEString &itemId, Ref<EditorLay
         TimeGUI::SetNextWindowPos(center, TimeGUI::TimeGUICond_Always, TEVector2(0.5f, 0.5f));
         TimeGUI::SetNextWindowSize(TEVector2(380.0f, 100.0f));
         if (TimeGUI::BeginPopupModal("Shutting Down Modal", nullptr,
-                                    TimeGUI::TimeGUIWindowFlags_NoResize | TimeGUI::TimeGUIWindowFlags_NoMove |
-                                    TimeGUI::TimeGUIWindowFlags_NoTitleBar))
+                                     TimeGUI::TimeGUIWindowFlags_NoResize | TimeGUI::TimeGUIWindowFlags_NoMove |
+                                         TimeGUI::TimeGUIWindowFlags_NoTitleBar))
         {
             TimeGUI::Spacing();
-            TimeGUI::TextColored(TEColor(0.25f, 0.85f, 0.45f, 1.0f), s_IsRestartPending ? "  Saving changes & restarting TimeEngine..." : "  Saving changes & closing TimeEngine...");
+            TimeGUI::TextColored(TEColor(0.25f, 0.85f, 0.45f, 1.0f), s_IsRestartPending
+                                                                         ? "  Saving changes & restarting TimeEngine..."
+                                                                         : "  Saving changes & closing TimeEngine...");
             TimeGUI::Spacing();
             float progress = (s_ExitTimer < 0.35f) ? (s_ExitTimer / 0.35f) : 1.0f;
             TEVector2 pMin = TimeGUI::GetCursorScreenPos();
@@ -385,7 +384,8 @@ void SaveAllToolbarOverlay::OnCustomRender(const TEString &itemId, Ref<EditorLay
             float barH = 16.0f;
             TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
             dl.AddRectFilled(pMin, TEVector2(pMin.x + barW, pMin.y + barH), IM_COL32(30, 36, 48, 255), 4.0f);
-            dl.AddRectFilled(pMin, TEVector2(pMin.x + barW * progress, pMin.y + barH), IM_COL32(50, 160, 90, 255), 4.0f);
+            dl.AddRectFilled(pMin, TEVector2(pMin.x + barW * progress, pMin.y + barH), IM_COL32(50, 160, 90, 255),
+                             4.0f);
             TimeGUI::EndPopup();
         }
 
@@ -668,4 +668,3 @@ void RestartEditorToolbarOverlay::RestartEditor()
     PlatformUtils::LaunchProcess(exePath, args);
     Application::Get().ForceClose();
 }
-

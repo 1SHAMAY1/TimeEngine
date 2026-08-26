@@ -1,11 +1,9 @@
 #include "AudioStudioLayer.hpp"
 
-namespace SoundStudio {
-
-AudioStudioLayer::AudioStudioLayer(SoundGraphAssetEditor *editor)
-    : Layer("AudioStudioLayer"), m_Editor(editor)
+namespace SoundStudio
 {
-}
+
+AudioStudioLayer::AudioStudioLayer(SoundGraphAssetEditor *editor) : Layer("AudioStudioLayer"), m_Editor(editor) {}
 
 void AudioStudioLayer::OnTimeGUIRender()
 {

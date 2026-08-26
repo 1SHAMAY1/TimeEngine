@@ -4,7 +4,6 @@
 #include <cmath>
 #include <sstream>
 
-
 bool NarrativeValue::AsBool() const
 {
     switch (m_Type)
@@ -15,7 +14,8 @@ bool NarrativeValue::AsBool() const
         return std::get<int>(m_Data) != 0;
     case NarrativeValueType::Float:
         return std::abs(std::get<float>(m_Data)) > 1e-6f;
-    case NarrativeValueType::String: {
+    case NarrativeValueType::String:
+    {
         const TEString &str = std::get<TEString>(m_Data);
         if (str == "true" || str == "True" || str == "1")
             return true;
@@ -36,7 +36,8 @@ int NarrativeValue::AsInt() const
         return std::get<int>(m_Data);
     case NarrativeValueType::Float:
         return static_cast<int>(std::get<float>(m_Data));
-    case NarrativeValueType::String: {
+    case NarrativeValueType::String:
+    {
         try
         {
             return std::stoi(std::get<TEString>(m_Data));
@@ -61,7 +62,8 @@ float NarrativeValue::AsFloat() const
         return static_cast<float>(std::get<int>(m_Data));
     case NarrativeValueType::Float:
         return std::get<float>(m_Data);
-    case NarrativeValueType::String: {
+    case NarrativeValueType::String:
+    {
         try
         {
             return std::stof(std::get<TEString>(m_Data));
@@ -84,7 +86,8 @@ TEString NarrativeValue::AsString() const
         return std::get<bool>(m_Data) ? "true" : "false";
     case NarrativeValueType::Int:
         return TEString::FromInt(std::get<int>(m_Data));
-    case NarrativeValueType::Float: {
+    case NarrativeValueType::Float:
+    {
         TEString s = TEString::FromFloat(std::get<float>(m_Data));
         // Strip trailing zeros if fractional
         if (s.Find(".") != TEString::npos)
@@ -205,4 +208,3 @@ NarrativeValue NarrativeValue::Parse(const TEString &str)
     // Default to string
     return NarrativeValue(str);
 }
-

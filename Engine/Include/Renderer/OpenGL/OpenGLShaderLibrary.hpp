@@ -3,7 +3,6 @@
 #include "Renderer/ShaderLibrary.hpp"
 #include <glad/glad.h>
 
-
 class OpenGLShaderLibrary : public ShaderLibrary
 {
 public:
@@ -27,8 +26,7 @@ public:
     static void SetUniform4f(OpenGLShader *shader, const TEString &name, const glm::vec4 &value);
     static void SetUniformMat3(OpenGLShader *shader, const TEString &name, const glm::mat3 &value);
     static void SetUniformMat4(OpenGLShader *shader, const TEString &name, const glm::mat4 &value);
-    static void SetUniformMat4Array(OpenGLShader *shader, const TEString &name,
-                                    const TEArray<glm::mat4> &values);
+    static void SetUniformMat4Array(OpenGLShader *shader, const TEString &name, const TEArray<glm::mat4> &values);
 
     // ===== OpenGL State Management =====
     static void EnableBlending();
@@ -105,4 +103,3 @@ private:
     static void GLAPIENTRY DebugCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length,
                                          const char *message, const void *userParam);
 };
-

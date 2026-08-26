@@ -2,7 +2,6 @@
 #include "Core/Asset/Asset.hpp"
 #include "Core/Asset/AssetManager.hpp"
 
-
 struct SubFrame
 {
     TEString Name;
@@ -95,4 +94,3 @@ private:
     TEArray<SubFrame> m_SubFrames;
     TEArray<AnimSequence> m_Animations;
 };
-

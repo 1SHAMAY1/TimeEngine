@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Graph/DialogueGraph.hpp"
 #include "Interpreters/InkBytecodeRunner.hpp"
 #include "Interpreters/YarnNodeRunner.hpp"
@@ -11,8 +11,6 @@
 #include "Runtime/NarrativeValue.hpp"
 #include "Runtime/QuestManager.hpp"
 #include <functional>
-
-
 
 using NarrativeExternalFunction = std::function<NarrativeValue(const TEArray<NarrativeValue> &args)>;
 
@@ -83,4 +81,3 @@ private:
 
     TEMap<TEString, NarrativeExternalFunction> m_ExternalFunctions;
 };
-

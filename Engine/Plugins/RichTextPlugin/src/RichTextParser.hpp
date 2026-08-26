@@ -8,7 +8,6 @@
 #include "Utils/TEString.hpp"
 #include <stack>
 
-
 struct RichTextSpan
 {
     TEString Text;
@@ -23,8 +22,7 @@ public:
     RichTextParser() = default;
 
     /// Parses a TEString markup string into an array of styled spans
-    static TEArray<RichTextSpan> Parse(const TEString &markupText,
-                                       const TERef<RichTextTable> &styleTable = nullptr,
+    static TEArray<RichTextSpan> Parse(const TEString &markupText, const TERef<RichTextTable> &styleTable = nullptr,
                                        const RichTextStyle &defaultStyle = RichTextStyle{},
                                        const TEMap<TEString, TEString> &variables = {});
 
@@ -34,4 +32,3 @@ public:
     /// Parses a color hex string (#RRGGBB, #RRGGBBAA, or named color)
     static TEColor ParseColor(const TEString &colorStr);
 };
-

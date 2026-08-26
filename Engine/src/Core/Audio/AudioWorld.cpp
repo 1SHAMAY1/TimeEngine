@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Audio/AudioWorld.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/AudioListenerComponent.hpp"
 #include "Core/Scene/AudioSource2DComponent.hpp"
 
@@ -35,10 +35,7 @@ void AudioWorld::OnRuntimeStop()
     }
 }
 
-void AudioWorld::OnUpdate(float dt)
-{
-    AudioEngine::OnUpdate(dt);
-}
+void AudioWorld::OnUpdate(float dt) { AudioEngine::OnUpdate(dt); }
 
 void AudioWorld::RegisterSource(AudioSource2DComponent *source)
 {
@@ -51,15 +48,9 @@ void AudioWorld::RegisterSource(AudioSource2DComponent *source)
     }
 }
 
-void AudioWorld::UnregisterSource(AudioSource2DComponent *source)
-{
-    m_Sources.Remove(source);
-}
+void AudioWorld::UnregisterSource(AudioSource2DComponent *source) { m_Sources.Remove(source); }
 
-void AudioWorld::SetListener(AudioListenerComponent *listener)
-{
-    m_Listener = listener;
-}
+void AudioWorld::SetListener(AudioListenerComponent *listener) { m_Listener = listener; }
 
 void AudioWorld::RemoveListener(AudioListenerComponent *listener)
 {

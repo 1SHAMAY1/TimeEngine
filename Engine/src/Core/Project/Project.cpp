@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
-#include "Core/Project/ProjectSerializer.hpp"
 #include "Core/Log.h"
-
+#include "Core/PreRequisites.h"
+#include "Core/Project/ProjectSerializer.hpp"
 
 TERef<Project> Project::New()
 {
@@ -13,7 +12,7 @@ TERef<Project> Project::New()
 TERef<Project> Project::Load(const TEString &path)
 {
     TERef<Project> project = CreateRef<Project>();
-    
+
     ProjectSerializer serializer(project);
     if (serializer.Deserialize(path))
     {

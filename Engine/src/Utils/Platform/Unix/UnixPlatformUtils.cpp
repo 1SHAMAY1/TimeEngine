@@ -130,8 +130,8 @@ TEString PlatformUtils::SaveFile(const char *filter)
 #endif
 }
 
-bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TEString &appName,
-                                            const TEString &appPath, const TEString &description)
+bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TEString &appName, const TEString &appPath,
+                                            const TEString &description)
 {
 #ifdef __APPLE__
     size_t lastSlash = appPath.find_last_of("/\\");
@@ -139,8 +139,8 @@ bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TES
     TEString bundlePath = appDir + "/TimeEditor.app";
 
     TEString command = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/"
-                          "Support/lsregister -f \"" +
-                          bundlePath + "\" 2>/dev/null";
+                       "Support/lsregister -f \"" +
+                       bundlePath + "\" 2>/dev/null";
     int ret = system(command.c_str());
     return (ret == 0);
 #else
@@ -205,7 +205,8 @@ TEString PlatformUtils::GetExecutablePath()
 #endif
 }
 
-bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString &commandLineArgs, uint32_t *outProcessId)
+bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString &commandLineArgs,
+                                  uint32_t *outProcessId)
 {
 #ifndef TE_PLATFORM_WINDOWS
     pid_t pid = fork();
@@ -248,4 +249,3 @@ bool PlatformUtils::KillProcess(uint32_t processId)
 }
 
 #endif
-

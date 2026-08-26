@@ -3,7 +3,6 @@
 #include "Core/Settings/EngineSettings.hpp"
 #include "Core/Settings/EngineSettingsRegistry.hpp"
 
-
 /**
  * GeneralEngineSettings - Concrete general engine settings subclass
  */
@@ -16,7 +15,10 @@ public:
     virtual TEString GetCategoryName() const override { return "Engine"; }
     virtual TEString GetSectionName() const override { return "General"; }
     virtual TEString GetDisplayName() const override { return "General Engine Settings"; }
-    virtual TEString GetDescription() const override { return "Core engine frame rate, logging, performance, and windowing configurations."; }
+    virtual TEString GetDescription() const override
+    {
+        return "Core engine frame rate, logging, performance, and windowing configurations.";
+    }
 
     static GeneralEngineSettings &Get();
 
@@ -212,4 +214,3 @@ private:
     void ValidateLogSettings();
     void ValidatePerformanceSettings();
 };
-

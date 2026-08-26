@@ -1,11 +1,10 @@
+#include "Core/Physics/RigidBodyComponent.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/PlayerMovementComponent2D.hpp"
 #include "Core/Scene/ProjectileMovementComponent.hpp"
 #include "Core/Scene/RotationComponent.hpp"
-#include "Core/Scene/EntityManager.hpp"
-#include "Core/Physics/RigidBodyComponent.hpp"
 #include <cmath>
-
 
 // Helper to ensure an entity has a RigidBodyComponent
 static RigidBodyComponent *EnsureRigidBody(Entity entity)
@@ -175,4 +174,3 @@ void RotationComponent::UpdateMovement(float dt)
         }
     }
 }
-

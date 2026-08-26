@@ -2,7 +2,6 @@
 #include "Core/Log.h"
 #include "Utils/TEString.hpp"
 
-
 struct ProjectConfig
 {
     TEString Name = "Untitled";

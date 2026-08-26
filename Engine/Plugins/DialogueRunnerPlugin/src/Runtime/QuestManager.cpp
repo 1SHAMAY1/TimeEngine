@@ -1,31 +1,15 @@
 #include "QuestManager.hpp"
 #include <sstream>
 
+void QuestManager::RegisterQuest(const QuestData &quest) { m_Quests[quest.ID] = quest; }
 
-void QuestManager::RegisterQuest(const QuestData &quest)
-{
-    m_Quests[quest.ID] = quest;
-}
+void QuestManager::UnregisterQuest(const TEString &questID) { m_Quests.Remove(questID); }
 
-void QuestManager::UnregisterQuest(const TEString &questID)
-{
-    m_Quests.Remove(questID);
-}
+bool QuestManager::HasQuest(const TEString &questID) const { return m_Quests.Find(questID) != nullptr; }
 
-bool QuestManager::HasQuest(const TEString &questID) const
-{
-    return m_Quests.Find(questID) != nullptr;
-}
+QuestData *QuestManager::GetQuest(const TEString &questID) { return m_Quests.Find(questID); }
 
-QuestData *QuestManager::GetQuest(const TEString &questID)
-{
-    return m_Quests.Find(questID);
-}
-
-const QuestData *QuestManager::GetQuest(const TEString &questID) const
-{
-    return m_Quests.Find(questID);
-}
+const QuestData *QuestManager::GetQuest(const TEString &questID) const { return m_Quests.Find(questID); }
 
 void QuestManager::SetQuestStatus(const TEString &questID, QuestStatus status)
 {
@@ -91,20 +75,11 @@ bool QuestManager::CompleteObjective(const TEString &questID, const TEString &ob
     return false;
 }
 
-void QuestManager::AddObserver(QuestStatusChangeCallback callback)
-{
-    m_Observers.push_back(callback);
-}
+void QuestManager::AddObserver(QuestStatusChangeCallback callback) { m_Observers.push_back(callback); }
 
-void QuestManager::ClearObservers()
-{
-    m_Observers.clear();
-}
+void QuestManager::ClearObservers() { m_Observers.clear(); }
 
-void QuestManager::Clear()
-{
-    m_Quests.Clear();
-}
+void QuestManager::Clear() { m_Quests.Clear(); }
 
 TEString QuestManager::SerializeNativeText() const
 {
@@ -117,8 +92,8 @@ TEString QuestManager::SerializeNativeText() const
         for (size_t i = 0; i < q.Objectives.Size(); ++i)
         {
             const auto &obj = q.Objectives[i];
-            ss << "QuestObj: " << q.ID << "|" << obj.ID << "|" << obj.Description << "|"
-               << (obj.bIsCompleted ? 1 : 0) << "|" << obj.CurrentProgress << "|" << obj.TargetProgress << "\n";
+            ss << "QuestObj: " << q.ID << "|" << obj.ID << "|" << obj.Description << "|" << (obj.bIsCompleted ? 1 : 0)
+               << "|" << obj.CurrentProgress << "|" << obj.TargetProgress << "\n";
         }
     }
     return ss.str();
@@ -171,4 +146,3 @@ bool QuestManager::DeserializeNativeText(const TEString &text)
     }
     return true;
 }
-

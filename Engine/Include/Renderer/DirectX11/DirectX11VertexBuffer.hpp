@@ -3,7 +3,6 @@
 
 struct ID3D11Buffer;
 
-
 class DirectX11VertexBuffer : public VertexBuffer
 {
 public:
@@ -19,4 +18,3 @@ private:
     uint32_t m_Stride = 0; // stride in bytes (always sizeof(float) * components)
     uint32_t m_Size = 0;
 };
-

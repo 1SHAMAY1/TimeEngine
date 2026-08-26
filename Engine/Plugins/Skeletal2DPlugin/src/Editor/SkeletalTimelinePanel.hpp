@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Editor/AssetEditor.hpp"
-#include "Utils/TimeGUI.hpp"
 #include "../Assets/SkeletalDataAsset.hpp"
 #include "../Core/SkeletalPoseEvaluator.hpp"
+#include "Editor/AssetEditor.hpp"
+#include "Utils/TimeGUI.hpp"
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 class SkeletalAssetEditor : public AssetEditor
 {
@@ -33,4 +34,3 @@ private:
 };
 
 } // namespace Skeletal2D
-

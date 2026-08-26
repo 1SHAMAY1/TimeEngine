@@ -7,7 +7,6 @@
 #include "RichTextRenderer.hpp"
 #include "RichTextTable.hpp"
 
-
 class RichTextAssetEditor : public AssetEditor
 {
 public:
@@ -37,4 +36,3 @@ private:
     RichTextLayoutResult m_AnimatedLayout;
     bool m_bDirty = true;
 };
-

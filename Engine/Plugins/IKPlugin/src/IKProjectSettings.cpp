@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "IKProjectSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,12 +7,12 @@ TE_REGISTER_PROJECT_SETTINGS(IKProjectSettings);
 
 namespace
 {
-    static int s_MaxSolverIterations = 15;
-    static float s_ToleranceDistance = 0.001f;
-    static bool s_EnableAngleConstraints = true;
-    static bool s_DrawDebugBones = false;
-    static float s_FootRaycastDistance = 1.5f;
-}
+static int s_MaxSolverIterations = 15;
+static float s_ToleranceDistance = 0.001f;
+static bool s_EnableAngleConstraints = true;
+static bool s_DrawDebugBones = false;
+static float s_FootRaycastDistance = 1.5f;
+} // namespace
 
 void IKProjectSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {

@@ -1,14 +1,13 @@
 #pragma once
-#include "../Core/ParticleTypes.hpp"
 #include "../Core/ParticlePool.hpp"
+#include "../Core/ParticleTypes.hpp"
+#include "Renderer/IndexBuffer.hpp"
 #include "Renderer/Shader.hpp"
+#include "Renderer/Texture.hpp"
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/VertexBuffer.hpp"
-#include "Renderer/IndexBuffer.hpp"
-#include "Renderer/Texture.hpp"
 #include "Utils/MathUtils.hpp"
 #include <memory>
-
 
 struct ParticleVertex
 {
@@ -45,4 +44,3 @@ private:
     uint32_t m_IndexCount = 0;
     glm::mat4 m_ViewProjection = glm::mat4(1.0f);
 };
-

@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "GameFrameWork/FontFunctionLibrary.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-
+#include "Core/PreRequisites.h"
 
 TERef<FontAsset> FontFunctionLibrary::GetFont(AssetHandle fontHandle)
 {
@@ -40,7 +39,7 @@ float FontFunctionLibrary::GetFontLineHeight(AssetHandle fontHandle, float scale
 }
 
 AssetHandle FontFunctionLibrary::ImportFontFromTTF(const TEString &ttfPath, const TEString &saveAssetPath,
-                                                 float pixelSize, uint32_t atlasSize)
+                                                   float pixelSize, uint32_t atlasSize)
 {
     auto font = CreateRef<FontAsset>(saveAssetPath.GetStem(), pixelSize);
     if (font->BakeFromTTF(ttfPath, pixelSize, atlasSize, atlasSize))
@@ -55,4 +54,3 @@ AssetHandle FontFunctionLibrary::ImportFontFromTTF(const TEString &ttfPath, cons
     }
     return 0;
 }
-

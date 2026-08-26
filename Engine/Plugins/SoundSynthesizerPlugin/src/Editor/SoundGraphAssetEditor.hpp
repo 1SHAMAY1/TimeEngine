@@ -8,7 +8,8 @@
 #include "SoundOscilloscope.hpp"
 #include "VirtualPianoKeyboard.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGraphAssetEditor : public AssetEditor
 {
@@ -47,4 +48,3 @@ private:
 };
 
 } // namespace SoundStudio
-

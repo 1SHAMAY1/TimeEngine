@@ -4,7 +4,6 @@
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 
-
 void CodeEditorSubmode::OnEnter(SpriteMode *mode)
 {
     if (mode && mode->m_ScriptRuntime)
@@ -13,13 +12,9 @@ void CodeEditorSubmode::OnEnter(SpriteMode *mode)
     }
 }
 
-void CodeEditorSubmode::OnUpdate(float dt, SpriteMode *mode)
-{
-}
+void CodeEditorSubmode::OnUpdate(float dt, SpriteMode *mode) {}
 
-void CodeEditorSubmode::OnExit(SpriteMode *mode)
-{
-}
+void CodeEditorSubmode::OnExit(SpriteMode *mode) {}
 
 bool CodeEditorSubmode::OnShortcut(const TEString &shortcutId, SpriteMode *mode)
 {
@@ -129,8 +124,8 @@ void CodeEditorSubmode::DrawCodeEditorPanel(SpriteMode *mode)
 
     // ── Code Text Area ────────────────────────────────────────────────────────
     TEVector2 avail = TimeGUI::GetContentRegionAvail();
-    if (TimeGUI::InputTextMultiline("##TScriptSource", mode->m_ProcBuffer,
-                                    TEVector2(-1, avail.y - 8), TimeGUIInputTextFlags_AllowTabInput))
+    if (TimeGUI::InputTextMultiline("##TScriptSource", mode->m_ProcBuffer, TEVector2(-1, avail.y - 8),
+                                    TimeGUIInputTextFlags_AllowTabInput))
     {
         if (mode->m_ScriptRuntime)
         {
@@ -179,15 +174,13 @@ void CodeEditorSubmode::DrawPreviewAndTimelinePanel(SpriteMode *mode)
     {
         for (int c = 0; c < checkCols; ++c)
         {
-            unsigned int chkCol =
-                ((r + c) % 2 == 0) ? TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.14f, 0.14f, 0.16f, 1.0f))
-                                   : TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.18f, 0.18f, 0.22f, 1.0f));
-            TEVector2 cp1 =
-                TEVector2(std::min(p.x + c * checkSize, p.x + canvasSize.x),
-                          std::min(p.y + r * checkSize, p.y + canvasSize.y));
-            TEVector2 cp2 =
-                TEVector2(std::min(p.x + (c + 1) * checkSize, p.x + canvasSize.x),
-                          std::min(p.y + (r + 1) * checkSize, p.y + canvasSize.y));
+            unsigned int chkCol = ((r + c) % 2 == 0)
+                                      ? TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.14f, 0.14f, 0.16f, 1.0f))
+                                      : TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.18f, 0.18f, 0.22f, 1.0f));
+            TEVector2 cp1 = TEVector2(std::min(p.x + c * checkSize, p.x + canvasSize.x),
+                                      std::min(p.y + r * checkSize, p.y + canvasSize.y));
+            TEVector2 cp2 = TEVector2(std::min(p.x + (c + 1) * checkSize, p.x + canvasSize.x),
+                                      std::min(p.y + (r + 1) * checkSize, p.y + canvasSize.y));
             if (cp2.x > cp1.x && cp2.y > cp1.y)
             {
                 dl.AddRectFilled(cp1, cp2, chkCol);

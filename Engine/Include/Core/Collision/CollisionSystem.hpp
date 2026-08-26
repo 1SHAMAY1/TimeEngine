@@ -5,7 +5,6 @@
 #include <functional>
 #include <unordered_map>
 
-
 class CollisionSystem
 {
 public:
@@ -30,4 +29,3 @@ private:
     TEArray<TEVector2> GetAxes(TESpan<TEVector2> points);
     void Project(TESpan<TEVector2> points, const TEVector2 &axis, float &min, float &max);
 };
-

@@ -39,7 +39,7 @@ void Skeletal2DPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, 
     TEVector2 wing1(mid.x - 5.0f, mid.y - 4.0f);
     TEVector2 wing2(mid.x + 5.0f, mid.y + 4.0f);
 
-    TEVector2 bonePts[4] = { r, wing1, j, wing2 };
+    TEVector2 bonePts[4] = {r, wing1, j, wing2};
     dl.AddConvexPolyFilled(bonePts, 4, 0xFF008985);
     dl.AddPolyline(bonePts, 4, 0xFF81ECEC, 1, 1.5f);
 

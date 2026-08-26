@@ -1,9 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Core/Navigation/NavigationMesh2D.hpp"
 #include "Core/Log.h"
-#include <queue>
-#include <cmath>
+#include "Core/PreRequisites.h"
 #include <algorithm>
+#include <cmath>
+#include <queue>
 
 NavigationMesh2D &NavigationMesh2D::Get()
 {
@@ -11,10 +11,7 @@ NavigationMesh2D &NavigationMesh2D::Get()
     return s_Instance;
 }
 
-NavigationMesh2D::NavigationMesh2D()
-{
-    Build2D({-1000.0f, -1000.0f}, {1000.0f, 1000.0f}, 16.0f);
-}
+NavigationMesh2D::NavigationMesh2D() { Build2D({-1000.0f, -1000.0f}, {1000.0f, 1000.0f}, 16.0f); }
 
 void NavigationMesh2D::Build(const TEVector3 &worldMin, const TEVector3 &worldMax, float cellSize)
 {
@@ -33,8 +30,10 @@ void NavigationMesh2D::Build2D(const TEVector2 &worldMin, const TEVector2 &world
     m_GridW = (int)std::ceil(width / m_CellSize);
     m_GridH = (int)std::ceil(height / m_CellSize);
 
-    if (m_GridW <= 0) m_GridW = 1;
-    if (m_GridH <= 0) m_GridH = 1;
+    if (m_GridW <= 0)
+        m_GridW = 1;
+    if (m_GridH <= 0)
+        m_GridH = 1;
 
     m_Grid.Clear();
     m_Grid.Resize(m_GridW * m_GridH, NavCell{true, 1.0f});
@@ -51,21 +50,12 @@ void NavigationMesh2D::WorldToGrid(const TEVector2 &worldPos, int &outX, int &ou
 
 TEVector2 NavigationMesh2D::GridToWorld(int x, int y) const
 {
-    return {
-        m_WorldMin.x + (x + 0.5f) * m_CellSize,
-        m_WorldMin.y + (y + 0.5f) * m_CellSize
-    };
+    return {m_WorldMin.x + (x + 0.5f) * m_CellSize, m_WorldMin.y + (y + 0.5f) * m_CellSize};
 }
 
-bool NavigationMesh2D::IsValidCell(int x, int y) const
-{
-    return x >= 0 && x < m_GridW && y >= 0 && y < m_GridH;
-}
+bool NavigationMesh2D::IsValidCell(int x, int y) const { return x >= 0 && x < m_GridW && y >= 0 && y < m_GridH; }
 
-int NavigationMesh2D::GetCellIndex(int x, int y) const
-{
-    return y * m_GridW + x;
-}
+int NavigationMesh2D::GetCellIndex(int x, int y) const { return y * m_GridW + x; }
 
 bool NavigationMesh2D::IsPointWalkable(const TEVector3 &point, float agentRadius) const
 {
@@ -110,10 +100,7 @@ void NavigationMesh2D::AddDynamicObstacle(uint64_t id, const TEVector2 &center, 
     AddObstacle(obs);
 }
 
-void NavigationMesh2D::RemoveDynamicObstacle(uint64_t id)
-{
-    RemoveObstacle(id);
-}
+void NavigationMesh2D::RemoveDynamicObstacle(uint64_t id) { RemoveObstacle(id); }
 
 void NavigationMesh2D::ApplyObstaclesToGrid()
 {
@@ -158,10 +145,7 @@ struct NodeRecord
     float hCost;
     float fCost() const { return gCost + hCost; }
 
-    bool operator>(const NodeRecord &other) const
-    {
-        return fCost() > other.fCost();
-    }
+    bool operator>(const NodeRecord &other) const { return fCost() > other.fCost(); }
 };
 
 TEArray<TEVector2> NavigationMesh2D::AStarSearch(int sx, int sy, int ex, int ey)

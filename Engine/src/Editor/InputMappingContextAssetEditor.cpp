@@ -1,18 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Editor/InputMappingContextAssetEditor.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/KeyCodes.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/MouseCodes.hpp"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Input/Input.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include <algorithm>
-
 
 #include "Utils/TEFileSystem.hpp"
 static const char *s_ValueTypeNames[] = {"Digital (Bool)", "Axis 1D (Float)", "Axis 2D (Vector2)"};
@@ -23,7 +17,7 @@ static const char *s_MouseButtonNames[] = {"Left Button", "Right Button", "Middl
 
 static struct KeyOption
 {
-    const TEString& Name;
+    const TEString &Name;
     KeyCode Code;
 } s_KeyOptions[] = {{"W", Key::W},
                     {"A", Key::A},
@@ -325,9 +319,10 @@ void InputMappingContextAssetEditor::DrawIcon(const TEVector2 &min, const TEVect
     // Gamepad / D-Pad Cross
     float cx = (iMin.x + iMax.x) * 0.5f;
     float cy = (iMin.y + iMax.y) * 0.5f;
-    dl.AddRectFilled(TEVector2(cx - 8.0f, cy - 3.0f), TEVector2(cx + 8.0f, cy + 3.0f), IM_COL32(80, 230, 120, 255), 1.0f);
-    dl.AddRectFilled(TEVector2(cx - 3.0f, cy - 8.0f), TEVector2(cx + 3.0f, cy + 8.0f), IM_COL32(80, 230, 120, 255), 1.0f);
+    dl.AddRectFilled(TEVector2(cx - 8.0f, cy - 3.0f), TEVector2(cx + 8.0f, cy + 3.0f), IM_COL32(80, 230, 120, 255),
+                     1.0f);
+    dl.AddRectFilled(TEVector2(cx - 3.0f, cy - 8.0f), TEVector2(cx + 3.0f, cy + 8.0f), IM_COL32(80, 230, 120, 255),
+                     1.0f);
 }
 
 TE_REGISTER_ASSET_EDITOR(InputMappingContextAssetEditor);
-

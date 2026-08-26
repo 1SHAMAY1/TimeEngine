@@ -19,4 +19,3 @@ private:
     void *m_Buffer = nullptr;
     uint32_t m_Count = 0;
 };
-

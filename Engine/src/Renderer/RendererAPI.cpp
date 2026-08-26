@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/RendererAPI.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 
 #ifdef TE_SUPPORT_OPENGL
@@ -62,4 +62,3 @@ TEScope<RendererAPI> RendererAPI::Create()
     }
     return nullptr;
 }
-

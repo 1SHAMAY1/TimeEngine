@@ -1,11 +1,9 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "NarrativeTypes.hpp"
 #include "Runtime/NarrativeBlackboard.hpp"
-
-
 
 struct YarnNode
 {
@@ -44,4 +42,3 @@ private:
     TEArray<StoryChoice> m_CurrentChoices;
     bool m_bCanContinue = false;
 };
-

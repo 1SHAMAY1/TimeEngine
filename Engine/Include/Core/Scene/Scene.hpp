@@ -66,4 +66,3 @@ private:
     AssetHandle m_Handle;
     TEString m_Name;
 };
-

@@ -2,7 +2,6 @@
 #include "Core/PreRequisites.h"
 #include "Editor/EditorMenubarRegistry.hpp"
 
-
 class EditorLayer;
 
 class TE_API IEditorMenubarOverlay
@@ -39,4 +38,3 @@ class TE_API EditMenubarOverlay : public IEditorMenubarOverlay
 public:
     void RegisterMenubarItems(Ref<EditorLayer> editor) override;
 };
-

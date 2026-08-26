@@ -1,7 +1,6 @@
 #include "RichTextLayout.hpp"
 #include <algorithm>
 
-
 struct LayoutWord
 {
     TEArray<RichTextGlyphQuad> Glyphs;
@@ -22,9 +21,8 @@ struct LayoutLine
 };
 
 RichTextLayoutResult RichTextLayoutEngine::ComputeLayout(const TEArray<RichTextSpan> &spans,
-                                                        const TERef<FontAsset> &defaultFont,
-                                                        float wrapWidth,
-                                                        float defaultLineSpacing)
+                                                         const TERef<FontAsset> &defaultFont, float wrapWidth,
+                                                         float defaultLineSpacing)
 {
     RichTextLayoutResult result;
     if (!defaultFont || spans.IsEmpty())
@@ -248,12 +246,11 @@ TEString RichTextLayoutEngine::HitTestLink(const RichTextLayoutResult &layout, c
 {
     for (const auto &hitbox : layout.LinkHitboxes)
     {
-        if (localPos.x >= hitbox.Min.x && localPos.x <= hitbox.Max.x &&
-            localPos.y >= hitbox.Min.y && localPos.y <= hitbox.Max.y)
+        if (localPos.x >= hitbox.Min.x && localPos.x <= hitbox.Max.x && localPos.y >= hitbox.Min.y &&
+            localPos.y <= hitbox.Max.y)
         {
             return hitbox.LinkID;
         }
     }
     return TEString::None;
 }
-

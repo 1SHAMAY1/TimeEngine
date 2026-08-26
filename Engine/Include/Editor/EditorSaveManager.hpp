@@ -3,8 +3,6 @@
 #include "Editor/ISavable.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 
-
-
 class TE_API EditorSaveManager
 {
 public:
@@ -39,4 +37,3 @@ public:
 
     static void Clear();
 };
-

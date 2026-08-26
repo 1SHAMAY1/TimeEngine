@@ -7,7 +7,6 @@
 #include "Editor/DialogueLiveSimulator.hpp"
 #include "Editor/DialogueNodeInspector.hpp"
 
-
 class DialogueGraphAssetEditor : public AssetEditor
 {
 public:
@@ -35,4 +34,3 @@ private:
 
     bool m_bShowSimulator = false;
 };
-

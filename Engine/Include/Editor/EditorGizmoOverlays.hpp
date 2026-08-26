@@ -1,7 +1,6 @@
 #pragma once
 #include "Editor/ViewportOverlayRegistry.hpp"
 
-
 class EditorLayer;
 
 class TE_API GizmoOverlay : public IViewportOverlay
@@ -46,4 +45,3 @@ public:
     void OnRenderGizmo(Ref<EditorLayer> editor) override;
     bool OnGizmoDrag(Ref<EditorLayer> editor) override;
 };
-

@@ -1,12 +1,10 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "NarrativeTypes.hpp"
 #include "Runtime/NarrativeBlackboard.hpp"
 #include "Runtime/NarrativeValue.hpp"
-
-
 
 struct InkChoicePoint
 {
@@ -48,4 +46,3 @@ private:
     TEMap<TEString, size_t> m_KnotAddresses;
     TEMap<TEString, int> m_VisitCounts;
 };
-

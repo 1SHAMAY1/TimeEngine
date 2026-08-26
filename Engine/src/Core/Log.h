@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CustomizableLogger.hpp"
-#include "PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "PreRequisites.h"
 #include "Utils/TEString.hpp"
 #include <sstream>
 
@@ -48,41 +48,41 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CORE_INFO_1(msg)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "INFO"))                                                                      \
+        if (Log::ShouldLog("Core", "INFO"))                                                                            \
         {                                                                                                              \
-            Log::AddMessage("Core", msg, "INFO");                                                                \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "INFO");                                                   \
+            Log::AddMessage("Core", msg, "INFO");                                                                      \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "INFO");                                                         \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_WARN_1(msg)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "WARNING"))                                                                   \
+        if (Log::ShouldLog("Core", "WARNING"))                                                                         \
         {                                                                                                              \
-            Log::AddMessage("Core", msg, "WARNING");                                                             \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "WARNING");                                                \
+            Log::AddMessage("Core", msg, "WARNING");                                                                   \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "WARNING");                                                      \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_ERROR_1(msg)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                           \
         {                                                                                                              \
-            Log::AddMessage("Core", msg, "ERROR");                                                               \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "ERROR");                                                  \
+            Log::AddMessage("Core", msg, "ERROR");                                                                     \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "ERROR");                                                        \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_CRITICAL_1(msg)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                        \
         {                                                                                                              \
-            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                               \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                                  \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                     \
         }                                                                                                              \
     } while (0)
 
@@ -90,67 +90,67 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CORE_INFO(...)                                                                                              \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "INFO"))                                                                      \
+        if (Log::ShouldLog("Core", "INFO"))                                                                            \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "INFO");                                                                \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "INFO");                                                   \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "INFO");                                                                      \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "INFO");                                                         \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_WARN(...)                                                                                              \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "WARNING"))                                                                   \
+        if (Log::ShouldLog("Core", "WARNING"))                                                                         \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "WARNING");                                                             \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "WARNING");                                                \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "WARNING");                                                                   \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "WARNING");                                                      \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_ERROR(...)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                           \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "ERROR");                                                               \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "ERROR");                                                  \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "ERROR");                                                                     \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "ERROR");                                                        \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_DEBUG(...)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "DEBUG"))                                                                     \
+        if (Log::ShouldLog("Core", "DEBUG"))                                                                           \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "DEBUG");                                                               \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "DEBUG");                                                  \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "DEBUG");                                                                     \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "DEBUG");                                                        \
         }                                                                                                              \
     } while (0)
 #define TE_INPUT_DEBUG(...)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Input", "DEBUG"))                                                                    \
+        if (Log::ShouldLog("Input", "DEBUG"))                                                                          \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Input", msg, "DEBUG");                                                              \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Input", msg, "DEBUG");                                                 \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Input", msg, "DEBUG");                                                                    \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Input", msg, "DEBUG");                                                       \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_CRITICAL(...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                        \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            if (Log::HasCoreLogger())                                                                            \
-                Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                               \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                                  \
+            if (Log::HasCoreLogger())                                                                                  \
+                Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                     \
         }                                                                                                              \
     } while (0)
 
@@ -164,56 +164,56 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CLIENT_INFO(...)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "INFO"))                                                                    \
+        if (Log::ShouldLog("Client", "INFO"))                                                                          \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "INFO");                                                              \
-            if (Log::HasClientLogger())                                                                          \
-                Log::GetClientLogger().log("Client", msg, "INFO");                                               \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "INFO");                                                                    \
+            if (Log::HasClientLogger())                                                                                \
+                Log::GetClientLogger().log("Client", msg, "INFO");                                                     \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_WARN(...)                                                                                            \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "WARNING"))                                                                 \
+        if (Log::ShouldLog("Client", "WARNING"))                                                                       \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "WARNING");                                                           \
-            if (Log::HasClientLogger())                                                                          \
-                Log::GetClientLogger().log("Client", msg, "WARNING");                                            \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "WARNING");                                                                 \
+            if (Log::HasClientLogger())                                                                                \
+                Log::GetClientLogger().log("Client", msg, "WARNING");                                                  \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_ERROR(...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "ERROR"))                                                                   \
+        if (Log::ShouldLog("Client", "ERROR"))                                                                         \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "ERROR");                                                             \
-            if (Log::HasClientLogger())                                                                          \
-                Log::GetClientLogger().log("Client", msg, "ERROR");                                              \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "ERROR");                                                                   \
+            if (Log::HasClientLogger())                                                                                \
+                Log::GetClientLogger().log("Client", msg, "ERROR");                                                    \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_DEBUG(...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "DEBUG"))                                                                   \
+        if (Log::ShouldLog("Client", "DEBUG"))                                                                         \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "DEBUG");                                                             \
-            if (Log::HasClientLogger())                                                                          \
-                Log::GetClientLogger().log("Client", msg, "DEBUG");                                              \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "DEBUG");                                                                   \
+            if (Log::HasClientLogger())                                                                                \
+                Log::GetClientLogger().log("Client", msg, "DEBUG");                                                    \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_CRITICAL(...)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "CRITICAL"))                                                                \
+        if (Log::ShouldLog("Client", "CRITICAL"))                                                                      \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "CRITICAL");                                                          \
-            if (Log::HasClientLogger())                                                                          \
-                Log::GetClientLogger().log("Client", msg, "CRITICAL");                                           \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "CRITICAL");                                                                \
+            if (Log::HasClientLogger())                                                                                \
+                Log::GetClientLogger().log("Client", msg, "CRITICAL");                                                 \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_ASSERT(x, msg)                                                                                       \
@@ -229,19 +229,19 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CORE_ERROR_1(msg)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                           \
         {                                                                                                              \
-            Log::AddMessage("Core", msg, "ERROR");                                                               \
-            Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
+            Log::AddMessage("Core", msg, "ERROR");                                                                     \
+            Log::GetCoreLogger().log("Core", msg, "ERROR");                                                            \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_CRITICAL_1(msg)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                        \
         {                                                                                                              \
-            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                                  \
+            Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                         \
         }                                                                                                              \
     } while (0)
 
@@ -250,11 +250,11 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CORE_ERROR(...)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "ERROR"))                                                                     \
+        if (Log::ShouldLog("Core", "ERROR"))                                                                           \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "ERROR");                                                               \
-            Log::GetCoreLogger().log("Core", msg, "ERROR");                                                      \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "ERROR");                                                                     \
+            Log::GetCoreLogger().log("Core", msg, "ERROR");                                                            \
         }                                                                                                              \
     } while (0)
 #define TE_CORE_DEBUG(...)
@@ -262,11 +262,11 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CORE_CRITICAL(...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Core", "CRITICAL"))                                                                  \
+        if (Log::ShouldLog("Core", "CRITICAL"))                                                                        \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Core", msg, "CRITICAL");                                                            \
-            Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                   \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Core", msg, "CRITICAL");                                                                  \
+            Log::GetCoreLogger().log("Core", msg, "CRITICAL");                                                         \
         }                                                                                                              \
     } while (0)
 
@@ -282,22 +282,22 @@ template <typename... Args> TEString LogFormat(Args &&...args)
 #define TE_CLIENT_ERROR(...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "ERROR"))                                                                   \
+        if (Log::ShouldLog("Client", "ERROR"))                                                                         \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "ERROR");                                                             \
-            Log::GetClientLogger().log("Client", msg, "ERROR");                                                  \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "ERROR");                                                                   \
+            Log::GetClientLogger().log("Client", msg, "ERROR");                                                        \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_DEBUG(...)
 #define TE_CLIENT_CRITICAL(...)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        if (Log::ShouldLog("Client", "CRITICAL"))                                                                \
+        if (Log::ShouldLog("Client", "CRITICAL"))                                                                      \
         {                                                                                                              \
-            TEString msg = LogFormat(__VA_ARGS__);                                                                  \
-            Log::AddMessage("Client", msg, "CRITICAL");                                                          \
-            Log::GetClientLogger().log("Client", msg, "CRITICAL");                                               \
+            TEString msg = LogFormat(__VA_ARGS__);                                                                     \
+            Log::AddMessage("Client", msg, "CRITICAL");                                                                \
+            Log::GetClientLogger().log("Client", msg, "CRITICAL");                                                     \
         }                                                                                                              \
     } while (0)
 #define TE_CLIENT_ASSERT(x, msg)                                                                                       \
@@ -307,4 +307,3 @@ template <typename... Args> TEString LogFormat(Args &&...args)
         __debugbreak();                                                                                                \
     }
 #endif
-

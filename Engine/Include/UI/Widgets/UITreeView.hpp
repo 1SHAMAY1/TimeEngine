@@ -4,7 +4,6 @@
 #include "UI/UIWidget.hpp"
 #include <functional>
 
-
 struct UITreeNode
 {
     TEString ID;
@@ -21,16 +20,16 @@ public:
     UITreeView(const TEString &id = "##UITreeView");
 
     void SetRootNodes(const TEArray<UITreeNode> &roots) { m_Roots = roots; }
-    const TEArray<UITreeNode>& GetRootNodes() const { return m_Roots; }
+    const TEArray<UITreeNode> &GetRootNodes() const { return m_Roots; }
 
     void SetSelectedNode(const TEString &nodeID) { m_SelectedNodeID = nodeID; }
-    const TEString& GetSelectedNode() const { return m_SelectedNodeID; }
+    const TEString &GetSelectedNode() const { return m_SelectedNodeID; }
 
     void DrawSelf() override;
 
-    std::function<void(const UITreeNode&)> OnNodeSelected;
-    std::function<void(const UITreeNode&)> OnNodeDoubleClicked;
-    std::function<void(const UITreeNode&)> OnNodeContextMenu;
+    std::function<void(const UITreeNode &)> OnNodeSelected;
+    std::function<void(const UITreeNode &)> OnNodeDoubleClicked;
+    std::function<void(const UITreeNode &)> OnNodeContextMenu;
 
 private:
     void RenderNodeRecursive(const UITreeNode &node);
@@ -38,4 +37,3 @@ private:
     TEArray<UITreeNode> m_Roots;
     TEString m_SelectedNodeID;
 };
-

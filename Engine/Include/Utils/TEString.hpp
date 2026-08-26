@@ -1,16 +1,15 @@
 #pragma once
 
 #include "Core/PreRequisites.h"
+#include <algorithm>
+#include <cstdarg>
+#include <cstdint>
+#include <mutex>
+#include <sstream>
 #include <string>
 #include <string_view>
-#include <vector>
 #include <unordered_map>
-#include <sstream>
-#include <cstdint>
-#include <cstdarg>
-#include <mutex>
-#include <algorithm>
-
+#include <vector>
 
 // Forward declaration of math types and containers
 struct TEVector;
@@ -51,7 +50,8 @@ public:
     void SetCurrentCulture(const std::string &culture);
     std::string GetCurrentCulture() const;
 
-    void RegisterStringTable(const std::string &culture, const std::string &ns, const std::string &key, const std::string &translation);
+    void RegisterStringTable(const std::string &culture, const std::string &ns, const std::string &key,
+                             const std::string &translation);
     std::string GetLocalizedString(const std::string &ns, const std::string &key, const std::string &defaultVal) const;
     void ClearStringTables();
 
@@ -62,7 +62,8 @@ private:
     mutable std::mutex m_Mutex;
     std::string m_CurrentCulture = "en-US";
     // Map: Culture -> (Namespace -> (Key -> Translation))
-    std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>> m_Tables;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>>
+        m_Tables;
 };
 
 // ==========================================
@@ -134,7 +135,11 @@ public:
     std::string_view ToStringView() const { return std::string_view(m_Data); }
 
     char operator[](size_t index) const { return m_Data[index]; }
-    char &operator[](size_t index) { RecomputeHashOnMutate(); return m_Data[index]; }
+    char &operator[](size_t index)
+    {
+        RecomputeHashOnMutate();
+        return m_Data[index];
+    }
 
     operator const std::string &() const { return m_Data; }
     explicit operator std::string_view() const { return std::string_view(m_Data); }
@@ -163,7 +168,8 @@ public:
     bool EndsWith(const TEString &suffix, ESearchCase searchCase = ESearchCase::CaseSensitive) const;
     bool EndsWith(const char *suffix, ESearchCase searchCase = ESearchCase::CaseSensitive) const;
 
-    int Find(const TEString &sub, ESearchCase searchCase = ESearchCase::CaseSensitive, ESearchDir searchDir = ESearchDir::FromStart, int startIdx = 0) const;
+    int Find(const TEString &sub, ESearchCase searchCase = ESearchCase::CaseSensitive,
+             ESearchDir searchDir = ESearchDir::FromStart, int startIdx = 0) const;
     int FindLast(const TEString &sub, ESearchCase searchCase = ESearchCase::CaseSensitive) const;
 
     TEString Left(size_t count) const;
@@ -184,7 +190,8 @@ public:
     void TrimEndInline();
     void TrimInline();
 
-    TEString Replace(const TEString &from, const TEString &to, ESearchCase searchCase = ESearchCase::CaseSensitive) const;
+    TEString Replace(const TEString &from, const TEString &to,
+                     ESearchCase searchCase = ESearchCase::CaseSensitive) const;
     void ReplaceInline(const TEString &from, const TEString &to, ESearchCase searchCase = ESearchCase::CaseSensitive);
     TEString Reverse() const;
     void ReverseInline();
@@ -216,15 +223,13 @@ public:
 
     // ── Formatting (Printf & Token Format) ───────────────────────────────
     static TEString Printf(const char *fmt, ...);
-    
-    template <typename... Args>
-    static TEString Format(const char *fmt, Args &&...args)
+
+    template <typename... Args> static TEString Format(const char *fmt, Args &&...args)
     {
         return Printf(fmt, std::forward<Args>(args)...);
     }
-    
-    template <typename... Args>
-    static TEString Format(const TEString &fmt, Args &&...args)
+
+    template <typename... Args> static TEString Format(const TEString &fmt, Args &&...args)
     {
         return Printf(fmt.c_str(), std::forward<Args>(args)...);
     }
@@ -302,25 +307,13 @@ inline bool operator==(const TEString &lhs, const TEString &rhs)
     return lhs.ToStdString() == rhs.ToStdString();
 }
 
-inline bool operator==(const TEString &lhs, const char *rhs)
-{
-    return lhs.ToStdString() == (rhs ? rhs : "");
-}
+inline bool operator==(const TEString &lhs, const char *rhs) { return lhs.ToStdString() == (rhs ? rhs : ""); }
 
-inline bool operator==(const char *lhs, const TEString &rhs)
-{
-    return rhs == lhs;
-}
+inline bool operator==(const char *lhs, const TEString &rhs) { return rhs == lhs; }
 
-inline bool operator==(const TEString &lhs, const std::string &rhs)
-{
-    return lhs.ToStdString() == rhs;
-}
+inline bool operator==(const TEString &lhs, const std::string &rhs) { return lhs.ToStdString() == rhs; }
 
-inline bool operator==(const std::string &lhs, const TEString &rhs)
-{
-    return lhs == rhs.ToStdString();
-}
+inline bool operator==(const std::string &lhs, const TEString &rhs) { return lhs == rhs.ToStdString(); }
 
 // Global Concatenation Overloads
 inline TEString operator+(const char *lhs, const TEString &rhs)
@@ -344,21 +337,15 @@ inline std::ostream &operator<<(std::ostream &os, const TEString &str)
     return os;
 }
 
-
 // Hash specialization for standard library containers
 namespace std
 {
-template <>
-struct hash<TEString>
+template <> struct hash<TEString>
 {
-    size_t operator()(const TEString &str) const noexcept
-    {
-        return static_cast<size_t>(str.GetHash());
-    }
+    size_t operator()(const TEString &str) const noexcept { return static_cast<size_t>(str.GetHash()); }
 };
 } // namespace std
 
 // Localization Macros
 #define TE_LOC(Namespace, Key, DefaultText) TEString::FromTable(Namespace, Key, DefaultText)
 #define TE_LOCTEXT(Key, DefaultText) TEString::FromTable("", Key, DefaultText)
-

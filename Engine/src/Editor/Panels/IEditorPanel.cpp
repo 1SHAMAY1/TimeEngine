@@ -1,6 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/IEditorPanel.hpp"
-
+#include "Core/PreRequisites.h"
 
 static TEArray<TERef<IEditorPanel>> &GetPanelsList()
 {
@@ -16,13 +15,6 @@ void EditorPanelRegistry::RegisterPanel(TERef<IEditorPanel> panel)
     }
 }
 
-TEArray<TERef<IEditorPanel>> EditorPanelRegistry::GetPanels()
-{
-    return GetPanelsList();
-}
+TEArray<TERef<IEditorPanel>> EditorPanelRegistry::GetPanels() { return GetPanelsList(); }
 
-void EditorPanelRegistry::Clear()
-{
-    GetPanelsList().Clear();
-}
-
+void EditorPanelRegistry::Clear() { GetPanelsList().Clear(); }

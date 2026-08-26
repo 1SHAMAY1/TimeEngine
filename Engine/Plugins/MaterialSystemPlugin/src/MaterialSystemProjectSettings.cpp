@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "MaterialSystemProjectSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,12 +7,12 @@ TE_REGISTER_PROJECT_SETTINGS(MaterialSystemProjectSettings);
 
 namespace
 {
-    static bool s_EnableShaderCache = true;
-    static int s_MaxMaterialCacheMB = 128;
-    static bool s_AutoRecompileOnSave = true;
-    static int s_TextureCompressionLevel = 1; // 0: None, 1: Fast, 2: High Quality
-    static bool s_StrictUniformValidation = false;
-}
+static bool s_EnableShaderCache = true;
+static int s_MaxMaterialCacheMB = 128;
+static bool s_AutoRecompileOnSave = true;
+static int s_TextureCompressionLevel = 1; // 0: None, 1: Fast, 2: High Quality
+static bool s_StrictUniformValidation = false;
+} // namespace
 
 void MaterialSystemProjectSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {
@@ -27,7 +27,7 @@ void MaterialSystemProjectSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
     TimeGUI::TextColored(TEColor(0.2f, 0.7f, 1.0f, 1.0f), "Texture & Uniform Policies");
     TimeGUI::Separator();
 
-    const char *compressionPresets[] = { "Uncompressed", "Fast Compression", "High Quality" };
+    const char *compressionPresets[] = {"Uncompressed", "Fast Compression", "High Quality"};
     TimeGUI::Combo("Texture Compression Preset", &s_TextureCompressionLevel, compressionPresets, 3);
     TimeGUI::Checkbox("Strict Uniform Block Validation", &s_StrictUniformValidation);
 

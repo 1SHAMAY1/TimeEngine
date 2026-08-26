@@ -1,7 +1,6 @@
 #include "NarrativeStringTable.hpp"
 #include <sstream>
 
-
 static TEString EscapePipes(const TEString &str)
 {
     TEString result;
@@ -51,8 +50,7 @@ static TEString UnescapePipes(const TEString &str)
     return result;
 }
 
-void NarrativeStringTable::SetString(const TEString &languageCode, const TEString &key,
-                                     const TEString &value)
+void NarrativeStringTable::SetString(const TEString &languageCode, const TEString &key, const TEString &value)
 {
     m_Tables[languageCode][key] = value;
 }
@@ -92,8 +90,7 @@ bool NarrativeStringTable::HasString(const TEString &key) const
     return false;
 }
 
-TEString NarrativeStringTable::FormatString(const TEString &input,
-                                              const NarrativeBlackboard *blackboard) const
+TEString NarrativeStringTable::FormatString(const TEString &input, const NarrativeBlackboard *blackboard) const
 {
     TEString text = HasString(input) ? GetRawString(input) : input;
     if (!blackboard)
@@ -138,10 +135,7 @@ TEString NarrativeStringTable::FormatString(const TEString &input,
     return result;
 }
 
-void NarrativeStringTable::Clear()
-{
-    m_Tables.Clear();
-}
+void NarrativeStringTable::Clear() { m_Tables.Clear(); }
 
 TEString NarrativeStringTable::SerializeNativeText() const
 {
@@ -192,4 +186,3 @@ bool NarrativeStringTable::DeserializeNativeText(const TEString &text)
 
     return true;
 }
-

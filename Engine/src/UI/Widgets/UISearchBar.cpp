@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "UI/Widgets/UISearchBar.hpp"
-#include "Utils/TimeGUI.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/MathUtils.hpp"
+#include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <cctype>
 
@@ -10,8 +10,10 @@ int UISearchBar::ComputeLevenshteinDistance(const TEString &s1, const TEString &
     size_t len1 = s1.Length();
     size_t len2 = s2.Length();
 
-    if (len1 == 0) return (int)len2;
-    if (len2 == 0) return (int)len1;
+    if (len1 == 0)
+        return (int)len2;
+    if (len2 == 0)
+        return (int)len1;
 
     TEArray<int> prevRow;
     TEArray<int> currRow;
@@ -42,7 +44,8 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
 {
     if (pattern.empty())
     {
-        if (outScore) *outScore = 1.0f;
+        if (outScore)
+            *outScore = 1.0f;
         return true;
     }
 
@@ -52,14 +55,16 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
     // 1. Exact Match
     if (t == p)
     {
-        if (outScore) *outScore = 200.0f;
+        if (outScore)
+            *outScore = 200.0f;
         return true;
     }
 
     // 2. Prefix Match
     if (t.StartsWith(p))
     {
-        if (outScore) *outScore = 150.0f;
+        if (outScore)
+            *outScore = 150.0f;
         return true;
     }
 
@@ -67,7 +72,8 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
     int subPos = t.Find(p);
     if (subPos != -1)
     {
-        if (outScore) *outScore = 100.0f - (float)subPos;
+        if (outScore)
+            *outScore = 100.0f - (float)subPos;
         return true;
     }
 
@@ -93,7 +99,8 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
 
     if (!acronym.empty() && acronym.Contains(p))
     {
-        if (outScore) *outScore = 80.0f;
+        if (outScore)
+            *outScore = 80.0f;
         return true;
     }
 
@@ -107,7 +114,8 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
             int maxAllowedDist = (p.Length() <= 4) ? 1 : 2;
             if (dist <= maxAllowedDist)
             {
-                if (outScore) *outScore = 60.0f - (float)dist * 15.0f;
+                if (outScore)
+                    *outScore = 60.0f - (float)dist * 15.0f;
                 return true;
             }
         }
@@ -119,7 +127,8 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
         int dist = ComputeLevenshteinDistance(p, t);
         if (dist <= 2)
         {
-            if (outScore) *outScore = 40.0f - (float)dist * 10.0f;
+            if (outScore)
+                *outScore = 40.0f - (float)dist * 10.0f;
             return true;
         }
     }
@@ -130,12 +139,14 @@ bool UISearchBar::FuzzyMatch(const TEString &pattern, const TEString &target, fl
 UISearchBar::UISearchBar(const TEString &placeholder, const TEString &id)
     : UIWidget(id), m_TextBox(placeholder, id + "_tb")
 {
-    m_TextBox.OnTextChanged = [this](const TEString &query) {
+    m_TextBox.OnTextChanged = [this](const TEString &query)
+    {
         if (OnQueryChanged)
             OnQueryChanged(query);
     };
 
-    m_TextBox.OnEnterPressed = [this](const TEString &query) {
+    m_TextBox.OnEnterPressed = [this](const TEString &query)
+    {
         if (m_SelectedPredictionIndex >= 0 && m_SelectedPredictionIndex < (int)m_ActivePredictions.Size())
         {
             SetQuery(m_ActivePredictions[m_SelectedPredictionIndex].Candidate);
@@ -160,15 +171,9 @@ void UISearchBar::Clear()
     m_ShowPopup = false;
 }
 
-void UISearchBar::Focus()
-{
-    m_TextBox.Focus();
-}
+void UISearchBar::Focus() { m_TextBox.Focus(); }
 
-bool UISearchBar::Matches(const TEString &text) const
-{
-    return FuzzyMatch(m_TextBox.GetText(), text);
-}
+bool UISearchBar::Matches(const TEString &text) const { return FuzzyMatch(m_TextBox.GetText(), text); }
 
 void UISearchBar::DrawAutocompletePopup()
 {
@@ -183,8 +188,8 @@ void UISearchBar::DrawAutocompletePopup()
     TimeGUI::SetNextWindowSize(TEVector2(size.x, 0.0f));
 
     TimeGUIWindowFlags popupFlags = TimeGUIWindowFlags_NoTitleBar | TimeGUIWindowFlags_NoResize |
-                                   TimeGUIWindowFlags_NoMove | TimeGUIWindowFlags_NoSavedSettings |
-                                   TimeGUIWindowFlags_AlwaysAutoResize;
+                                    TimeGUIWindowFlags_NoMove | TimeGUIWindowFlags_NoSavedSettings |
+                                    TimeGUIWindowFlags_AlwaysAutoResize;
 
     if (TimeGUI::Begin("##SearchPredictionsPopup", nullptr, popupFlags))
     {
@@ -243,9 +248,7 @@ void UISearchBar::DrawSelf()
 
         // Sort predictions by relevance score descending
         std::sort(m_ActivePredictions.begin(), m_ActivePredictions.end(),
-                  [](const PredictiveMatchResult &a, const PredictiveMatchResult &b) {
-                      return a.Score > b.Score;
-                  });
+                  [](const PredictiveMatchResult &a, const PredictiveMatchResult &b) { return a.Score > b.Score; });
 
         // Limit to top 6 predictions
         if (m_ActivePredictions.Size() > 6)

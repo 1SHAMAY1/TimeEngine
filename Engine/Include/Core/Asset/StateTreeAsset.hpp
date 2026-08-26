@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/Asset/Asset.hpp"
 #include "Core/AI/StateTreeGraph.hpp"
+#include "Core/Asset/Asset.hpp"
 #include "Utils/TEString.hpp"
 
 class TE_API StateTreeAsset : public Asset

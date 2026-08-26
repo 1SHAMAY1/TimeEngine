@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "GameFrameWork/StringTableFunctionLibrary.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-
+#include "Core/PreRequisites.h"
 
 TEString StringTableFunctionLibrary::GetLocalizedString(AssetHandle tableHandle, const TEString &ns,
                                                         const TEString &key, const TEString &culture)
@@ -10,7 +9,8 @@ TEString StringTableFunctionLibrary::GetLocalizedString(AssetHandle tableHandle,
     auto table = AssetManager::GetAsset<TEStringTable>(tableHandle);
     if (table)
     {
-        TEString targetCulture = culture.IsEmpty() ? TEString(TELocalizationManager::Get().GetCurrentCulture()) : culture;
+        TEString targetCulture =
+            culture.IsEmpty() ? TEString(TELocalizationManager::Get().GetCurrentCulture()) : culture;
         TEString val = table->GetEntry(ns, key, targetCulture);
         if (!val.IsEmpty())
             return val;
@@ -23,10 +23,7 @@ void StringTableFunctionLibrary::SetActiveCulture(const TEString &culture)
     TELocalizationManager::Get().SetCurrentCulture(culture);
 }
 
-TEString StringTableFunctionLibrary::GetActiveCulture()
-{
-    return TELocalizationManager::Get().GetCurrentCulture();
-}
+TEString StringTableFunctionLibrary::GetActiveCulture() { return TELocalizationManager::Get().GetCurrentCulture(); }
 
 AssetHandle StringTableFunctionLibrary::CreateStringTable(const TEString &path, const TEString &defaultCulture)
 {
@@ -73,4 +70,3 @@ bool StringTableFunctionLibrary::ImportStringTableFromCSV(AssetHandle tableHandl
     }
     return false;
 }
-

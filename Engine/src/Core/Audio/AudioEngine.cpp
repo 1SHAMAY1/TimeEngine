@@ -2,7 +2,14 @@
 
 // miniaudio vendor implementation — strictly confined to this source file
 #define MINIAUDIO_IMPLEMENTATION
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4244)
+#endif
 #include "miniaudio.h"
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #include "Core/Audio/AudioEngine.hpp"
 #include "Core/Log.h"
@@ -106,10 +113,7 @@ void AudioEngine::Shutdown()
     TE_CORE_INFO("[AudioEngine] MiniAudio engine shut down.");
 }
 
-bool AudioEngine::IsInitialized()
-{
-    return s_State.Initialized;
-}
+bool AudioEngine::IsInitialized() { return s_State.Initialized; }
 
 AudioClipHandle AudioEngine::LoadClip(const TEString &filePath, bool streamFromDisk)
 {
@@ -131,7 +135,8 @@ AudioClipHandle AudioEngine::LoadClip(const TEString &filePath, bool streamFromD
     if (streamFromDisk)
         flags |= MA_SOUND_FLAG_STREAM;
 
-    ma_result result = ma_sound_init_from_file(&s_State.Engine, filePath.c_str(), flags, nullptr, nullptr, &instance->Sound);
+    ma_result result =
+        ma_sound_init_from_file(&s_State.Engine, filePath.c_str(), flags, nullptr, nullptr, &instance->Sound);
     if (result != MA_SUCCESS)
     {
         TE_CORE_WARN("[AudioEngine] Failed to load audio clip '{0}'. Result: {1}", filePath.c_str(), (int)result);
@@ -346,7 +351,8 @@ void AudioEngine::SubmitPCMFrames(const void *pFrames, uint64_t frameCount, uint
     }
 
     // Playback raw PCM waveform buffer
-    ma_audio_buffer_config bufferConfig = ma_audio_buffer_config_init(ma_format_f32, channels, frameCount, pFrames, nullptr);
+    ma_audio_buffer_config bufferConfig =
+        ma_audio_buffer_config_init(ma_format_f32, channels, frameCount, pFrames, nullptr);
     bufferConfig.sampleRate = sampleRate;
 
     // Create a temporary sound buffer instance
@@ -378,40 +384,19 @@ void AudioEngine::SetMasterVolume(float volume)
         ma_engine_set_volume(&s_State.Engine, s_State.MasterVolume);
 }
 
-float AudioEngine::GetMasterVolume()
-{
-    return s_State.MasterVolume;
-}
+float AudioEngine::GetMasterVolume() { return s_State.MasterVolume; }
 
-void AudioEngine::SetMusicVolume(float volume)
-{
-    s_State.MusicVolume = std::max(0.0f, volume);
-}
+void AudioEngine::SetMusicVolume(float volume) { s_State.MusicVolume = std::max(0.0f, volume); }
 
-float AudioEngine::GetMusicVolume()
-{
-    return s_State.MusicVolume;
-}
+float AudioEngine::GetMusicVolume() { return s_State.MusicVolume; }
 
-void AudioEngine::SetSFXVolume(float volume)
-{
-    s_State.SFXVolume = std::max(0.0f, volume);
-}
+void AudioEngine::SetSFXVolume(float volume) { s_State.SFXVolume = std::max(0.0f, volume); }
 
-float AudioEngine::GetSFXVolume()
-{
-    return s_State.SFXVolume;
-}
+float AudioEngine::GetSFXVolume() { return s_State.SFXVolume; }
 
-void AudioEngine::SetVoiceVolume(float volume)
-{
-    s_State.VoiceVolume = std::max(0.0f, volume);
-}
+void AudioEngine::SetVoiceVolume(float volume) { s_State.VoiceVolume = std::max(0.0f, volume); }
 
-float AudioEngine::GetVoiceVolume()
-{
-    return s_State.VoiceVolume;
-}
+float AudioEngine::GetVoiceVolume() { return s_State.VoiceVolume; }
 
 void AudioEngine::SetListenerPosition(const TEVector2 &position)
 {
@@ -423,10 +408,7 @@ void AudioEngine::SetListenerPosition(const TEVector2 &position)
     }
 }
 
-TEVector2 AudioEngine::GetListenerPosition()
-{
-    return s_State.ListenerPos;
-}
+TEVector2 AudioEngine::GetListenerPosition() { return s_State.ListenerPos; }
 
 void AudioEngine::SetListenerVelocity(const TEVector2 &velocity)
 {
@@ -438,10 +420,7 @@ void AudioEngine::SetListenerVelocity(const TEVector2 &velocity)
     }
 }
 
-TEVector2 AudioEngine::GetListenerVelocity()
-{
-    return s_State.ListenerVel;
-}
+TEVector2 AudioEngine::GetListenerVelocity() { return s_State.ListenerVel; }
 
 TEArray<TEString> AudioEngine::GetOutputDevices()
 {
@@ -478,10 +457,7 @@ bool AudioEngine::SetOutputDevice(const TEString &deviceName)
     return true;
 }
 
-TEString AudioEngine::GetCurrentOutputDevice()
-{
-    return "Default Playback Device";
-}
+TEString AudioEngine::GetCurrentOutputDevice() { return "Default Playback Device"; }
 
 void AudioEngine::SetTimeDilationFactor(float factor)
 {
@@ -499,10 +475,7 @@ void AudioEngine::SetTimeDilationFactor(float factor)
     }
 }
 
-float AudioEngine::GetTimeDilationFactor()
-{
-    return s_State.TimeDilation;
-}
+float AudioEngine::GetTimeDilationFactor() { return s_State.TimeDilation; }
 
 size_t AudioEngine::GetActiveSoundCount()
 {

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Project/ProjectSerializer.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 
@@ -51,30 +51,32 @@ bool ProjectSerializer::Deserialize(const TEString &filepath)
     auto &config = m_Project->GetConfig();
     config.EnabledPlugins.Clear();
 
-    return TEFileSystem::ForEachLine(filepath, [&config](const TEString &line) {
-        if (line.StartsWith("Project: "))
-            config.Name = line.Mid(9).Trim();
-        else if (line.StartsWith("StartScene: "))
-            config.StartScene = line.Mid(12).Trim();
-        else if (line.StartsWith("AssetDirectory: "))
-            config.AssetDirectory = line.Mid(16).Trim();
-        else if (line.StartsWith("ScriptModulePath: "))
-            config.ScriptModulePath = line.Mid(18).Trim();
-        else if (line.StartsWith("ThumbnailPath: "))
-            config.ThumbnailPath = line.Mid(15).Trim();
-        else if (line.StartsWith("Plugins: "))
-        {
-            TEString pluginsList = line.Mid(9).Trim();
-            auto tokens = pluginsList.Split(',');
-            for (auto &tok : tokens)
-            {
-                TEString trimmed = tok.Trim();
-                if (!trimmed.empty() && !config.EnabledPlugins.Contains(trimmed))
-                {
-                    config.EnabledPlugins.Add(trimmed);
-                }
-            }
-        }
-        return true;
-    });
+    return TEFileSystem::ForEachLine(filepath,
+                                     [&config](const TEString &line)
+                                     {
+                                         if (line.StartsWith("Project: "))
+                                             config.Name = line.Mid(9).Trim();
+                                         else if (line.StartsWith("StartScene: "))
+                                             config.StartScene = line.Mid(12).Trim();
+                                         else if (line.StartsWith("AssetDirectory: "))
+                                             config.AssetDirectory = line.Mid(16).Trim();
+                                         else if (line.StartsWith("ScriptModulePath: "))
+                                             config.ScriptModulePath = line.Mid(18).Trim();
+                                         else if (line.StartsWith("ThumbnailPath: "))
+                                             config.ThumbnailPath = line.Mid(15).Trim();
+                                         else if (line.StartsWith("Plugins: "))
+                                         {
+                                             TEString pluginsList = line.Mid(9).Trim();
+                                             auto tokens = pluginsList.Split(',');
+                                             for (auto &tok : tokens)
+                                             {
+                                                 TEString trimmed = tok.Trim();
+                                                 if (!trimmed.empty() && !config.EnabledPlugins.Contains(trimmed))
+                                                 {
+                                                     config.EnabledPlugins.Add(trimmed);
+                                                 }
+                                             }
+                                         }
+                                         return true;
+                                     });
 }

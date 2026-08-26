@@ -1,17 +1,13 @@
 #pragma once
-#include "ParticleTypes.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
-#include <vector>
+#include "ParticleTypes.hpp"
 #include <cstdint>
-
+#include <vector>
 
 class ParticlePool
 {
 public:
-    ParticlePool(size_t initialCapacity = 2000)
-    {
-        Resize(initialCapacity);
-    }
+    ParticlePool(size_t initialCapacity = 2000) { Resize(initialCapacity); }
 
     void Resize(size_t newCapacity)
     {
@@ -71,4 +67,3 @@ private:
     size_t m_ActiveCount = 0;
     size_t m_FirstFreeIndex = 0;
 };
-

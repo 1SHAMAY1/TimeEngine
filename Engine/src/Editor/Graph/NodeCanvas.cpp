@@ -1,9 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Graph/NodeCanvas.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <cmath>
-
 
 NodeCanvas::NodeCanvas() {}
 
@@ -14,10 +13,7 @@ void NodeCanvas::SelectNode(uint64_t nodeId, bool clearOthers)
     m_SelectedNodeIDs.Add(nodeId);
 }
 
-void NodeCanvas::ClearSelection()
-{
-    m_SelectedNodeIDs.Clear();
-}
+void NodeCanvas::ClearSelection() { m_SelectedNodeIDs.Clear(); }
 
 TERef<GraphNode> NodeCanvas::GetPrimarySelectedNode(const Graph &graph) const
 {
@@ -139,8 +135,7 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
 
     // Background and Grid
-    dl.AddRectFilled(canvasScreenPos, canvasScreenPos + availSize,
-                     TimeGUI::GetColorU32(m_Style.BackgroundColor));
+    dl.AddRectFilled(canvasScreenPos, canvasScreenPos + availSize, TimeGUI::GetColorU32(m_Style.BackgroundColor));
 
     // Draw Background Grid
     if (m_Zoom > 0.15f)
@@ -154,15 +149,13 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
         for (float x = startX; x < availSize.x; x += scaledGrid)
         {
             dl.AddLine(TEVector2(canvasScreenPos.x + x, canvasScreenPos.y),
-                       TEVector2(canvasScreenPos.x + x, canvasScreenPos.y + availSize.y),
-                       gridCol, 1.0f);
+                       TEVector2(canvasScreenPos.x + x, canvasScreenPos.y + availSize.y), gridCol, 1.0f);
         }
 
         for (float y = startY; y < availSize.y; y += scaledGrid)
         {
             dl.AddLine(TEVector2(canvasScreenPos.x, canvasScreenPos.y + y),
-                       TEVector2(canvasScreenPos.x + availSize.x, canvasScreenPos.y + y),
-                       gridCol, 1.0f);
+                       TEVector2(canvasScreenPos.x + availSize.x, canvasScreenPos.y + y), gridCol, 1.0f);
         }
     }
 
@@ -181,9 +174,7 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
         TEVector2 cp1 = p1 + TEVector2(dx, 0.0f);
         TEVector2 cp2 = p2 - TEVector2(dx, 0.0f);
 
-        dl.AddBezierCubic(p1, cp1, cp2, p2,
-                          TimeGUI::GetColorU32(pinColor),
-                          m_Style.WireThickness * m_Zoom);
+        dl.AddBezierCubic(p1, cp1, cp2, p2, TimeGUI::GetColorU32(pinColor), m_Style.WireThickness * m_Zoom);
     }
 
     // Draw Active Pin Dragging Connection
@@ -196,12 +187,12 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
         float dx = std::abs(mousePos.x - p1.x) * 0.5f;
         dx = std::max(dx, 30.0f * m_Zoom);
 
-        TEVector2 cp1 = (srcPin && srcPin->Direction == PinDirection::Input) ? (p1 - TEVector2(dx, 0.0f)) : (p1 + TEVector2(dx, 0.0f));
-        TEVector2 cp2 = (srcPin && srcPin->Direction == PinDirection::Input) ? (mousePos + TEVector2(dx, 0.0f)) : (mousePos - TEVector2(dx, 0.0f));
+        TEVector2 cp1 = (srcPin && srcPin->Direction == PinDirection::Input) ? (p1 - TEVector2(dx, 0.0f))
+                                                                             : (p1 + TEVector2(dx, 0.0f));
+        TEVector2 cp2 = (srcPin && srcPin->Direction == PinDirection::Input) ? (mousePos + TEVector2(dx, 0.0f))
+                                                                             : (mousePos - TEVector2(dx, 0.0f));
 
-        dl.AddBezierCubic(p1, cp1, cp2, mousePos,
-                          TimeGUI::GetColorU32(pinColor),
-                          m_Style.WireThickness * m_Zoom);
+        dl.AddBezierCubic(p1, cp1, cp2, mousePos, TimeGUI::GetColorU32(pinColor), m_Style.WireThickness * m_Zoom);
 
         if (TimeGUI::IsMouseReleased(0))
         {
@@ -246,33 +237,26 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
         TEVector2 nodeMax = nodeMin + TEVector2(nodeWidth, bodyHeight);
 
         bool isSelected = m_SelectedNodeIDs.Contains(node->ID);
-        bool isNodeHovered = mousePos.x >= nodeMin.x && mousePos.x <= nodeMax.x &&
-                             mousePos.y >= nodeMin.y && mousePos.y <= nodeMax.y;
+        bool isNodeHovered =
+            mousePos.x >= nodeMin.x && mousePos.x <= nodeMax.x && mousePos.y >= nodeMin.y && mousePos.y <= nodeMax.y;
 
         if (isNodeHovered && isCanvasHovered)
             hoveredNodeID = node->ID;
 
         // Node Background
-        dl.AddRectFilled(nodeMin, nodeMax,
-                         TimeGUI::GetColorU32(m_Style.NodeBgColor),
-                         m_Style.NodeRounding * m_Zoom);
+        dl.AddRectFilled(nodeMin, nodeMax, TimeGUI::GetColorU32(m_Style.NodeBgColor), m_Style.NodeRounding * m_Zoom);
 
         // Header
         TEVector2 headerMax = TEVector2(nodeMax.x, nodeMin.y + headerHeight);
-        dl.AddRectFilled(nodeMin, headerMax,
-                         TimeGUI::GetColorU32(node->HeaderColor),
-                         m_Style.NodeRounding * m_Zoom);
+        dl.AddRectFilled(nodeMin, headerMax, TimeGUI::GetColorU32(node->HeaderColor), m_Style.NodeRounding * m_Zoom);
 
         // Header Title
-        dl.AddText(nodeMin + TEVector2(10.0f * m_Zoom, 6.0f * m_Zoom),
-                   TIMEGUI_COL32_WHITE, node->Title);
+        dl.AddText(nodeMin + TEVector2(10.0f * m_Zoom, 6.0f * m_Zoom), TIMEGUI_COL32_WHITE, node->Title);
 
         // Border
         TEColor borderColor = isSelected ? m_Style.NodeSelectedBorderColor : m_Style.NodeBorderColor;
         float borderWidth = isSelected ? 2.5f : m_Style.NodeBorderWidth;
-        dl.AddRect(nodeMin, nodeMax,
-                   TimeGUI::GetColorU32(borderColor),
-                   m_Style.NodeRounding * m_Zoom, 0, borderWidth);
+        dl.AddRect(nodeMin, nodeMax, TimeGUI::GetColorU32(borderColor), m_Style.NodeRounding * m_Zoom, 0, borderWidth);
 
         // Input Pins
         float pinRowHeight = 22.0f * m_Zoom;
@@ -289,11 +273,10 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
             }
 
             TEColor pinCol = pin.Type.GetColor();
-            dl.AddCircleFilled(pinCenter, m_Style.PinRadius * m_Zoom,
-                               TimeGUI::GetColorU32(pinCol));
+            dl.AddCircleFilled(pinCenter, m_Style.PinRadius * m_Zoom, TimeGUI::GetColorU32(pinCol));
 
-            dl.AddText(pinCenter + TEVector2(12.0f * m_Zoom, -6.0f * m_Zoom),
-                       TIMEGUI_COL32(220, 220, 220, 255), pin.Name);
+            dl.AddText(pinCenter + TEVector2(12.0f * m_Zoom, -6.0f * m_Zoom), TIMEGUI_COL32(220, 220, 220, 255),
+                       pin.Name);
         }
 
         // Output Pins
@@ -310,12 +293,10 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
             }
 
             TEColor pinCol = pin.Type.GetColor();
-            dl.AddCircleFilled(pinCenter, m_Style.PinRadius * m_Zoom,
-                               TimeGUI::GetColorU32(pinCol));
+            dl.AddCircleFilled(pinCenter, m_Style.PinRadius * m_Zoom, TimeGUI::GetColorU32(pinCol));
 
             float textOffset = (float)(pin.Name.length() * 7) * m_Zoom + 14.0f * m_Zoom;
-            dl.AddText(pinCenter - TEVector2(textOffset, 6.0f * m_Zoom),
-                       TIMEGUI_COL32(220, 220, 220, 255), pin.Name);
+            dl.AddText(pinCenter - TEVector2(textOffset, 6.0f * m_Zoom), TIMEGUI_COL32(220, 220, 220, 255), pin.Name);
         }
     }
 
@@ -404,7 +385,8 @@ void NodeCanvas::Draw(Graph &graph, const TEVector2 &canvasSize)
     }
 
     // Deletion
-    if (isCanvasHovered && (TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Delete) || TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Backspace)))
+    if (isCanvasHovered &&
+        (TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Delete) || TimeGUI::IsKeyPressed(TimeGUI::TimeGUIKey_Backspace)))
     {
         for (uint64_t id : m_SelectedNodeIDs)
         {

@@ -6,7 +6,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 class TriangleComponent : public ProceduralSpriteComponent
 {
 public:
@@ -47,17 +46,12 @@ public:
         if (!bIsVisible || !renderer)
             return;
 
-        TERef<Material> renderMat = material ? material : Material::GetDefault();
-        if (renderMat)
-        {
-            renderMat->SetColor(BaseColor);
+        TEVector4 w1 = worldModel * TEVector4(Point1.x, Point1.y, 0.0f, 1.0f);
+        TEVector4 w2 = worldModel * TEVector4(Point2.x, Point2.y, 0.0f, 1.0f);
+        TEVector4 w3 = worldModel * TEVector4(Point3.x, Point3.y, 0.0f, 1.0f);
 
-            TEVector4 w1 = worldModel * TEVector4(Point1.x, Point1.y, 0.0f, 1.0f);
-            TEVector4 w2 = worldModel * TEVector4(Point2.x, Point2.y, 0.0f, 1.0f);
-            TEVector4 w3 = worldModel * TEVector4(Point3.x, Point3.y, 0.0f, 1.0f);
-
-            renderer->SubmitTriangle(TEVector2(w1.x, w1.y), TEVector2(w2.x, w2.y), TEVector2(w3.x, w3.y), renderMat);
-        }
+        renderer->SubmitTriangle(TEVector2(w1.x, w1.y), TEVector2(w2.x, w2.y), TEVector2(w3.x, w3.y), BaseColor,
+                                 material);
     }
 };
 
@@ -71,4 +65,3 @@ T_REGISTER_PROPERTY(TriangleComponent, bool, bIsVisible, "Visible")
 T_REGISTER_PRESET(Triangle, "Triangle", "Shapes",
                   ([](EntityID id, EntityManager *em) { em->AddComponent<TriangleComponent>(id); }))
 #endif
-

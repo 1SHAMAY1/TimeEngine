@@ -1,8 +1,8 @@
-#include "Core/Project/Project.hpp"
 #include "Core/Plugin/PluginManager.hpp"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/Project/Project.hpp"
 #include "Layers/LogoLayer.hpp"
 #include "Layers/RuntimeLayer.hpp"
+#include "Utils/TEFileSystem.hpp"
 #ifdef TE_EDITOR
 #include "Layers/EditorLayer.hpp"
 #include "Layers/ProjectHubLayer.hpp"
@@ -36,7 +36,8 @@ public:
                 Project::Load(startProject);
             }
 
-            TE_CORE_INFO("Launching Standalone RuntimeLayer (Scene: %s)", startScene.IsEmpty() ? "Default" : startScene.c_str());
+            TE_CORE_INFO("Launching Standalone RuntimeLayer (Scene: %s)",
+                         startScene.IsEmpty() ? "Default" : startScene.c_str());
             PushLayer(CreateRef<RuntimeLayer>(startScene));
             return;
         }
@@ -97,7 +98,7 @@ Scope<Application> CreateApplication(int argc, char **argv)
     {
         TE_CORE_INFO("Registering .teproj file association to: %s", executablePath.c_str());
         PlatformUtils::RegisterFileAssociation(".teproj", "TimeEngine.Project", executablePath,
-                                                "TimeEngine Project File");
+                                               "TimeEngine Project File");
     }
 
     TEString startProject = "";
@@ -163,24 +164,26 @@ Scope<Application> CreateApplication(int argc, char **argv)
         if (TEFileSystem::Exists(configPath))
         {
             bool found = false;
-            TEFileSystem::ForEachLine(configPath, [&](const TEString &line) -> bool
-            {
-                if (found) return false;
-                if (line.find("TargetAPI: ") == 0)
-                {
-                    try
-                    {
-                        int api = std::stoi(line.substr(11));
-                        RendererContext::SetAPI((GraphicsAPI)api);
-                    }
-                    catch (...)
-                    {
-                    }
-                    found = true;
-                    return false;
-                }
-                return true;
-            });
+            TEFileSystem::ForEachLine(configPath,
+                                      [&](const TEString &line) -> bool
+                                      {
+                                          if (found)
+                                              return false;
+                                          if (line.find("TargetAPI: ") == 0)
+                                          {
+                                              try
+                                              {
+                                                  int api = std::stoi(line.substr(11));
+                                                  RendererContext::SetAPI((GraphicsAPI)api);
+                                              }
+                                              catch (...)
+                                              {
+                                              }
+                                              found = true;
+                                              return false;
+                                          }
+                                          return true;
+                                      });
         }
     }
 

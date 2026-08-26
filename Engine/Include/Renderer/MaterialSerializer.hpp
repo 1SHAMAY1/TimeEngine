@@ -11,4 +11,3 @@ public:
 private:
     TERef<Material> m_Material;
 };
-

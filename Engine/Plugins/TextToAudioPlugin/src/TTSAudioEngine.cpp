@@ -10,15 +10,9 @@ TTSAudioEngine &TTSAudioEngine::Get()
     return s_Instance;
 }
 
-TTSAudioEngine::TTSAudioEngine()
-{
-    m_Backend = CreateScope<WinSAPIAudioBackend>();
-}
+TTSAudioEngine::TTSAudioEngine() { m_Backend = CreateScope<WinSAPIAudioBackend>(); }
 
-TTSAudioEngine::~TTSAudioEngine()
-{
-    Shutdown();
-}
+TTSAudioEngine::~TTSAudioEngine() { Shutdown(); }
 
 bool TTSAudioEngine::Initialize()
 {

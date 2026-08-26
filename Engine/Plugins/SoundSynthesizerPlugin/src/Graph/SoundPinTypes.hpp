@@ -4,7 +4,8 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/TEString.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 struct SoundPin
 {

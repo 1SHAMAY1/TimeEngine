@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-
 class TE_API InputSystem
 {
 public:
@@ -35,4 +34,3 @@ private:
     TEArray<InputComponent *> m_Components;
     TERef<InputRemapper> m_Remapper;
 };
-

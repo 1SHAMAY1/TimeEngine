@@ -5,8 +5,8 @@
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 
-#include "Core/Scripting/TScriptMacros.hpp"
 #include "Core/Scripting/TScriptInstance.hpp"
+#include "Core/Scripting/TScriptMacros.hpp"
 
 class TObject;
 
@@ -214,10 +214,8 @@ public:
     inline static const TEString StaticClassName = "TComponent";
 };
 
-
 #define TPROPERTY_FLOAT(var, name) TimeGUI::DragFloat(name, &var)
 #define TPROPERTY_VEC2(var, name) UIUtils::DrawVec2Control(name, var)
 #define TPROPERTY_VEC3(var, name) UIUtils::DrawVec3Control(name, var)
 #define TPROPERTY_BOOL(var, name) TimeGUI::Checkbox(name, &var)
 #define TPROPERTY_COLOR(var, name) TimeGUI::DrawColorControl(name, var)
-

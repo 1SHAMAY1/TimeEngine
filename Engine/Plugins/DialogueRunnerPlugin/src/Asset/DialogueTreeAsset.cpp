@@ -1,12 +1,8 @@
 #include "DialogueTreeAsset.hpp"
-#include "DialogueTreeSerializer.hpp"
 #include "Core/Log.h"
+#include "DialogueTreeSerializer.hpp"
 
-
-DialogueTreeAsset::DialogueTreeAsset()
-{
-    m_Graph.ResetToDefaultEntry();
-}
+DialogueTreeAsset::DialogueTreeAsset() { m_Graph.ResetToDefaultEntry(); }
 
 const TEString &DialogueTreeAsset::GetType() const
 {
@@ -34,10 +30,7 @@ bool DialogueTreeAsset::LoadFromFile(const TEString &path)
     return DialogueTreeSerializer::LoadFromFile(m_Graph, path);
 }
 
-bool DialogueTreeAsset::SaveToFile(const TEString &path)
-{
-    return DialogueTreeSerializer::SaveToFile(m_Graph, path);
-}
+bool DialogueTreeAsset::SaveToFile(const TEString &path) { return DialogueTreeSerializer::SaveToFile(m_Graph, path); }
 
 void DialogueTreeAsset::OnContentBrowserCreate(const TEString &path)
 {
@@ -45,4 +38,3 @@ void DialogueTreeAsset::OnContentBrowserCreate(const TEString &path)
     m_Graph.ResetToDefaultEntry();
     SaveToFile(path);
 }
-

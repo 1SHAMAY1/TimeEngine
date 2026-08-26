@@ -4,7 +4,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TEString.hpp"
 
-
 class TE_API TETable : public Asset
 {
 public:
@@ -22,4 +21,3 @@ public:
     virtual bool ExportToCSV(const TEString &csvPath) const { return false; }
     virtual bool ImportFromCSV(const TEString &csvPath) { return false; }
 };
-

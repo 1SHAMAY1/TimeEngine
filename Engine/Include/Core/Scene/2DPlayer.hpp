@@ -1,7 +1,6 @@
 #pragma once
-#include "PlayerBase.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
-
+#include "PlayerBase.hpp"
 
 TE_CLASS()
 class TE_API Player2D : public PlayerBase
@@ -22,4 +21,3 @@ T_REGISTER_COMPONENT(Player2D, "Player 2D")
 T_REGISTER_PRESET(Player2D, "2D Player", "Gameplay & Managers",
                   [](EntityID id, EntityManager *em) { em->AddComponent<Player2D>(id); })
 #endif
-

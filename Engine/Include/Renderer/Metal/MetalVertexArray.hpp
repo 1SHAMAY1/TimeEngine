@@ -23,4 +23,3 @@ private:
     TERef<VertexBuffer> m_VertexBuffer = nullptr;
     TERef<IndexBuffer> m_IndexBuffer = nullptr;
 };
-

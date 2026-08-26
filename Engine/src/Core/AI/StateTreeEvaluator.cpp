@@ -1,11 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeEvaluator.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 
-StateTreeEvaluator::~StateTreeEvaluator()
-{
-    Reset();
-}
+StateTreeEvaluator::~StateTreeEvaluator() { Reset(); }
 
 void StateTreeEvaluator::Reset()
 {
@@ -83,8 +80,8 @@ void StateTreeEvaluator::TransitionTo(uint64_t targetNodeId)
         m_History.RemoveAt(0);
     }
 
-    TE_CORE_INFO("[StateTreeEvaluator] Entity {0} transitioned to state '{1}'",
-                 m_Agent.IsValid() ? m_Agent.GetID() : 0, m_ActiveNode->StateName.c_str());
+    TE_CORE_INFO("[StateTreeEvaluator] Entity {0} transitioned to state '{1}'", m_Agent.IsValid() ? m_Agent.GetID() : 0,
+                 m_ActiveNode->StateName.c_str());
 
     // Enter new state
     if (m_ActiveNode && m_Agent.IsValid())

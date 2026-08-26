@@ -1,9 +1,8 @@
 #pragma once
+#include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 #include "InputAction.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 #include <functional>
-
 
 TE_CLASS()
 class TE_API InputComponent : public TComponent
@@ -19,10 +18,7 @@ public:
 
     using ActionBinding = std::function<void(const InputActionValue &)>;
 
-    void BindAction(const TEString &actionName, ActionBinding callback)
-    {
-        m_ActionBindings[actionName] = callback;
-    }
+    void BindAction(const TEString &actionName, ActionBinding callback) { m_ActionBindings[actionName] = callback; }
 
     void ExecuteAction(const TEString &actionName, const InputActionValue &value)
     {
@@ -32,10 +28,7 @@ public:
         }
     }
 
-    void ExecuteAction(const InputAction &action, const InputActionValue &value)
-    {
-        ExecuteAction(action.Name, value);
-    }
+    void ExecuteAction(const InputAction &action, const InputActionValue &value) { ExecuteAction(action.Name, value); }
 
     virtual TEString GetClassName() const override { return StaticClassName; }
 
@@ -48,4 +41,3 @@ T_REGISTER_COMPONENT(InputComponent, "Input Component")
 T_REGISTER_PRESET(InputComponent, "Input Component", "Input & Controls",
                   [](EntityID id, EntityManager *em) { em->AddComponent<InputComponent>(id); })
 #endif
-

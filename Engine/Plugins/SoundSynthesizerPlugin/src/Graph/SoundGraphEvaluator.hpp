@@ -6,7 +6,8 @@
 #include <memory>
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGraphEvaluator
 {

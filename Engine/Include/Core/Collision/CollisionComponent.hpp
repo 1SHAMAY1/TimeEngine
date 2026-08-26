@@ -3,7 +3,6 @@
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
-
 class CollisionComponent : public TComponent
 {
 public:
@@ -19,4 +18,3 @@ public:
 
     virtual void OnUpdateShape(const TEMatrix4 &worldTransform) {}
 };
-

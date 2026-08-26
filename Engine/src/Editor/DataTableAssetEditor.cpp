@@ -1,10 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Editor/DataTableAssetEditor.hpp"
 #include "Core/Asset/TEDataTable.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 void DataTableAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -20,7 +19,8 @@ void DataTableAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::TextColored(TEColor(0.2f, 0.8f, 1.0f, 1.0f), "DataTable: %s", dataTable->GetName().c_str());
     TimeGUI::SameLine();
-    TimeGUI::TextDisabled("(Row DataType: %s | Rows: %zu)", dataTable->GetRowDataTypeName().c_str(), dataTable->GetRowCount());
+    TimeGUI::TextDisabled("(Row DataType: %s | Rows: %zu)", dataTable->GetRowDataTypeName().c_str(),
+                          dataTable->GetRowCount());
 
     TimeGUI::Separator();
 
@@ -80,7 +80,9 @@ void DataTableAssetEditor::DrawEditor(EditorTab &tab)
     TEString rowToDelete = "";
     bool modified = false;
 
-    if (TimeGUI::BeginTable("DataTableGrid", 4, TimeGUITableFlags_Borders | TimeGUITableFlags_RowBg | TimeGUITableFlags_Resizable | TimeGUITableFlags_ScrollY))
+    if (TimeGUI::BeginTable("DataTableGrid", 4,
+                            TimeGUITableFlags_Borders | TimeGUITableFlags_RowBg | TimeGUITableFlags_Resizable |
+                                TimeGUITableFlags_ScrollY))
     {
         TimeGUI::TableSetupColumn("Row Name", TimeGUITableColumnFlags_WidthFixed, 150.0f);
         TimeGUI::TableSetupColumn("Properties Summary", TimeGUITableColumnFlags_WidthStretch);
@@ -177,4 +179,3 @@ void DataTableAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) 
 }
 
 TE_REGISTER_ASSET_EDITOR(DataTableAssetEditor);
-

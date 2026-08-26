@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 
@@ -36,10 +36,12 @@ bool GraphSerializer::SerializeToString(TEString &outText)
 
     for (const auto &node : nodes)
     {
-        ss += "Node: " + TEString::FromInt64(static_cast<int64_t>(node->ID)) + "|" + node->NodeType + "|" + node->Title + "|"
-            + node->Category + "|" + TEString::FromFloat(node->Position.x) + " " + TEString::FromFloat(node->Position.y) + "|"
-            + TEString::FromFloat(node->Size.x) + " " + TEString::FromFloat(node->Size.y) + "|" + TEString::FromFloat(node->HeaderColor.r) + " "
-            + TEString::FromFloat(node->HeaderColor.g) + " " + TEString::FromFloat(node->HeaderColor.b) + " " + TEString::FromFloat(node->HeaderColor.a) + "\n";
+        ss += "Node: " + TEString::FromInt64(static_cast<int64_t>(node->ID)) + "|" + node->NodeType + "|" +
+              node->Title + "|" + node->Category + "|" + TEString::FromFloat(node->Position.x) + " " +
+              TEString::FromFloat(node->Position.y) + "|" + TEString::FromFloat(node->Size.x) + " " +
+              TEString::FromFloat(node->Size.y) + "|" + TEString::FromFloat(node->HeaderColor.r) + " " +
+              TEString::FromFloat(node->HeaderColor.g) + " " + TEString::FromFloat(node->HeaderColor.b) + " " +
+              TEString::FromFloat(node->HeaderColor.a) + "\n";
 
         for (const auto &prop : node->Properties)
         {
@@ -49,17 +51,19 @@ bool GraphSerializer::SerializeToString(TEString &outText)
         for (const auto &pin : node->InputPins)
         {
             const auto &col = pin.Type.GetColor();
-            ss += "  InPin: " + TEString::FromInt64(static_cast<int64_t>(pin.ID)) + "|" + pin.Name + "|" + TEString::FromInt((int)pin.Type.GetKind()) + "|"
-                + pin.Type.GetTypeName() + "|" + pin.DefaultValue + "|"
-                + TEString::FromFloat(col.r) + " " + TEString::FromFloat(col.g) + " " + TEString::FromFloat(col.b) + " " + TEString::FromFloat(col.a) + "\n";
+            ss += "  InPin: " + TEString::FromInt64(static_cast<int64_t>(pin.ID)) + "|" + pin.Name + "|" +
+                  TEString::FromInt((int)pin.Type.GetKind()) + "|" + pin.Type.GetTypeName() + "|" + pin.DefaultValue +
+                  "|" + TEString::FromFloat(col.r) + " " + TEString::FromFloat(col.g) + " " +
+                  TEString::FromFloat(col.b) + " " + TEString::FromFloat(col.a) + "\n";
         }
 
         for (const auto &pin : node->OutputPins)
         {
             const auto &col = pin.Type.GetColor();
-            ss += "  OutPin: " + TEString::FromInt64(static_cast<int64_t>(pin.ID)) + "|" + pin.Name + "|" + TEString::FromInt((int)pin.Type.GetKind()) + "|"
-                + pin.Type.GetTypeName() + "|" + pin.DefaultValue + "|"
-                + TEString::FromFloat(col.r) + " " + TEString::FromFloat(col.g) + " " + TEString::FromFloat(col.b) + " " + TEString::FromFloat(col.a) + "\n";
+            ss += "  OutPin: " + TEString::FromInt64(static_cast<int64_t>(pin.ID)) + "|" + pin.Name + "|" +
+                  TEString::FromInt((int)pin.Type.GetKind()) + "|" + pin.Type.GetTypeName() + "|" + pin.DefaultValue +
+                  "|" + TEString::FromFloat(col.r) + " " + TEString::FromFloat(col.g) + " " +
+                  TEString::FromFloat(col.b) + " " + TEString::FromFloat(col.a) + "\n";
         }
     }
 
@@ -67,9 +71,11 @@ bool GraphSerializer::SerializeToString(TEString &outText)
     ss += "ConnectionsCount: " + TEString::FromInt(static_cast<int>(connections.Size())) + "\n";
     for (const auto &conn : connections)
     {
-        ss += "Connection: " + TEString::FromInt64(static_cast<int64_t>(conn.ID)) + "|" + TEString::FromInt64(static_cast<int64_t>(conn.SourceNodeID)) + "|"
-            + TEString::FromInt64(static_cast<int64_t>(conn.SourcePinID)) + "|" + TEString::FromInt64(static_cast<int64_t>(conn.TargetNodeID)) + "|"
-            + TEString::FromInt64(static_cast<int64_t>(conn.TargetPinID)) + "\n";
+        ss += "Connection: " + TEString::FromInt64(static_cast<int64_t>(conn.ID)) + "|" +
+              TEString::FromInt64(static_cast<int64_t>(conn.SourceNodeID)) + "|" +
+              TEString::FromInt64(static_cast<int64_t>(conn.SourcePinID)) + "|" +
+              TEString::FromInt64(static_cast<int64_t>(conn.TargetNodeID)) + "|" +
+              TEString::FromInt64(static_cast<int64_t>(conn.TargetPinID)) + "\n";
     }
 
     outText = ss;

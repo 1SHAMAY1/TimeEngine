@@ -44,7 +44,7 @@ public:
 
             // Stream to audio engine
             AudioEngine::SubmitPCMFrames(stereo.Left.Samples, SoundStudio::AUDIO_BLOCK_SIZE,
-                                             SoundStudio::DEFAULT_SAMPLE_RATE, 1);
+                                         SoundStudio::DEFAULT_SAMPLE_RATE, 1);
         }
     }
 

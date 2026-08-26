@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/ProjectSettingsRegistry.hpp"
+#include "Core/PreRequisites.h"
 
 ProjectSettingsRegistry &ProjectSettingsRegistry::Instance()
 {
@@ -15,12 +15,6 @@ void ProjectSettingsRegistry::Register(TERef<TEProjectSettings> settings)
     }
 }
 
-const TEArray<TERef<TEProjectSettings>> &ProjectSettingsRegistry::GetSettings()
-{
-    return Instance().m_ProjectSettings;
-}
+const TEArray<TERef<TEProjectSettings>> &ProjectSettingsRegistry::GetSettings() { return Instance().m_ProjectSettings; }
 
-void ProjectSettingsRegistry::Clear()
-{
-    Instance().m_ProjectSettings.Clear();
-}
+void ProjectSettingsRegistry::Clear() { Instance().m_ProjectSettings.Clear(); }

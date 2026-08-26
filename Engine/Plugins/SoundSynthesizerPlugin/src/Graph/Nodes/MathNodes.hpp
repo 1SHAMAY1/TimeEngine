@@ -2,7 +2,8 @@
 
 #include "../SoundGraphNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class GainNode : public SoundGraphNode
 {

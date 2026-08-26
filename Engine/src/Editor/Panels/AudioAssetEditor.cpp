@@ -1,17 +1,17 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/AudioAssetEditor.hpp"
 #include "Core/Audio/AudioEngine.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 
-AudioAssetEditor::AudioAssetEditor()
-{
-}
+AudioAssetEditor::AudioAssetEditor() {}
 
 TEString AudioAssetEditor::CreateDefaultTemplate(const TEString &name) const
 {
     return "{\n"
-           "  \"Name\": \"" + name + "\",\n"
+           "  \"Name\": \"" +
+           name +
+           "\",\n"
            "  \"AssetType\": \"AudioClip\",\n"
            "  \"Volume\": 1.0,\n"
            "  \"Pitch\": 1.0,\n"
@@ -97,8 +97,7 @@ void AudioAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::Spacing();
     TimeGUI::TextDisabled("Active Sounds: %zu | Loaded Clips: %zu | Dilation: %.2fx",
-                          AudioEngine::GetActiveSoundCount(),
-                          AudioEngine::GetLoadedClipCount(),
+                          AudioEngine::GetActiveSoundCount(), AudioEngine::GetLoadedClipCount(),
                           AudioEngine::GetTimeDilationFactor());
 }
 
@@ -121,8 +120,10 @@ void AudioAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) cons
     float cy = (cMin.y + cMax.y) * 0.5f;
 
     // Speaker body
-    dl.AddRectFilled(TEVector2(cx - 8.0f, cy - 6.0f), TEVector2(cx - 2.0f, cy + 6.0f), IM_COL32(0, 210, 255, 255), 1.0f);
-    dl.AddTriangleFilled(TEVector2(cx - 2.0f, cy - 6.0f), TEVector2(cx + 4.0f, cy - 11.0f), TEVector2(cx + 4.0f, cy + 11.0f), IM_COL32(0, 210, 255, 255));
+    dl.AddRectFilled(TEVector2(cx - 8.0f, cy - 6.0f), TEVector2(cx - 2.0f, cy + 6.0f), IM_COL32(0, 210, 255, 255),
+                     1.0f);
+    dl.AddTriangleFilled(TEVector2(cx - 2.0f, cy - 6.0f), TEVector2(cx + 4.0f, cy - 11.0f),
+                         TEVector2(cx + 4.0f, cy + 11.0f), IM_COL32(0, 210, 255, 255));
 
     // Sound waves
     dl.AddCircle(TEVector2(cx + 4.0f, cy), 8.0f, IM_COL32(100, 230, 255, 200), 16, 2.0f);

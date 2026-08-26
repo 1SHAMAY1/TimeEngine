@@ -1,7 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESVertexArray.hpp"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
-
 
 OpenGLESVertexArray::OpenGLESVertexArray()
 {
@@ -38,4 +37,3 @@ void OpenGLESVertexArray::SetIndexBuffer(const TERef<IndexBuffer> &indexBuffer)
     indexBuffer->Bind();
     m_IndexBuffer = indexBuffer;
 }
-

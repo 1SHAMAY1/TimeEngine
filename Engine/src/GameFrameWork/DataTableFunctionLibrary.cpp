@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "GameFrameWork/DataTableFunctionLibrary.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-
+#include "Core/PreRequisites.h"
 
 TERef<DataAsset> DataTableFunctionLibrary::GetDataTableRow(AssetHandle tableHandle, const TEString &rowName)
 {
@@ -57,7 +56,8 @@ AssetHandle DataTableFunctionLibrary::CreateDataTable(const TEString &path, cons
     return 0;
 }
 
-bool DataTableFunctionLibrary::AddRowFromDataAsset(AssetHandle tableHandle, const TEString &rowName, AssetHandle dataAssetHandle)
+bool DataTableFunctionLibrary::AddRowFromDataAsset(AssetHandle tableHandle, const TEString &rowName,
+                                                   AssetHandle dataAssetHandle)
 {
     auto table = AssetManager::GetAsset<TEDataTable>(tableHandle);
     auto dataAsset = AssetManager::GetAsset<DataAsset>(dataAssetHandle);
@@ -98,4 +98,3 @@ bool DataTableFunctionLibrary::ImportDataTableFromCSV(AssetHandle tableHandle, c
     }
     return false;
 }
-

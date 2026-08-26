@@ -5,7 +5,8 @@
 #include "Utils/TEString.hpp"
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 static constexpr uint32_t AUDIO_BLOCK_SIZE = 128; // 128 samples per DSP evaluation block
 static constexpr uint32_t DEFAULT_SAMPLE_RATE = 44100;

@@ -2,7 +2,6 @@
 
 #include "Core/Graph/GraphConnection.hpp"
 
-
 struct DialogueGraphConnection : public GraphConnection
 {
     DialogueGraphConnection() = default;

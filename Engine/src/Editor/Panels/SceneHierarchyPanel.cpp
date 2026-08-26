@@ -1,5 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/SceneHierarchyPanel.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/Scene.hpp"
@@ -12,16 +13,15 @@
 #include "Layers/EditorLayer.hpp"
 #include "UI/Widgets/UISearchBar.hpp"
 #include "Utils/TimeGUI.hpp"
-#include "Core/Log.h"
 
 static Entity s_ContextEntity = Entity();
 static bool s_ShouldOpenHierarchyContextMenu = false;
 
-SceneHierarchyPanel::SceneHierarchyPanel()
-    : IEditorPanel("Scene Hierarchy")
+SceneHierarchyPanel::SceneHierarchyPanel() : IEditorPanel("Scene Hierarchy")
 {
     m_SearchBar = CreateRef<UISearchBar>("Search entities...", "##HierarchySearchBar");
-    m_CreateModalSearchBar = CreateRef<UISearchBar>("Search Entity or Component type...", "##CreateEntityModalSearchBar");
+    m_CreateModalSearchBar =
+        CreateRef<UISearchBar>("Search Entity or Component type...", "##CreateEntityModalSearchBar");
 }
 
 void SceneHierarchyPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
@@ -98,7 +98,8 @@ void SceneHierarchyPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         TEMap<TEString, TEArray<EntityPreset>> categorizedPresets;
         for (const auto &preset : ComponentRegistry::Get().GetEntityPresets())
         {
-            if (m_CreateModalSearchBar && !m_CreateModalSearchBar->Matches(preset.Name) && !m_CreateModalSearchBar->Matches(preset.Category))
+            if (m_CreateModalSearchBar && !m_CreateModalSearchBar->Matches(preset.Name) &&
+                !m_CreateModalSearchBar->Matches(preset.Category))
                 continue;
 
             TEString cat = preset.Category.empty() ? "General" : preset.Category;
@@ -135,7 +136,8 @@ void SceneHierarchyPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         }
         else
         {
-            TimeGUI::TextWrapped("Preset configured with components and defaults for %s.", m_SelectedPresetName.c_str());
+            TimeGUI::TextWrapped("Preset configured with components and defaults for %s.",
+                                 m_SelectedPresetName.c_str());
         }
 
         TimeGUI::EndChild();
@@ -225,7 +227,8 @@ void SceneHierarchyPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
     if (TimeGUI::BeginPopup("SceneHierarchyContextMenu"))
     {
-        TE_CORE_INFO("[Hierarchy] Rendering SceneHierarchyContextMenu for entity ID: {0}", (uint64_t)s_ContextEntity.GetID());
+        TE_CORE_INFO("[Hierarchy] Rendering SceneHierarchyContextMenu for entity ID: {0}",
+                     (uint64_t)s_ContextEntity.GetID());
         bool hasEntity = s_ContextEntity.IsValid() && em.IsValid(s_ContextEntity.GetID());
         if (hasEntity)
         {
@@ -338,7 +341,8 @@ void SceneHierarchyPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     TimeGUI::End();
 }
 
-void SceneHierarchyPanel::DrawEntityNode(EntityID entityID, EntityManager &em, Ref<EditorLayer> editor, Entity &entityToDelete)
+void SceneHierarchyPanel::DrawEntityNode(EntityID entityID, EntityManager &em, Ref<EditorLayer> editor,
+                                         Entity &entityToDelete)
 {
     Entity entity(entityID, &em);
     TEString entityName = "Entity (" + TEString::FromInt64(static_cast<int64_t>(entityID)) + ")";
@@ -355,7 +359,8 @@ void SceneHierarchyPanel::DrawEntityNode(EntityID entityID, EntityManager &em, R
     auto *tc = em.GetComponent<TransformComponent>(entity);
     bool hasChildren = tc && !tc->Children.empty();
 
-    TimeGUITreeNodeFlags flags = TimeGUITreeNodeFlags_OpenOnArrow | TimeGUITreeNodeFlags_SpanAvailWidth | TimeGUITreeNodeFlags_FramePadding | TimeGUITreeNodeFlags_AllowOverlap;
+    TimeGUITreeNodeFlags flags = TimeGUITreeNodeFlags_OpenOnArrow | TimeGUITreeNodeFlags_SpanAvailWidth |
+                                 TimeGUITreeNodeFlags_FramePadding | TimeGUITreeNodeFlags_AllowOverlap;
     if (isSelected)
         flags |= TimeGUITreeNodeFlags_Selected;
     if (!hasChildren)
@@ -385,7 +390,8 @@ void SceneHierarchyPanel::DrawEntityNode(EntityID entityID, EntityManager &em, R
     // 1. '+' Action Button (Launches Context Menu for this entity)
     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.20f, 0.25f, 0.35f, 0.70f));
     TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(0.24f, 0.65f, 0.35f, 0.95f));
-    if (TimeGUI::Button((TEString("##AddAction_") + TEString::FromInt64(static_cast<int64_t>(entityID))).c_str(), TEVector2(btnSize, btnSize)))
+    if (TimeGUI::Button((TEString("##AddAction_") + TEString::FromInt64(static_cast<int64_t>(entityID))).c_str(),
+                        TEVector2(btnSize, btnSize)))
     {
         TE_CORE_INFO("[Hierarchy] '+' button clicked on entity '{0}' (ID: {1})", entityName, (uint64_t)entityID);
         editor->SelectEntity(entity, false, false);
@@ -406,7 +412,8 @@ void SceneHierarchyPanel::DrawEntityNode(EntityID entityID, EntityManager &em, R
     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.65f, 0.18f, 0.18f, 0.70f));
     TimeGUI::PushStyleColor(TimeGUICol_ButtonHovered, TEVector4(0.85f, 0.22f, 0.22f, 0.95f));
     TimeGUI::PushStyleColor(TimeGUICol_ButtonActive, TEVector4(0.50f, 0.12f, 0.12f, 1.0f));
-    if (TimeGUI::Button((TEString("##DelAction_") + TEString::FromInt64(static_cast<int64_t>(entityID))).c_str(), TEVector2(btnSize, btnSize)))
+    if (TimeGUI::Button((TEString("##DelAction_") + TEString::FromInt64(static_cast<int64_t>(entityID))).c_str(),
+                        TEVector2(btnSize, btnSize)))
     {
         TE_CORE_INFO("[Hierarchy] 'X' remove button clicked on entity '{0}' (ID: {1})", entityName, (uint64_t)entityID);
         entityToDelete = entity;
@@ -472,4 +479,3 @@ bool SceneHierarchyPanel::OnShortcut(const TEString &shortcutId, Ref<EditorLayer
 }
 
 TE_REGISTER_EDITOR_PANEL(SceneHierarchyPanel);
-

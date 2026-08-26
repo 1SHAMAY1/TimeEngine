@@ -1,11 +1,9 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 #include <cstdint>
-
-
 
 enum class NarrativeNodeType : uint8_t
 {
@@ -80,4 +78,3 @@ struct QuestData
     QuestStatus Status = QuestStatus::NotStarted;
     TEArray<QuestObjective> Objectives;
 };
-

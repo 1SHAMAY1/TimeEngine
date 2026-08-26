@@ -2,7 +2,6 @@
 
 #include "Renderer/TEColor.hpp"
 
-
 class TEOpenGLColor
 {
 public:
@@ -13,4 +12,3 @@ public:
     static const TEColor White;
     static const TEColor Transparent;
 };
-

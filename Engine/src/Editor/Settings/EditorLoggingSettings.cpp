@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Settings/EditorLoggingSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Settings/GeneralEngineSettings.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
@@ -35,7 +35,7 @@ void EditorLoggingSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
     TimeGUI::TextColored(TEColor(0.2f, 0.7f, 1.0f, 1.0f), "Verbosity & Thresholds");
     TimeGUI::Separator();
 
-    const char *logLevels[] = { "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL" };
+    const char *logLevels[] = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"};
     int currentLevelIdx = 1;
     TEString curLevel = settings.GetLogLevel();
     for (int i = 0; i < 5; ++i)

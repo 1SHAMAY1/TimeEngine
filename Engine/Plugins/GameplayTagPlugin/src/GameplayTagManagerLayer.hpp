@@ -8,7 +8,6 @@
 #include "UI/Widgets/UISearchBar.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 /**
  * GameplayTagManagerLayer
  * Comprehensive editor layer for managing, inspecting, editing, diagnosing,
@@ -74,4 +73,3 @@ private:
     TEArray<TagValidationIssue> m_CachedIssues;
     bool m_ShowDiagnostics = false;
 };
-

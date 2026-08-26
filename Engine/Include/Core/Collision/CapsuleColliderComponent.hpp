@@ -12,10 +12,7 @@ public:
     T_PROPERTY(float, Radius, "Radius", 0.5f)
     T_PROPERTY(float, Height, "Height", 1.0f)
 
-    CapsuleColliderComponent()
-    {
-        shape.type = CollisionType::Capsule;
-    }
+    CapsuleColliderComponent() { shape.type = CollisionType::Capsule; }
 
     virtual TEString GetClassName() const override { return StaticClassName; }
 

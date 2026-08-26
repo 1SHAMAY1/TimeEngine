@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-
 class SpriteComponent : public TComponent
 {
 public:
@@ -31,4 +30,3 @@ T_REGISTER_PROPERTY(SpriteComponent, TEColor, Color, "Color")
 T_REGISTER_PRESET(SpriteComponent, "Sprite", "2D Rendering",
                   [](EntityID id, EntityManager *em) { em->AddComponent<SpriteComponent>(id); })
 #endif
-

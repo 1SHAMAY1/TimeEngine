@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/Graph.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEString.hpp"
 #include <functional>
-
 
 using NodeFactoryFn = std::function<TERef<GraphNode>(const TEString &nodeType)>;
 

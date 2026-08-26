@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/TScriptAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scripting/TScriptAsset.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
@@ -47,13 +47,20 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
     bool hasTimer = false;
     bool hasDestroy = false;
 
-    auto checkEvent = [&](const TEString &name) {
-        if (name == "on_ready") hasReady = true;
-        else if (name == "on_update") hasUpdate = true;
-        else if (name == "on_collision") hasCollision = true;
-        else if (name == "on_input") hasInput = true;
-        else if (name == "on_timer") hasTimer = true;
-        else if (name == "on_destroy") hasDestroy = true;
+    auto checkEvent = [&](const TEString &name)
+    {
+        if (name == "on_ready")
+            hasReady = true;
+        else if (name == "on_update")
+            hasUpdate = true;
+        else if (name == "on_collision")
+            hasCollision = true;
+        else if (name == "on_input")
+            hasInput = true;
+        else if (name == "on_timer")
+            hasTimer = true;
+        else if (name == "on_destroy")
+            hasDestroy = true;
     };
 
     for (const auto &cls : scriptAsset->CachedAST.classes)
@@ -90,17 +97,17 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     TimeGUI::TextDisabled("| Hooks:");
     TimeGUI::SameLine();
-    TimeGUI::TextColored(hasReady ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f),
-                         "on_ready %s", hasReady ? "[OK]" : "[-]");
+    TimeGUI::TextColored(hasReady ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f), "on_ready %s",
+                         hasReady ? "[OK]" : "[-]");
     TimeGUI::SameLine();
-    TimeGUI::TextColored(hasUpdate ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f),
-                         "on_update %s", hasUpdate ? "[OK]" : "[-]");
+    TimeGUI::TextColored(hasUpdate ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f), "on_update %s",
+                         hasUpdate ? "[OK]" : "[-]");
     TimeGUI::SameLine();
     TimeGUI::TextColored(hasCollision ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f),
                          "on_collision %s", hasCollision ? "[OK]" : "[-]");
     TimeGUI::SameLine();
-    TimeGUI::TextColored(hasInput ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f),
-                         "on_input %s", hasInput ? "[OK]" : "[-]");
+    TimeGUI::TextColored(hasInput ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f), "on_input %s",
+                         hasInput ? "[OK]" : "[-]");
 
     TimeGUI::Separator();
 

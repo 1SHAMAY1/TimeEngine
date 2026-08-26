@@ -1,31 +1,45 @@
-#include "Core/PreRequisites.h"
 #include "Input/ShortcutManager.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Input/Input.hpp"
 #include <algorithm>
 #include <sstream>
-
 
 #include <mutex>
 
 static std::mutex s_ShortcutMutex;
 static std::mutex s_ListenerMutex;
+static bool s_IsShutdown = false;
 
 TEString ShortcutManager::s_ActiveContext = "Global";
 
+static TERef<TEMap<TEString, Shortcut>> s_RegistryRef;
+static TERef<TEMap<TEString, ShortcutListenerFn>> s_ListenersRef;
+
 TEMap<TEString, Shortcut> &ShortcutManager::GetRegistry()
 {
-    static TEMap<TEString, Shortcut> s_Registry;
-    return s_Registry;
+    if (!s_RegistryRef)
+        s_RegistryRef = CreateRef<TEMap<TEString, Shortcut>>();
+    return *s_RegistryRef;
 }
 
 TEMap<TEString, ShortcutListenerFn> &ShortcutManager::GetListeners()
 {
-    static TEMap<TEString, ShortcutListenerFn> s_Listeners;
-    return s_Listeners;
+    if (!s_ListenersRef)
+        s_ListenersRef = CreateRef<TEMap<TEString, ShortcutListenerFn>>();
+    return *s_ListenersRef;
 }
 
-ShortcutAutoRegister::ShortcutAutoRegister(const char *id, const TEString& name, const TEString& category,
+void ShortcutManager::Shutdown()
+{
+    std::lock_guard<std::mutex> lock(s_ListenerMutex);
+    s_IsShutdown = true;
+    if (s_ListenersRef)
+        s_ListenersRef->clear();
+    TE_CORE_INFO("[ShortcutManager] Shutdown complete. Listeners cleared.");
+}
+
+ShortcutAutoRegister::ShortcutAutoRegister(const char *id, const TEString &name, const TEString &category,
                                            const char *context, KeyCode key, KeyModifier mods)
 {
     Shortcut sc;
@@ -160,9 +174,11 @@ void ShortcutManager::AddListener(const TEString &listenerName, ShortcutListener
 
 void ShortcutManager::RemoveListener(const TEString &listenerName)
 {
-    if (listenerName.empty())
+    if (listenerName.empty() || s_IsShutdown)
         return;
     std::lock_guard<std::mutex> lock(s_ListenerMutex);
+    if (s_IsShutdown)
+        return;
     auto &listeners = GetListeners();
     auto it = listeners.find(listenerName);
     if (it != listeners.end())
@@ -173,12 +189,14 @@ void ShortcutManager::RemoveListener(const TEString &listenerName)
 
 bool ShortcutManager::BroadcastShortcut(const TEString &shortcutId)
 {
-    if (shortcutId.empty())
+    if (shortcutId.empty() || s_IsShutdown)
         return false;
 
     TEArray<ShortcutListenerFn> activeListeners;
     {
         std::lock_guard<std::mutex> lock(s_ListenerMutex);
+        if (s_IsShutdown)
+            return false;
         for (const auto &pair : GetListeners())
         {
             if (pair.second)
@@ -202,49 +220,92 @@ static TEString KeyCodeToString(KeyCode key)
 {
     switch (key)
     {
-    case Key::Space: return "Space";
-    case Key::Apostrophe: return "'";
-    case Key::Comma: return ",";
-    case Key::Minus: return "-";
-    case Key::Period: return ".";
-    case Key::Slash: return "/";
-    case Key::Semicolon: return ";";
-    case Key::Equal: return "=";
-    case Key::LeftBracket: return "[";
-    case Key::Backslash: return "\\";
-    case Key::RightBracket: return "]";
-    case Key::GraveAccent: return "`";
-    case Key::Escape: return "Esc";
-    case Key::Enter: return "Enter";
-    case Key::Tab: return "Tab";
-    case Key::Backspace: return "Backspace";
-    case Key::Insert: return "Insert";
-    case Key::Delete: return "Delete";
-    case Key::Right: return "Right";
-    case Key::Left: return "Left";
-    case Key::Down: return "Down";
-    case Key::Up: return "Up";
-    case Key::PageUp: return "PageUp";
-    case Key::PageDown: return "PageDown";
-    case Key::Home: return "Home";
-    case Key::End: return "End";
-    case Key::CapsLock: return "CapsLock";
-    case Key::ScrollLock: return "ScrollLock";
-    case Key::NumLock: return "NumLock";
-    case Key::PrintScreen: return "PrintScreen";
-    case Key::Pause: return "Pause";
-    case Key::F1: return "F1";
-    case Key::F2: return "F2";
-    case Key::F3: return "F3";
-    case Key::F4: return "F4";
-    case Key::F5: return "F5";
-    case Key::F6: return "F6";
-    case Key::F7: return "F7";
-    case Key::F8: return "F8";
-    case Key::F9: return "F9";
-    case Key::F10: return "F10";
-    case Key::F11: return "F11";
-    case Key::F12: return "F12";
+    case Key::Space:
+        return "Space";
+    case Key::Apostrophe:
+        return "'";
+    case Key::Comma:
+        return ",";
+    case Key::Minus:
+        return "-";
+    case Key::Period:
+        return ".";
+    case Key::Slash:
+        return "/";
+    case Key::Semicolon:
+        return ";";
+    case Key::Equal:
+        return "=";
+    case Key::LeftBracket:
+        return "[";
+    case Key::Backslash:
+        return "\\";
+    case Key::RightBracket:
+        return "]";
+    case Key::GraveAccent:
+        return "`";
+    case Key::Escape:
+        return "Esc";
+    case Key::Enter:
+        return "Enter";
+    case Key::Tab:
+        return "Tab";
+    case Key::Backspace:
+        return "Backspace";
+    case Key::Insert:
+        return "Insert";
+    case Key::Delete:
+        return "Delete";
+    case Key::Right:
+        return "Right";
+    case Key::Left:
+        return "Left";
+    case Key::Down:
+        return "Down";
+    case Key::Up:
+        return "Up";
+    case Key::PageUp:
+        return "PageUp";
+    case Key::PageDown:
+        return "PageDown";
+    case Key::Home:
+        return "Home";
+    case Key::End:
+        return "End";
+    case Key::CapsLock:
+        return "CapsLock";
+    case Key::ScrollLock:
+        return "ScrollLock";
+    case Key::NumLock:
+        return "NumLock";
+    case Key::PrintScreen:
+        return "PrintScreen";
+    case Key::Pause:
+        return "Pause";
+    case Key::F1:
+        return "F1";
+    case Key::F2:
+        return "F2";
+    case Key::F3:
+        return "F3";
+    case Key::F4:
+        return "F4";
+    case Key::F5:
+        return "F5";
+    case Key::F6:
+        return "F6";
+    case Key::F7:
+        return "F7";
+    case Key::F8:
+        return "F8";
+    case Key::F9:
+        return "F9";
+    case Key::F10:
+        return "F10";
+    case Key::F11:
+        return "F11";
+    case Key::F12:
+        return "F12";
     default:
         if (key >= Key::D0 && key <= Key::D9)
         {
@@ -325,10 +386,8 @@ bool ShortcutManager::ProcessKeyPressed(KeyCode key, KeyModifier mods, const TES
         return false;
 
     // Modifiers alone shouldn't trigger shortcuts directly
-    if (key == Key::LeftControl || key == Key::RightControl ||
-        key == Key::LeftShift || key == Key::RightShift ||
-        key == Key::LeftAlt || key == Key::RightAlt ||
-        key == Key::LeftSuper || key == Key::RightSuper)
+    if (key == Key::LeftControl || key == Key::RightControl || key == Key::LeftShift || key == Key::RightShift ||
+        key == Key::LeftAlt || key == Key::RightAlt || key == Key::LeftSuper || key == Key::RightSuper)
     {
         return false;
     }
@@ -378,15 +437,9 @@ bool ShortcutManager::ProcessKeyPressed(KeyCode key, KeyModifier mods, const TES
     return false;
 }
 
-void ShortcutManager::SetActiveContext(const TEString &context)
-{
-    s_ActiveContext = context;
-}
+void ShortcutManager::SetActiveContext(const TEString &context) { s_ActiveContext = context; }
 
-const TEString &ShortcutManager::GetActiveContext()
-{
-    return s_ActiveContext;
-}
+const TEString &ShortcutManager::GetActiveContext() { return s_ActiveContext; }
 
 // ---------------------------------------------------------------------------
 // Static Persistent Core Shortcuts Registration
@@ -405,4 +458,3 @@ TE_REGISTER_SHORTCUT(Editor_GizmoNone, "Gizmo: None", "Viewport", "Editor", Key:
 TE_REGISTER_SHORTCUT(Editor_GizmoTranslate, "Gizmo: Translate", "Viewport", "Editor", Key::W, KeyModifier::None);
 TE_REGISTER_SHORTCUT(Editor_GizmoRotate, "Gizmo: Rotate", "Viewport", "Editor", Key::E, KeyModifier::None);
 TE_REGISTER_SHORTCUT(Editor_GizmoScale, "Gizmo: Scale", "Viewport", "Editor", Key::R, KeyModifier::None);
-

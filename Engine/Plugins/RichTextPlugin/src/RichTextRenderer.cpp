@@ -1,9 +1,7 @@
 #include "RichTextRenderer.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
-void RichTextRenderer::DrawToImGui(const RichTextLayoutResult &layout,
-                                   const TERef<FontAsset> &font,
+void RichTextRenderer::DrawToImGui(const RichTextLayoutResult &layout, const TERef<FontAsset> &font,
                                    const TEVector2 &screenPos,
                                    const std::function<void(const TEString &)> &onLinkClicked)
 {
@@ -46,8 +44,8 @@ void RichTextRenderer::DrawToImGui(const RichTextLayoutResult &layout,
                                               static_cast<int>(col.b * 255), static_cast<int>(col.a * 255));
 
         // Draw glyph quad
-        drawList.AddImage(texId, TEVector2(x0, y0), TEVector2(x1, y1),
-                          TEVector2(g.UV.x, g.UV.y), TEVector2(g.UV.z, g.UV.w), glyphCol);
+        drawList.AddImage(texId, TEVector2(x0, y0), TEVector2(x1, y1), TEVector2(g.UV.x, g.UV.y),
+                          TEVector2(g.UV.z, g.UV.w), glyphCol);
 
         // Draw underline if enabled
         if (g.Style.Underline)
@@ -64,4 +62,3 @@ void RichTextRenderer::DrawToImGui(const RichTextLayoutResult &layout,
         }
     }
 }
-

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "GameplayTagProjectSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "GameplayTagManager.hpp"
 #include "GameplayTagWidgets.hpp"
 #include "Layers/EditorLayer.hpp"
@@ -9,38 +9,38 @@ TE_REGISTER_PROJECT_SETTINGS(GameplayTagProjectSettings);
 
 namespace
 {
-    static TEString s_NewTagBuffer = "";
-    static TEString s_NewDescBuffer = "";
-    static TEString s_SearchFilter = "";
-    static bool s_ShowAddTagModal = false;
-    static TEString s_SelectedTagPath = "";
+static TEString s_NewTagBuffer = "";
+static TEString s_NewDescBuffer = "";
+static TEString s_SearchFilter = "";
+static bool s_ShowAddTagModal = false;
+static TEString s_SelectedTagPath = "";
 
-    void DrawTagTreeRecursive(const GameplayTagTreeNode &node)
+void DrawTagTreeRecursive(const GameplayTagTreeNode &node)
+{
+    for (const auto &pair : node.Children)
     {
-        for (const auto &pair : node.Children)
+        const auto &child = pair.second;
+        bool isLeaf = child.Children.empty();
+        TimeGUITreeNodeFlags flags = TimeGUITreeNodeFlags_OpenOnArrow;
+        if (isLeaf)
+            flags |= TimeGUITreeNodeFlags_Leaf;
+        if (s_SelectedTagPath == child.FullTagPath)
+            flags |= TimeGUITreeNodeFlags_Selected;
+
+        bool open = TimeGUI::TreeNodeEx(child.SegmentName + "##" + child.FullTagPath, flags);
+        if (TimeGUI::IsItemClicked())
         {
-            const auto &child = pair.second;
-            bool isLeaf = child.Children.empty();
-            TimeGUITreeNodeFlags flags = TimeGUITreeNodeFlags_OpenOnArrow;
-            if (isLeaf)
-                flags |= TimeGUITreeNodeFlags_Leaf;
-            if (s_SelectedTagPath == child.FullTagPath)
-                flags |= TimeGUITreeNodeFlags_Selected;
+            s_SelectedTagPath = child.FullTagPath;
+        }
 
-            bool open = TimeGUI::TreeNodeEx(child.SegmentName + "##" + child.FullTagPath, flags);
-            if (TimeGUI::IsItemClicked())
-            {
-                s_SelectedTagPath = child.FullTagPath;
-            }
-
-            if (open)
-            {
-                DrawTagTreeRecursive(child);
-                TimeGUI::TreePop();
-            }
+        if (open)
+        {
+            DrawTagTreeRecursive(child);
+            TimeGUI::TreePop();
         }
     }
 }
+} // namespace
 
 void GameplayTagProjectSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {

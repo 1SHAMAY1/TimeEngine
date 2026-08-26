@@ -64,4 +64,3 @@ private:
 
 // To be defined by the client (e.g., TimeEditor app)
 TEScope<Application> CreateApplication(int argc, char **argv);
-

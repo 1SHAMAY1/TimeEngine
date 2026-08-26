@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanShader.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include <iostream>
 
@@ -93,4 +93,3 @@ void VulkanShader::SetUniform2f(const TEString &name, const glm::vec2 &value) {}
 void VulkanShader::SetUniform1f(const TEString &name, float value) {}
 
 void VulkanShader::SetUniform1i(const TEString &name, int value) {}
-

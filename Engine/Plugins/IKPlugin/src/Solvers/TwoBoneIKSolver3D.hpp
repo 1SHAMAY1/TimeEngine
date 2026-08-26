@@ -1,19 +1,19 @@
 #pragma once
 
-#include <cmath>
+#include "IIKSolver.hpp"
 #include <algorithm>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "IIKSolver.hpp"
 
-namespace IK {
+namespace IK
+{
 
 class TwoBoneIKSolver3D
 {
 public:
-    static bool Solve(const glm::vec3& rootPos, float lengthA, float lengthB,
-                      const glm::vec3& targetPos, const glm::vec3& poleTarget,
-                      glm::vec3& outMidPos)
+    static bool Solve(const glm::vec3 &rootPos, float lengthA, float lengthB, const glm::vec3 &targetPos,
+                      const glm::vec3 &poleTarget, glm::vec3 &outMidPos)
     {
         glm::vec3 toTarget = targetPos - rootPos;
         float dist = glm::length(toTarget);
@@ -25,7 +25,8 @@ public:
         float clampedDist = std::clamp(dist, minDist + 0.0001f, maxDist - 0.0001f);
 
         // Law of cosines for angle at root (alpha)
-        float cosAlpha = (lengthA * lengthA + clampedDist * clampedDist - lengthB * lengthB) / (2.0f * lengthA * clampedDist);
+        float cosAlpha =
+            (lengthA * lengthA + clampedDist * clampedDist - lengthB * lengthB) / (2.0f * lengthA * clampedDist);
         cosAlpha = std::clamp(cosAlpha, -1.0f, 1.0f);
         float alpha = std::acos(cosAlpha);
 

@@ -1,7 +1,8 @@
 #include "WavePlayerNode.hpp"
 #include <cmath>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 WavePlayerNode::WavePlayerNode()
 {

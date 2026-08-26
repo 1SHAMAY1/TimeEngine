@@ -1,26 +1,30 @@
 #pragma once
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
-#include "Utils/TimeGUI.hpp"
 #include "Utils/TEString.hpp"
-
+#include "Utils/TimeGUI.hpp"
 
 template <typename T> struct TEPropertyDrawer
 {
-    static void Draw(void *addr, const TEString &displayName) { TimeGUI::Text(displayName + ": [No Drawer]"); }
+    static bool Draw(void *addr, const TEString &displayName)
+    {
+        TimeGUI::Text(displayName + ": [No Drawer]");
+        return false;
+    }
     static TEString Serialize(void *addr) { return ""; }
     static void Deserialize(void *addr, const TEString &data) {}
 };
 
 template <> struct TEPropertyDrawer<uint64_t>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
         TEString cleanName = displayName;
         size_t hashPos = cleanName.find("###");
         if (hashPos != TEString::npos)
             cleanName = cleanName.substr(0, hashPos);
         TimeGUI::Text(cleanName + ": " + TEString::FromInt64(static_cast<int64_t>(*(uint64_t *)addr)));
+        return false;
     }
     static TEString Serialize(void *addr) { return TEString::FromInt64(static_cast<int64_t>(*(uint64_t *)addr)); }
     static void Deserialize(void *addr, const TEString &data)
@@ -34,9 +38,9 @@ template <> struct TEPropertyDrawer<uint64_t>
 
 template <> struct TEPropertyDrawer<float>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
-        TimeGUI::DragFloat(displayName, (float *)addr, 0.1f);
+        return TimeGUI::DragFloat(displayName, (float *)addr, 0.1f);
     }
     static TEString Serialize(void *addr) { return TEString::FromFloat(*(float *)addr); }
     static void Deserialize(void *addr, const TEString &data)
@@ -48,9 +52,9 @@ template <> struct TEPropertyDrawer<float>
 
 template <> struct TEPropertyDrawer<int>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
-        TimeGUI::DragInt(displayName, (int *)addr, 1.0f);
+        return TimeGUI::DragInt(displayName, (int *)addr, 1.0f);
     }
     static TEString Serialize(void *addr) { return TEString::FromInt(*(int *)addr); }
     static void Deserialize(void *addr, const TEString &data)
@@ -62,10 +66,10 @@ template <> struct TEPropertyDrawer<int>
 
 template <> struct TEPropertyDrawer<TEString>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
         TEString *str = (TEString *)addr;
-        TimeGUI::InputText(displayName, *str);
+        return TimeGUI::InputText(displayName, *str);
     }
     static TEString Serialize(void *addr) { return *(TEString *)addr; }
     static void Deserialize(void *addr, const TEString &data) { *(TEString *)addr = data; }
@@ -73,16 +77,16 @@ template <> struct TEPropertyDrawer<TEString>
 
 template <> struct TEPropertyDrawer<bool>
 {
-    static void Draw(void *addr, const TEString &displayName) { TimeGUI::Checkbox(displayName, (bool *)addr); }
+    static bool Draw(void *addr, const TEString &displayName) { return TimeGUI::Checkbox(displayName, (bool *)addr); }
     static TEString Serialize(void *addr) { return *(bool *)addr ? "true" : "false"; }
     static void Deserialize(void *addr, const TEString &data) { *(bool *)addr = (data == "true" || data == "1"); }
 };
 
 template <> struct TEPropertyDrawer<TEVector2>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
-        UIUtils::DrawVec2Control(displayName, *(TEVector2 *)addr);
+        return UIUtils::DrawVec2Control(displayName, *(TEVector2 *)addr);
     }
     static TEString Serialize(void *addr)
     {
@@ -103,9 +107,9 @@ template <> struct TEPropertyDrawer<TEVector2>
 
 template <> struct TEPropertyDrawer<TEVector>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
-        UIUtils::DrawVec3Control(displayName, *(TEVector *)addr);
+        return UIUtils::DrawVec3Control(displayName, *(TEVector *)addr);
     }
     static TEString Serialize(void *addr)
     {
@@ -127,14 +131,15 @@ template <> struct TEPropertyDrawer<TEVector>
 
 template <> struct TEPropertyDrawer<TEColor>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
-        UIUtils::DrawColorControl(displayName, ((TEColor *)addr)->GetValue());
+        return UIUtils::DrawColorControl(displayName, *(TEColor *)addr);
     }
     static TEString Serialize(void *addr)
     {
         auto v = ((TEColor *)addr)->GetValue();
-        return TEString::FromFloat(v.r) + " " + TEString::FromFloat(v.g) + " " + TEString::FromFloat(v.b) + " " + TEString::FromFloat(v.a);
+        return TEString::FromFloat(v.r) + " " + TEString::FromFloat(v.g) + " " + TEString::FromFloat(v.b) + " " +
+               TEString::FromFloat(v.a);
     }
     static void Deserialize(void *addr, const TEString &data)
     {
@@ -152,7 +157,7 @@ template <> struct TEPropertyDrawer<TEColor>
 
 template <> struct TEPropertyDrawer<TERotator>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
         TERotator *rot = (TERotator *)addr;
         TEVector euler = rot->ToVec3();
@@ -161,12 +166,15 @@ template <> struct TEPropertyDrawer<TERotator>
             rot->Pitch = euler.x;
             rot->Yaw = euler.y;
             rot->Roll = euler.z;
+            return true;
         }
+        return false;
     }
     static TEString Serialize(void *addr)
     {
         TERotator *rot = (TERotator *)addr;
-        return TEString::FromFloat(rot->Pitch) + " " + TEString::FromFloat(rot->Yaw) + " " + TEString::FromFloat(rot->Roll);
+        return TEString::FromFloat(rot->Pitch) + " " + TEString::FromFloat(rot->Yaw) + " " +
+               TEString::FromFloat(rot->Roll);
     }
     static void Deserialize(void *addr, const TEString &data)
     {
@@ -183,10 +191,10 @@ template <> struct TEPropertyDrawer<TERotator>
 
 template <> struct TEPropertyDrawer<TEScale>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
         TEScale *scale = (TEScale *)addr;
-        UIUtils::DrawVec3Control(displayName, scale->Scale, 1.0f);
+        return UIUtils::DrawVec3Control(displayName, scale->Scale, 1.0f);
     }
     static TEString Serialize(void *addr)
     {
@@ -209,12 +217,13 @@ template <> struct TEPropertyDrawer<TEScale>
 
 template <> struct TEPropertyDrawer<TETransform>
 {
-    static void Draw(void *addr, const TEString &displayName)
+    static bool Draw(void *addr, const TEString &displayName)
     {
         TETransform *transform = (TETransform *)addr;
-        TEPropertyDrawer<TEVector>::Draw(&transform->Position, "Position");
-        TEPropertyDrawer<TERotator>::Draw(&transform->Rotation, "Rotation");
-        TEPropertyDrawer<TEScale>::Draw(&transform->Scale, "Scale");
+        bool p = TEPropertyDrawer<TEVector>::Draw(&transform->Position, "Position");
+        bool r = TEPropertyDrawer<TERotator>::Draw(&transform->Rotation, "Rotation");
+        bool s = TEPropertyDrawer<TEScale>::Draw(&transform->Scale, "Scale");
+        return p || r || s;
     }
     static TEString Serialize(void *addr)
     {
@@ -225,4 +234,3 @@ template <> struct TEPropertyDrawer<TETransform>
         // Not used directly
     }
 };
-

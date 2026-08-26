@@ -5,7 +5,6 @@
 #include "Utils/TimeGUI.hpp"
 #include <functional>
 
-
 class TE_API UIWidget : public std::enable_shared_from_this<UIWidget>
 {
 public:
@@ -16,15 +15,15 @@ public:
     void AddChild(TERef<UIWidget> child);
     void RemoveChild(TERef<UIWidget> child);
     void ClearChildren();
-    const TEArray<TERef<UIWidget>>& GetChildren() const { return m_Children; }
+    const TEArray<TERef<UIWidget>> &GetChildren() const { return m_Children; }
     TERef<UIWidget> GetParent() const { return m_Parent.lock(); }
 
     // Transform & Layout
     void SetPosition(const TEVector2 &pos) { m_Position = pos; }
-    const TEVector2& GetPosition() const { return m_Position; }
+    const TEVector2 &GetPosition() const { return m_Position; }
 
     void SetSize(const TEVector2 &size) { m_Size = size; }
-    const TEVector2& GetSize() const { return m_Size; }
+    const TEVector2 &GetSize() const { return m_Size; }
 
     void SetVisible(bool visible) { m_IsVisible = visible; }
     bool IsVisible() const { return m_IsVisible; }
@@ -32,7 +31,7 @@ public:
     void SetEnabled(bool enabled) { m_IsEnabled = enabled; }
     bool IsEnabled() const { return m_IsEnabled; }
 
-    const TEString& GetID() const { return m_ID; }
+    const TEString &GetID() const { return m_ID; }
     void SetID(const TEString &id) { m_ID = id; }
 
     // Core Drawing & Updates
@@ -50,9 +49,9 @@ public:
     static void ClearViewportWidgets();
 
     // Event Callbacks
-    std::function<void(UIWidget*)> OnHovered;
-    std::function<void(UIWidget*)> OnUnhovered;
-    std::function<void(UIWidget*)> OnClicked;
+    std::function<void(UIWidget *)> OnHovered;
+    std::function<void(UIWidget *)> OnUnhovered;
+    std::function<void(UIWidget *)> OnClicked;
 
 protected:
     virtual void DrawSelf() = 0;
@@ -68,4 +67,3 @@ protected:
     TEWeakRef<UIWidget> m_Parent;
     TEArray<TERef<UIWidget>> m_Children;
 };
-

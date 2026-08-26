@@ -4,7 +4,8 @@
 #include <cstdint>
 
 TE_CLASS()
-class TE_API TObject {
+class TE_API TObject
+{
 protected:
     static inline std::atomic<uint64_t> IDCounter = 1;
 
@@ -15,7 +16,7 @@ protected:
     TEString Name;
 
     TEPROPERTY()
-    TObject* Owner = nullptr;
+    TObject *Owner = nullptr;
 
     TEPROPERTY()
     bool bMarkedPendingDestroy = false;
@@ -24,14 +25,14 @@ protected:
     bool bInitialized = false;
 
 public:
-    TObject(const TEString& name = "UnnamedObject") : Name(name) {}
+    TObject(const TEString &name = "UnnamedObject") : Name(name) {}
 
     uint64_t GetID() const { return ID; }
-    const TEString& GetName() const { return Name; }
-    void SetName(const TEString& newName) { Name = newName; }
+    const TEString &GetName() const { return Name; }
+    void SetName(const TEString &newName) { Name = newName; }
 
-    TObject* GetOwner() const { return Owner; }
-    void SetOwner(TObject* newOwner) { Owner = newOwner; }
+    TObject *GetOwner() const { return Owner; }
+    void SetOwner(TObject *newOwner) { Owner = newOwner; }
 
     void OnInitialize() { bInitialized = true; }
     void Tick(float deltaTime) {}

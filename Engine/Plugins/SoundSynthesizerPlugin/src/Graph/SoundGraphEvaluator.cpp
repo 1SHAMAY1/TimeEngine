@@ -1,12 +1,10 @@
 #include "SoundGraphEvaluator.hpp"
 #include "DSP/AudioDSPUtils.hpp"
 
-namespace SoundStudio {
-
-SoundGraphEvaluator::SoundGraphEvaluator(TERef<SoundGraph> graph)
+namespace SoundStudio
 {
-    SetGraph(graph);
-}
+
+SoundGraphEvaluator::SoundGraphEvaluator(TERef<SoundGraph> graph) { SetGraph(graph); }
 
 void SoundGraphEvaluator::SetGraph(TERef<SoundGraph> graph)
 {

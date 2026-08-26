@@ -28,7 +28,6 @@
 #include <cstring>
 #include <iostream>
 
-
 // -------------------------------------------------------------------------
 //  File-local helper: BlendFactor -> D3D11_BLEND
 //  Kept here (not in the header) because D3D11_BLEND requires d3d11.h
@@ -404,4 +403,3 @@ void DirectX11RendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor 
     ctx.DeviceContext->OMSetBlendState(bs, nullptr, 0xFFFFFFFF);
     bs->Release();
 }
-

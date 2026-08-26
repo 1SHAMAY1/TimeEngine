@@ -1,7 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanShaderLibrary.hpp"
+#include "Core/PreRequisites.h"
 #include <iostream>
-
 
 TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanBasicShader() { return nullptr; }
 TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanTextureShader() { return nullptr; }
@@ -12,10 +11,7 @@ TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanParticleShader() { return n
 TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanPostProcessShader() { return nullptr; }
 TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanUIShader() { return nullptr; }
 TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanLight2DShader() { return nullptr; }
-TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanComputeShader(const TEString &computeSource)
-{
-    return nullptr;
-}
+TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanComputeShader(const TEString &computeSource) { return nullptr; }
 
 void VulkanShaderLibrary::SetUniform1i(VulkanShader *shader, const TEString &name, int value) {}
 void VulkanShaderLibrary::SetUniform1f(VulkanShader *shader, const TEString &name, float value) {}
@@ -74,8 +70,7 @@ void VulkanShaderLibrary::BindImageTexture(unsigned int unit, unsigned int textu
 unsigned int VulkanShaderLibrary::CreateUniformBuffer(const void *data, size_t size) { return 0; }
 void VulkanShaderLibrary::BindUniformBuffer(unsigned int uboID, unsigned int bindingPoint) {}
 void VulkanShaderLibrary::UpdateUniformBuffer(unsigned int uboID, const void *data, size_t offset, size_t size) {}
-void VulkanShaderLibrary::BindUniformBlock(VulkanShader *shader, const TEString &blockName,
-                                           unsigned int bindingPoint)
+void VulkanShaderLibrary::BindUniformBlock(VulkanShader *shader, const TEString &blockName, unsigned int bindingPoint)
 {
 }
 
@@ -102,4 +97,3 @@ void VulkanShaderLibrary::GetQueryObjectuiv(unsigned int id, uint32_t pname, uns
 void VulkanShaderLibrary::FenceSync(uint32_t condition, uint32_t flags) {}
 void VulkanShaderLibrary::ClientWaitSync(void *sync, uint32_t flags, uint64_t timeout) {}
 void VulkanShaderLibrary::DeleteSync(void *sync) {}
-

@@ -2,7 +2,6 @@
 #include "ControllableGameObject.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 
-
 enum class ECameraSelectionMode
 {
     DedicatedPlayerCamera = 0, // Smooth Follow & Shake & Deflect
@@ -28,4 +27,3 @@ public:
 #ifdef TE_EDITOR
 T_REGISTER_ENUM_PROPERTY(PlayerBase, ECameraSelectionMode, SelectedCameraMode, "Camera Selection Mode")
 #endif
-

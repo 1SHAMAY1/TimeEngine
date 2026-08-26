@@ -1,18 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/StateTreeAsset.hpp"
 #include "Core/Graph/GraphSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 
-StateTreeAsset::StateTreeAsset()
-{
-    m_Graph = CreateRef<StateTreeGraph>(m_Name);
-}
+StateTreeAsset::StateTreeAsset() { m_Graph = CreateRef<StateTreeGraph>(m_Name); }
 
-StateTreeAsset::StateTreeAsset(const TEString &name)
-    : m_Name(name)
-{
-    m_Graph = CreateRef<StateTreeGraph>(m_Name);
-}
+StateTreeAsset::StateTreeAsset(const TEString &name) : m_Name(name) { m_Graph = CreateRef<StateTreeGraph>(m_Name); }
 
 TERef<Asset> StateTreeAsset::Clone() const
 {
@@ -31,7 +24,8 @@ bool StateTreeAsset::LoadFromFile(const TEString &path)
     if (!m_Graph)
         m_Graph = CreateRef<StateTreeGraph>(m_Name);
 
-    auto factory = [](const TEString &nodeType) -> TERef<GraphNode> {
+    auto factory = [](const TEString &nodeType) -> TERef<GraphNode>
+    {
         if (nodeType == "StateNode")
             return CreateRef<StateNode>();
         if (nodeType == "StateRootNode")

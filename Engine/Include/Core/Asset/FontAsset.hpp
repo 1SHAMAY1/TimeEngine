@@ -6,8 +6,6 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
 
-
-
 struct TE_API FontGlyph
 {
     TEString Character = " ";
@@ -41,8 +39,8 @@ public:
     virtual void OnContentBrowserCreate(const TEString &path) override;
 
     // Font Atlas Baking
-    bool BakeFromTTF(const TEString &ttfPath, float pixelSize = 32.0f,
-                     uint32_t atlasWidth = 512, uint32_t atlasHeight = 512);
+    bool BakeFromTTF(const TEString &ttfPath, float pixelSize = 32.0f, uint32_t atlasWidth = 512,
+                     uint32_t atlasHeight = 512);
 
     // Typography Metrics & Query
     bool GetGlyph(const TEString &character, FontGlyph &outGlyph) const;
@@ -89,4 +87,3 @@ protected:
 
     TERef<Texture> m_AtlasTexture;
 };
-

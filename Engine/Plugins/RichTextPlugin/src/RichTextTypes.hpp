@@ -6,7 +6,6 @@
 #include "Utils/TEString.hpp"
 #include <cstdint>
 
-
 enum class ERichTextAlign
 {
     Left = 0,
@@ -69,4 +68,3 @@ struct RichTextLinkHitbox
     TEVector2 Min{0.0f, 0.0f};
     TEVector2 Max{0.0f, 0.0f};
 };
-

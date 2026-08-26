@@ -2,7 +2,6 @@
 #include "Editor/AssetEditor.hpp"
 #include "Input/InputMappingContext.hpp"
 
-
 class TE_API InputMappingContextAssetEditor : public AssetEditor
 {
 public:
@@ -22,4 +21,3 @@ public:
 private:
     int m_ListeningIndex = -1; // -1 if not detecting key, index of mapping being listened to
 };
-

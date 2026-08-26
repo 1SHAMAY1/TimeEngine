@@ -78,18 +78,9 @@ struct PCGPoint
     {
     }
 
-    void SetAttribute(const TEString &key, const PCGAttributeValue &val)
-    {
-        Attributes[key] = val;
-    }
+    void SetAttribute(const TEString &key, const PCGAttributeValue &val) { Attributes[key] = val; }
 
-    const PCGAttributeValue *GetAttribute(const TEString &key) const
-    {
-        return Attributes.Find(key);
-    }
+    const PCGAttributeValue *GetAttribute(const TEString &key) const { return Attributes.Find(key); }
 
-    bool HasAttribute(const TEString &key) const
-    {
-        return Attributes.Find(key) != nullptr;
-    }
+    bool HasAttribute(const TEString &key) const { return Attributes.Find(key) != nullptr; }
 };

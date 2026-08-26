@@ -11,4 +11,3 @@ public:
 private:
     TERef<SpriteSheet> m_SpriteSheet;
 };
-

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "ISubmode.hpp"
 #include "../SpriteEditorTypes.hpp"
+#include "ISubmode.hpp"
 #include <vector>
-
 
 enum class PixelToolType
 {
@@ -47,11 +46,16 @@ private:
     void DrawResizeModal(SpriteMode *mode);
 
     // Pixel Manipulation Algorithms
-    void FloodFill(TEArray<TEVector4> &pixels, int width, int height, int startX, int startY, const TEVector4 &targetCol, const TEVector4 &fillCol);
-    void ReplaceColor(TEArray<TEVector4> &pixels, int width, int height, const TEVector4 &targetCol, const TEVector4 &fillCol);
-    void DrawBrushPixel(TEArray<TEVector4> &pixels, int width, int height, int x, int y, const TEVector4 &col, int size);
-    void DrawDitherPixel(TEArray<TEVector4> &pixels, int width, int height, int x, int y, const TEVector4 &col, int size);
-    void DrawBresenhamLine(TEArray<TEVector4> &pixels, int width, int height, int x0, int y0, int x1, int y1, const TEVector4 &col, int size);
+    void FloodFill(TEArray<TEVector4> &pixels, int width, int height, int startX, int startY,
+                   const TEVector4 &targetCol, const TEVector4 &fillCol);
+    void ReplaceColor(TEArray<TEVector4> &pixels, int width, int height, const TEVector4 &targetCol,
+                      const TEVector4 &fillCol);
+    void DrawBrushPixel(TEArray<TEVector4> &pixels, int width, int height, int x, int y, const TEVector4 &col,
+                        int size);
+    void DrawDitherPixel(TEArray<TEVector4> &pixels, int width, int height, int x, int y, const TEVector4 &col,
+                         int size);
+    void DrawBresenhamLine(TEArray<TEVector4> &pixels, int width, int height, int x0, int y0, int x1, int y1,
+                           const TEVector4 &col, int size);
 
     // Layer Composite Helper
     TEArray<TEVector4> GetCompositeFramePixels(SpriteMode *mode, int frameIndex);
@@ -85,4 +89,3 @@ private:
     bool m_MaintainAspectRatio = true;
     bool m_ResizeCanvasOnly = true; // true: Crop/expand canvas, false: scale content
 };
-

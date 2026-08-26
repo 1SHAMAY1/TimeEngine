@@ -3,7 +3,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 struct TE_API ImageData
 {
     TEArray<uint8_t> Pixels;
@@ -44,8 +43,8 @@ public:
 
     static AssetHandle LoadAsset(const TEString &path);
     static AssetHandle ReloadAsset(AssetHandle handle);
-    static void        UnloadAsset(AssetHandle handle);
-    static bool        DeleteAsset(const TEString &path);
+    static void UnloadAsset(AssetHandle handle);
+    static bool DeleteAsset(const TEString &path);
 
     static void AddAsset(AssetHandle handle, const TERef<Asset> &asset);
     static bool HasAsset(AssetHandle handle);
@@ -62,18 +61,16 @@ public:
     // Image & Font utilities (stb encapsulation)
     static ImageData ImportImage(const TEString &filepath, int desiredChannels = 0);
     static bool ExportImagePNG(const TEString &path, int width, int height, int channels, const void *data);
-    static bool BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSize,
-                              uint32_t atlasWidth, uint32_t atlasHeight,
-                              float &outAscent, float &outDescent, float &outLineHeight,
-                              TEMap<TEString, struct FontGlyph> &outGlyphs,
-                              TEArray<uint8_t> &outRgbaBitmap);
+    static bool BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSize, uint32_t atlasWidth,
+                              uint32_t atlasHeight, float &outAscent, float &outDescent, float &outLineHeight,
+                              TEMap<TEString, struct FontGlyph> &outGlyphs, TEArray<uint8_t> &outRgbaBitmap);
 
 private:
     static TEMap<AssetHandle, TERef<Asset>> s_LoadedAssets;
 };
 
-#define TE_REGISTER_ASSET(type) \
-    static struct TEAssetRegistrar_##type { \
-        TEAssetRegistrar_##type() { AssetManager::RegisterAssetType(CreateRef<type>()); } \
+#define TE_REGISTER_ASSET(type)                                                                                        \
+    static struct TEAssetRegistrar_##type                                                                              \
+    {                                                                                                                  \
+        TEAssetRegistrar_##type() { AssetManager::RegisterAssetType(CreateRef<type>()); }                              \
     } g_TEAssetRegistrar_##type;
-

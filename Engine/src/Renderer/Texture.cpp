@@ -1,8 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Texture.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include "Utils/TEFileSystem.hpp"
@@ -13,7 +13,6 @@
 #include <d3d11.h>
 #endif
 
-
 TE_REGISTER_ASSET(Texture)
 
 bool Texture::LoadFromFile(const TEString &path)
@@ -21,7 +20,7 @@ bool Texture::LoadFromFile(const TEString &path)
     TEString ext = path.GetExtension();
     if (ext == ".tetexture")
     {
-        auto self = TERef<Texture>(this, [](Texture*){});
+        auto self = TERef<Texture>(this, [](Texture *) {});
         TextureSerializer serializer(self);
         return serializer.Deserialize(path);
     }
@@ -31,7 +30,8 @@ bool Texture::LoadFromFile(const TEString &path)
         m_Handle = AssetRegistry::RegisterPath(path);
         m_Name = path.GetStem();
         ImageData img = AssetManager::ImportImage(path, 4);
-        if (!img.IsValid()) return false;
+        if (!img.IsValid())
+            return false;
         m_Width = img.Width;
         m_Height = img.Height;
         m_Channels = img.Channels;
@@ -40,8 +40,7 @@ bool Texture::LoadFromFile(const TEString &path)
     return false;
 }
 
-Texture::Texture(const TEString &path)
-    : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
+Texture::Texture(const TEString &path) : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
 {
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Name = path.GetStem();
@@ -310,4 +309,3 @@ void Texture::OnContentBrowserCreate(const TEString &path)
         TE_CORE_ERROR("Failed to serialize and create Texture metadata at {0}", finalPath.c_str());
     }
 }
-

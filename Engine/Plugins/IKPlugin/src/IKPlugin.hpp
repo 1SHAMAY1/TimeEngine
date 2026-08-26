@@ -13,7 +13,8 @@ public:
     virtual TEString GetAuthor() const override { return "TimeEngine Team"; }
     virtual TEString GetDescription() const override
     {
-        return "2D Inverse Kinematics (IK) Plugin with Analytical 2-Bone, FABRIK, CCD, Aim/LookAt, and Foot Grounding Solvers";
+        return "2D Inverse Kinematics (IK) Plugin with Analytical 2-Bone, FABRIK, CCD, Aim/LookAt, and Foot Grounding "
+               "Solvers";
     }
 
     virtual void DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const override;

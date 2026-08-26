@@ -3,7 +3,6 @@
 #include "Utils/TimeGUI.hpp"
 #include <sstream>
 
-
 void DialogueLiveSimulator::StartSimulation(const DialogueGraph &graph)
 {
     m_Story.LoadFromGraph(graph);
@@ -142,4 +141,3 @@ void DialogueLiveSimulator::DrawSimulatorPanel(const DialogueGraph &graph)
         }
     }
 }
-

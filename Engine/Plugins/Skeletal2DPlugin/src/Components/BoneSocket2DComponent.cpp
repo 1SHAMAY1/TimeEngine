@@ -1,6 +1,6 @@
 #include "BoneSocket2DComponent.hpp"
-#include "Core/Scene/TransformComponent.hpp"
 #include "Core/Scene/EntityManager.hpp"
+#include "Core/Scene/TransformComponent.hpp"
 
 void BoneSocket2DComponent::OnUpdate(float dt)
 {
@@ -13,7 +13,7 @@ void BoneSocket2DComponent::OnUpdate(float dt)
         Entity owner = GetOwnerEntity();
         if (owner && owner.HasComponent<TransformComponent>())
         {
-            auto* tc = owner.GetComponent<TransformComponent>();
+            auto *tc = owner.GetComponent<TransformComponent>();
             if (tc)
             {
                 glm::vec4 localPos(LocalOffset.x, LocalOffset.y, 0.0f, 1.0f);

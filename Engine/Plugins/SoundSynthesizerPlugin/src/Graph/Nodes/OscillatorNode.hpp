@@ -3,7 +3,8 @@
 #include "../../DSP/WaveTableOscillator.hpp"
 #include "../SoundGraphNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class OscillatorNode : public SoundGraphNode
 {

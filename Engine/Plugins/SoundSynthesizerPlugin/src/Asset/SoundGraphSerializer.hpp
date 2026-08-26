@@ -4,7 +4,8 @@
 #include "Utils/TEString.hpp"
 #include <memory>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGraphSerializer
 {

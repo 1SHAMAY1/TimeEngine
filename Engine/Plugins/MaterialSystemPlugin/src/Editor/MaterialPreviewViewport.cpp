@@ -3,10 +3,7 @@
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 
-
-MaterialPreviewViewport::MaterialPreviewViewport()
-{
-}
+MaterialPreviewViewport::MaterialPreviewViewport() {}
 
 void MaterialPreviewViewport::InitRenderer()
 {
@@ -86,7 +83,10 @@ void MaterialPreviewViewport::Draw(const TERef<MaterialAsset> &material)
     }
 
     // Draw Material Preview Shape
-    dl.AddRectFilled(objMin, objMax, TimeGUI::ColorConvertFloat4ToU32(TEVector4(surfaceColor.r, surfaceColor.g, surfaceColor.b, surfaceColor.a)), 8.0f);
+    dl.AddRectFilled(
+        objMin, objMax,
+        TimeGUI::ColorConvertFloat4ToU32(TEVector4(surfaceColor.r, surfaceColor.g, surfaceColor.b, surfaceColor.a)),
+        8.0f);
     dl.AddRect(objMin, objMax, TIMEGUI_COL32(255, 255, 255, 120), 8.0f, 0, 1.5f);
 
     // 2D Light Tester Handle
@@ -98,7 +98,8 @@ void MaterialPreviewViewport::Draw(const TERef<MaterialAsset> &material)
 
         // Allow dragging light position
         TEVector2 mousePos = TimeGUI::GetMousePos();
-        if (TimeGUI::IsMouseDown(0) && glm::distance(glm::vec2(mousePos.x, mousePos.y), glm::vec2(lightScreenPos.x, lightScreenPos.y)) <= 20.0f)
+        if (TimeGUI::IsMouseDown(0) &&
+            glm::distance(glm::vec2(mousePos.x, mousePos.y), glm::vec2(lightScreenPos.x, lightScreenPos.y)) <= 20.0f)
         {
             m_LightPos = mousePos - center + TEVector2(150.0f, 150.0f);
         }
@@ -110,7 +111,10 @@ void MaterialPreviewViewport::Draw(const TERef<MaterialAsset> &material)
         bool compiled = material->GetCompileResult().Success;
         TEColor statusColor = compiled ? TEColor(0.2f, 0.8f, 0.3f, 1.0f) : TEColor(0.9f, 0.25f, 0.25f, 1.0f);
         const char *statusText = compiled ? "[Shader Compiled & Ready]" : "[Compilation Error]";
-        dl.AddText(pMin + TEVector2(12.0f, 12.0f), TimeGUI::ColorConvertFloat4ToU32(TEVector4(statusColor.r, statusColor.g, statusColor.b, statusColor.a)), statusText);
+        dl.AddText(
+            pMin + TEVector2(12.0f, 12.0f),
+            TimeGUI::ColorConvertFloat4ToU32(TEVector4(statusColor.r, statusColor.g, statusColor.b, statusColor.a)),
+            statusText);
 
         if (!compiled && !material->GetCompileResult().ErrorMessage.empty())
         {

@@ -3,7 +3,6 @@
 #include "Layers/Layer.hpp"
 #include <memory>
 
-
 class TE_API EngineSettingsButtonLayer : public Layer
 {
 public:
@@ -24,4 +23,3 @@ private:
     void RenderEngineSettingsButton();
     void CreateFloatingEngineSettingsWindow();
 };
-

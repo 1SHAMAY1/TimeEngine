@@ -3,9 +3,10 @@
 
 struct GLFWwindow;
 
-class WindowsWindow : public IWindow {
+class WindowsWindow : public IWindow
+{
 public:
-    WindowsWindow(const WindowProps& props);
+    WindowsWindow(const WindowProps &props);
     virtual ~WindowsWindow();
 
     void OnUpdate() override;
@@ -13,23 +14,22 @@ public:
     unsigned int GetWidth() const override { return m_Data.Width; }
     unsigned int GetHeight() const override { return m_Data.Height; }
 
-    void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
+    void SetEventCallback(const EventCallbackFn &callback) override { m_Data.EventCallback = callback; }
     void SetVSync(bool enabled) override;
     bool IsVSync() const override;
 
-    void* GetNativeWindow() const override { return m_Window; }
+    void *GetNativeWindow() const override { return m_Window; }
 
-    void* GetGLLoaderFunction() const;
- 
-
+    void *GetGLLoaderFunction() const;
 
 private:
-    virtual void Init(const WindowProps& props);
+    virtual void Init(const WindowProps &props);
     virtual void Shutdown();
 
-    GLFWwindow* m_Window;
+    GLFWwindow *m_Window;
 
-    struct WindowData {
+    struct WindowData
+    {
         TEString Title;
         unsigned int Width, Height;
         bool VSync;

@@ -1,8 +1,7 @@
 #pragma once
-#include "ParticleModule.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
+#include "ParticleModule.hpp"
 #include <algorithm>
-
 
 class GravityForceModule : public ParticleModule
 {
@@ -54,10 +53,8 @@ public:
 
         float normalizedAge = 1.0f - (particle.Lifetime / particle.MaxLifetime);
         TEVector4 gradColor = Gradient.Evaluate(normalizedAge);
-        particle.Color = TEVector4(particle.BaseColor.x * gradColor.x,
-                                   particle.BaseColor.y * gradColor.y,
-                                   particle.BaseColor.z * gradColor.z,
-                                   particle.BaseColor.w * gradColor.w);
+        particle.Color = TEVector4(particle.BaseColor.x * gradColor.x, particle.BaseColor.y * gradColor.y,
+                                   particle.BaseColor.z * gradColor.z, particle.BaseColor.w * gradColor.w);
     }
 };
 
@@ -125,4 +122,3 @@ public:
         }
     }
 };
-

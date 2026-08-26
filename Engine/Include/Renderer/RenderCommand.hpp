@@ -16,8 +16,14 @@ public:
     static void DrawIndexed(uint32_t vao, uint32_t indexCount) { s_RendererAPI->DrawIndexed(vao, indexCount); }
     static void SetBlendMode(int blendMode) { s_RendererAPI->SetBlendMode(blendMode); }
 
-    static bool LoadLoader(void *(*loadProc)(const char *)) { return s_RendererAPI ? s_RendererAPI->LoadLoader(loadProc) : false; }
-    static TEString GetVersionString() { return s_RendererAPI ? s_RendererAPI->GetVersionString() : "Unknown OpenGL Version"; }
+    static bool LoadLoader(void *(*loadProc)(const char *))
+    {
+        return s_RendererAPI ? s_RendererAPI->LoadLoader(loadProc) : false;
+    }
+    static TEString GetVersionString()
+    {
+        return s_RendererAPI ? s_RendererAPI->GetVersionString() : "Unknown OpenGL Version";
+    }
     static TEString GetGPUVendor() { return s_RendererAPI ? s_RendererAPI->GetGPUVendor() : "Unknown Vendor"; }
     static TEString GetGPURenderer() { return s_RendererAPI ? s_RendererAPI->GetGPURenderer() : "Unknown Renderer"; }
 
@@ -38,4 +44,3 @@ public:
 private:
     static TEScope<RendererAPI> s_RendererAPI;
 };
-

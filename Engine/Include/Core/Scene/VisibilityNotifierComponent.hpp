@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GameFrameWork/TComponent.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
+#include "GameFrameWork/TComponent.hpp"
 #include "Utils/MathUtils.hpp"
 
 TE_CLASS()
@@ -28,7 +28,6 @@ private:
 #ifdef TE_EDITOR
 T_REGISTER_COMPONENT(VisibilityNotifierComponent, "Visibility Notifier Component")
 T_REGISTER_PROPERTY(VisibilityNotifierComponent, TEVector2, BoundsSize, "Bounds Size")
-T_REGISTER_PRESET(VisibilityNotifierPreset, "Visibility Notifier", "Utility", [](EntityID id, EntityManager *em) {
-    em->AddComponent<VisibilityNotifierComponent>(id);
-})
+T_REGISTER_PRESET(VisibilityNotifierPreset, "Visibility Notifier", "Utility",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<VisibilityNotifierComponent>(id); })
 #endif

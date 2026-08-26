@@ -3,7 +3,6 @@
 #include "Utils/TEString.hpp"
 #include <glm/glm.hpp>
 
-
 class TE_API TEColor
 {
 public:
@@ -49,4 +48,3 @@ public:
 
     operator glm::vec4() const { return {r, g, b, a}; }
 };
-

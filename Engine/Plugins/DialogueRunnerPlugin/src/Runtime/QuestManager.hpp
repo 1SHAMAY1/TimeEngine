@@ -1,11 +1,9 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "NarrativeTypes.hpp"
 #include <functional>
-
-
 
 using QuestStatusChangeCallback = std::function<void(const TEString &questID, QuestStatus newStatus)>;
 
@@ -44,4 +42,3 @@ private:
     TEMap<TEString, QuestData> m_Quests;
     TEArray<QuestStatusChangeCallback> m_Observers;
 };
-

@@ -3,10 +3,7 @@
 #include "Nodes/PCGGeneratorNodes.hpp"
 #include "Nodes/PCGSpawnerNodes.hpp"
 
-PCGGraphAsset::PCGGraphAsset()
-{
-    m_Graph.SetName("New PCG Graph");
-}
+PCGGraphAsset::PCGGraphAsset() { m_Graph.SetName("New PCG Graph"); }
 
 const TEString &PCGGraphAsset::GetType() const
 {
@@ -34,10 +31,7 @@ bool PCGGraphAsset::LoadFromFile(const TEString &path)
     return PCGGraphSerializer::LoadFromFile(m_Graph, path);
 }
 
-bool PCGGraphAsset::SaveToFile(const TEString &path)
-{
-    return PCGGraphSerializer::SaveToFile(m_Graph, path);
-}
+bool PCGGraphAsset::SaveToFile(const TEString &path) { return PCGGraphSerializer::SaveToFile(m_Graph, path); }
 
 void PCGGraphAsset::OnContentBrowserCreate(const TEString &path)
 {

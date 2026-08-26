@@ -7,7 +7,6 @@
 #include "Utils/MathUtils.hpp"
 #include <vector>
 
-
 struct RichTextLayoutResult
 {
     TEArray<RichTextGlyphQuad> GlyphQuads;
@@ -22,12 +21,9 @@ public:
     RichTextLayoutEngine() = default;
 
     /// Computes layout geometry, wrapping, alignment, and hitboxes for parsed rich text spans
-    static RichTextLayoutResult ComputeLayout(const TEArray<RichTextSpan> &spans,
-                                             const TERef<FontAsset> &defaultFont,
-                                             float wrapWidth = 0.0f,
-                                             float defaultLineSpacing = 1.2f);
+    static RichTextLayoutResult ComputeLayout(const TEArray<RichTextSpan> &spans, const TERef<FontAsset> &defaultFont,
+                                              float wrapWidth = 0.0f, float defaultLineSpacing = 1.2f);
 
     /// Tests if a local mouse position hovers over an interactive hyperlink hitbox
     static TEString HitTestLink(const RichTextLayoutResult &layout, const TEVector2 &localPos);
 };
-

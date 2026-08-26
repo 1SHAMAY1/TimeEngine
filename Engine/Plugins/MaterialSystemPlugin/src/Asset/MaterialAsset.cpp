@@ -5,10 +5,7 @@
 #include "Graph/MaterialNodes_Slabs.hpp"
 #include "Graph/MaterialOutputNode.hpp"
 
-
-MaterialAsset::MaterialAsset(const TEString &name) : m_Name(name), m_Graph(name)
-{
-}
+MaterialAsset::MaterialAsset(const TEString &name) : m_Name(name), m_Graph(name) {}
 
 void MaterialAsset::CreateDefaultGraph()
 {
@@ -54,8 +51,7 @@ bool MaterialAsset::Recompile()
     m_CompileResult = MaterialShaderCompiler::Compile(m_Graph);
     if (m_CompileResult.Success)
     {
-        m_CompiledShader = Shader::Create(m_CompileResult.VertexShaderSource,
-                                          m_CompileResult.FragmentShaderSource);
+        m_CompiledShader = Shader::Create(m_CompileResult.VertexShaderSource, m_CompileResult.FragmentShaderSource);
         return m_CompiledShader != nullptr;
     }
     return false;

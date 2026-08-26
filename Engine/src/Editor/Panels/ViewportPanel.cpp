@@ -1,17 +1,16 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/ViewportPanel.hpp"
-#include "Editor/EditorUtils.hpp"
-#include "Editor/EditorSaveManager.hpp"
-#include "Editor/ViewportContextMenu.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/TransformComponent.hpp"
+#include "Editor/EditorSaveManager.hpp"
+#include "Editor/EditorUtils.hpp"
+#include "Editor/ViewportContextMenu.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Layers/ProfilingLayer.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Utils/TimeGUI.hpp"
-#include "Core/Log.h"
-
 
 void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 {
@@ -54,8 +53,7 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
         uint32_t textureID = fb->GetColorAttachmentRendererID();
         TimeGUI::Image((TimeGUI::TimeGUITextureID)(uintptr_t)textureID,
-                       TEVector2(viewportPanelSize.x, viewportPanelSize.y),
-                       TEVector2(0, 1), TEVector2(1, 0));
+                       TEVector2(viewportPanelSize.x, viewportPanelSize.y), TEVector2(0, 1), TEVector2(1, 0));
     }
 
     // Viewport Screen Bounds & Infinite 2D Grid
@@ -84,12 +82,16 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             {
                 TEMatrix4 worldMat = GameplayUtils::ResolveWorldTransform(em, primaryEntity, nullptr);
                 TEVector2 worldPos(worldMat[3][0], worldMat[3][1]);
-                TEVector2 screenPos = vpMin + GameplayUtils::WorldToViewportPixel(worldPos, vpSize, TEVector2(camPos.x, camPos.y), camZoom);
+                TEVector2 screenPos = vpMin + GameplayUtils::WorldToViewportPixel(
+                                                  worldPos, vpSize, TEVector2(camPos.x, camPos.y), camZoom);
 
                 int gizmoMode = 0;
-                if (editor->GetGizmoType() == EditorLayer::GizmoType::Translate) gizmoMode = 1;
-                else if (editor->GetGizmoType() == EditorLayer::GizmoType::Rotate) gizmoMode = 2;
-                else if (editor->GetGizmoType() == EditorLayer::GizmoType::Scale) gizmoMode = 3;
+                if (editor->GetGizmoType() == EditorLayer::GizmoType::Translate)
+                    gizmoMode = 1;
+                else if (editor->GetGizmoType() == EditorLayer::GizmoType::Rotate)
+                    gizmoMode = 2;
+                else if (editor->GetGizmoType() == EditorLayer::GizmoType::Scale)
+                    gizmoMode = 3;
 
                 if (gizmoMode > 0)
                 {
@@ -105,22 +107,28 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                     float hitRadius = 14.0f;
 
                     bool hoveredCenter = (mousePos - screenPos).Length() <= 10.0f;
-                    bool hoveredX = (mousePos.x >= screenPos.x && mousePos.x <= screenPos.x + armLen + 10.0f && std::abs(mousePos.y - screenPos.y) <= hitRadius);
-                    bool hoveredY = (mousePos.y <= screenPos.y && mousePos.y >= screenPos.y - armLen - 10.0f && std::abs(mousePos.x - screenPos.x) <= hitRadius);
+                    bool hoveredX = (mousePos.x >= screenPos.x && mousePos.x <= screenPos.x + armLen + 10.0f &&
+                                     std::abs(mousePos.y - screenPos.y) <= hitRadius);
+                    bool hoveredY = (mousePos.y <= screenPos.y && mousePos.y >= screenPos.y - armLen - 10.0f &&
+                                     std::abs(mousePos.x - screenPos.x) <= hitRadius);
                     isGizmoHovered = hoveredCenter || hoveredX || hoveredY;
 
                     editor->SetGizmoDragging(s_IsGizmoDragging || isGizmoHovered);
 
-                    if (editor->IsViewportHovered() && TimeGUI::IsMouseClicked(0) && isGizmoHovered && !TimeGUI::IsAnyItemHovered())
+                    if (editor->IsViewportHovered() && TimeGUI::IsMouseClicked(0) && isGizmoHovered &&
+                        !TimeGUI::IsAnyItemHovered())
                     {
                         s_IsGizmoDragging = true;
                         s_DragStartMouse = mousePos;
                         s_DragStartPos = tc->Transform.Position;
                         s_DragStartRot = tc->Transform.Rotation.Yaw;
                         s_DragStartScale = tc->Transform.Scale.Scale;
-                        if (hoveredCenter) s_ActiveGizmoAxis = 0;
-                        else if (hoveredX) s_ActiveGizmoAxis = 1;
-                        else if (hoveredY) s_ActiveGizmoAxis = 2;
+                        if (hoveredCenter)
+                            s_ActiveGizmoAxis = 0;
+                        else if (hoveredX)
+                            s_ActiveGizmoAxis = 1;
+                        else if (hoveredY)
+                            s_ActiveGizmoAxis = 2;
                     }
 
                     if (s_IsGizmoDragging)
@@ -140,12 +148,15 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
                             if (tc->Parent != 0 && em.IsValid(tc->Parent))
                             {
-                                TEMatrix4 pMat = GameplayUtils::ResolveWorldTransform(em, Entity(tc->Parent, &em), nullptr);
+                                TEMatrix4 pMat =
+                                    GameplayUtils::ResolveWorldTransform(em, Entity(tc->Parent, &em), nullptr);
                                 float pRot = std::atan2(pMat[0][1], pMat[0][0]);
                                 float pScaleX = std::sqrt(pMat[0][0] * pMat[0][0] + pMat[0][1] * pMat[0][1]);
                                 float pScaleY = std::sqrt(pMat[1][0] * pMat[1][0] + pMat[1][1] * pMat[1][1]);
-                                if (pScaleX < 0.0001f) pScaleX = 1.0f;
-                                if (pScaleY < 0.0001f) pScaleY = 1.0f;
+                                if (pScaleX < 0.0001f)
+                                    pScaleX = 1.0f;
+                                if (pScaleY < 0.0001f)
+                                    pScaleY = 1.0f;
 
                                 float cosA = std::cos(-pRot);
                                 float sinA = std::sin(-pRot);
@@ -169,9 +180,11 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                             {
                                 float scaleFactor = 0.02f;
                                 if (s_ActiveGizmoAxis == 0 || s_ActiveGizmoAxis == 1)
-                                    tc->Transform.Scale.Scale.x = Max(0.01f, s_DragStartScale.x + mouseDelta.x * scaleFactor);
+                                    tc->Transform.Scale.Scale.x =
+                                        Max(0.01f, s_DragStartScale.x + mouseDelta.x * scaleFactor);
                                 if (s_ActiveGizmoAxis == 0 || s_ActiveGizmoAxis == 2)
-                                    tc->Transform.Scale.Scale.y = Max(0.01f, s_DragStartScale.y - mouseDelta.y * scaleFactor);
+                                    tc->Transform.Scale.Scale.y =
+                                        Max(0.01f, s_DragStartScale.y - mouseDelta.y * scaleFactor);
                             }
                             if (editor && editor->GetActiveScene())
                             {
@@ -207,18 +220,19 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     bool isOverOverlayUI = isOverLeftPill || isOverRightPill;
 
     // ── Left-Click Entity Selection Raycast ───────────────────────────────────
-    if (editor->IsViewportHovered() && !editor->IsGizmoDragging() && !isGizmoHovered && !isOverOverlayUI && TimeGUI::IsMouseClicked(0))
+    if (editor->IsViewportHovered() && !editor->IsGizmoDragging() && !isGizmoHovered && !isOverOverlayUI &&
+        TimeGUI::IsMouseClicked(0))
     {
-        if (mousePos.x >= vpMin.x && mousePos.x <= vpMin.x + vpSize.x &&
-            mousePos.y >= vpMin.y && mousePos.y <= vpMin.y + vpSize.y)
+        if (mousePos.x >= vpMin.x && mousePos.x <= vpMin.x + vpSize.x && mousePos.y >= vpMin.y &&
+            mousePos.y <= vpMin.y + vpSize.y)
         {
             TEVector2 pixelPos = mousePos - vpMin;
-            TEVector2 worldMouse = GameplayUtils::ViewportPixelToWorld(
-                pixelPos, vpSize, TEVector2(camPos.x, camPos.y), camZoom);
+            TEVector2 worldMouse =
+                GameplayUtils::ViewportPixelToWorld(pixelPos, vpSize, TEVector2(camPos.x, camPos.y), camZoom);
 
             Entity hitEntity = GameplayUtils::PickEntity(*activeScene, worldMouse);
-            TE_CORE_INFO("[Viewport Click] Pixel=({0}, {1}), World=({2}, {3}), Hit={4}",
-                         pixelPos.x, pixelPos.y, worldMouse.x, worldMouse.y, hitEntity.IsValid() ? (uint64_t)hitEntity : 0);
+            TE_CORE_INFO("[Viewport Click] Pixel=({0}, {1}), World=({2}, {3}), Hit={4}", pixelPos.x, pixelPos.y,
+                         worldMouse.x, worldMouse.y, hitEntity.IsValid() ? (uint64_t)hitEntity : 0);
 
             if (hitEntity.IsValid())
             {
@@ -235,16 +249,18 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     // ── Right-Click to Spawn ViewportContextMenu Layer ────────────────────────
     if (editor->IsViewportHovered() && !isOverOverlayUI && TimeGUI::IsMouseClicked(1))
     {
-        if (mousePos.x >= vpMin.x && mousePos.x <= vpMin.x + vpSize.x &&
-            mousePos.y >= vpMin.y && mousePos.y <= vpMin.y + vpSize.y)
+        if (mousePos.x >= vpMin.x && mousePos.x <= vpMin.x + vpSize.x && mousePos.y >= vpMin.y &&
+            mousePos.y <= vpMin.y + vpSize.y)
         {
             ViewportContextMenu::OpenAt(mousePos, editor->GetHoveredEntity());
         }
     }
 
     // ── Group 1: Top-Left Hamburger Menu Pill ─────────────────────────────────
-    dl.AddRectFilled(overlayPosLeft, TEVector2(overlayPosLeft.x + pillLeftWidth, overlayPosLeft.y + pillHeight), 0xD013161C, 6.0f);
-    dl.AddRect(overlayPosLeft, TEVector2(overlayPosLeft.x + pillLeftWidth, overlayPosLeft.y + pillHeight), 0x90283040, 6.0f, 0, 1.0f);
+    dl.AddRectFilled(overlayPosLeft, TEVector2(overlayPosLeft.x + pillLeftWidth, overlayPosLeft.y + pillHeight),
+                     0xD013161C, 6.0f);
+    dl.AddRect(overlayPosLeft, TEVector2(overlayPosLeft.x + pillLeftWidth, overlayPosLeft.y + pillHeight), 0x90283040,
+               6.0f, 0, 1.0f);
 
     TimeGUI::SetCursorScreenPos(TEVector2(overlayPosLeft.x + 4.0f, overlayPosLeft.y + 3.0f));
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 4.0f);
@@ -259,15 +275,25 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     TEVector2 hMin = TimeGUI::GetItemRectMin();
     TEVector2 hCenter = TEVector2(hMin.x + 14.0f, hMin.y + 13.0f);
     EditorUtils::DrawHamburgerIcon(dl, hCenter, 16.0f, 0xFFFFFFFF);
-    if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Viewport Display & Tools Menu");
+    if (TimeGUI::IsItemHovered())
+        TimeGUI::SetTooltip("Viewport Display & Tools Menu");
 
     if (TimeGUI::BeginPopup("ViewportHamburgerPopup"))
     {
         static int shadingMode = 0; // 0 = Lit, 1 = Wireframe, 2 = Unlit
         TimeGUI::TextDisabled("Shading Mode");
-        if (TimeGUI::RadioButton("Lit", shadingMode == 0)) { shadingMode = 0; }
-        if (TimeGUI::RadioButton("Wireframe", shadingMode == 1)) { shadingMode = 1; }
-        if (TimeGUI::RadioButton("Unlit", shadingMode == 2)) { shadingMode = 2; }
+        if (TimeGUI::RadioButton("Lit", shadingMode == 0))
+        {
+            shadingMode = 0;
+        }
+        if (TimeGUI::RadioButton("Wireframe", shadingMode == 1))
+        {
+            shadingMode = 1;
+        }
+        if (TimeGUI::RadioButton("Unlit", shadingMode == 2))
+        {
+            shadingMode = 2;
+        }
 
         TimeGUI::Separator();
 
@@ -286,11 +312,13 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     TimeGUI::PopStyleColor(2);
     TimeGUI::PopStyleVar(1);
 
-    // ── Group 2: Right-Side Transform Vector Icons & Snapping Pill (Top-Right) 
+    // ── Group 2: Right-Side Transform Vector Icons & Snapping Pill (Top-Right)
     if (overlayPosRight.x > overlayPosLeft.x + pillLeftWidth + 10.0f)
     {
-        dl.AddRectFilled(overlayPosRight, TEVector2(overlayPosRight.x + pillRightWidth, overlayPosRight.y + pillHeight), 0xD013161C, 6.0f);
-        dl.AddRect(overlayPosRight, TEVector2(overlayPosRight.x + pillRightWidth, overlayPosRight.y + pillHeight), 0x90283040, 6.0f, 0, 1.0f);
+        dl.AddRectFilled(overlayPosRight, TEVector2(overlayPosRight.x + pillRightWidth, overlayPosRight.y + pillHeight),
+                         0xD013161C, 6.0f);
+        dl.AddRect(overlayPosRight, TEVector2(overlayPosRight.x + pillRightWidth, overlayPosRight.y + pillHeight),
+                   0x90283040, 6.0f, 0, 1.0f);
 
         TimeGUI::SetCursorScreenPos(TEVector2(overlayPosRight.x + 4.0f, overlayPosRight.y + 3.0f));
 
@@ -304,62 +332,73 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
         // 1. Select Tool (Arrow Icon)
         bool isSelect = (editor->GetGizmoType() == EditorLayer::GizmoType::None);
-        if (isSelect) TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
+        if (isSelect)
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
         if (TimeGUI::Button("##VpToolSelect", TEVector2(btnW, btnH)))
             editor->SetGizmoType(EditorLayer::GizmoType::None);
         TEVector2 bMin1 = TimeGUI::GetItemRectMin();
         TEVector2 bCenter1 = TEVector2(bMin1.x + btnW * 0.5f, bMin1.y + btnH * 0.5f);
         EditorUtils::DrawSelectIcon(dl, bCenter1, 16.0f, 0xFFFFFFFF);
-        if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Select Tool (Q)");
-        if (isSelect) TimeGUI::PopStyleColor();
+        if (TimeGUI::IsItemHovered())
+            TimeGUI::SetTooltip("Select Tool (Q)");
+        if (isSelect)
+            TimeGUI::PopStyleColor();
 
         TimeGUI::SameLine();
 
         // 2. Translate Tool (4-way Arrow Icon)
         bool isTranslate = (editor->GetGizmoType() == EditorLayer::GizmoType::Translate);
-        if (isTranslate) TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
+        if (isTranslate)
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
         if (TimeGUI::Button("##VpToolTranslate", TEVector2(btnW, btnH)))
             editor->SetGizmoType(EditorLayer::GizmoType::Translate);
         TEVector2 bMin2 = TimeGUI::GetItemRectMin();
         TEVector2 bCenter2 = TEVector2(bMin2.x + btnW * 0.5f, bMin2.y + btnH * 0.5f);
         EditorUtils::DrawTranslateIcon(dl, bCenter2, 16.0f, 0xFFFFFFFF);
-        if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Move / Translate (W)");
-        if (isTranslate) TimeGUI::PopStyleColor();
+        if (TimeGUI::IsItemHovered())
+            TimeGUI::SetTooltip("Move / Translate (W)");
+        if (isTranslate)
+            TimeGUI::PopStyleColor();
 
         TimeGUI::SameLine();
 
         // 3. Rotate Tool (Arc Icon)
         bool isRotate = (editor->GetGizmoType() == EditorLayer::GizmoType::Rotate);
-        if (isRotate) TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
+        if (isRotate)
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
         if (TimeGUI::Button("##VpToolRotate", TEVector2(btnW, btnH)))
             editor->SetGizmoType(EditorLayer::GizmoType::Rotate);
         TEVector2 bMin3 = TimeGUI::GetItemRectMin();
         TEVector2 bCenter3 = TEVector2(bMin3.x + btnW * 0.5f, bMin3.y + btnH * 0.5f);
         EditorUtils::DrawRotateIcon(dl, bCenter3, 16.0f, 0xFFFFFFFF);
-        if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Rotate (E)");
-        if (isRotate) TimeGUI::PopStyleColor();
+        if (TimeGUI::IsItemHovered())
+            TimeGUI::SetTooltip("Rotate (E)");
+        if (isRotate)
+            TimeGUI::PopStyleColor();
 
         TimeGUI::SameLine();
 
         // 4. Scale Tool (Diagonal Box Icon)
         bool isScale = (editor->GetGizmoType() == EditorLayer::GizmoType::Scale);
-        if (isScale) TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
+        if (isScale)
+            TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
         if (TimeGUI::Button("##VpToolScale", TEVector2(btnW, btnH)))
             editor->SetGizmoType(EditorLayer::GizmoType::Scale);
         TEVector2 bMin4 = TimeGUI::GetItemRectMin();
         TEVector2 bCenter4 = TEVector2(bMin4.x + btnW * 0.5f, bMin4.y + btnH * 0.5f);
         EditorUtils::DrawScaleIcon(dl, bCenter4, 16.0f, 0xFFFFFFFF);
-        if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Scale (R)");
-        if (isScale) TimeGUI::PopStyleColor();
+        if (TimeGUI::IsItemHovered())
+            TimeGUI::SetTooltip("Scale (R)");
+        if (isScale)
+            TimeGUI::PopStyleColor();
 
         TimeGUI::SameLine(0, 6);
 
         // 5. Snapping Pill Button with Right-Click / Left-Click 3x4 Grid Selection
         static float s_CurrentSnap = 1.0f;
         TEString snapLabel = (s_CurrentSnap <= 0.0f) ? "No Snap" : (TEString::FromFloat(s_CurrentSnap, 1));
-        if (s_CurrentSnap == 1.0f || s_CurrentSnap == 2.0f || s_CurrentSnap == 5.0f ||
-            s_CurrentSnap == 10.0f || s_CurrentSnap == 20.0f || s_CurrentSnap == 25.0f ||
-            s_CurrentSnap == 50.0f || s_CurrentSnap == 100.0f)
+        if (s_CurrentSnap == 1.0f || s_CurrentSnap == 2.0f || s_CurrentSnap == 5.0f || s_CurrentSnap == 10.0f ||
+            s_CurrentSnap == 20.0f || s_CurrentSnap == 25.0f || s_CurrentSnap == 50.0f || s_CurrentSnap == 100.0f)
         {
             snapLabel = TEString::FromInt((int)s_CurrentSnap);
         }
@@ -369,7 +408,8 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         {
             TimeGUI::OpenPopup("SnappingGridPopup");
         }
-        if (TimeGUI::IsItemHovered()) TimeGUI::SetTooltip("Grid Snapping (Click / Right-Click to Change)");
+        if (TimeGUI::IsItemHovered())
+            TimeGUI::SetTooltip("Grid Snapping (Click / Right-Click to Change)");
 
         if (TimeGUI::BeginPopupContextItem("SnappingGridPopup"))
         {
@@ -379,7 +419,8 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             TimeGUI::Spacing();
 
             const float snapValues[12] = {0.0f, 0.1f, 0.2f, 0.5f, 1.0f, 2.0f, 5.0f, 10.0f, 20.0f, 25.0f, 50.0f, 100.0f};
-            const char *snapLabels[12] = {"No Snap", "0.1", "0.2", "0.5", "1.0", "2.0", "5.0", "10", "20", "25", "50", "100"};
+            const char *snapLabels[12] = {"No Snap", "0.1", "0.2", "0.5", "1.0", "2.0",
+                                          "5.0",     "10",  "20",  "25",  "50",  "100"};
 
             for (int r = 0; r < 4; ++r)
             {
@@ -387,7 +428,8 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 {
                     int idx = r * 3 + c;
                     bool active = (s_CurrentSnap == snapValues[idx]);
-                    if (active) TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
+                    if (active)
+                        TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.24f, 0.48f, 0.85f, 0.95f));
 
                     if (TimeGUI::Button(snapLabels[idx], TEVector2(74.0f, 32.0f)))
                     {
@@ -395,9 +437,11 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                         TimeGUI::CloseCurrentPopup();
                     }
 
-                    if (active) TimeGUI::PopStyleColor();
+                    if (active)
+                        TimeGUI::PopStyleColor();
 
-                    if (c < 2) TimeGUI::SameLine(0, 6);
+                    if (c < 2)
+                        TimeGUI::SameLine(0, 6);
                 }
                 TimeGUI::Spacing();
             }
@@ -455,4 +499,3 @@ bool ViewportPanel::OnShortcut(const TEString &shortcutId, Ref<EditorLayer> edit
 }
 
 TE_REGISTER_EDITOR_PANEL(ViewportPanel);
-

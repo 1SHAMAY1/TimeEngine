@@ -3,7 +3,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include <functional>
 
-
 class RenderCommand
 {
 public:
@@ -23,4 +22,3 @@ public:
 private:
     TEArray<TEScope<RenderCommand>> m_Queue;
 };
-

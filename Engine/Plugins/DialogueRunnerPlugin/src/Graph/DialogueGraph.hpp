@@ -1,11 +1,10 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Graph/DialogueGraphConnection.hpp"
 #include "Graph/DialogueGraphNode.hpp"
 #include "NarrativeTypes.hpp"
-
 
 class DialogueGraph
 {
@@ -47,4 +46,3 @@ private:
     TEArray<DialogueGraphNode> m_Nodes;
     TEArray<DialogueGraphConnection> m_Connections;
 };
-

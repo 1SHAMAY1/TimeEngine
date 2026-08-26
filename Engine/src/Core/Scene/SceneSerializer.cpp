@@ -1,12 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
-
 
 SceneSerializer::SceneSerializer(const TERef<Scene> &scene) : m_Scene(scene) {}
 
@@ -106,10 +105,12 @@ bool SceneSerializer::Deserialize(const TEString &filepath)
     }
 
     TEArray<TEString> lines;
-    TEFileSystem::ForEachLine(filepath, [&lines](const TEString &line) {
-        lines.push_back(line);
-        return true;
-    });
+    TEFileSystem::ForEachLine(filepath,
+                              [&lines](const TEString &line)
+                              {
+                                  lines.push_back(line);
+                                  return true;
+                              });
 
     if (m_Scene)
     {
@@ -247,7 +248,8 @@ bool SceneSerializer::Deserialize(const TEString &filepath)
                                         if (idMap.count(oldID))
                                         {
                                             EntityID newID = idMap[oldID];
-                                            prop.DeserializeFunc(currentComponent, TEString::FromInt64(static_cast<int64_t>(newID)));
+                                            prop.DeserializeFunc(currentComponent,
+                                                                 TEString::FromInt64(static_cast<int64_t>(newID)));
                                         }
                                         else
                                         {

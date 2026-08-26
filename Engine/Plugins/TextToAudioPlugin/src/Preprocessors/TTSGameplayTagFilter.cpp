@@ -21,7 +21,4 @@ bool TTSGameplayTagFilter::IsTTSMuted()
     return false;
 }
 
-bool TTSGameplayTagFilter::ShouldSpeak()
-{
-    return !IsTTSMuted();
-}
+bool TTSGameplayTagFilter::ShouldSpeak() { return !IsTTSMuted(); }

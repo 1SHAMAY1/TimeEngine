@@ -3,7 +3,6 @@
 #include "Renderer/GraphicsAPI.hpp"
 #include <glm/glm.hpp>
 
-
 enum class BlendFactor
 {
     Zero = 0,
@@ -40,4 +39,3 @@ public:
     static GraphicsAPI GetAPI();
     static TEScope<RendererAPI> Create();
 };
-

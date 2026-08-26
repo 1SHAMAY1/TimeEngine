@@ -8,7 +8,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
-
 using EntityID = uint64_t;
 
 class EntityManager;
@@ -90,8 +89,7 @@ public:
 private:
     EntityID m_NextEntityID = 1;
     TESet<EntityID> m_AliveEntities;
-    TEMap<std::type_index, TEMap<EntityID, TEArray<TEScope<TComponent>>>>
-        m_ComponentPools;
+    TEMap<std::type_index, TEMap<EntityID, TEArray<TEScope<TComponent>>>> m_ComponentPools;
     TEMap<TEString, std::function<TComponent *(EntityID)>> m_ComponentFactories;
 };
 
@@ -119,7 +117,7 @@ Component *EntityManager::AddComponent(EntityID entityID, Args &&...args)
     auto &pool = m_ComponentPools[std::type_index(typeid(Component))][entityID];
     auto comp = CreateScope<Component>(std::forward<Args>(args)...);
     comp->SetOwner(reinterpret_cast<TObject *>(entityID));
-    comp->SetEntityManager(this); 
+    comp->SetEntityManager(this);
     Component *ptr = comp.get();
     pool.Add(std::move(comp));
     return ptr;
@@ -196,8 +194,7 @@ inline TEArray<TComponent *> EntityManager::GetAllComponents(EntityID entityID) 
     return results;
 }
 
-template <typename Component>
-inline TEArray<Component *> EntityManager::GetAllComponents() const
+template <typename Component> inline TEArray<Component *> EntityManager::GetAllComponents() const
 {
     static_assert(std::is_base_of<TComponent, Component>::value, "Component must derive from TComponent");
     TEArray<Component *> results;
@@ -253,13 +250,8 @@ inline const TEArray<TScriptInstance> &Entity::GetScripts() const
 
 namespace std
 {
-template <>
-struct hash<Entity>
+template <> struct hash<Entity>
 {
-    size_t operator()(const Entity &entity) const noexcept
-    {
-        return static_cast<size_t>(entity.GetID());
-    }
+    size_t operator()(const Entity &entity) const noexcept { return static_cast<size_t>(entity.GetID()); }
 };
-}
-
+} // namespace std

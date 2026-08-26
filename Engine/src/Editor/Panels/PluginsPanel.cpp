@@ -1,15 +1,13 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/PluginsPanel.hpp"
 #include "Core/Plugin/PluginManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "UI/Widgets/UISearchBar.hpp"
 #include "UI/Widgets/UIToggleSwitch.hpp"
-#include "Editor/Panels/IEditorPanel.hpp"
 
-
-PluginsPanel::PluginsPanel()
-    : IEditorPanel("Plugins")
+PluginsPanel::PluginsPanel() : IEditorPanel("Plugins")
 {
     m_Visible = false;
     m_SearchBar = CreateRef<UISearchBar>("Search installed plugins...", "##PluginsSearchBar");
@@ -57,7 +55,8 @@ void PluginsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     if (plugins.empty())
     {
         TimeGUI::Spacing();
-        TimeGUI::TextColored(TEVector4(0.6f, 0.65f, 0.75f, 1.0f), "No plugins discovered in engine or project directories.");
+        TimeGUI::TextColored(TEVector4(0.6f, 0.65f, 0.75f, 1.0f),
+                             "No plugins discovered in engine or project directories.");
         TimeGUI::Spacing();
         if (TimeGUI::Button("Scan Again", TEVector2(120.0f, 28.0f)))
         {
@@ -73,7 +72,8 @@ void PluginsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         for (size_t i = 0; i < plugins.size(); ++i)
         {
             const auto &plugin = plugins[i];
-            if (m_SearchBar && !m_SearchBar->Matches(plugin.Name) && !m_SearchBar->Matches(plugin.Description) && !m_SearchBar->Matches(plugin.Author))
+            if (m_SearchBar && !m_SearchBar->Matches(plugin.Name) && !m_SearchBar->Matches(plugin.Description) &&
+                !m_SearchBar->Matches(plugin.Author))
                 continue;
 
             visibleCount++;
@@ -91,8 +91,10 @@ void PluginsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 
             // Background & Border with hover highlight
             bool isEnabled = plugin.Enabled;
-            unsigned int bgCol = isHovered ? (isEnabled ? 0xDD1B2433 : 0xBB161A22) : (isEnabled ? 0xBB141B26 : 0x8811151D);
-            unsigned int borderCol = isHovered ? (isEnabled ? 0xFF4A88E8 : 0x88405068) : (isEnabled ? 0x66334D6E : 0x44242C38);
+            unsigned int bgCol =
+                isHovered ? (isEnabled ? 0xDD1B2433 : 0xBB161A22) : (isEnabled ? 0xBB141B26 : 0x8811151D);
+            unsigned int borderCol =
+                isHovered ? (isEnabled ? 0xFF4A88E8 : 0x88405068) : (isEnabled ? 0x66334D6E : 0x44242C38);
             dl.AddRectFilled(cardMin, cardMax, bgCol, 8.0f);
             dl.AddRect(cardMin, cardMax, borderCol, 8.0f, 0, 1.2f);
 
@@ -127,7 +129,8 @@ void PluginsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             TEString verText = "v" + (plugin.Version.empty() ? TEString("1.0.0") : plugin.Version);
             TEVector2 verPos = TEVector2(textStartX + titleWidth + 12.0f, cardMin.y + 15.0f);
             TEVector2 verSize = TimeGUI::CalcTextSize(verText);
-            dl.AddRectFilled(TEVector2(verPos.x - 4.0f, verPos.y - 1.0f), TEVector2(verPos.x + verSize.x + 4.0f, verPos.y + verSize.y + 1.0f), 0x334477AA, 4.0f);
+            dl.AddRectFilled(TEVector2(verPos.x - 4.0f, verPos.y - 1.0f),
+                             TEVector2(verPos.x + verSize.x + 4.0f, verPos.y + verSize.y + 1.0f), 0x334477AA, 4.0f);
             dl.AddText(verPos, 0xFF9FC4E8, verText.c_str());
 
             // Row 2: Author
@@ -187,4 +190,3 @@ void PluginsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 }
 
 TE_REGISTER_EDITOR_PANEL(PluginsPanel);
-

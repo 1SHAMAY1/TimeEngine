@@ -5,13 +5,12 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#include "Renderer/DirectX11/DirectX11VertexBuffer.hpp"
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
+#include "Renderer/DirectX11/DirectX11VertexBuffer.hpp"
 #include <Windows.h>
 #include <cstring>
 #include <d3d11.h>
 #include <iostream>
-
 
 DirectX11VertexBuffer::DirectX11VertexBuffer(float *vertices, uint32_t size) : m_Size(size)
 {
@@ -82,4 +81,3 @@ void DirectX11VertexBuffer::SetData(float *vertices, uint32_t size) const
         std::cerr << "[DirectX11] Failed to map vertex buffer: 0x" << std::hex << hr << "\n";
     }
 }
-

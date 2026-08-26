@@ -3,7 +3,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 class ParallaxComponent : public TComponent
 {
 public:
@@ -23,4 +22,3 @@ T_REGISTER_PROPERTY(ParallaxComponent, TEVector2, ScrollFactor, "Scroll Factor")
 T_REGISTER_PRESET(ParallaxComponent, "Parallax Layer", "2D Rendering",
                   [](EntityID id, EntityManager *em) { em->AddComponent<ParallaxComponent>(id); })
 #endif
-

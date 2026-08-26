@@ -3,7 +3,8 @@
 #include "../SoundStudioTypes.hpp"
 #include <cstdint>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 struct AudioDSPContext
 {

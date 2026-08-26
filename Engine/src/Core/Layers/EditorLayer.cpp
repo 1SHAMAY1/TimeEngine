@@ -1,72 +1,38 @@
-#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Application.h"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Asset/AssetManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
-#include "Core/Settings/EngineSettings.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/KeyCodes.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Log.h"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/GameManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/TagComponent.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Scene/TransformComponent.hpp"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/Settings/EngineSettings.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/DefaultModes.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorGizmoOverlays.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorLayoutManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorMenubarOverlay.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorMenubarRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorMode.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorPanel.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorSaveManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorToolbar.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorToolbarOverlay.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorToolbarRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/EditorUtils.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Editor/ViewportOverlayRegistry.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Input/Input.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Input/ShortcutManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Renderer/Framebuffer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Renderer/RenderCommand.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Renderer/Renderer2D.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Renderer/TEColor.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
@@ -77,15 +43,15 @@
     [this](auto &&...args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 #endif
 
-
 const TEArray<TEScope<EditorMode>> &EditorLayer::GetGlobalModes() { return EditorModeRegistry::GetModes(); }
 
 void EditorLayer::SetGlobalActiveMode(const TEString &name) { EditorModeRegistry::SetActiveMode(name); }
 
 EditorMode *EditorLayer::GetGlobalActiveMode() { return EditorModeRegistry::GetActiveMode(); }
 
-EditorLayer::EditorLayer(const TEString &startScene, const TEString &name)
-    : Layer(name), m_StartScenePath(startScene) {}
+EditorLayer::EditorLayer(const TEString &startScene, const TEString &name) : Layer(name), m_StartScenePath(startScene)
+{
+}
 
 EditorLayer::~EditorLayer() {}
 
@@ -176,24 +142,10 @@ void EditorLayer::OnAttach()
         }
     }
 
-    // Framebuffer Init
-    TE_CORE_INFO("Initializing Framebuffer...");
-    FramebufferSpecification fbSpec;
-    fbSpec.Width = 1280;
-    fbSpec.Height = 720;
-    m_Framebuffer = Framebuffer::Create(fbSpec);
-    m_LightMapFramebuffer = Framebuffer::Create(fbSpec);
-
-    // Renderer Init
-    TE_CORE_INFO("Initializing Renderer2D...");
-    m_Renderer2D = Renderer2D::Create();
-
     InitEditorModes();
 
     // Connect universal shortcut listener
-    ShortcutManager::AddListener("EditorLayer", [this](const TEString &shortcutId) {
-        return OnShortcut(shortcutId);
-    });
+    ShortcutManager::AddListener("EditorLayer", [this](const TEString &shortcutId) { return OnShortcut(shortcutId); });
 
     PopulateOverlaysAndPanels();
 
@@ -251,8 +203,26 @@ void EditorLayer::OnUpdate()
     // Update Active Mode
     if (EditorMode *activeMode = EditorModeRegistry::GetActiveMode())
         activeMode->OnUpdate(dt);
+}
 
-    // Main Scene Pass
+void EditorLayer::OnRender()
+{
+    // Lazy initialize Framebuffers and Renderer2D on the Dedicated Render Thread (OpenGL context owner)
+    if (!m_Framebuffer)
+    {
+        FramebufferSpecification fbSpec;
+        fbSpec.Width = 1280;
+        fbSpec.Height = 720;
+        m_Framebuffer = Framebuffer::Create(fbSpec);
+        m_LightMapFramebuffer = Framebuffer::Create(fbSpec);
+    }
+
+    if (!m_Renderer2D)
+    {
+        m_Renderer2D = Renderer2D::Create();
+    }
+
+    // Main Scene Pass — must run on the Dedicated Render Thread (OpenGL context owner)
     if (m_Framebuffer)
     {
         m_Framebuffer->Bind();
@@ -413,13 +383,15 @@ void EditorLayer::UpdateCamera(float dt)
         if (TimeGUI::IsMouseDragging(TimeGUI::TimeGUIMouseButton_Middle) ||
             TimeGUI::IsMouseDragging(TimeGUI::TimeGUIMouseButton_Right))
         {
-            TEVector2 delta = TimeGUI::GetMouseDragDelta(TimeGUI::IsMouseDragging(TimeGUI::TimeGUIMouseButton_Middle) ?
-                                                         TimeGUI::TimeGUIMouseButton_Middle : TimeGUI::TimeGUIMouseButton_Right);
+            TEVector2 delta = TimeGUI::GetMouseDragDelta(TimeGUI::IsMouseDragging(TimeGUI::TimeGUIMouseButton_Middle)
+                                                             ? TimeGUI::TimeGUIMouseButton_Middle
+                                                             : TimeGUI::TimeGUIMouseButton_Right);
             float factor = (m_CameraZoom * 2.0f) / (vpHeight > 0.0f ? vpHeight : 720.0f);
             m_CameraPosition.x -= delta.x * factor;
             m_CameraPosition.y += delta.y * factor;
-            TimeGUI::ResetMouseDragDelta(TimeGUI::IsMouseDragging(TimeGUI::TimeGUIMouseButton_Middle) ?
-                                         TimeGUI::TimeGUIMouseButton_Middle : TimeGUI::TimeGUIMouseButton_Right);
+            TimeGUI::ResetMouseDragDelta(TimeGUI::IsMouseDragging(TimeGUI::TimeGUIMouseButton_Middle)
+                                             ? TimeGUI::TimeGUIMouseButton_Middle
+                                             : TimeGUI::TimeGUIMouseButton_Right);
         }
 
         // WASD fly-through navigation when holding Right Click
@@ -469,10 +441,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent &e)
     return false;
 }
 
-bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent &e)
-{
-    return false;
-}
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent &e) { return false; }
 
 bool EditorLayer::IsEntitySelected(Entity entity) const
 {
@@ -497,10 +466,7 @@ void EditorLayer::SelectEntity(Entity entity, bool multiSelect, bool toggle)
     }
 }
 
-void EditorLayer::ClearSelection()
-{
-    m_SelectedEntities.clear();
-}
+void EditorLayer::ClearSelection() { m_SelectedEntities.clear(); }
 
 void EditorLayer::DeleteSelectedEntities()
 {
@@ -619,10 +585,7 @@ bool EditorLayer::OnShortcut(const TEString &shortcutId)
     return false;
 }
 
-void EditorLayer::UpdateGizmoHover()
-{
-    m_HoveredGizmoAxis = -1;
-}
+void EditorLayer::UpdateGizmoHover() { m_HoveredGizmoAxis = -1; }
 
 void EditorLayer::ProcessDeletionQueues()
 {
@@ -772,7 +735,8 @@ void EditorLayer::PopulateOverlaysAndPanels()
         item.category = "Window";
         item.label = panel->GetTitle();
         item.priority = 100;
-        item.isVisible = [panelId]() -> bool {
+        item.isVisible = [panelId]() -> bool
+        {
             EditorMode *mode = EditorModeRegistry::GetActiveMode();
             return !mode || mode->IsPanelAllowed(panelId);
         };
@@ -796,15 +760,13 @@ TEArray<EditorToolbarItem> EditorLayer::GetToolbarItemsByAlignment(EditorToolbar
     return EditorToolbarRegistry::GetItems(align);
 }
 
-TEArray<ViewportOverlayItem> EditorLayer::GetViewportItemsByCornerAndAlignment(ViewportOverlayCorner corner, ViewportOverlayAlignment align) const
+TEArray<ViewportOverlayItem> EditorLayer::GetViewportItemsByCornerAndAlignment(ViewportOverlayCorner corner,
+                                                                               ViewportOverlayAlignment align) const
 {
     return ViewportOverlayRegistry::GetItems(corner, align);
 }
 
-TEArray<TERef<IEditorPanel>> EditorLayer::GetRegisteredPanels() const
-{
-    return m_Panels;
-}
+TEArray<TERef<IEditorPanel>> EditorLayer::GetRegisteredPanels() const { return m_Panels; }
 
 TERef<IEditorPanel> EditorLayer::GetPanelByID(const TEString &id) const
 {
@@ -815,4 +777,3 @@ TERef<IEditorPanel> EditorLayer::GetPanelByID(const TEString &id) const
     }
     return nullptr;
 }
-

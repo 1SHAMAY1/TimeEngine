@@ -1,7 +1,8 @@
 #include "SoundTransportBar.hpp"
 #include "Utils/TimeGUI.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 void SoundTransportBar::Draw(bool isPlaying, float &masterGain)
 {

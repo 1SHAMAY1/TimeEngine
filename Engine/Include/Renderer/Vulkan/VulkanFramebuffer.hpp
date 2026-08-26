@@ -2,7 +2,6 @@
 #include "Renderer/Framebuffer.hpp"
 #include <volk.h>
 
-
 class VulkanFramebuffer : public Framebuffer
 {
 public:
@@ -26,4 +25,3 @@ private:
     VkImage m_DepthImage = VK_NULL_HANDLE;
     FramebufferSpecification m_Specification;
 };
-

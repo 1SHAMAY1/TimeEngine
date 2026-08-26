@@ -1,14 +1,15 @@
 #pragma once
 
-#include <vector>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include "Utils/TEString.hpp"
-#include "Renderer/TEColor.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
+#include "Utils/TEString.hpp"
+#include <glm/glm.hpp>
+#include <unordered_map>
+#include <vector>
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 enum class AttachmentType
 {

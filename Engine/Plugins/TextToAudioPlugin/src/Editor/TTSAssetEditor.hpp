@@ -20,7 +20,8 @@ public:
     virtual void DrawIcon(const TEVector2 &min, const TEVector2 &max) const override;
 
 private:
-    TEString m_InputText = "<color=gold>Welcome!</color> <pause time=\"400ms\"/> <pitch value=\"+20%\">Speech synthesis active.</pitch>";
+    TEString m_InputText =
+        "<color=gold>Welcome!</color> <pause time=\"400ms\"/> <pitch value=\"+20%\">Speech synthesis active.</pitch>";
     float m_Volume = 1.0f;
     float m_Pitch = 1.0f;
     float m_Rate = 1.0f;

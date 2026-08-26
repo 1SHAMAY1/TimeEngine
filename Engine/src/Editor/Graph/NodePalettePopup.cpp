@@ -1,19 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Graph/NodePalettePopup.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <cstring>
 
+void NodePalettePopup::Clear() { m_Entries.Empty(); }
 
-void NodePalettePopup::Clear()
-{
-    m_Entries.Empty();
-}
-
-void NodePalettePopup::RegisterNode(const NodePaletteEntry &entry)
-{
-    m_Entries.Add(entry);
-}
+void NodePalettePopup::RegisterNode(const NodePaletteEntry &entry) { m_Entries.Add(entry); }
 
 void NodePalettePopup::RegisterNode(const TEString &name, const TEString &category, const TEString &nodeType,
                                     const TEString &desc, std::function<TERef<GraphNode>()> factory)
@@ -74,8 +67,7 @@ TERef<GraphNode> NodePalettePopup::Draw()
                 TEString catLower = entry.Category.ToLower();
                 std::transform(catLower.begin(), catLower.end(), catLower.begin(), ::tolower);
 
-                if (!nameLower.Contains(searchLower) &&
-                    !catLower.Contains(searchLower))
+                if (!nameLower.Contains(searchLower) && !catLower.Contains(searchLower))
                 {
                     continue;
                 }

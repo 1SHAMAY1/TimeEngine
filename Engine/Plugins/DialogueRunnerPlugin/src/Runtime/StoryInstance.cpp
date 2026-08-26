@@ -1,11 +1,7 @@
 #include "StoryInstance.hpp"
 #include <sstream>
 
-
-StoryInstance::StoryInstance()
-{
-    Reset();
-}
+StoryInstance::StoryInstance() { Reset(); }
 
 bool StoryInstance::LoadFromGraph(const DialogueGraph &graph)
 {
@@ -86,13 +82,15 @@ TEString StoryInstance::Continue()
 
         switch (node->Type)
         {
-        case NarrativeNodeType::Entry: {
+        case NarrativeNodeType::Entry:
+        {
             // Advance to next connected node
             m_CurrentNodeID = m_Graph.GetNextNode(node->ID);
             continue;
         }
 
-        case NarrativeNodeType::Dialogue: {
+        case NarrativeNodeType::Dialogue:
+        {
             m_CurrentSpeaker = node->Speaker;
             TEString raw = node->Text;
             if (!node->LocalizedKey.empty() && m_StringTable.HasString(node->LocalizedKey))
@@ -107,7 +105,8 @@ TEString StoryInstance::Continue()
             return m_CurrentText;
         }
 
-        case NarrativeNodeType::Choice: {
+        case NarrativeNodeType::Choice:
+        {
             m_CurrentSpeaker = node->Speaker;
             // Gather choices with their target connection node IDs
             auto conns = m_Graph.GetConnectionsFromNode(node->ID);
@@ -136,7 +135,8 @@ TEString StoryInstance::Continue()
             return "";
         }
 
-        case NarrativeNodeType::Condition: {
+        case NarrativeNodeType::Condition:
+        {
             bool eval = m_Blackboard.EvaluateCondition(node->ConditionVar, node->ConditionOp, node->ConditionValue);
             uint64_t truePinId = node->OutputPins.Size() > 0 ? node->OutputPins[0].ID : 0;
             uint64_t falsePinId = node->OutputPins.Size() > 1 ? node->OutputPins[1].ID : 0;
@@ -146,7 +146,8 @@ TEString StoryInstance::Continue()
             continue;
         }
 
-        case NarrativeNodeType::Action: {
+        case NarrativeNodeType::Action:
+        {
             if (!node->ActionVar.empty())
             {
                 m_Blackboard.ApplyMutation(node->ActionVar, node->ActionOp, node->ActionValue);
@@ -173,7 +174,8 @@ TEString StoryInstance::Continue()
             continue;
         }
 
-        case NarrativeNodeType::Divert: {
+        case NarrativeNodeType::Divert:
+        {
             if (!node->DivertTargetKnot.empty())
             {
                 JumpToKnot(node->DivertTargetKnot);
@@ -185,7 +187,8 @@ TEString StoryInstance::Continue()
             continue;
         }
 
-        case NarrativeNodeType::Exit: {
+        case NarrativeNodeType::Exit:
+        {
             m_CurrentNodeID = 0;
             m_bCanContinue = false;
             return "";
@@ -197,10 +200,7 @@ TEString StoryInstance::Continue()
     return "";
 }
 
-const TEString &StoryInstance::GetCurrentSpeaker() const
-{
-    return m_CurrentSpeaker;
-}
+const TEString &StoryInstance::GetCurrentSpeaker() const { return m_CurrentSpeaker; }
 
 TEArray<StoryChoice> StoryInstance::GetCurrentChoices() const
 {
@@ -339,4 +339,3 @@ bool StoryInstance::LoadStateNativeText(const TEString &text)
     m_QuestManager.DeserializeNativeText(text);
     return true;
 }
-

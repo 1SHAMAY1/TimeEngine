@@ -118,17 +118,14 @@ bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
     TEArray<glm::vec2> processList;
     auto outData = CreateRef<PCGPointData>();
 
-    auto toGrid = [&](const glm::vec2 &p) -> glm::ivec2 {
-        return glm::ivec2(
-            std::clamp(static_cast<int>((p.x - ctx.BoundsMin.x) / cellSize), 0, gridW - 1),
-            std::clamp(static_cast<int>((p.y - ctx.BoundsMin.y) / cellSize), 0, gridH - 1)
-        );
+    auto toGrid = [&](const glm::vec2 &p) -> glm::ivec2
+    {
+        return glm::ivec2(std::clamp(static_cast<int>((p.x - ctx.BoundsMin.x) / cellSize), 0, gridW - 1),
+                          std::clamp(static_cast<int>((p.y - ctx.BoundsMin.y) / cellSize), 0, gridH - 1));
     };
 
-    glm::vec2 firstPoint(
-        ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
-        ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y)
-    );
+    glm::vec2 firstPoint(ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
+                         ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y));
     processList.push_back(firstPoint);
     outData->AddPoint(PCGPoint(glm::vec3(firstPoint.x, firstPoint.y, 0.0f), 1.0f, r * 0.5f));
     glm::ivec2 g0 = toGrid(firstPoint);
@@ -146,8 +143,8 @@ bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
             float dist = ctx.RandomFloat(r, 2.0f * r);
             glm::vec2 candidate = current + glm::vec2(std::cos(angle) * dist, std::sin(angle) * dist);
 
-            if (candidate.x < ctx.BoundsMin.x || candidate.x > ctx.BoundsMax.x ||
-                candidate.y < ctx.BoundsMin.y || candidate.y > ctx.BoundsMax.y)
+            if (candidate.x < ctx.BoundsMin.x || candidate.x > ctx.BoundsMax.x || candidate.y < ctx.BoundsMin.y ||
+                candidate.y > ctx.BoundsMax.y)
                 continue;
 
             glm::ivec2 cg = toGrid(candidate);

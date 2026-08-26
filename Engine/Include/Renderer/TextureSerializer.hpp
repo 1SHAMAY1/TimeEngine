@@ -11,4 +11,3 @@ public:
 private:
     TERef<Texture> m_Texture;
 };
-

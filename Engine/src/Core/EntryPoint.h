@@ -7,8 +7,8 @@ extern Scope<Application> CreateApplication(int argc, char **argv);
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <windows.h>
 #include <shobjidl.h>
+#include <windows.h>
 #endif
 
 inline int RunEngine(int argc, char **argv)
@@ -54,4 +54,3 @@ int main(int argc, char **argv) { return RunEngine(argc, argv); }
 #else
 int main(int argc, char **argv) { return RunEngine(argc, argv); }
 #endif
-

@@ -1,7 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Layers/LayerStack.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
-
 
 LayerStack::LayerStack() {}
 
@@ -127,4 +126,3 @@ void LayerStack::Clear()
     m_LayersToRemove.Clear();
     m_LayerInsertIndex = 0;
 }
-

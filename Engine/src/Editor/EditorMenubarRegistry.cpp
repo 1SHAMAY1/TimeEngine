@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorMenubarRegistry.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
-
 
 static TEMap<TEString, EditorMenubarItem> &GetItemsMap()
 {
@@ -18,10 +17,7 @@ void EditorMenubarRegistry::RegisterItem(const EditorMenubarItem &item)
     }
 }
 
-void EditorMenubarRegistry::UnregisterItem(const TEString &id)
-{
-    GetItemsMap().Remove(id);
-}
+void EditorMenubarRegistry::UnregisterItem(const TEString &id) { GetItemsMap().Remove(id); }
 
 TEArray<TEString> EditorMenubarRegistry::GetCategories()
 {
@@ -68,17 +64,13 @@ TEArray<EditorMenubarItem> EditorMenubarRegistry::GetItemsInCategory(const TEStr
         }
     }
 
-    std::sort(result.begin(), result.end(), [](const EditorMenubarItem &a, const EditorMenubarItem &b) {
-        return a.priority < b.priority;
-    });
+    std::sort(result.begin(), result.end(),
+              [](const EditorMenubarItem &a, const EditorMenubarItem &b) { return a.priority < b.priority; });
 
     return result;
 }
 
-void EditorMenubarRegistry::Clear()
-{
-    GetItemsMap().Clear();
-}
+void EditorMenubarRegistry::Clear() { GetItemsMap().Clear(); }
 
 void EditorMenubarRegistry::OnTimeGUIRender()
 {
@@ -104,4 +96,3 @@ void EditorMenubarRegistry::OnTimeGUIRender()
         TimeGUI::EndMenuBar();
     }
 }
-

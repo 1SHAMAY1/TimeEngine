@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeTasks.hpp"
+#include "Core/PreRequisites.h"
 
 #if defined(TE_HAS_PLUGIN_GAMEPLAYTAGPLUGIN) || defined(TE_PLUGIN_GAMEPLAYTAGPLUGIN)
 #include "../../../../Plugins/GameplayTagPlugin/src/GameplayTagContainer.hpp"

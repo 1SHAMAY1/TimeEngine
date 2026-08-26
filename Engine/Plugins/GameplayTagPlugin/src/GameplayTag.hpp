@@ -4,7 +4,6 @@
 #include <cctype>
 #include <functional>
 
-
 class GameplayTag
 {
 public:
@@ -133,10 +132,7 @@ public:
         return other.GetParentTag() == *this;
     }
 
-    bool IsChildOf(const GameplayTag &other) const
-    {
-        return MatchesTag(other) && *this != other;
-    }
+    bool IsChildOf(const GameplayTag &other) const { return MatchesTag(other) && *this != other; }
 
     bool operator==(const GameplayTag &other) const { return m_Tag == other.m_Tag; }
     bool operator!=(const GameplayTag &other) const { return m_Tag != other.m_Tag; }
@@ -161,7 +157,6 @@ private:
     TEString m_Tag;
 };
 
-
 namespace std
 {
 template <> struct hash<GameplayTag>
@@ -169,4 +164,3 @@ template <> struct hash<GameplayTag>
     size_t operator()(const GameplayTag &tag) const noexcept { return std::hash<TEString>{}(tag.ToString()); }
 };
 } // namespace std
-

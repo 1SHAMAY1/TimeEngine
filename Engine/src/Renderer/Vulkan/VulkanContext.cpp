@@ -1,9 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanContext.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include <iostream>
 #include <vector>
-
 
 void VulkanContext::Init(void *windowHandle)
 {
@@ -75,4 +74,3 @@ void VulkanContext::CreateCommandPool()
 {
     // Create command pool
 }
-

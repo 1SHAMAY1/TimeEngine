@@ -1,9 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Editor/DataAssetEditor.hpp"
 #include "Core/Asset/DataAsset.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 void DataAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -25,7 +24,8 @@ void DataAssetEditor::DrawEditor(EditorTab &tab)
 
     static TEString s_NewPropName = "";
     static int s_SelectedTypeIdx = 0;
-    const char *s_TypeNames[] = {"Int", "Int64", "Float", "Double", "Bool", "String", "Vector2", "Vector4", "Color", "AssetHandle"};
+    const char *s_TypeNames[] = {"Int",    "Int64",   "Float",   "Double", "Bool",
+                                 "String", "Vector2", "Vector4", "Color",  "AssetHandle"};
 
     // Add Property Section
     TimeGUI::Text("Add Property:");
@@ -33,7 +33,8 @@ void DataAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::InputText("##NewPropName", s_NewPropName);
     TimeGUI::SameLine();
     TimeGUI::SetNextItemWidth(120.0f);
-    TimeGUI::Combo("##NewPropType", &s_SelectedTypeIdx, s_TypeNames, (int)(sizeof(s_TypeNames) / sizeof(s_TypeNames[0])));
+    TimeGUI::Combo("##NewPropType", &s_SelectedTypeIdx, s_TypeNames,
+                   (int)(sizeof(s_TypeNames) / sizeof(s_TypeNames[0])));
     TimeGUI::SameLine();
     if (TimeGUI::Button("Add Property"))
     {
@@ -65,7 +66,7 @@ void DataAssetEditor::DrawEditor(EditorTab &tab)
     for (auto &[key, val] : dataAsset->GetAllProperties())
     {
         TimeGUI::PushID(key.c_str());
-        
+
         TimeGUI::SetNextItemWidth(120.0f);
         TimeGUI::TextColored(TEColor(1.0f, 0.84f, 0.0f, 1.0f), "%s", key.c_str());
         TimeGUI::SameLine(150.0f);
@@ -73,25 +74,36 @@ void DataAssetEditor::DrawEditor(EditorTab &tab)
         switch (val.Type)
         {
         case EDataPropertyType::Int:
-            if (TimeGUI::DragInt("##val", &val.IntVal)) modified = true;
+            if (TimeGUI::DragInt("##val", &val.IntVal))
+                modified = true;
             break;
         case EDataPropertyType::Int64:
         {
             int temp = static_cast<int>(val.Int64Val);
-            if (TimeGUI::DragInt("##val", &temp)) { val.Int64Val = temp; modified = true; }
+            if (TimeGUI::DragInt("##val", &temp))
+            {
+                val.Int64Val = temp;
+                modified = true;
+            }
             break;
         }
         case EDataPropertyType::Float:
-            if (TimeGUI::DragFloat("##val", &val.FloatVal, 0.1f)) modified = true;
+            if (TimeGUI::DragFloat("##val", &val.FloatVal, 0.1f))
+                modified = true;
             break;
         case EDataPropertyType::Double:
         {
             float temp = static_cast<float>(val.DoubleVal);
-            if (TimeGUI::DragFloat("##val", &temp, 0.1f)) { val.DoubleVal = temp; modified = true; }
+            if (TimeGUI::DragFloat("##val", &temp, 0.1f))
+            {
+                val.DoubleVal = temp;
+                modified = true;
+            }
             break;
         }
         case EDataPropertyType::Bool:
-            if (TimeGUI::Checkbox("##val", &val.BoolVal)) modified = true;
+            if (TimeGUI::Checkbox("##val", &val.BoolVal))
+                modified = true;
             break;
         case EDataPropertyType::String:
         {
@@ -102,10 +114,12 @@ void DataAssetEditor::DrawEditor(EditorTab &tab)
             break;
         }
         case EDataPropertyType::Vector2:
-            if (TimeGUI::DragFloat2("##val", &val.Vec2Val.x, 0.1f)) modified = true;
+            if (TimeGUI::DragFloat2("##val", &val.Vec2Val.x, 0.1f))
+                modified = true;
             break;
         case EDataPropertyType::Vector4:
-            if (TimeGUI::DragFloat4("##val", &val.Vec4Val.x, 0.1f)) modified = true;
+            if (TimeGUI::DragFloat4("##val", &val.Vec4Val.x, 0.1f))
+                modified = true;
             break;
         case EDataPropertyType::Color:
         {
@@ -121,7 +135,11 @@ void DataAssetEditor::DrawEditor(EditorTab &tab)
         case EDataPropertyType::AssetHandle:
         {
             int handleInt = static_cast<int>(val.HandleVal);
-            if (TimeGUI::DragInt("##val", &handleInt)) { val.HandleVal = handleInt; modified = true; }
+            if (TimeGUI::DragInt("##val", &handleInt))
+            {
+                val.HandleVal = handleInt;
+                modified = true;
+            }
             break;
         }
         }
@@ -171,4 +189,3 @@ void DataAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) const
 }
 
 TE_REGISTER_ASSET_EDITOR(DataAssetEditor);
-

@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Renderer/TEColor.hpp"
 
-
 class TEVulkanColor
 {
 public:
@@ -12,4 +11,3 @@ public:
     static const TEColor White;
     static const TEColor Transparent;
 };
-

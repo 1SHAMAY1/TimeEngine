@@ -1,17 +1,16 @@
 #include "TTSAssetEditor.hpp"
 #include "../TTSAudioEngine.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Utils/TimeGUI.hpp"
 #include "Utils/TEFileSystem.hpp"
+#include "Utils/TimeGUI.hpp"
 
-TTSAssetEditor::TTSAssetEditor()
-{
-}
+TTSAssetEditor::TTSAssetEditor() {}
 
 TEString TTSAssetEditor::CreateDefaultTemplate(const TEString &name) const
 {
     return "{\n"
-           "  \"Text\": \"<color=gold>Hello!</color> <pause time=\\\"300ms\\\"/> Welcome to TimeEngine speech synthesis.\",\n"
+           "  \"Text\": \"<color=gold>Hello!</color> <pause time=\\\"300ms\\\"/> Welcome to TimeEngine speech "
+           "synthesis.\",\n"
            "  \"Volume\": 1.0,\n"
            "  \"Pitch\": 1.0,\n"
            "  \"Rate\": 1.0,\n"
@@ -43,11 +42,10 @@ void TTSAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     if (TimeGUI::Button("Save Asset##TTSSave"))
     {
-        TEString json = "{\n  \"Text\": \"" + m_InputText + "\",\n  \"Volume\": " +
-                        TEString::FromFloat(m_Volume) + ",\n  \"Pitch\": " +
-                        TEString::FromFloat(m_Pitch) + ",\n  \"Rate\": " +
-                        TEString::FromFloat(m_Rate) + ",\n  \"EnableAcoustics\": " +
-                        (m_EnableAcoustics ? "true" : "false") + "\n}";
+        TEString json = "{\n  \"Text\": \"" + m_InputText + "\",\n  \"Volume\": " + TEString::FromFloat(m_Volume) +
+                        ",\n  \"Pitch\": " + TEString::FromFloat(m_Pitch) +
+                        ",\n  \"Rate\": " + TEString::FromFloat(m_Rate) +
+                        ",\n  \"EnableAcoustics\": " + (m_EnableAcoustics ? "true" : "false") + "\n}";
         if (TEFileSystem::WriteAllText(tab.AssetPath, json))
         {
             AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, false);
@@ -137,8 +135,7 @@ void TTSAssetEditor::DrawEditor(EditorTab &tab)
     }
 
     TimeGUI::Spacing();
-    TimeGUI::TextDisabled("Status: %s | Queue Size: %zu",
-                          TTSAudioEngine::Get().IsSpeaking() ? "Speaking..." : "Idle",
+    TimeGUI::TextDisabled("Status: %s | Queue Size: %zu", TTSAudioEngine::Get().IsSpeaking() ? "Speaking..." : "Idle",
                           TTSAudioEngine::Get().GetQueueSize());
 }
 

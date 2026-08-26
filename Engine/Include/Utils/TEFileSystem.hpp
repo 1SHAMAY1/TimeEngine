@@ -17,7 +17,8 @@ public:
     static uint64_t RemoveAll(const TEString &path);
     static bool CopyFile(const TEString &from, const TEString &to, bool overwrite = true);
     static uint64_t FileSize(const TEString &path);
-    static TEArray<TEString> GetFiles(const TEString &directory, const TEString &extension = "", bool recursive = false);
+    static TEArray<TEString> GetFiles(const TEString &directory, const TEString &extension = "",
+                                      bool recursive = false);
     static TEArray<TEString> GetDirectories(const TEString &directory, bool recursive = false);
     static TEString GetCurrentWorkingDirectory();
     static bool SetCurrentWorkingDirectory(const TEString &path);

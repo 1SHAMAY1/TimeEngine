@@ -12,7 +12,7 @@ template <typename T> struct TEPropertyDrawer;
 class TComponent;
 using EntityID = uint64_t;
 
-using PropertyDrawFunc = std::function<void(void *, const TEString &)>;
+using PropertyDrawFunc = std::function<bool(void *, const TEString &)>;
 
 struct PropertyMetadata
 {
@@ -21,7 +21,7 @@ struct PropertyMetadata
     PropertyDrawFunc DrawFunc;
     size_t Offset;
     std::function<bool(void *)> Condition = nullptr; // Returns true if property should be visible
-    TEString EnumName;                            // If set, this property is an enum
+    TEString EnumName;                               // If set, this property is an enum
     std::function<TEString(void *)> SerializeFunc = nullptr;
     std::function<void(void *, const TEString &)> DeserializeFunc = nullptr;
 };
@@ -85,11 +85,11 @@ public:
                 return true;
         }
         meta.Properties.push_back({propName, displayName,
-                                   [member, propName](void *instance, const TEString &label)
+                                   [member, propName](void *instance, const TEString &label) -> bool
                                    {
                                        TEString uiLabel = label + "###" + propName;
                                        Type *ptr = &(static_cast<Class *>(instance)->*member);
-                                       TEPropertyDrawer<Type>::Draw(ptr, uiLabel);
+                                       return TEPropertyDrawer<Type>::Draw(ptr, uiLabel);
                                    },
                                    0, // Offset no longer used directly, but kept in struct for ABI or other uses
                                    condition, "",
@@ -117,12 +117,13 @@ public:
                 return true;
         }
         meta.Properties.push_back({propName, displayName,
-                                   [getPtr, propName](void *instance, const TEString &label)
+                                   [getPtr, propName](void *instance, const TEString &label) -> bool
                                    {
                                        TEString uiLabel = label + "###" + propName;
                                        Type *ptr = getPtr(instance);
                                        if (ptr)
-                                           TEPropertyDrawer<Type>::Draw(ptr, uiLabel);
+                                           return TEPropertyDrawer<Type>::Draw(ptr, uiLabel);
+                                       return false;
                                    },
                                    0, condition, "",
                                    [getPtr](void *instance) -> TEString
@@ -149,69 +150,70 @@ public:
             if (p.Name == propName)
                 return true;
         }
-        meta.Properties.push_back({propName, displayName,
-                                   [member, enumName, propName](void *instance, const TEString &label)
-                                   {
-                                       EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
-                                       int *val =
-                                           reinterpret_cast<int *>(valPtr); // Enums are ints in our property system
-                                       auto enumMeta = ComponentRegistry::Get().GetEnumMetadata(enumName);
-                                       if (enumMeta)
-                                       {
-                                           const char *current = "Unknown";
-                                           for (const auto &pair : enumMeta->Values)
-                                           {
-                                               if (pair.second == *val)
-                                               {
-                                                   current = pair.first.c_str();
-                                                   break;
-                                               }
-                                           }
-                                           // Use ### for unique ID while keeping display label
-                                           TEString imguiLabel = label + "###" + propName;
-                                           if (TimeGUI::BeginCombo(imguiLabel.c_str(), current))
-                                           {
-                                               for (const auto &pair : enumMeta->Values)
-                                               {
-                                                   bool isSelected = (pair.second == *val);
-                                                   // Use ### with value to ensure unique ID even if names match (or are
-                                                   // duplicated)
-                                                   TEString selectableId =
-                                                       pair.first + "###" + TEString::FromInt(pair.second);
-                                                   if (TimeGUI::Selectable(selectableId.c_str(), isSelected))
-                                                   {
-                                                       *val = pair.second;
-                                                   }
-                                                   if (isSelected)
-                                                       TimeGUI::SetItemDefaultFocus();
-                                               }
-                                               TimeGUI::EndCombo();
-                                           }
-                                       }
-                                       else
-                                       {
-                                           TimeGUI::Text(TEString::Format("%s: Enum %s not found", label.c_str(), enumName.c_str()));
-                                       }
-                                   },
-                                   0, nullptr, enumName,
-                                   [member](void *instance) -> TEString
-                                   {
-                                       // Enums will be stored as integers
-                                       EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
-                                       return TEString::FromInt(static_cast<int>(*valPtr));
-                                   },
-                                   [member](void *instance, const TEString &data)
-                                   {
-                                       if (data.empty())
-                                           return;
-                                       EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
-                                       *valPtr = static_cast<EnumType>(std::stoi(data));
-                                   }});
+        meta.Properties.push_back(
+            {propName, displayName,
+             [member, enumName, propName](void *instance, const TEString &label) -> bool
+             {
+                 bool changed = false;
+                 EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
+                 int *val = reinterpret_cast<int *>(valPtr); // Enums are ints in our property system
+                 auto enumMeta = ComponentRegistry::Get().GetEnumMetadata(enumName);
+                 if (enumMeta)
+                 {
+                     const char *current = "Unknown";
+                     for (const auto &pair : enumMeta->Values)
+                     {
+                         if (pair.second == *val)
+                         {
+                             current = pair.first.c_str();
+                             break;
+                         }
+                     }
+                     // Use ### for unique ID while keeping display label
+                     TEString imguiLabel = label + "###" + propName;
+                     if (TimeGUI::BeginCombo(imguiLabel.c_str(), current))
+                     {
+                         for (const auto &pair : enumMeta->Values)
+                         {
+                             bool isSelected = (pair.second == *val);
+                             // Use ### with value to ensure unique ID even if names match (or are
+                             // duplicated)
+                             TEString selectableId = pair.first + "###" + TEString::FromInt(pair.second);
+                             if (TimeGUI::Selectable(selectableId.c_str(), isSelected))
+                             {
+                                 *val = pair.second;
+                                 changed = true;
+                             }
+                             if (isSelected)
+                                 TimeGUI::SetItemDefaultFocus();
+                         }
+                         TimeGUI::EndCombo();
+                     }
+                 }
+                 else
+                 {
+                     TimeGUI::Text(TEString::Format("%s: Enum %s not found", label.c_str(), enumName.c_str()));
+                 }
+                 return changed;
+             },
+             0, nullptr, enumName,
+             [member](void *instance) -> TEString
+             {
+                 // Enums will be stored as integers
+                 EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
+                 return TEString::FromInt(static_cast<int>(*valPtr));
+             },
+             [member](void *instance, const TEString &data)
+             {
+                 if (data.empty())
+                     return;
+                 EnumType *valPtr = &(static_cast<Class *>(instance)->*member);
+                 *valPtr = static_cast<EnumType>(std::stoi(data));
+             }});
         return true;
     }
 
-    template <typename E>
-    bool RegisterEnum(const TEString &name, const TEArray<std::pair<TEString, E>> &values)
+    template <typename E> bool RegisterEnum(const TEString &name, const TEArray<std::pair<TEString, E>> &values)
     {
         auto &meta = m_Enums[name];
         if (!meta.Values.empty())
@@ -311,12 +313,11 @@ struct TEComponentInternalRegistrar
 // Self-registering preset helper - registers once at startup
 struct TEPresetRegistrar
 {
-    TEPresetRegistrar(const char *displayName, const TEString& category, EntityPresetFactory factory)
+    TEPresetRegistrar(const char *displayName, const TEString &category, EntityPresetFactory factory)
     {
         ComponentRegistry::Get().RegisterEntityPreset(displayName, category, std::move(factory));
     }
 };
-
 
 // Marker for Editor UI and base class helpers
 #define GENERATED_BODY(Class)                                                                                          \
@@ -355,8 +356,8 @@ struct TEPresetRegistrar
         ComponentRegistry::Get().RegisterProperty<Class, Type>(#Class, #Var, DName, &Class::Var, Cond);
 
 #define T_REGISTER_ENUM_PROPERTY(Class, EnumType, Var, DName)                                                          \
-    inline static bool s_##Class##_##Var##_Reg = ComponentRegistry::Get().RegisterEnumProperty<Class, EnumType>( \
-        #Class, #Var, DName, &Class::Var, #EnumType);
+    inline static bool s_##Class##_##Var##_Reg =                                                                       \
+        ComponentRegistry::Get().RegisterEnumProperty<Class, EnumType>(#Class, #Var, DName, &Class::Var, #EnumType);
 
 // Enum registration (must be used INSIDE a namespace)
 #define T_ENUM(EnumType, ...)                                                                                          \
@@ -375,4 +376,3 @@ struct TEPresetRegistrar
     inline static TEPresetRegistrar s_preset_##UniqueName##_Reg(DisplayName, Category, __VA_ARGS__);
 
 #include "PropertyDrawers.hpp"
-

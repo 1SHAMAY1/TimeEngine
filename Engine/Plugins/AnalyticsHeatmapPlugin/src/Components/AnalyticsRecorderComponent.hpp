@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/Scene/ComponentRegistry.hpp"
-#include "GameFrameWork/TComponent.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "GameFrameWork/TComponent.hpp"
 #include "Utils/TEString.hpp"
 
 struct AnalyticsDataPoint

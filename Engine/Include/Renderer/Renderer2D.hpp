@@ -13,17 +13,25 @@ public:
     virtual ~Renderer2D() override;
 
     void BeginFrame(const TEMatrix4 &viewProjection) override;
-    void Submit(const TERef<VertexArray> &vao, const TERef<Material> &material,
-                const TEMatrix4 &transform, uint32_t indexCount) override;
+    void Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const TEMatrix4 &transform,
+                uint32_t indexCount) override;
     void EndFrame() override;
     void Flush() override;
 
     // 2D-specific API (example: submit a quad)
-    void SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TERef<Material> &material);
+    void SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TERef<Material> &material = nullptr);
+    void SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TEColor &color,
+                    const TERef<Material> &material = nullptr);
     void SubmitQuad(const TEMatrix4 &transform, const TERef<Material> &material, int blendMode = 0);
+    void SubmitQuad(const TEMatrix4 &transform, const TEColor &color, const TERef<Material> &material = nullptr,
+                    int blendMode = 0);
     void SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3,
-                        const TERef<Material> &material);
-    void SubmitCircle(const TEVector2 &center, float radius, const TERef<Material> &material);
+                        const TERef<Material> &material = nullptr);
+    void SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3, const TEColor &color,
+                        const TERef<Material> &material = nullptr);
+    void SubmitCircle(const TEVector2 &center, float radius, const TERef<Material> &material = nullptr);
+    void SubmitCircle(const TEVector2 &center, float radius, const TEColor &color,
+                      const TERef<Material> &material = nullptr);
     void SubmitLine(const TEVector2 &p1, const TEVector2 &p2, float thickness, const TEColor &color);
     void SubmitLight(const class LightComponent &light, const TEVector2 &position, float rotation = 0.0f);
     void SubmitShadow(const TEVector2 &lightPos, float lightRadius, const TEArray<TEVector2> &vertices);
@@ -49,4 +57,3 @@ private:
     float m_AmbientHorizonHeight = 0.5f;
     float m_AmbientHorizonSpread = 0.2f;
 };
-

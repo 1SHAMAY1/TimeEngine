@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <glm/glm.hpp>
 
-namespace IK {
+namespace IK
+{
 
 struct FootPlacementResult
 {
@@ -17,8 +18,9 @@ struct FootPlacementResult
 class FootGrounder
 {
 public:
-    static FootPlacementResult Evaluate(const glm::vec3& defaultFootPos, float raycastHitHeight,
-                                        const glm::vec3& groundNormal, float maxStepUp = 30.0f, float maxStepDown = 50.0f)
+    static FootPlacementResult Evaluate(const glm::vec3 &defaultFootPos, float raycastHitHeight,
+                                        const glm::vec3 &groundNormal, float maxStepUp = 30.0f,
+                                        float maxStepDown = 50.0f)
     {
         FootPlacementResult result;
         float heightDiff = raycastHitHeight - defaultFootPos.y;

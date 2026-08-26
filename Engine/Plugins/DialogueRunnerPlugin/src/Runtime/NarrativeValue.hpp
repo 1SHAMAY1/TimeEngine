@@ -4,7 +4,6 @@
 #include "Utils/TEString.hpp"
 #include <variant>
 
-
 enum class NarrativeValueType : uint8_t
 {
     Null = 0,
@@ -56,4 +55,3 @@ private:
     NarrativeValueType m_Type = NarrativeValueType::Null;
     std::variant<std::monostate, bool, int, float, TEString> m_Data;
 };
-

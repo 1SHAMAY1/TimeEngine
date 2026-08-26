@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Layers/Layer.hpp"
 #include "../SpriteEditorTypes.hpp"
+#include "Layers/Layer.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 class SpriteMode;
 
@@ -48,8 +47,10 @@ private:
     void ExecuteSingleFrameExport();
     void ExecuteSpritesheetExport();
 
-    void ExportMetadataJson(const TEString &jsonPath, int sheetW, int sheetH, int cellW, int cellH, int cols, int rows, int frameCount);
-    void ExportMetadataTESheet(const TEString &tesheetPath, const TEString &texturePath, int sheetW, int sheetH, int cellW, int cellH, int cols, int rows, int frameCount);
+    void ExportMetadataJson(const TEString &jsonPath, int sheetW, int sheetH, int cellW, int cellH, int cols, int rows,
+                            int frameCount);
+    void ExportMetadataTESheet(const TEString &tesheetPath, const TEString &texturePath, int sheetW, int sheetH,
+                               int cellW, int cellH, int cols, int rows, int frameCount);
 
     void ResetCropToFull();
 

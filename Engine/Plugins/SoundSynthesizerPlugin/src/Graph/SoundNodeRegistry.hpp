@@ -8,7 +8,8 @@
 #include <memory>
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 struct SoundNodeInfo
 {

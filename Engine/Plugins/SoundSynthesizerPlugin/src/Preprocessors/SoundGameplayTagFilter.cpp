@@ -6,10 +6,12 @@
 #include "../../../GameplayTagPlugin/src/GameplayTagManager.hpp"
 
 TE_DECLARE_GAMEPLAY_TAG(TAG_Audio_Synth_Muted)
-TE_DEFINE_GAMEPLAY_TAG_COMMENT(TAG_Audio_Synth_Muted, "Audio.Synth.Muted", "Mutes procedural sound synthesizer playback")
+TE_DEFINE_GAMEPLAY_TAG_COMMENT(TAG_Audio_Synth_Muted, "Audio.Synth.Muted",
+                               "Mutes procedural sound synthesizer playback")
 #endif
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 bool SoundGameplayTagFilter::IsSynthMuted()
 {
@@ -22,14 +24,8 @@ bool SoundGameplayTagFilter::IsSynthMuted()
     return false;
 }
 
-bool SoundGameplayTagFilter::ShouldSynthesize()
-{
-    return !IsSynthMuted();
-}
+bool SoundGameplayTagFilter::ShouldSynthesize() { return !IsSynthMuted(); }
 
-float SoundGameplayTagFilter::GetTagVolumeMultiplier()
-{
-    return IsSynthMuted() ? 0.0f : 1.0f;
-}
+float SoundGameplayTagFilter::GetTagVolumeMultiplier() { return IsSynthMuted() ? 0.0f : 1.0f; }
 
 } // namespace SoundStudio

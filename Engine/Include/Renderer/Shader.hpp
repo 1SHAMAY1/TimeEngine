@@ -43,4 +43,3 @@ protected:
     AssetHandle m_Handle = 0;
     TEString m_Name = "Unnamed Shader";
 };
-

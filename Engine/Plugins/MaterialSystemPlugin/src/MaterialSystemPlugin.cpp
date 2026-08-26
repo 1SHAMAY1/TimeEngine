@@ -8,7 +8,6 @@
 #include "Editor/MaterialInstanceEditor.hpp"
 #include "Integration/MaterialMCPTools.hpp"
 
-
 void MaterialSystemPlugin::OnLoad()
 {
     TE_CORE_INFO("[MaterialSystemPlugin] Initializing Modular Material System...");
@@ -16,7 +15,8 @@ void MaterialSystemPlugin::OnLoad()
     // Register .tematerial and .tematinst asset types with AssetManager
     AssetManager::RegisterAssetType(CreateRef<MaterialAsset>());
     AssetManager::RegisterAssetType(CreateRef<MaterialInstanceAsset>());
-    TE_CORE_INFO("[MaterialSystemPlugin] Registered Asset Types: MaterialAsset (.tematerial), MaterialInstanceAsset (.tematinst)");
+    TE_CORE_INFO("[MaterialSystemPlugin] Registered Asset Types: MaterialAsset (.tematerial), MaterialInstanceAsset "
+                 "(.tematinst)");
 
     // Register visual editors
     AssetEditorRegistry::Register(CreateRef<MaterialAssetEditor>());

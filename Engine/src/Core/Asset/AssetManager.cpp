@@ -5,7 +5,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4996)
 #endif
 
 #include "Core/Asset/AssetManager.hpp"
@@ -26,10 +26,9 @@
 #include "Core/Log.h"
 #include "Renderer/Texture.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include <unordered_set>
 #include <fstream>
 #include <sstream>
-
+#include <unordered_set>
 
 TEMap<AssetHandle, TERef<Asset>> AssetManager::s_LoadedAssets;
 
@@ -39,16 +38,13 @@ static TEMap<TEString, AssetTypeMetadata> &GetAssetTypeRegistryMap()
     return s_Registry;
 }
 
-const TEMap<TEString, AssetTypeMetadata> &AssetManager::GetRegisteredAssetTypes()
-{
-    return GetAssetTypeRegistryMap();
-}
+const TEMap<TEString, AssetTypeMetadata> &AssetManager::GetRegisteredAssetTypes() { return GetAssetTypeRegistryMap(); }
 
 #include "Core/Asset/DataAsset.hpp"
 #include "Core/Asset/FontAsset.hpp"
+#include "Core/Asset/StateTreeAsset.hpp"
 #include "Core/Asset/TEDataTable.hpp"
 #include "Core/Asset/TEStringTable.hpp"
-#include "Core/Asset/StateTreeAsset.hpp"
 
 void AssetManager::Init()
 {
@@ -304,11 +300,9 @@ bool AssetManager::ExportImagePNG(const TEString &path, int width, int height, i
     return true;
 }
 
-bool AssetManager::BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSize,
-                                 uint32_t atlasWidth, uint32_t atlasHeight,
-                                 float &outAscent, float &outDescent, float &outLineHeight,
-                                 TEMap<TEString, FontGlyph> &outGlyphs,
-                                 TEArray<uint8_t> &outRgbaBitmap)
+bool AssetManager::BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSize, uint32_t atlasWidth,
+                                 uint32_t atlasHeight, float &outAscent, float &outDescent, float &outLineHeight,
+                                 TEMap<TEString, FontGlyph> &outGlyphs, TEArray<uint8_t> &outRgbaBitmap)
 {
     if (ttfData.IsEmpty())
         return false;
@@ -334,8 +328,7 @@ bool AssetManager::BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSiz
     TEArray<uint8_t> monoBitmap;
     monoBitmap.Resize(atlasWidth * atlasHeight, 0);
 
-    int result = stbtt_BakeFontBitmap(ttfData.GetData(), 0, pixelSize,
-                                      monoBitmap.GetData(), atlasWidth, atlasHeight,
+    int result = stbtt_BakeFontBitmap(ttfData.GetData(), 0, pixelSize, monoBitmap.GetData(), atlasWidth, atlasHeight,
                                       firstChar, numChars, bakedChars.GetData());
     if (result <= 0)
     {
@@ -376,5 +369,3 @@ bool AssetManager::BakeFontAtlas(const TEArray<uint8_t> &ttfData, float pixelSiz
 
     return true;
 }
-
-

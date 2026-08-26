@@ -18,4 +18,3 @@ private:
     void *m_Buffer = nullptr;
     uint32_t m_Size = 0;
 };
-

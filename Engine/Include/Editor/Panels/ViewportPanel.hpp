@@ -1,7 +1,6 @@
 #pragma once
 #include "Editor/Panels/IEditorPanel.hpp"
 
-
 class TE_API ViewportPanel : public IEditorPanel
 {
 public:
@@ -12,4 +11,3 @@ public:
     void OnTimeGUIRender(Ref<EditorLayer> editor) override;
     bool OnShortcut(const TEString &shortcutId, Ref<EditorLayer> editor) override;
 };
-

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "ISubmode.hpp"
 #include "../SpriteEditorTypes.hpp"
+#include "ISubmode.hpp"
 #include <vector>
-
 
 class VectorEditorSubmode : public ISubmode
 {
@@ -24,4 +23,3 @@ private:
     void DrawVectorCanvas(SpriteMode *mode);
     void DrawPropertiesSidebar(SpriteMode *mode);
 };
-

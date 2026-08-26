@@ -8,7 +8,6 @@
 struct ImVec2;
 struct ImVec4;
 
-
 // ===== TEVector2 =====
 struct TE_API TEVector2
 {
@@ -288,8 +287,8 @@ public:
 
     TEString ToString() const
     {
-        return TEString("Pitch: ") + TEString::FromFloat(Pitch, 2) + ", Yaw: " +
-               TEString::FromFloat(Yaw, 2) + ", Roll: " + TEString::FromFloat(Roll, 2);
+        return TEString("Pitch: ") + TEString::FromFloat(Pitch, 2) + ", Yaw: " + TEString::FromFloat(Yaw, 2) +
+               ", Roll: " + TEString::FromFloat(Roll, 2);
     }
 
     bool operator==(const TERotator &other) const
@@ -421,4 +420,3 @@ inline TEVector Lerp(const TEVector &a, const TEVector &b, float t) { return a +
 
 inline TEVector2 Mod(const TEVector2 &x, const TEVector2 &y) { return {Mod(x.x, y.x), Mod(x.y, y.y)}; }
 inline TEVector Mod(const TEVector &x, const TEVector &y) { return {Mod(x.x, y.x), Mod(x.y, y.y), Mod(x.z, y.z)}; }
-

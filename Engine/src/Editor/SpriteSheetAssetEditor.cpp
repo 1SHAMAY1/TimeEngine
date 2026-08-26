@@ -1,12 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Editor/SpriteSheetAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Renderer/SpriteSheet.hpp"
 #include "Renderer/SpriteSheetSerializer.hpp"
 #include "Renderer/Texture.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -226,7 +225,8 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
                 float maxX = canvasPos.x + sf.U1 * previewW;
                 float maxY = canvasPos.y + sf.V1 * previewH;
 
-                drawList.AddRect(TEVector2(minX, minY), TEVector2(maxX, maxY), TIMEGUI_COL32(0, 255, 200, 255), 0.0f, 0, 1.5f);
+                drawList.AddRect(TEVector2(minX, minY), TEVector2(maxX, maxY), TIMEGUI_COL32(0, 255, 200, 255), 0.0f, 0,
+                                 1.5f);
             }
         }
         else
@@ -320,4 +320,3 @@ void SpriteSheetAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max
 }
 
 TE_REGISTER_ASSET_EDITOR(SpriteSheetAssetEditor);
-

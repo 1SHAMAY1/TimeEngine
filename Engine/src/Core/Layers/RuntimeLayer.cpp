@@ -1,25 +1,20 @@
-#include "Core/PreRequisites.h"
 #include "Layers/RuntimeLayer.hpp"
 #include "Core/Application.h"
+#include "Core/KeyCodes.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/PlayerCameraComponent.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Core/Scene/TransformComponent.hpp"
-#include "Core/KeyCodes.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
 
-RuntimeLayer::RuntimeLayer(const TEString &scenePath, const TEString &name)
-    : Layer(name), m_ScenePath(scenePath)
-{
-}
+RuntimeLayer::RuntimeLayer(const TEString &scenePath, const TEString &name) : Layer(name), m_ScenePath(scenePath) {}
 
-RuntimeLayer::~RuntimeLayer()
-{
-}
+RuntimeLayer::~RuntimeLayer() {}
 
 void RuntimeLayer::OnAttach()
 {

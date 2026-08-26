@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Asset/Asset.hpp"
-#include "Utils/MathUtils.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
-
 
 class MaterialInstanceAsset : public Asset
 {
@@ -24,7 +23,10 @@ public:
     TEVector4 GetVectorOverride(const TEString &name, const TEVector4 &defaultValue = {1, 1, 1, 1}) const;
     bool HasVectorOverride(const TEString &name) const;
 
-    void SetTextureOverride(const TEString &name, const TEString &texturePath) { m_TextureOverrides[name] = texturePath; }
+    void SetTextureOverride(const TEString &name, const TEString &texturePath)
+    {
+        m_TextureOverrides[name] = texturePath;
+    }
     TEString GetTextureOverride(const TEString &name) const;
     bool HasTextureOverride(const TEString &name) const;
 

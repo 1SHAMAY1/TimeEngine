@@ -1,14 +1,10 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorLayoutManager.hpp"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Editor/EditorSaveManager.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
-#include "Utils/TEFileSystem.hpp"
-#include "Core/Log.h"
-
 
 #include "Utils/TEFileSystem.hpp"
 EditorLayoutManager &EditorLayoutManager::Get()
@@ -48,16 +44,16 @@ void EditorLayoutManager::BuildDefaultTopology(unsigned int dockspaceID)
     unsigned int dock_main_id = dockspaceID;
 
     // Split Right: 25% width
-    unsigned int dock_id_right = TimeGUI::DockBuilderSplitNode(
-        dock_main_id, TimeGUI::TimeGUIDir_Right, 0.25f, nullptr, &dock_main_id);
+    unsigned int dock_id_right =
+        TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Right, 0.25f, nullptr, &dock_main_id);
 
     // Split Bottom: 28% height from central node
-    unsigned int dock_id_bottom = TimeGUI::DockBuilderSplitNode(
-        dock_main_id, TimeGUI::TimeGUIDir_Down, 0.28f, nullptr, &dock_main_id);
+    unsigned int dock_id_bottom =
+        TimeGUI::DockBuilderSplitNode(dock_main_id, TimeGUI::TimeGUIDir_Down, 0.28f, nullptr, &dock_main_id);
 
     // Split Right into Top and Bottom (Hierarchy top, Properties bottom)
-    unsigned int dock_id_right_bottom = TimeGUI::DockBuilderSplitNode(
-        dock_id_right, TimeGUI::TimeGUIDir_Down, 0.55f, nullptr, &dock_id_right);
+    unsigned int dock_id_right_bottom =
+        TimeGUI::DockBuilderSplitNode(dock_id_right, TimeGUI::TimeGUIDir_Down, 0.55f, nullptr, &dock_id_right);
 
     // Dock standard panels
     TimeGUI::DockBuilderDockWindow("Viewport", dock_main_id);
@@ -108,4 +104,3 @@ bool EditorLayoutManager::Load()
     TE_CORE_INFO("EditorLayoutManager: Workspace layout loaded from {0}.", m_LayoutIniPath);
     return true;
 }
-

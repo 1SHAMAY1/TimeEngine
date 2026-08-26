@@ -20,15 +20,15 @@ enum class AudioAttenuationModel
 // Playback options for a single sound instance
 struct TE_API AudioPlayParams
 {
-    float Volume = 1.0f;                    // 0.0f to 1.0f (or higher for boost)
-    float Pitch = 1.0f;                     // Playback speed multiplier (1.0 = normal)
-    float Pan = 0.0f;                       // Stereo pan (-1.0 = Left, 0.0 = Center, +1.0 = Right)
-    bool Loop = false;                      // Repeat sound continuously
-    bool Spatial = false;                   // Enable distance attenuation & panning based on position
-    TEVector2 Position = {0.0f, 0.0f};      // 2D World space emitter position
-    float MinDistance = 1.0f;               // Distance where attenuation begins
-    float MaxDistance = 50.0f;              // Distance where sound becomes silent
-    float RollOff = 1.0f;                   // Attenuation curve steepness
+    float Volume = 1.0f;               // 0.0f to 1.0f (or higher for boost)
+    float Pitch = 1.0f;                // Playback speed multiplier (1.0 = normal)
+    float Pan = 0.0f;                  // Stereo pan (-1.0 = Left, 0.0 = Center, +1.0 = Right)
+    bool Loop = false;                 // Repeat sound continuously
+    bool Spatial = false;              // Enable distance attenuation & panning based on position
+    TEVector2 Position = {0.0f, 0.0f}; // 2D World space emitter position
+    float MinDistance = 1.0f;          // Distance where attenuation begins
+    float MaxDistance = 50.0f;         // Distance where sound becomes silent
+    float RollOff = 1.0f;              // Attenuation curve steepness
     AudioAttenuationModel Attenuation = AudioAttenuationModel::Inverse;
 };
 

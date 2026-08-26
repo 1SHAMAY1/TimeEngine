@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "NarrativeTypes.hpp"
 #include "Runtime/NarrativeValue.hpp"
 #include <functional>
@@ -39,4 +39,3 @@ private:
     TEMap<TEString, NarrativeValue> m_Variables;
     TEArray<VariableChangeCallback> m_Observers;
 };
-

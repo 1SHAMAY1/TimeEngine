@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Core/Asset/Asset.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
-#include "Core/Asset/Asset.hpp"
 #include "Gameframework/GameplayUtils.hpp"
 
 enum class MotionMatchingDimensionMode : uint8_t

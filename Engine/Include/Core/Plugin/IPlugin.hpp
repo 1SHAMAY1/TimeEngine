@@ -5,7 +5,6 @@
 #include "Utils/TEString.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 class TE_API IPlugin
 {
 public:
@@ -32,7 +31,6 @@ public:
     }
 };
 
-
 // Helper macros for exporting plugin creation/destruction functions
 #ifdef TE_PLATFORM_WINDOWS
 #define TE_PLUGIN_EXPORT extern "C" __declspec(dllexport)
@@ -40,8 +38,5 @@ public:
 #define TE_PLUGIN_EXPORT extern "C"
 #endif
 
-#define TE_REGISTER_PLUGIN(PluginType) \
-    TE_PLUGIN_EXPORT void CreatePluginInstance(TERef<IPlugin>& outPlugin) { \
-        outPlugin = CreateRef<PluginType>(); \
-    }
-
+#define TE_REGISTER_PLUGIN(PluginType)                                                                                 \
+    TE_PLUGIN_EXPORT void CreatePluginInstance(TERef<IPlugin> &outPlugin) { outPlugin = CreateRef<PluginType>(); }

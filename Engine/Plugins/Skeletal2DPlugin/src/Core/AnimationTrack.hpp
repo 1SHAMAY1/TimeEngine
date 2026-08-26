@@ -1,14 +1,15 @@
 #pragma once
 
-#include <vector>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include "Utils/TEString.hpp"
-#include "Renderer/TEColor.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
+#include "Utils/TEString.hpp"
+#include <glm/glm.hpp>
+#include <unordered_map>
+#include <vector>
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 enum class EasingCurve
 {
@@ -37,8 +38,7 @@ inline float EvaluateCurve(float t, EasingCurve curve)
     }
 }
 
-template <typename T>
-struct Keyframe
+template <typename T> struct Keyframe
 {
     float Time = 0.0f;
     T Value;
@@ -54,8 +54,8 @@ struct BoneTimeline
     TEArray<Keyframe<float>> RotationKeys; // Radians
     TEArray<Keyframe<glm::vec2>> ScaleKeys;
 
-    void Evaluate(float time, glm::vec2& outPos, float& outRot, glm::vec2& outScale,
-                  const glm::vec2& defaultPos, float defaultRot, const glm::vec2& defaultScale) const
+    void Evaluate(float time, glm::vec2 &outPos, float &outRot, glm::vec2 &outScale, const glm::vec2 &defaultPos,
+                  float defaultRot, const glm::vec2 &defaultScale) const
     {
         outPos = EvaluateVector2(TranslationKeys, time, defaultPos);
         outRot = EvaluateFloat(RotationKeys, time, defaultRot);
@@ -63,11 +63,14 @@ struct BoneTimeline
     }
 
 private:
-    static float EvaluateFloat(const TEArray<Keyframe<float>>& keys, float time, float defaultVal)
+    static float EvaluateFloat(const TEArray<Keyframe<float>> &keys, float time, float defaultVal)
     {
-        if (keys.empty()) return defaultVal;
-        if (keys.size() == 1 || time <= keys.front().Time) return keys.front().Value;
-        if (time >= keys.back().Time) return keys.back().Value;
+        if (keys.empty())
+            return defaultVal;
+        if (keys.size() == 1 || time <= keys.front().Time)
+            return keys.front().Value;
+        if (time >= keys.back().Time)
+            return keys.back().Value;
 
         for (size_t i = 0; i < keys.size() - 1; ++i)
         {
@@ -82,11 +85,14 @@ private:
         return defaultVal;
     }
 
-    static glm::vec2 EvaluateVector2(const TEArray<Keyframe<glm::vec2>>& keys, float time, const glm::vec2& defaultVal)
+    static glm::vec2 EvaluateVector2(const TEArray<Keyframe<glm::vec2>> &keys, float time, const glm::vec2 &defaultVal)
     {
-        if (keys.empty()) return defaultVal;
-        if (keys.size() == 1 || time <= keys.front().Time) return keys.front().Value;
-        if (time >= keys.back().Time) return keys.back().Value;
+        if (keys.empty())
+            return defaultVal;
+        if (keys.size() == 1 || time <= keys.front().Time)
+            return keys.front().Value;
+        if (time >= keys.back().Time)
+            return keys.back().Value;
 
         for (size_t i = 0; i < keys.size() - 1; ++i)
         {

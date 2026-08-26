@@ -2,7 +2,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 TE_CLASS()
 class TE_API MovementComponentBase : public TComponent
 {
@@ -25,4 +24,3 @@ public:
     inline static const TEString StaticClassName = "MovementComponentBase";
     virtual TEString GetClassName() const override { return StaticClassName; }
 };
-

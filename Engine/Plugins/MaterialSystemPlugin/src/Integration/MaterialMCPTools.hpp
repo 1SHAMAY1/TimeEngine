@@ -2,7 +2,6 @@
 
 #include "Core/PreRequisites.h"
 
-
 class MaterialMCPTools
 {
 public:

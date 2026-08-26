@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeGraph.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/TEString.hpp"
-
 
 class TE_API StateTreeEvaluator
 {

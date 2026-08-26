@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/RigidBody2DComponent.hpp"
-#include "Core/Scene/TransformComponent.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
+#include "Core/Scene/TransformComponent.hpp"
 
 RigidBody2DComponent::RigidBody2DComponent()
 {
@@ -55,7 +55,8 @@ void RigidBody2DComponent::SyncToPhysics(PhysicsWorld *physicsWorld)
         m_InternalBody.Position = {transform->Transform.Position.x, transform->Transform.Position.y};
         m_InternalBody.IsStatic = (GetRigidBodyType() == ERigidBodyType2D::Static);
         m_InternalBody.Mass = Mass;
-        m_InternalBody.InverseMass = (Mass > 0.0f && GetRigidBodyType() == ERigidBodyType2D::Dynamic) ? 1.0f / Mass : 0.0f;
+        m_InternalBody.InverseMass =
+            (Mass > 0.0f && GetRigidBodyType() == ERigidBodyType2D::Dynamic) ? 1.0f / Mass : 0.0f;
     }
 }
 
@@ -77,25 +78,13 @@ void RigidBody2DComponent::SyncFromPhysics(PhysicsWorld *physicsWorld)
     }
 }
 
-void RigidBody2DComponent::SetLinearVelocity(const TEVector2 &velocity)
-{
-    m_InternalBody.Velocity = velocity;
-}
+void RigidBody2DComponent::SetLinearVelocity(const TEVector2 &velocity) { m_InternalBody.Velocity = velocity; }
 
-TEVector2 RigidBody2DComponent::GetLinearVelocity() const
-{
-    return m_InternalBody.Velocity;
-}
+TEVector2 RigidBody2DComponent::GetLinearVelocity() const { return m_InternalBody.Velocity; }
 
-void RigidBody2DComponent::SetAngularVelocity(float omega)
-{
-    m_AngularVelocity = omega;
-}
+void RigidBody2DComponent::SetAngularVelocity(float omega) { m_AngularVelocity = omega; }
 
-float RigidBody2DComponent::GetAngularVelocity() const
-{
-    return m_AngularVelocity;
-}
+float RigidBody2DComponent::GetAngularVelocity() const { return m_AngularVelocity; }
 
 void RigidBody2DComponent::ApplyForce(const TEVector2 &force)
 {

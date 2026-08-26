@@ -1,11 +1,10 @@
-#include "Core/PreRequisites.h"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Layers/ProfilingLayer.hpp"
 #include <algorithm>
 #include <chrono>
 #include <velox/VeloxAPI.h>
-
 
 PhysicsWorld::PhysicsWorld()
 {
@@ -287,4 +286,3 @@ bool PhysicsWorld::Raycast(const TEVector2 &start, const TEVector2 &direction, f
     }
     return false;
 }
-

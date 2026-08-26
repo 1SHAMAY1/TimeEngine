@@ -1,7 +1,6 @@
 #include "Integration/MaterialMCPTools.hpp"
 #include "Core/Log.h"
 
-
 void MaterialMCPTools::RegisterTools()
 {
 #if defined(TE_PLUGIN_MCP_ENABLED)

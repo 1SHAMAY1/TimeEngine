@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
-#include "GameFrameWork/GameplayUtils.hpp"
-#include "Utils/MathUtils.hpp"
-#include "Utils/TEString.hpp"
 #include "../Assets/SkeletalDataAsset.hpp"
 #include "../Core/AnimationTrack.hpp"
 #include "../Core/BoneHierarchy.hpp"
 #include "../Core/SkinTable.hpp"
+#include "Core/PreRequisites.h"
+#include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/MathUtils.hpp"
+#include "Utils/TEString.hpp"
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 enum class SkeletalEditorTool
 {

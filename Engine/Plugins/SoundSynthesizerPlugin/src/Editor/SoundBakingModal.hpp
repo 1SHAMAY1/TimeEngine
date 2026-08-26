@@ -4,7 +4,8 @@
 #include "../Graph/SoundGraph.hpp"
 #include <memory>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundBakingModal
 {

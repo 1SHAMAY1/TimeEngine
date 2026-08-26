@@ -1,12 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/MaterialSerializer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
-#include "Utils/TEFileSystem.hpp"
 #include <sstream>
-
 
 #include "Utils/TEFileSystem.hpp"
 MaterialSerializer::MaterialSerializer(const TERef<Material> &material) : m_Material(material) {}
@@ -48,61 +45,62 @@ bool MaterialSerializer::Deserialize(const TEString &filepath)
     if (!TEFileSystem::Exists(filepath))
         return false;
 
-    TEFileSystem::ForEachLine(filepath, [&](const TEString &line) -> bool
-    {
-        if (line.find("Material: ") == 0)
-        {
-            m_Material->SetName(line.substr(10));
-        }
-        else if (line.find("Color: ") == 0)
-        {
-            TEArray<TEString> colorParts = line.substr(7).Split(' ');
-            float r = colorParts.Num() > 0 ? colorParts[0].ToFloat() : 0.0f;
-            float g = colorParts.Num() > 1 ? colorParts[1].ToFloat() : 0.0f;
-            float b = colorParts.Num() > 2 ? colorParts[2].ToFloat() : 0.0f;
-            float a = colorParts.Num() > 3 ? colorParts[3].ToFloat() : 1.0f;
-            m_Material->SetColor(TEColor(r, g, b, a));
-        }
-        else if (line.find("Node: ") == 0)
-        {
-            TEString content = line.substr(6);
-            TEArray<TEString> parts = content.Split('|');
+    TEFileSystem::ForEachLine(filepath,
+                              [&](const TEString &line) -> bool
+                              {
+                                  if (line.find("Material: ") == 0)
+                                  {
+                                      m_Material->SetName(line.substr(10));
+                                  }
+                                  else if (line.find("Color: ") == 0)
+                                  {
+                                      TEArray<TEString> colorParts = line.substr(7).Split(' ');
+                                      float r = colorParts.Num() > 0 ? colorParts[0].ToFloat() : 0.0f;
+                                      float g = colorParts.Num() > 1 ? colorParts[1].ToFloat() : 0.0f;
+                                      float b = colorParts.Num() > 2 ? colorParts[2].ToFloat() : 0.0f;
+                                      float a = colorParts.Num() > 3 ? colorParts[3].ToFloat() : 1.0f;
+                                      m_Material->SetColor(TEColor(r, g, b, a));
+                                  }
+                                  else if (line.find("Node: ") == 0)
+                                  {
+                                      TEString content = line.substr(6);
+                                      TEArray<TEString> parts = content.Split('|');
 
-            if (parts.Num() >= 10)
-            {
-                MaterialPassNode node;
-                node.Name = parts[0];
-                node.Type = (MaterialPassNodeType)std::stoi(parts[1]);
-                node.Enabled = (std::stoi(parts[2]) != 0);
-                node.TexturePath = parts[3];
-                if (!node.TexturePath.empty() && TEFileSystem::Exists(node.TexturePath))
-                {
-                    node.TextureRef = CreateRef<Texture>(node.TexturePath);
-                }
+                                      if (parts.Num() >= 10)
+                                      {
+                                          MaterialPassNode node;
+                                          node.Name = parts[0];
+                                          node.Type = (MaterialPassNodeType)std::stoi(parts[1]);
+                                          node.Enabled = (std::stoi(parts[2]) != 0);
+                                          node.TexturePath = parts[3];
+                                          if (!node.TexturePath.empty() && TEFileSystem::Exists(node.TexturePath))
+                                          {
+                                              node.TextureRef = CreateRef<Texture>(node.TexturePath);
+                                          }
 
-                TEArray<TEString> colorParts = parts[4].Split(' ');
-                node.Color.x = colorParts.Num() > 0 ? colorParts[0].ToFloat() : 0.0f;
-                node.Color.y = colorParts.Num() > 1 ? colorParts[1].ToFloat() : 0.0f;
-                node.Color.z = colorParts.Num() > 2 ? colorParts[2].ToFloat() : 0.0f;
-                node.Color.w = colorParts.Num() > 3 ? colorParts[3].ToFloat() : 1.0f;
+                                          TEArray<TEString> colorParts = parts[4].Split(' ');
+                                          node.Color.x = colorParts.Num() > 0 ? colorParts[0].ToFloat() : 0.0f;
+                                          node.Color.y = colorParts.Num() > 1 ? colorParts[1].ToFloat() : 0.0f;
+                                          node.Color.z = colorParts.Num() > 2 ? colorParts[2].ToFloat() : 0.0f;
+                                          node.Color.w = colorParts.Num() > 3 ? colorParts[3].ToFloat() : 1.0f;
 
-                node.FloatVal1 = std::stof(parts[5]);
-                node.FloatVal2 = std::stof(parts[6]);
-                node.FloatVal3 = std::stof(parts[7]);
-                node.FloatVal4 = std::stof(parts[8]);
-                node.BlendMode = std::stoi(parts[9]);
+                                          node.FloatVal1 = std::stof(parts[5]);
+                                          node.FloatVal2 = std::stof(parts[6]);
+                                          node.FloatVal3 = std::stof(parts[7]);
+                                          node.FloatVal4 = std::stof(parts[8]);
+                                          node.BlendMode = std::stoi(parts[9]);
 
-                if (parts.Num() >= 12)
-                {
-                    node.TargetQueueIndex = std::stoi(parts[10]);
-                    node.QueueName = parts[11];
-                }
+                                          if (parts.Num() >= 12)
+                                          {
+                                              node.TargetQueueIndex = std::stoi(parts[10]);
+                                              node.QueueName = parts[11];
+                                          }
 
-                stack.Add(node);
-            }
-        }
-        return true;
-    });
+                                          stack.Add(node);
+                                      }
+                                  }
+                                  return true;
+                              });
 
     if (stack.IsEmpty())
     {
@@ -116,4 +114,3 @@ bool MaterialSerializer::Deserialize(const TEString &filepath)
 
     return true;
 }
-

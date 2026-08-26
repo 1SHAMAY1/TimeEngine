@@ -1,7 +1,7 @@
 #include "SoundSynthesizerPlugin.hpp"
 #include "Core/Log.h"
-#include "Editor/SoundGraphAssetEditor.hpp"
 #include "Editor/EditorMode.hpp"
+#include "Editor/SoundGraphAssetEditor.hpp"
 #include "Graph/SoundNodeRegistry.hpp"
 #include "MCP/SoundSynthMCPTools.hpp"
 
@@ -51,10 +51,11 @@ void SoundSynthesizerPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 
     // Frequency spectrum equalizer bars
     float barX = min.x + 10.0f;
     float barY = max.y - 7.0f;
-    float barHeights[5] = { 6.0f, 12.0f, 16.0f, 10.0f, 14.0f };
+    float barHeights[5] = {6.0f, 12.0f, 16.0f, 10.0f, 14.0f};
     for (int i = 0; i < 5; ++i)
     {
-        dl.AddLine(TEVector2(barX + i * 6.5f, barY), TEVector2(barX + i * 6.5f, barY - barHeights[i]), 0xFFE056FD, 3.0f);
+        dl.AddLine(TEVector2(barX + i * 6.5f, barY), TEVector2(barX + i * 6.5f, barY - barHeights[i]), 0xFFE056FD,
+                   3.0f);
     }
 }
 

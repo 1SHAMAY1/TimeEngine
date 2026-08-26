@@ -3,7 +3,6 @@
 #include "Core/Asset/DataAsset.hpp"
 #include "RichTextTypes.hpp"
 
-
 class RichTextDataAsset : public DataAsset
 {
 public:
@@ -19,7 +18,11 @@ public:
 
     // Style Specific Accessors
     const TEString &GetStyleName() const { return m_Style.StyleName; }
-    void SetStyleName(const TEString &name) { m_Style.StyleName = name; m_Name = name.ToStdString(); }
+    void SetStyleName(const TEString &name)
+    {
+        m_Style.StyleName = name;
+        m_Name = name.ToStdString();
+    }
 
     AssetHandle GetFontAssetHandle() const { return m_Style.FontAsset; }
     void SetFontAssetHandle(AssetHandle handle) { m_Style.FontAsset = handle; }
@@ -54,4 +57,3 @@ public:
 protected:
     RichTextStyle m_Style;
 };
-

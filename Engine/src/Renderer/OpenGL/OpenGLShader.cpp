@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
-#include "Core/Log.h"
 #include "Renderer/OpenGL/OpenGLShader.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
@@ -76,10 +76,7 @@ void OpenGLShader::Bind() const { glUseProgram(m_RendererID); }
 
 void OpenGLShader::Unbind() const { glUseProgram(0); }
 
-int OpenGLShader::GetUniformLocation(const TEString &name)
-{
-    return glGetUniformLocation(m_RendererID, name.c_str());
-}
+int OpenGLShader::GetUniformLocation(const TEString &name) { return glGetUniformLocation(m_RendererID, name.c_str()); }
 
 void OpenGLShader::SetUniformMat4(const TEString &name, const glm::mat4 &value)
 {
@@ -104,4 +101,3 @@ void OpenGLShader::SetUniform2f(const TEString &name, const glm::vec2 &value)
 void OpenGLShader::SetUniform1f(const TEString &name, float value) { glUniform1f(GetUniformLocation(name), value); }
 
 void OpenGLShader::SetUniform1i(const TEString &name, int value) { glUniform1i(GetUniformLocation(name), value); }
-

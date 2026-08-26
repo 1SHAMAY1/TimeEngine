@@ -3,7 +3,6 @@
 #include "Layers/ProfilingLayer.hpp"
 #include <memory>
 
-
 class TE_API ProfilingButtonLayer : public Layer
 {
 public:
@@ -24,4 +23,3 @@ private:
     void RenderProfilingButton();
     void CreateFloatingProfilingWindow();
 };
-

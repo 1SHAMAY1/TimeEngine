@@ -1,22 +1,21 @@
-#include "Core/PreRequisites.h"
 #include "Layers/ProjectHubLayer.hpp"
 #include "Core/Application.h"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
-#include "Layers/EditorLayer.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
+#include "Layers/EditorLayer.hpp"
 #include "Utils/PlatformUtils.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
-#include "Utils/TEFileSystem.hpp"
 #include <fstream>
 
 #include "Renderer/Texture.hpp"
 
 // Note: Ensure PlatformUtils.hpp is implemented for Windows/Project Folder picking
 
-
-static void DrawUI_Title(const TEString& text, const TEVector4 &color = TEVector4(1, 1, 1, 1))
+static void DrawUI_Title(const TEString &text, const TEVector4 &color = TEVector4(1, 1, 1, 1))
 {
     TimeGUI::PushFont(TimeGUI::GetDefaultFont()); // Assuming default font for now, ideally use a Large Font
     TimeGUI::TextColored(color, text);
@@ -129,7 +128,7 @@ void ProjectHubLayer::OnTimeGUIRender()
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FramePadding, TEVector2(20, 12));
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 8.0f);
 
-    auto drawNavButton = [&](const TEString& label, HubView view)
+    auto drawNavButton = [&](const TEString &label, HubView view)
     {
         bool active = m_CurrentView == view;
         if (active)
@@ -336,8 +335,7 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
     }
 }
 
-void ProjectHubLayer::CreateProject(const TEString &name, const TEString &path,
-                                    const TEString &thumbnailPath)
+void ProjectHubLayer::CreateProject(const TEString &name, const TEString &path, const TEString &thumbnailPath)
 {
     // 1. Create Directories
     TEString projectPath = path / name;
@@ -430,13 +428,15 @@ void ProjectHubLayer::LoadRecentProjects()
     if (!TEFileSystem::Exists(recentFile))
         return;
 
-    TEFileSystem::ForEachLine(recentFile, [this](const TEString &line) {
-        if (!line.IsEmpty() && TEFileSystem::Exists(line))
-        {
-            m_RecentProjects.push_back(line);
-        }
-        return true;
-    });
+    TEFileSystem::ForEachLine(recentFile,
+                              [this](const TEString &line)
+                              {
+                                  if (!line.IsEmpty() && TEFileSystem::Exists(line))
+                                  {
+                                      m_RecentProjects.push_back(line);
+                                  }
+                                  return true;
+                              });
 }
 
 void ProjectHubLayer::SaveRecentProjects()
@@ -500,4 +500,3 @@ void ProjectHubLayer::SetDarkThemeColors()
     colors[TimeGUICol_SliderGrab] = TEVector4{0.35f, 0.65f, 1.0f, 0.8f};
     colors[TimeGUICol_SliderGrabActive] = TEVector4{0.4f, 0.7f, 1.0f, 1.0f};
 }
-

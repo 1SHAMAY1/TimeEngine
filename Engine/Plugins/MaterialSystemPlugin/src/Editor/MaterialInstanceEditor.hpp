@@ -3,7 +3,6 @@
 #include "Core/PreRequisites.h"
 #include "Editor/AssetEditor.hpp"
 
-
 class MaterialInstanceEditor : public AssetEditor
 {
 public:
@@ -15,7 +14,8 @@ public:
     virtual TEString GetAssetDescription() const override { return "Parameter override instance of parent material"; }
     virtual TEString CreateDefaultTemplate(const TEString &name) const override
     {
-        return "{\n  \"MaterialInstance\": {\n    \"Name\": \"" + name + "\",\n    \"Parent\": \"\",\n    \"Scalars\": {},\n    \"Vectors\": {}\n  }\n}";
+        return "{\n  \"MaterialInstance\": {\n    \"Name\": \"" + name +
+               "\",\n    \"Parent\": \"\",\n    \"Scalars\": {},\n    \"Vectors\": {}\n  }\n}";
     }
     virtual void DrawEditor(EditorTab &tab) override;
     virtual void DrawIcon(const TEVector2 &min, const TEVector2 &max) const override;

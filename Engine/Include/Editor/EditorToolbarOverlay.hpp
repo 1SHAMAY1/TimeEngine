@@ -2,7 +2,6 @@
 #include "Core/PreRequisites.h"
 #include "Editor/EditorToolbarRegistry.hpp"
 
-
 class EditorLayer;
 
 class TE_API IEditorToolbarOverlay
@@ -83,4 +82,3 @@ public:
     static void RequestRestart();
     static void RestartEditor();
 };
-

@@ -1,8 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeConditions.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/TagComponent.hpp"
-#include "Core/Log.h"
 
 // STDistanceCondition
 bool STDistanceCondition::Evaluate(Entity agent) const
@@ -80,13 +80,7 @@ bool STHasLineOfSightCondition::Evaluate(Entity agent) const
 }
 
 // STTimerCondition
-bool STTimerCondition::Evaluate(Entity agent) const
-{
-    return true;
-}
+bool STTimerCondition::Evaluate(Entity agent) const { return true; }
 
 // STTScriptCondition
-bool STTScriptCondition::Evaluate(Entity agent) const
-{
-    return true;
-}
+bool STTScriptCondition::Evaluate(Entity agent) const { return true; }

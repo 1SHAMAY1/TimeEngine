@@ -1,22 +1,30 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLFramebuffer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
-
 
 static const uint32_t s_MaxFramebufferSize = 8192;
 
-OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification &spec) : m_Specification(spec) { Invalidate(); }
+OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification &spec)
+    : m_Specification(spec), m_NeedsReallocation(true)
+{
+}
 
 OpenGLFramebuffer::~OpenGLFramebuffer()
 {
-    glDeleteFramebuffers(1, &m_RendererID);
-    glDeleteTextures(1, &m_ColorAttachment);
-    glDeleteTextures(1, &m_DepthAttachment);
+    if (m_RendererID)
+    {
+        glDeleteFramebuffers(1, &m_RendererID);
+        glDeleteTextures(1, &m_ColorAttachment);
+        glDeleteTextures(1, &m_DepthAttachment);
+    }
 }
 
 void OpenGLFramebuffer::Invalidate()
 {
+    if (m_Specification.Width == 0 || m_Specification.Height == 0)
+        return;
+
     if (m_RendererID)
     {
         glDeleteFramebuffers(1, &m_RendererID);
@@ -49,6 +57,12 @@ void OpenGLFramebuffer::Invalidate()
 
 void OpenGLFramebuffer::Bind()
 {
+    if (m_NeedsReallocation)
+    {
+        Invalidate();
+        m_NeedsReallocation = false;
+    }
+
     glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
     glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 }
@@ -63,9 +77,10 @@ void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
         return;
     }
 
+    if (m_Specification.Width == width && m_Specification.Height == height)
+        return;
+
     m_Specification.Width = width;
     m_Specification.Height = height;
-
-    Invalidate();
+    m_NeedsReallocation = true;
 }
-

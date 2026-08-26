@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Settings/EditorAppearanceSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,13 +7,13 @@ TE_REGISTER_EDITOR_SETTINGS(EditorAppearanceSettings);
 
 namespace
 {
-    static float s_UIScaling = 1.0f;
-    static float s_FontSize = 14.0f;
-    static float s_AccentColor[4] = { 0.2f, 0.55f, 0.9f, 1.0f };
-    static bool s_ConsoleAutoScroll = true;
-    static bool s_HighlightActiveTab = true;
-    static bool s_ShowAssetExtensions = true;
-}
+static float s_UIScaling = 1.0f;
+static float s_FontSize = 14.0f;
+static float s_AccentColor[4] = {0.2f, 0.55f, 0.9f, 1.0f};
+static bool s_ConsoleAutoScroll = true;
+static bool s_HighlightActiveTab = true;
+static bool s_ShowAssetExtensions = true;
+} // namespace
 
 void EditorAppearanceSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {

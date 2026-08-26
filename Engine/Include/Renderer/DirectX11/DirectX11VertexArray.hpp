@@ -3,7 +3,6 @@
 
 struct ID3D11InputLayout;
 
-
 // In D3D11, there is no VAO equivalent. This class groups vertex + index buffers
 // together and manages an ID3D11InputLayout that describes the vertex layout to the IA stage.
 // The input layout is created lazily the first time Bind() is called, once a shader is active.
@@ -28,4 +27,3 @@ private:
     TERef<IndexBuffer> m_IndexBuffer = nullptr;
     ID3D11InputLayout *m_InputLayout = nullptr;
 };
-

@@ -1,15 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/TEStringTable.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
-
-TEStringTable::TEStringTable()
-{
-}
+TEStringTable::TEStringTable() {}
 
 TEStringTable::TEStringTable(const TEString &name, const TEString &defaultCulture)
     : m_Name(name), m_DefaultCulture(defaultCulture)
@@ -34,32 +31,34 @@ bool TEStringTable::LoadFromFile(const TEString &path)
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Entries.Clear();
 
-    bool success = TEFileSystem::ForEachLine(path, [this](const TEString &line) {
-        if (line.StartsWith("StringTable: "))
-        {
-            m_Name = line.Mid(13).Trim();
-        }
-        else if (line.StartsWith("DefaultCulture: "))
-        {
-            m_DefaultCulture = line.Mid(16).Trim();
-        }
-        else if (line.StartsWith("Entry: "))
-        {
-            TEString content = line.Mid(7);
-            auto parts = content.Split("|");
-            if (parts.size() >= 4)
-            {
-                StringTableEntry entry;
-                entry.Namespace = parts[0];
-                entry.Key = parts[1];
-                entry.Culture = parts[2];
-                entry.Translation = parts[3];
-                entry.Comment = (parts.size() > 4) ? parts[4] : "";
-                m_Entries.Add(entry);
-            }
-        }
-        return true;
-    });
+    bool success = TEFileSystem::ForEachLine(path,
+                                             [this](const TEString &line)
+                                             {
+                                                 if (line.StartsWith("StringTable: "))
+                                                 {
+                                                     m_Name = line.Mid(13).Trim();
+                                                 }
+                                                 else if (line.StartsWith("DefaultCulture: "))
+                                                 {
+                                                     m_DefaultCulture = line.Mid(16).Trim();
+                                                 }
+                                                 else if (line.StartsWith("Entry: "))
+                                                 {
+                                                     TEString content = line.Mid(7);
+                                                     auto parts = content.Split("|");
+                                                     if (parts.size() >= 4)
+                                                     {
+                                                         StringTableEntry entry;
+                                                         entry.Namespace = parts[0];
+                                                         entry.Key = parts[1];
+                                                         entry.Culture = parts[2];
+                                                         entry.Translation = parts[3];
+                                                         entry.Comment = (parts.size() > 4) ? parts[4] : "";
+                                                         m_Entries.Add(entry);
+                                                     }
+                                                 }
+                                                 return true;
+                                             });
 
     if (!success)
         return false;
@@ -207,7 +206,8 @@ bool TEStringTable::ExportToCSV(const TEString &csvPath) const
     hout << "Namespace,Key,Culture,Translation,Comment\n";
     for (const auto &e : m_Entries)
     {
-        hout << e.Namespace.c_str() << "," << e.Key.c_str() << "," << e.Culture.c_str() << "," << e.Translation.c_str() << "," << e.Comment.c_str() << "\n";
+        hout << e.Namespace.c_str() << "," << e.Key.c_str() << "," << e.Culture.c_str() << "," << e.Translation.c_str()
+             << "," << e.Comment.c_str() << "\n";
     }
 
     hout.close();
@@ -222,21 +222,23 @@ bool TEStringTable::ImportFromCSV(const TEString &csvPath)
     m_Entries.Clear();
     bool isFirstLine = true;
 
-    TEFileSystem::ForEachLine(csvPath, [this, &isFirstLine](const TEString &line) {
-        if (isFirstLine)
-        {
-            isFirstLine = false;
-            return true; // Skip CSV header
-        }
+    TEFileSystem::ForEachLine(csvPath,
+                              [this, &isFirstLine](const TEString &line)
+                              {
+                                  if (isFirstLine)
+                                  {
+                                      isFirstLine = false;
+                                      return true; // Skip CSV header
+                                  }
 
-        auto parts = line.Split(",");
-        if (parts.size() >= 4)
-        {
-            TEString comment = (parts.size() > 4) ? parts[4] : "";
-            SetEntry(parts[0], parts[1], parts[2], parts[3], comment);
-        }
-        return true;
-    });
+                                  auto parts = line.Split(",");
+                                  if (parts.size() >= 4)
+                                  {
+                                      TEString comment = (parts.size() > 4) ? parts[4] : "";
+                                      SetEntry(parts[0], parts[1], parts[2], parts[3], comment);
+                                  }
+                                  return true;
+                              });
 
     SyncToLocalizationManager();
     return true;

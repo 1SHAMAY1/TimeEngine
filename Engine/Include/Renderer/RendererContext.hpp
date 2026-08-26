@@ -16,4 +16,3 @@ public:
 private:
     static GraphicsAPI s_API;
 };
-

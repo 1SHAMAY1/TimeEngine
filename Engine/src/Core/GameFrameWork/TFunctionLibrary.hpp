@@ -4,7 +4,8 @@
 
 #include "Utils/TEString.hpp"
 
-class TFunctionLibrary {
+class TFunctionLibrary
+{
 public:
     // Base for stateless utility classes
     inline static const TEString StaticClassName = "TFunctionLibrary";

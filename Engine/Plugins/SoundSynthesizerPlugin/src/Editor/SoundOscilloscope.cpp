@@ -2,12 +2,10 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include <algorithm>
 
-namespace SoundStudio {
-
-SoundOscilloscope::SoundOscilloscope(size_t historySize)
+namespace SoundStudio
 {
-    m_WaveformHistory.resize(historySize, 0.0f);
-}
+
+SoundOscilloscope::SoundOscilloscope(size_t historySize) { m_WaveformHistory.resize(historySize, 0.0f); }
 
 void SoundOscilloscope::PushBlock(const AudioBufferBlock &block)
 {
@@ -60,7 +58,8 @@ void SoundOscilloscope::Draw(float width, float height)
     }
 
     // Oscilloscope Title
-    drawList.AddText(TEVector2(pos.x + 8.0f, pos.y + 4.0f), TIMEGUI_COL32(180, 180, 180, 255), "Live Waveform Oscilloscope");
+    drawList.AddText(TEVector2(pos.x + 8.0f, pos.y + 4.0f), TIMEGUI_COL32(180, 180, 180, 255),
+                     "Live Waveform Oscilloscope");
 }
 
 } // namespace SoundStudio

@@ -67,4 +67,3 @@ private:
     static bool s_MouseButtonDown[3];
     static bool s_MouseButtonUp[3];
 };
-

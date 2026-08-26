@@ -1,8 +1,7 @@
 #pragma once
-#include "Editor/Panels/IEditorPanel.hpp"
 #include "Core/Scene/EntityManager.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include <memory>
-
 
 class TE_API SceneHierarchyPanel : public IEditorPanel
 {
@@ -25,4 +24,3 @@ private:
     bool m_Focused = false;
     bool m_Hovered = false;
 };
-

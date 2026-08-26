@@ -9,4 +9,3 @@ enum class GraphicsAPI
     DirectX11,
     Metal
 };
-

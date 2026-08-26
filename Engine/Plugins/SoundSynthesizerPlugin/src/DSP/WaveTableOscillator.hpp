@@ -3,7 +3,8 @@
 #include "../SoundStudioTypes.hpp"
 #include "AudioDSPContext.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class WaveTableOscillator
 {

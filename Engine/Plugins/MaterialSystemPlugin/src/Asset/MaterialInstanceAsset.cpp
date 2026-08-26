@@ -1,7 +1,6 @@
 #include "Asset/MaterialInstanceAsset.hpp"
 #include "Asset/MaterialAssetSerializer.hpp"
 
-
 MaterialInstanceAsset::MaterialInstanceAsset(const TEString &name) : m_Name(name) {}
 
 float MaterialInstanceAsset::GetScalarOverride(const TEString &name, float defaultValue) const

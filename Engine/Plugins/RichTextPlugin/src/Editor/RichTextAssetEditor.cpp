@@ -1,25 +1,29 @@
 #include "Editor/RichTextAssetEditor.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Utils/TimeGUI.hpp"
 #include "Utils/TEFileSystem.hpp"
+#include "Utils/TimeGUI.hpp"
 
 RichTextAssetEditor::RichTextAssetEditor()
 {
     const char *defaultSample =
         "<color=gold><b>TimeEngine</b></color> <color=#00e0ff><b>Rich Text Studio</b></color>\n"
         "Welcome to the <wave amp=3 speed=3><color=cyan><b>modular rich text subsystem</b></color></wave>!\n"
-        "Features include <shake intensity=2><b>shake effects</b></shake>, <rainbow speed=2>rainbow styling</rainbow>, and <link=ShopPrompt><u>interactive hyperlinks</u></link>.\n"
-        "Supports <size=20><color=orange>custom font sizes</color></size>, <i>italics</i>, <u>underlines</u>, and <s>strikethroughs</s>.";
+        "Features include <shake intensity=2><b>shake effects</b></shake>, <rainbow speed=2>rainbow styling</rainbow>, "
+        "and <link=ShopPrompt><u>interactive hyperlinks</u></link>.\n"
+        "Supports <size=20><color=orange>custom font sizes</color></size>, <i>italics</i>, <u>underlines</u>, and "
+        "<s>strikethroughs</s>.";
 
     m_InputBuffer = defaultSample;
 }
 
 TEString RichTextAssetEditor::CreateDefaultTemplate(const TEString &name) const
 {
-    return "<color=gold><b>" + name + "</b></color>\n"
+    return "<color=gold><b>" + name +
+           "</b></color>\n"
            "Welcome to <wave amp=3 speed=3><color=cyan><b>RichText</b></color></wave> in TimeEngine!\n"
-           "Use <shake intensity=2>shake</shake>, <rainbow speed=2>rainbow</rainbow>, and <link=Action><u>links</u></link>.";
+           "Use <shake intensity=2>shake</shake>, <rainbow speed=2>rainbow</rainbow>, and "
+           "<link=Action><u>links</u></link>.";
 }
 
 void RichTextAssetEditor::DrawEditor(EditorTab &tab)
@@ -50,21 +54,61 @@ void RichTextAssetEditor::DrawEditor(EditorTab &tab)
     // Quick Tag Insertion Buttons Toolbar
     TimeGUI::Text("Quick Tags:");
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<b>Bold</b>")) { m_InputBuffer += "<b>text</b>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<b>Bold</b>"))
+    {
+        m_InputBuffer += "<b>text</b>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<i>Italic</i>")) { m_InputBuffer += "<i>text</i>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<i>Italic</i>"))
+    {
+        m_InputBuffer += "<i>text</i>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<u>Under</u>")) { m_InputBuffer += "<u>text</u>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<u>Under</u>"))
+    {
+        m_InputBuffer += "<u>text</u>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<color>")) { m_InputBuffer += "<color=gold>text</color>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<color>"))
+    {
+        m_InputBuffer += "<color=gold>text</color>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<wave>")) { m_InputBuffer += "<wave amp=4 speed=3>wavy</wave>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<wave>"))
+    {
+        m_InputBuffer += "<wave amp=4 speed=3>wavy</wave>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<shake>")) { m_InputBuffer += "<shake intensity=2>shaking</shake>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<shake>"))
+    {
+        m_InputBuffer += "<shake intensity=2>shaking</shake>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<rainbow>")) { m_InputBuffer += "<rainbow speed=2>rainbow</rainbow>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<rainbow>"))
+    {
+        m_InputBuffer += "<rainbow speed=2>rainbow</rainbow>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
     TimeGUI::SameLine();
-    if (TimeGUI::Button("<link>")) { m_InputBuffer += "<link=action_id>click me</link>"; m_bDirty = true; AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true); }
+    if (TimeGUI::Button("<link>"))
+    {
+        m_InputBuffer += "<link=action_id>click me</link>";
+        m_bDirty = true;
+        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+    }
 
     TimeGUI::Separator();
 
@@ -138,9 +182,7 @@ void RichTextAssetEditor::DrawEditor(EditorTab &tab)
 
     // Draw animated layout
     RichTextRenderer::DrawToImGui(m_AnimatedLayout, defaultFont, TEVector2(canvasP0.x + 15.0f, canvasP0.y + 15.0f),
-                                 [this](const TEString &link) {
-                                     m_LastClickedLink = link;
-                                 });
+                                  [this](const TEString &link) { m_LastClickedLink = link; });
 
     TimeGUI::Dummy(canvasSz);
     TimeGUI::Columns(1);
@@ -167,7 +209,8 @@ void RichTextAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) c
     float barW = (cMax.x - cMin.x) * 0.55f;
 
     // Top horizontal bar
-    dl.AddLine(TEVector2(cx - barW * 0.5f, topY), TEVector2(cx + barW * 0.5f, topY), IM_COL32(230, 140, 255, 255), 3.0f);
+    dl.AddLine(TEVector2(cx - barW * 0.5f, topY), TEVector2(cx + barW * 0.5f, topY), IM_COL32(230, 140, 255, 255),
+               3.0f);
     // Vertical stem
     dl.AddLine(TEVector2(cx, topY), TEVector2(cx, botY), IM_COL32(180, 80, 255, 255), 3.0f);
 }

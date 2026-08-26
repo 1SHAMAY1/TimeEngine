@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Core/Asset/StateTreeAsset.hpp"
 #include "Editor/AssetEditor.hpp"
 #include "Editor/Graph/NodeCanvas.hpp"
-#include "Core/Asset/StateTreeAsset.hpp"
 
 class TE_API StateTreeAssetEditor : public AssetEditor
 {

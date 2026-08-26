@@ -2,17 +2,12 @@
 #include "ParticleWidgets.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
-ParticleStackEditorPanel::ParticleStackEditorPanel()
-    : IEditorPanel("Particle FX Stack Editor")
+ParticleStackEditorPanel::ParticleStackEditorPanel() : IEditorPanel("Particle FX Stack Editor")
 {
     m_StandaloneEmitter.ApplyFirePreset();
 }
 
-void ParticleStackEditorPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
-{
-    OnTimeGUIRender();
-}
+void ParticleStackEditorPanel::OnTimeGUIRender(Ref<EditorLayer> editor) { OnTimeGUIRender(); }
 
 void ParticleStackEditorPanel::OnTimeGUIRender()
 {
@@ -242,7 +237,8 @@ void ParticleStackEditorPanel::DrawParticleUpdateSection()
 
     if (ParticleWidgets::DrawModuleHeader("Particle Update - Color Over Life", nullptr, true))
     {
-        float startCol[4] = {emitter->StartColor.r, emitter->StartColor.g, emitter->StartColor.b, emitter->StartColor.a};
+        float startCol[4] = {emitter->StartColor.r, emitter->StartColor.g, emitter->StartColor.b,
+                             emitter->StartColor.a};
         if (TimeGUI::ColorEdit4("Start Color", startCol))
             emitter->StartColor = TEColor(startCol[0], startCol[1], startCol[2], startCol[3]);
 
@@ -278,4 +274,3 @@ void ParticleStackEditorPanel::DrawParticleRenderSection()
             emitter->BlendMode = (EParticleBlendMode)currentBlend;
     }
 }
-

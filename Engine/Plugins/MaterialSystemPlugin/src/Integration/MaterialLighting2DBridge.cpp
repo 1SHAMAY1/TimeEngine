@@ -1,7 +1,6 @@
 #include "Integration/MaterialLighting2DBridge.hpp"
 #include "Core/Log.h"
 
-
 bool MaterialLighting2DBridge::IsLighting2DActive()
 {
 #if defined(TE_PLUGIN_LIGHTING2D_ENABLED)

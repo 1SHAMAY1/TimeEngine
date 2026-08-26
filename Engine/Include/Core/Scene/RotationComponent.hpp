@@ -1,7 +1,6 @@
 #pragma once
-#include "MovementComponentBase.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
-
+#include "MovementComponentBase.hpp"
 
 TE_CLASS()
 class TE_API RotationComponent : public MovementComponentBase
@@ -30,8 +29,6 @@ T_REGISTER_COMPONENT(RotationComponent, "Rotation Component")
 T_REGISTER_PROPERTY(RotationComponent, float, RotationSpeed, "Rotation Speed")
 T_REGISTER_PROPERTY(RotationComponent, float, TargetAngle, "Target Angle")
 T_REGISTER_PROPERTY(RotationComponent, bool, bAutoRotate, "Auto Rotate")
-T_REGISTER_PRESET(RotationComponent, "Rotation Component", "Gameplay", [](EntityID id, EntityManager *em) {
-    em->AddComponent<RotationComponent>(id);
-})
+T_REGISTER_PRESET(RotationComponent, "Rotation Component", "Gameplay",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<RotationComponent>(id); })
 #endif
-

@@ -8,7 +8,6 @@
 #include "Utils/MathUtils.hpp"
 #include <cstdint>
 
-
 struct PendingConnection
 {
     uint64_t SourceNodeID = 0;
@@ -42,8 +41,8 @@ public:
 
 private:
     void DrawGrid(const TEVector2 &canvasPos, const TEVector2 &canvasSize);
-    void DrawNode(DialogueGraph &graph, DialogueGraphNode &node, const TEVector2 &canvasOrigin,
-                  float zoom, uint64_t highlightNodeID);
+    void DrawNode(DialogueGraph &graph, DialogueGraphNode &node, const TEVector2 &canvasOrigin, float zoom,
+                  uint64_t highlightNodeID);
     void DrawConnections(const DialogueGraph &graph, const TEVector2 &canvasOrigin, float zoom);
     void DrawContextMenu(DialogueGraph &graph, const TEVector2 &canvasOrigin, float zoom);
     void DrawPendingLink(const TEVector2 &canvasOrigin, float zoom);
@@ -51,7 +50,7 @@ private:
     TEVector2 WorldToCanvas(const TEVector2 &worldPos, const TEVector2 &canvasOrigin, float zoom) const;
     TEVector2 CanvasToWorld(const TEVector2 &screenPos, const TEVector2 &canvasOrigin, float zoom) const;
     TEVector2 GetPinScreenPos(const DialogueGraph &graph, uint64_t pinId, const TEVector2 &canvasOrigin,
-                               float zoom) const;
+                              float zoom) const;
 
     uint64_t m_SelectedNodeID = 0;
     TEVector2 m_ScrollOffset = {0.0f, 0.0f};
@@ -67,4 +66,3 @@ private:
     TEArray<GraphUndoState> m_UndoStack;
     static constexpr size_t s_MaxUndoDepth = 32;
 };
-

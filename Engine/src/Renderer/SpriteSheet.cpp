@@ -1,19 +1,16 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/SpriteSheet.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Core/Log.h"
-#include "Utils/TEFileSystem.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/SpriteSheetSerializer.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Renderer/Texture.hpp"
-
+#include "Utils/TEFileSystem.hpp"
 
 #include "Utils/TEFileSystem.hpp"
 TE_REGISTER_ASSET(SpriteSheet)
 
 bool SpriteSheet::LoadFromFile(const TEString &path)
 {
-    auto self = TERef<SpriteSheet>(this, [](SpriteSheet*){});
+    auto self = TERef<SpriteSheet>(this, [](SpriteSheet *) {});
     SpriteSheetSerializer serializer(self);
     return serializer.Deserialize(path);
 }
@@ -122,4 +119,3 @@ void SpriteSheet::OnContentBrowserCreate(const TEString &path)
         TE_CORE_ERROR("Failed to serialize and create SpriteSheet at {0}", finalPath.c_str());
     }
 }
-

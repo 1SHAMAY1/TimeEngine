@@ -1,9 +1,8 @@
 #pragma once
+#include "Core/Events/Event.h"
 #include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
-#include "Core/Events/Event.h"
 #include "Layers/Layer.hpp"
-
 
 class TE_API ProjectHubLayer : public Layer
 {
@@ -27,8 +26,7 @@ private:
     void UI_DrawProjectsList();
     void UI_DrawCreateProjectView();
 
-    void CreateProject(const TEString &name, const TEString &path,
-                       const TEString &thumbnailPath = "");
+    void CreateProject(const TEString &name, const TEString &path, const TEString &thumbnailPath = "");
     void OpenProject(const TEString &path);
 
     // Styles
@@ -51,4 +49,3 @@ private:
 
     TEString m_ProjectToOpen;
 };
-

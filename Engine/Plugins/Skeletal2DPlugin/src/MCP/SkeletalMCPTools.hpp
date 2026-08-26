@@ -1,6 +1,7 @@
 #pragma once
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 class SkeletalMCPTools
 {

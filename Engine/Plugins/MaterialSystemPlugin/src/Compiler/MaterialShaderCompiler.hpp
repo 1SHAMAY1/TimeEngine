@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Compiler/MaterialUniformBlock.hpp"
 #include "Core/Graph/Graph.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEString.hpp"
-
 
 struct MaterialCompileResult
 {

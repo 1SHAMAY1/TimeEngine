@@ -3,7 +3,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
 
-
 class TE_API AmbientLightComponent : public TComponent
 {
 public:
@@ -33,4 +32,3 @@ T_REGISTER_PROPERTY(AmbientLightComponent, float, HorizonSpread, "Horizon Spread
 T_REGISTER_PRESET(AmbientLightComponent, "Ambient Light", "Lights",
                   [](EntityID id, EntityManager *em) { em->AddComponent<AmbientLightComponent>(id); })
 #endif
-

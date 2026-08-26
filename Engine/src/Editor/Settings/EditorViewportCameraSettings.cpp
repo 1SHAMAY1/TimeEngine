@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Settings/EditorViewportCameraSettings.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 
@@ -7,13 +7,13 @@ TE_REGISTER_EDITOR_SETTINGS(EditorViewportCameraSettings);
 
 namespace
 {
-    static float s_CameraMoveSpeed = 5.0f;
-    static float s_CameraZoomSpeed = 0.25f;
-    static float s_MouseSensitivity = 1.0f;
-    static bool s_InvertZoomDirection = false;
-    static bool s_SmoothPan = true;
-    static float s_PanDamping = 0.85f;
-}
+static float s_CameraMoveSpeed = 5.0f;
+static float s_CameraZoomSpeed = 0.25f;
+static float s_MouseSensitivity = 1.0f;
+static bool s_InvertZoomDirection = false;
+static bool s_SmoothPan = true;
+static float s_PanDamping = 0.85f;
+} // namespace
 
 void EditorViewportCameraSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
 {
@@ -42,7 +42,7 @@ void EditorViewportCameraSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
         TimeGUI::Separator();
 
         auto camPos = editor->GetCameraPosition();
-        float posArr[3] = { camPos.x, camPos.y, camPos.z };
+        float posArr[3] = {camPos.x, camPos.y, camPos.z};
         if (TimeGUI::DragFloat3("Position (X, Y, Z)", posArr, 0.1f))
         {
             editor->SetCameraPosition(TEVector(posArr[0], posArr[1], posArr[2]));

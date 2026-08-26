@@ -2,7 +2,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 class TransformComponent : public TComponent
 {
 public:
@@ -17,14 +16,14 @@ public:
     inline static const TEString StaticClassName = "TransformComponent";
 };
 
-
 #ifdef TE_EDITOR
 #include "Core/Scene/ComponentRegistry.hpp"
 T_REGISTER_COMPONENT(TransformComponent, "Transform Component")
 T_REGISTER_PROPERTY(TransformComponent, EntityID, Parent, "Parent")
 T_COMPONENT_INTERNAL(TransformComponent)
 
-inline static bool s_TransformComp_Props_Reg = []() {
+inline static bool s_TransformComp_Props_Reg = []()
+{
     auto &reg = ComponentRegistry::Get();
     reg.RegisterProperty<TransformComponent, TEVector>(
         "TransformComponent", "Position", "Position",
@@ -38,4 +37,3 @@ inline static bool s_TransformComp_Props_Reg = []() {
     return true;
 }();
 #endif
-

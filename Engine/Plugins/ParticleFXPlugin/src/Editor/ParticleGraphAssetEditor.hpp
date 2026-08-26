@@ -4,7 +4,6 @@
 #include "Editor/AssetEditor.hpp"
 #include "Editor/Graph/NodeCanvas.hpp"
 
-
 class ParticleGraphAssetEditor : public AssetEditor
 {
 public:

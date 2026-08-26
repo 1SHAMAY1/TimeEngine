@@ -2,7 +2,6 @@
 #include "Core/Asset/Asset.hpp"
 #include "Core/Asset/AssetManager.hpp"
 
-
 enum class TextureFilterMode
 {
     Linear = 0,
@@ -59,10 +58,7 @@ public:
     virtual const TEString &GetName() const override { return m_Name; }
     virtual const TEString &GetHoverDescription() const override { return m_FilePath; }
 
-    virtual TERef<class Texture> GetIcon() const override
-    {
-        return nullptr;
-    } // Will be handled by AssetManager
+    virtual TERef<class Texture> GetIcon() const override { return nullptr; } // Will be handled by AssetManager
     virtual TERef<class Texture> GetThumbnail() const override { return nullptr; }
 
     virtual TERef<Asset> Clone() const override { return CreateRef<Texture>(); }
@@ -90,4 +86,3 @@ private:
 };
 
 using Texture2D = Texture;
-

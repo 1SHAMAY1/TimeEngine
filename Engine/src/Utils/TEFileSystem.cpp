@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
+#include "Core/PreRequisites.h"
 #include <filesystem>
 #include <fstream>
 
@@ -225,4 +225,3 @@ bool TEFileSystem::ForEachLine(const TEString &path, const std::function<bool(co
 
     return true;
 }
-

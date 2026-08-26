@@ -1,7 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorMode.hpp"
+#include "Core/PreRequisites.h"
 #include <algorithm>
-
 
 EditorModeRegistry &EditorModeRegistry::Instance()
 {
@@ -25,9 +24,7 @@ void EditorModeRegistry::UnregisterMode(const TEString &name)
     }
 
     auto it = std::remove_if(instance.m_Modes.begin(), instance.m_Modes.end(),
-                             [&name](const TEScope<EditorMode> &mode) {
-                                 return mode && mode->GetName() == name;
-                             });
+                             [&name](const TEScope<EditorMode> &mode) { return mode && mode->GetName() == name; });
     instance.m_Modes.erase(it, instance.m_Modes.end());
 }
 
@@ -48,7 +45,8 @@ void EditorModeRegistry::SetActiveMode(const TEString &name)
             instance.m_ActiveMode = mode.get();
             if (instance.m_ActiveMode && instance.m_ActiveMode->WantsFullscreenWorkspace())
             {
-                TimeGUI::DockBuilderDockWindow(instance.m_ActiveMode->GetWorkspaceWindowName(), TimeGUI::GetID("MyDockSpace"));
+                TimeGUI::DockBuilderDockWindow(instance.m_ActiveMode->GetWorkspaceWindowName(),
+                                               TimeGUI::GetID("MyDockSpace"));
             }
             instance.m_ActiveMode->OnEnter();
             return;
@@ -56,15 +54,9 @@ void EditorModeRegistry::SetActiveMode(const TEString &name)
     }
 }
 
-EditorMode *EditorModeRegistry::GetActiveMode()
-{
-    return Instance().m_ActiveMode;
-}
+EditorMode *EditorModeRegistry::GetActiveMode() { return Instance().m_ActiveMode; }
 
-const TEArray<TEScope<EditorMode>> &EditorModeRegistry::GetModes()
-{
-    return Instance().m_Modes;
-}
+const TEArray<TEScope<EditorMode>> &EditorModeRegistry::GetModes() { return Instance().m_Modes; }
 
 void EditorModeRegistry::Clear()
 {
@@ -76,4 +68,3 @@ void EditorModeRegistry::Clear()
     }
     instance.m_Modes.clear();
 }
-

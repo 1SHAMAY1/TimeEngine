@@ -1,11 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "UI/UIWidget.hpp"
+#include "Core/PreRequisites.h"
 
-
-UIWidget::UIWidget(const TEString &id)
-    : m_ID(id)
-{
-}
+UIWidget::UIWidget(const TEString &id) : m_ID(id) {}
 
 void UIWidget::AddChild(TERef<UIWidget> child)
 {
@@ -84,9 +80,9 @@ void UIWidget::AddToViewport(int zOrder)
 
     s_ViewportWidgets.Add(self);
     // Sort by zOrder ascending
-    std::stable_sort(s_ViewportWidgets.begin(), s_ViewportWidgets.end(), [](const TERef<UIWidget> &a, const TERef<UIWidget> &b) {
-        return a->GetZOrder() < b->GetZOrder();
-    });
+    std::stable_sort(s_ViewportWidgets.begin(), s_ViewportWidgets.end(),
+                     [](const TERef<UIWidget> &a, const TERef<UIWidget> &b)
+                     { return a->GetZOrder() < b->GetZOrder(); });
 }
 
 void UIWidget::RemoveFromViewport()
@@ -125,9 +121,4 @@ void UIWidget::UpdateViewportWidgets(float dt)
     }
 }
 
-void UIWidget::ClearViewportWidgets()
-{
-    s_ViewportWidgets.Clear();
-}
-
-
+void UIWidget::ClearViewportWidgets() { s_ViewportWidgets.Clear(); }

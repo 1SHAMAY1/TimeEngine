@@ -2,7 +2,6 @@
 #include "ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
-
 TE_CLASS()
 class TE_API ControllableGameObject : public TComponent
 {
@@ -18,4 +17,3 @@ public:
 
     virtual TEString GetClassName() const override { return StaticClassName; }
 };
-

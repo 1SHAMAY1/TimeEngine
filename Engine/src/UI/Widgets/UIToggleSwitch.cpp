@@ -1,6 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "UI/Widgets/UIToggleSwitch.hpp"
-
+#include "Core/PreRequisites.h"
 
 UIToggleSwitch::UIToggleSwitch(bool initialState, const TEVector2 &size, const TEString &id)
     : UIWidget(id), m_IsChecked(initialState)
@@ -18,10 +17,7 @@ void UIToggleSwitch::SetChecked(bool checked)
     }
 }
 
-void UIToggleSwitch::Toggle()
-{
-    SetChecked(!m_IsChecked);
-}
+void UIToggleSwitch::Toggle() { SetChecked(!m_IsChecked); }
 
 void UIToggleSwitch::DrawSelf()
 {
@@ -52,8 +48,7 @@ bool UIToggleSwitch::DrawToggle(const TEString &id, bool &checked, const TEVecto
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
 
     // Track Background & Outline
-    unsigned int trackBg = checked ? (isHovered ? 0xFF32C66D : 0xFF28B568)
-                                   : (isHovered ? 0xFF3B485C : 0xFF283240);
+    unsigned int trackBg = checked ? (isHovered ? 0xFF32C66D : 0xFF28B568) : (isHovered ? 0xFF3B485C : 0xFF283240);
     unsigned int trackBorder = checked ? 0xFF45E585 : 0xFF45556C;
     dl.AddRectFilled(switchMin, switchMax, trackBg, radius);
     dl.AddRect(switchMin, switchMax, trackBorder, radius, 0, 1.2f);

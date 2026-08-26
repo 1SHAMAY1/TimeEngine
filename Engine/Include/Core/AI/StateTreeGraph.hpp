@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Core/AI/StateTreeConditions.hpp"
+#include "Core/AI/StateTreeTasks.hpp"
 #include "Core/Graph/Graph.hpp"
 #include "Core/Graph/GraphNode.hpp"
-#include "Core/AI/StateTreeTasks.hpp"
-#include "Core/AI/StateTreeConditions.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
 
 class TE_API StateNode : public GraphNode
 {

@@ -2,7 +2,6 @@
 #include "Core/Asset/Asset.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 
-
 class AssetRegistry
 {
 public:
@@ -20,4 +19,3 @@ private:
     static TEMap<TEString, AssetHandle> s_PathToHandle;
     static AssetHandle s_NextHandle;
 };
-

@@ -21,10 +21,7 @@ public:
     TTSAudioComponent() = default;
     virtual ~TTSAudioComponent() = default;
 
-    void OnInitialize() override
-    {
-        TComponent::OnInitialize();
-    }
+    void OnInitialize() override { TComponent::OnInitialize(); }
 
     void OnAttach() override
     {
@@ -49,10 +46,7 @@ public:
         TTSAudioEngine::Get().Speak(req);
     }
 
-    void Stop()
-    {
-        TTSAudioEngine::Get().StopAll();
-    }
+    void Stop() { TTSAudioEngine::Get().StopAll(); }
 
     const char *GetClassName() const override { return StaticClassName; }
 };

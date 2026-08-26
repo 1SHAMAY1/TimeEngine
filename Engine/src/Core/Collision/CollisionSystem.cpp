@@ -1,9 +1,8 @@
-#include "Core/PreRequisites.h"
 #include "Core/Collision/CollisionSystem.hpp"
 #include "Core/Collision/CollisionTypes.hpp"
+#include "Core/PreRequisites.h"
 #include <algorithm>
 #include <glm/glm.hpp>
-
 
 void CollisionSystem::Process()
 {
@@ -119,8 +118,9 @@ bool CollisionSystem::CheckCollision(CollisionComponent *a, CollisionComponent *
         {
             TEVector2 dir = {s.capsule.point2.x - s.capsule.point1.x, s.capsule.point2.y - s.capsule.point1.y};
             float len = sqrt(dir.x * dir.x + dir.y * dir.y);
-            TEVector2 norm = (len > 0.0001f) ? TEVector2{-dir.y / len * s.capsule.radius, dir.x / len * s.capsule.radius}
-                                             : TEVector2{s.capsule.radius, 0.0f};
+            TEVector2 norm = (len > 0.0001f)
+                                 ? TEVector2{-dir.y / len * s.capsule.radius, dir.x / len * s.capsule.radius}
+                                 : TEVector2{s.capsule.radius, 0.0f};
             out.Add({s.capsule.point1.x - norm.x, s.capsule.point1.y - norm.y});
             out.Add({s.capsule.point2.x - norm.x, s.capsule.point2.y - norm.y});
             out.Add({s.capsule.point2.x + norm.x, s.capsule.point2.y + norm.y});
@@ -263,4 +263,3 @@ void CollisionSystem::Project(TESpan<TEVector2> points, const TEVector2 &axis, f
             max = p;
     }
 }
-

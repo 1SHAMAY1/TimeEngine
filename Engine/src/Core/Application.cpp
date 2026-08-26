@@ -1,10 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Application.h"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Audio/AudioEngine.hpp"
 #include "Core/Plugin/PluginManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Threading/Threading.hpp"
 #include "Events/ApplicationEvent.h"
+#include "Input/ShortcutManager.hpp"
 #include "Layers/ProfilingLayer.hpp"
 #include "Layers/TimeGUILayer.hpp"
 #include "Log.h"
@@ -49,6 +50,7 @@ Application::Application() : m_Running(true)
 
     // Release context from Main Thread so Dedicated Render Thread exclusively owns it
     IWindow::MakeContextCurrent(nullptr);
+    TaskSystem::InitWidgetThread();
     TaskSystem::InitRenderThread(m_Window->GetNativeWindow());
 
     m_Window->SetEventCallback(
@@ -103,10 +105,7 @@ Application::Application() : m_Running(true)
     PluginManager::Initialize();
 }
 
-Application::~Application()
-{
-    TE_CORE_INFO("Application Destructor called.");
-}
+Application::~Application() { TE_CORE_INFO("Application Destructor called."); }
 
 void Application::Close() { m_Running = false; }
 
@@ -122,7 +121,13 @@ void Application::Run()
         if (profiler)
             profiler->OnUpdate();
 
-        // 1. Application & Layer Logic update on Main Thread
+        // 1. Poll OS / Window events & Game Logic on Main Thread
+        m_Window->OnUpdate();
+
+#ifdef TE_EDITOR
+        TimeGUI::PrepareGLFWFrame();
+#endif
+
         auto gameStartTime = std::chrono::high_resolution_clock::now();
         OnUpdate();
         for (Layer *layer : m_LayerStack)
@@ -137,49 +142,83 @@ void Application::Run()
             profiler->RecordGameTime(gameDurationMs);
         }
 
-        // 2. Submit GPU / UI Frame to Dedicated Render Thread
-        TaskSystem::SubmitRenderFrame([this]() {
-            RenderCommand::SetClearColor(TEColor::Black());
-            RenderCommand::Clear();
+        void *drawData = nullptr;
 
 #ifdef TE_EDITOR
-            m_TimeGUILayer->Begin();
-            for (Layer *layer : m_LayerStack)
+        // 2. Stage 1: UI Generation on Dedicated Widget Thread
+        TaskSystem::SubmitWidgetFrame(
+            [this, &drawData, profiler]()
             {
-                if (layer)
-                    layer->OnTimeGUIRender();
-            }
-            m_TimeGUILayer->End();
+                auto uiStartTime = std::chrono::high_resolution_clock::now();
+                m_TimeGUILayer->Begin();
+                for (Layer *layer : m_LayerStack)
+                {
+                    if (layer)
+                        layer->OnTimeGUIRender();
+                }
+                drawData = m_TimeGUILayer->End();
+                auto uiEndTime = std::chrono::high_resolution_clock::now();
+                if (profiler)
+                {
+                    float uiDurationMs = std::chrono::duration<float, std::milli>(uiEndTime - uiStartTime).count();
+                    profiler->RecordUITime(uiDurationMs);
+                }
+            });
+        TaskSystem::WaitWidgetFrame(); // Wait for Widget Thread to finish generating draw data
 #endif
-        });
 
-        // 3. Process deferred layer modifications
+        // 3. Stage 2: GPU Rasterization on Dedicated Render Thread
+        uint32_t winW = m_Window ? m_Window->GetWidth() : 1280;
+        uint32_t winH = m_Window ? m_Window->GetHeight() : 720;
+
+        TaskSystem::SubmitRenderFrame(
+            [this, drawData, winW, winH]()
+            {
+                RenderCommand::SetViewport(0, 0, winW, winH);
+                RenderCommand::SetClearColor(TEColor::Black());
+                RenderCommand::Clear();
+
+                // Execute layer scene render passes (framebuffers, Renderer2D, lights, etc.)
+                for (Layer *layer : m_LayerStack)
+                {
+                    if (layer)
+                        layer->OnRender();
+                }
+
+#ifdef TE_EDITOR
+                if (drawData)
+                    TimeGUI::RenderDrawData(drawData);
+#endif
+            });
+        TaskSystem::WaitRenderFrame(); // Wait for Render Thread before next frame starts
+
+        // 4. Stage 3: Deferred layer modifications
         m_LayerStack.ProcessDeferredRemovals();
         ProcessDeferredAdditions();
-
-        // 4. Poll OS / Window events on Main Thread
-        m_Window->OnUpdate();
-
-        // 5. Sync with Render Thread frame
-        TaskSystem::WaitRenderFrame();
     }
 
     TE_CORE_INFO("Application Run ended. Cleaning up subsystems...");
 
-    // 1. Detach & release all active layers
+    // 1. Release asset prototypes FIRST while plugin DLL code is still loaded in memory
+    AssetManager::Shutdown();
+
+    // 2. Shut down plugins and audio while layers are intact
+    PluginManager::Shutdown();
+    AudioEngine::Shutdown();
+
+    // 3. Detach & release all active layers
     m_LayerStack.Clear();
     m_LayersToAdd.Clear();
     m_OverlaysToAdd.Clear();
 
-    // 2. Shut down assets, plugins, and audio
-    AssetManager::Shutdown();
-    PluginManager::Shutdown();
-    AudioEngine::Shutdown();
-
-    // 3. Shut down dedicated render thread before destroying window
+    // 4. Shut down dedicated worker threads (flushes pending render/widget jobs)
+    TaskSystem::ShutdownWidgetThread();
     TaskSystem::ShutdownRenderThread();
 
-    // 4. Destroy window and terminate OpenGL/GLFW
+    // 5. Shut down shortcuts after threads are done
+    ShortcutManager::Shutdown();
+
+    // 6. Destroy window and terminate OpenGL/GLFW
     m_Window.reset();
     IWindow::Terminate();
 }
@@ -226,4 +265,3 @@ void Application::ProcessDeferredAdditions()
     }
     m_OverlaysToAdd.Empty();
 }
-

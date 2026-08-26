@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Input/InputSystem.hpp"
+#include "Core/PreRequisites.h"
 #include "Input/Input.hpp"
 #include <algorithm>
-
 
 InputSystem &InputSystem::Get()
 {
@@ -21,17 +20,15 @@ void InputSystem::AddMappingContext(TERef<InputMappingContext> context, int prio
         if (cp.Context == context)
         {
             cp.Priority = priority;
-            std::sort(m_Contexts.begin(), m_Contexts.end(), [](const ContextPriority &a, const ContextPriority &b) {
-                return a.Priority > b.Priority;
-            });
+            std::sort(m_Contexts.begin(), m_Contexts.end(),
+                      [](const ContextPriority &a, const ContextPriority &b) { return a.Priority > b.Priority; });
             return;
         }
     }
 
     m_Contexts.Add({context, priority});
-    std::sort(m_Contexts.begin(), m_Contexts.end(), [](const ContextPriority &a, const ContextPriority &b) {
-        return a.Priority > b.Priority;
-    });
+    std::sort(m_Contexts.begin(), m_Contexts.end(),
+              [](const ContextPriority &a, const ContextPriority &b) { return a.Priority > b.Priority; });
 }
 
 void InputSystem::RemoveMappingContext(TERef<InputMappingContext> context)
@@ -51,10 +48,7 @@ void InputSystem::RegisterComponent(InputComponent *component)
     }
 }
 
-void InputSystem::UnregisterComponent(InputComponent *component)
-{
-    m_Components.Remove(component);
-}
+void InputSystem::UnregisterComponent(InputComponent *component) { m_Components.Remove(component); }
 
 void InputSystem::Update(float deltaTime)
 {
@@ -103,4 +97,3 @@ void InputSystem::Update(float deltaTime)
         }
     }
 }
-

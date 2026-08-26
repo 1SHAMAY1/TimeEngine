@@ -1,7 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorGizmoOverlays.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
-
 
 TE_REGISTER_VIEWPORT_OVERLAY(SelectGizmoOverlay);
 TE_REGISTER_VIEWPORT_OVERLAY(TranslateGizmoOverlay);
@@ -19,7 +18,8 @@ void SelectGizmoOverlay::RegisterViewportItem(Ref<EditorLayer> editor)
     item.priority = 0;
     item.ownerOverlay = this;
     item.isActive = [this]() { return m_IsActive; };
-    item.onClick = [this, editor]() {
+    item.onClick = [this, editor]()
+    {
         if (editor)
         {
             editor->SetGizmoType(EditorLayer::GizmoType::None);
@@ -44,7 +44,8 @@ void TranslateGizmoOverlay::RegisterViewportItem(Ref<EditorLayer> editor)
     item.priority = 1;
     item.ownerOverlay = this;
     item.isActive = [this]() { return m_IsActive; };
-    item.onClick = [this, editor]() {
+    item.onClick = [this, editor]()
+    {
         if (editor)
         {
             editor->SetGizmoType(EditorLayer::GizmoType::Translate);
@@ -58,10 +59,7 @@ void TranslateGizmoOverlay::OnRenderGizmo(Ref<EditorLayer> editor)
     // Translate handle rendering
 }
 
-bool TranslateGizmoOverlay::OnGizmoDrag(Ref<EditorLayer> editor)
-{
-    return false;
-}
+bool TranslateGizmoOverlay::OnGizmoDrag(Ref<EditorLayer> editor) { return false; }
 
 void RotateGizmoOverlay::RegisterViewportItem(Ref<EditorLayer> editor)
 {
@@ -74,7 +72,8 @@ void RotateGizmoOverlay::RegisterViewportItem(Ref<EditorLayer> editor)
     item.priority = 2;
     item.ownerOverlay = this;
     item.isActive = [this]() { return m_IsActive; };
-    item.onClick = [this, editor]() {
+    item.onClick = [this, editor]()
+    {
         if (editor)
         {
             editor->SetGizmoType(EditorLayer::GizmoType::Rotate);
@@ -88,10 +87,7 @@ void RotateGizmoOverlay::OnRenderGizmo(Ref<EditorLayer> editor)
     // Rotate ring rendering
 }
 
-bool RotateGizmoOverlay::OnGizmoDrag(Ref<EditorLayer> editor)
-{
-    return false;
-}
+bool RotateGizmoOverlay::OnGizmoDrag(Ref<EditorLayer> editor) { return false; }
 
 void ScaleGizmoOverlay::RegisterViewportItem(Ref<EditorLayer> editor)
 {
@@ -104,7 +100,8 @@ void ScaleGizmoOverlay::RegisterViewportItem(Ref<EditorLayer> editor)
     item.priority = 3;
     item.ownerOverlay = this;
     item.isActive = [this]() { return m_IsActive; };
-    item.onClick = [this, editor]() {
+    item.onClick = [this, editor]()
+    {
         if (editor)
         {
             editor->SetGizmoType(EditorLayer::GizmoType::Scale);
@@ -118,8 +115,4 @@ void ScaleGizmoOverlay::OnRenderGizmo(Ref<EditorLayer> editor)
     // Scale handle rendering
 }
 
-bool ScaleGizmoOverlay::OnGizmoDrag(Ref<EditorLayer> editor)
-{
-    return false;
-}
-
+bool ScaleGizmoOverlay::OnGizmoDrag(Ref<EditorLayer> editor) { return false; }

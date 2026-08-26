@@ -1,18 +1,20 @@
 #pragma once
 
-#include <vector>
-#include <cmath>
+#include "IIKSolver.hpp"
 #include <algorithm>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "IIKSolver.hpp"
+#include <vector>
 
-namespace IK {
+namespace IK
+{
 
 class CCDIKSolver3D
 {
 public:
-    static bool Solve(TEArray<IKJoint3D>& joints, const glm::vec3& target, int maxIterations = 10, float tolerance = 0.5f)
+    static bool Solve(TEArray<IKJoint3D> &joints, const glm::vec3 &target, int maxIterations = 10,
+                      float tolerance = 0.5f)
     {
         if (joints.size() < 2)
             return false;
@@ -48,7 +50,7 @@ public:
                         {
                             axis = glm::normalize(axis);
                             glm::quat rot = glm::angleAxis(angle, axis);
-                            
+
                             // Rotate position of subsequent joints
                             for (size_t j = i + 1; j < joints.size(); ++j)
                             {

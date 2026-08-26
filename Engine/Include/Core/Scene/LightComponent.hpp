@@ -5,7 +5,6 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 enum class TELightType
 {
     Point = 0,
@@ -104,4 +103,3 @@ T_REGISTER_PRESET(LineLight, "Line Light", "Lights",
                               l->Type = TELightType::Line;
                       }))
 #endif
-

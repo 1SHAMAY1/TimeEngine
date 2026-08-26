@@ -9,8 +9,7 @@
 class EditorToolbar
 {
 public:
-    static void OnTimeGUIRender(const TERef<Texture> &saveIcon = nullptr,
-                                const TERef<Texture> &playIcon = nullptr,
+    static void OnTimeGUIRender(const TERef<Texture> &saveIcon = nullptr, const TERef<Texture> &playIcon = nullptr,
                                 const TERef<Texture> &brandIcon = nullptr)
     {
         float toolbarHeight = 36.0f;
@@ -185,4 +184,3 @@ private:
         }
     }
 };
-

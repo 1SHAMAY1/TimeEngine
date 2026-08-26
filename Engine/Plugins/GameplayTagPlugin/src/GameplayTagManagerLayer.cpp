@@ -4,9 +4,7 @@
 #include <algorithm>
 #include <cstring>
 
-
-GameplayTagManagerLayer::GameplayTagManagerLayer(const TEString &name)
-    : Layer(name)
+GameplayTagManagerLayer::GameplayTagManagerLayer(const TEString &name) : Layer(name)
 {
     m_SearchBar = CreateRef<UISearchBar>("Search gameplay tags...", "##GameplayTagManagerSearch");
 }
@@ -19,10 +17,7 @@ void GameplayTagManagerLayer::OnAttach()
     RefreshDiagnostics();
 }
 
-void GameplayTagManagerLayer::OnDetach()
-{
-    TE_CORE_INFO("[GameplayTagManagerLayer] Detached.");
-}
+void GameplayTagManagerLayer::OnDetach() { TE_CORE_INFO("[GameplayTagManagerLayer] Detached."); }
 
 void GameplayTagManagerLayer::OnUpdate()
 {
@@ -44,14 +39,9 @@ void GameplayTagManagerLayer::OnTimeGUIRender()
     RenderMainWindow();
 }
 
-void GameplayTagManagerLayer::OnEvent(Event &event)
-{
-}
+void GameplayTagManagerLayer::OnEvent(Event &event) {}
 
-void GameplayTagManagerLayer::RefreshDiagnostics()
-{
-    m_CachedIssues = GameplayTagManager::Get().ValidateTags();
-}
+void GameplayTagManagerLayer::RefreshDiagnostics() { m_CachedIssues = GameplayTagManager::Get().ValidateTags(); }
 
 void GameplayTagManagerLayer::RenderMainWindow()
 {
@@ -345,11 +335,13 @@ void GameplayTagManagerLayer::RenderDiagnosticsSection()
 
     if (m_CachedIssues.IsEmpty())
     {
-        TimeGUI::TextColored(TEVector4(0.2f, 0.9f, 0.4f, 1.0f), "✅ All registered gameplay tags are valid! No issues found.");
+        TimeGUI::TextColored(TEVector4(0.2f, 0.9f, 0.4f, 1.0f),
+                             "✅ All registered gameplay tags are valid! No issues found.");
     }
     else
     {
-        TimeGUI::TextColored(TEVector4(1.0f, 0.6f, 0.2f, 1.0f), "Found %zu issue(s):", static_cast<size_t>(m_CachedIssues.Num()));
+        TimeGUI::TextColored(TEVector4(1.0f, 0.6f, 0.2f, 1.0f),
+                             "Found %zu issue(s):", static_cast<size_t>(m_CachedIssues.Num()));
         for (int32_t i = 0; i < m_CachedIssues.Num(); ++i)
         {
             const auto &issue = m_CachedIssues[i];
@@ -364,4 +356,3 @@ void GameplayTagManagerLayer::RenderDiagnosticsSection()
         }
     }
 }
-

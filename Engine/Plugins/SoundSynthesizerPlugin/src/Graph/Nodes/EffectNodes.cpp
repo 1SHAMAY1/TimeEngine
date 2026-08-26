@@ -1,6 +1,7 @@
 #include "EffectNodes.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 // 1. Delay Node
 DelayNode::DelayNode()
@@ -14,10 +15,8 @@ DelayNode::DelayNode()
 
 void DelayNode::ExecuteDSP(const AudioDSPContext &ctx)
 {
-    m_Delay.SetParameters(GetInputValueFloat("Time (ms)", ctx),
-                          GetInputValueFloat("Feedback", ctx),
-                          GetInputValueFloat("Dry/Wet", ctx),
-                          (float)ctx.SampleRate);
+    m_Delay.SetParameters(GetInputValueFloat("Time (ms)", ctx), GetInputValueFloat("Feedback", ctx),
+                          GetInputValueFloat("Dry/Wet", ctx), (float)ctx.SampleRate);
 
     m_Delay.ProcessBlock(GetInputBuffer("Audio In"), GetOutputBuffer("Audio Out"));
 }

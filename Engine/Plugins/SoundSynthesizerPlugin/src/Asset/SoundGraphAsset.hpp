@@ -3,7 +3,8 @@
 #include "../Graph/SoundGraph.hpp"
 #include "Core/Asset/Asset.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGraphAsset : public Asset
 {

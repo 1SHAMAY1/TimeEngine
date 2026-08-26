@@ -1,15 +1,14 @@
-#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Plugin/PluginManager.hpp"
-#include "Core/Scene/Scene.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
+#include "Core/Scene/Scene.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 #include "GameFrameWork/TComponent.hpp"
 
 #include <algorithm>
 #include <sstream>
-
 
 TEString GameplayUtils::GetEntityDisplayName(EntityManager &mgr, Entity entity)
 {
@@ -80,7 +79,8 @@ bool GameplayUtils::EntityContainsPoint(EntityManager &mgr, Entity entity, const
         TEMatrix4 model = ResolveWorldTransform(mgr, entity, comp);
         if (comp->ContainsPoint(model, worldPoint))
         {
-            TE_CORE_INFO("[PickEntity] Hit component '{0}' on entity '{1}'", comp->GetClassName(), GetEntityDisplayName(mgr, entity));
+            TE_CORE_INFO("[PickEntity] Hit component '{0}' on entity '{1}'", comp->GetClassName(),
+                         GetEntityDisplayName(mgr, entity));
             return true;
         }
     }
@@ -116,8 +116,8 @@ Entity GameplayUtils::PickEntity(Scene &scene, const TEVector2 &worldPoint)
     return result;
 }
 
-TEVector2 GameplayUtils::ViewportPixelToWorld(TEVector2 pixelPos, TEVector2 viewportSize,
-                                              TEVector2 cameraPos, float cameraZoom)
+TEVector2 GameplayUtils::ViewportPixelToWorld(TEVector2 pixelPos, TEVector2 viewportSize, TEVector2 cameraPos,
+                                              float cameraZoom)
 {
     float aspect = (viewportSize.y > 0) ? viewportSize.x / viewportSize.y : 1.0f;
     float vpW = (viewportSize.x > 0) ? viewportSize.x : 1.0f;
@@ -129,17 +129,19 @@ TEVector2 GameplayUtils::ViewportPixelToWorld(TEVector2 pixelPos, TEVector2 view
     return world;
 }
 
-TEVector2 GameplayUtils::WorldToViewportPixel(TEVector2 worldPos, TEVector2 viewportSize,
-                                              TEVector2 cameraPos, float cameraZoom)
+TEVector2 GameplayUtils::WorldToViewportPixel(TEVector2 worldPos, TEVector2 viewportSize, TEVector2 cameraPos,
+                                              float cameraZoom)
 {
     float aspect = (viewportSize.y > 0) ? viewportSize.x / viewportSize.y : 1.0f;
     float vpW = (viewportSize.x > 0) ? viewportSize.x : 1.0f;
     float vpH = (viewportSize.y > 0) ? viewportSize.y : 1.0f;
 
     float denomX = (aspect * cameraZoom);
-    if (denomX == 0.0f) denomX = 1.0f;
+    if (denomX == 0.0f)
+        denomX = 1.0f;
     float denomY = cameraZoom;
-    if (denomY == 0.0f) denomY = 1.0f;
+    if (denomY == 0.0f)
+        denomY = 1.0f;
 
     TEVector2 pixel;
     pixel.x = (((worldPos.x - cameraPos.x) / denomX) + 1.0f) * 0.5f * vpW;
@@ -177,5 +179,3 @@ TERef<UIWidget> GameplayUtils::CreateWidget(const TEString &uiAssetPath)
     }
     return nullptr;
 }
-
-

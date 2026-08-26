@@ -3,7 +3,6 @@
 #include "Editor/EditorMode.hpp"
 #include "SpriteMode.hpp"
 
-
 void SpriteEditorPlugin::OnLoad()
 {
     TE_CORE_INFO("[SpriteEditorPlugin] Loaded successfully.");
@@ -29,12 +28,10 @@ void SpriteEditorPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min
     float cell = 6.5f;
 
     // Pixel heart bitmap pattern (4x4)
-    unsigned int heartMap[4][4] = {
-        { 0x00000000, 0xFFFF4757, 0xFFFF4757, 0x00000000 },
-        { 0xFFFF4757, 0xFFFF6B81, 0xFFFF4757, 0xFFFF4757 },
-        { 0xFFFF4757, 0xFFFF4757, 0xFFFF6B81, 0xFFFF4757 },
-        { 0x00000000, 0xFFFF4757, 0x00000000, 0x00000000 }
-    };
+    unsigned int heartMap[4][4] = {{0x00000000, 0xFFFF4757, 0xFFFF4757, 0x00000000},
+                                   {0xFFFF4757, 0xFFFF6B81, 0xFFFF4757, 0xFFFF4757},
+                                   {0xFFFF4757, 0xFFFF4757, 0xFFFF6B81, 0xFFFF4757},
+                                   {0x00000000, 0xFFFF4757, 0x00000000, 0x00000000}};
 
     for (int r = 0; r < 4; ++r)
     {
@@ -58,4 +55,3 @@ void SpriteEditorPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min
 }
 
 TE_REGISTER_PLUGIN(SpriteEditorPlugin);
-

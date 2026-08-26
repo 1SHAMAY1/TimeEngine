@@ -2,7 +2,8 @@
 
 #include "Utils/TEString.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGameplayTagFilter
 {

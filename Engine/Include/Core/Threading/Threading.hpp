@@ -1,23 +1,21 @@
 #pragma once
 
 #include "Core/PreRequisites.h"
-#include "ThreadPool.hpp"
 #include "TaskSystem.hpp"
+#include "ThreadPool.hpp"
 
-#include <mutex>
-#include <shared_mutex>
-#include <queue>
 #include <condition_variable>
+#include <mutex>
 #include <optional>
+#include <queue>
+#include <shared_mutex>
 #include <utility>
-
 
 // ====================================================================================
 // TEMutex<T> - Safe Mutex Guard wrapping inner value
 // Data is inaccessible without acquiring the RAII guard.
 // ====================================================================================
-template <typename T>
-class TEMutex
+template <typename T> class TEMutex
 {
 public:
     class Guard
@@ -45,18 +43,14 @@ public:
         T &m_Value;
     };
 
-    template <typename... Args>
-    explicit TEMutex(Args &&...args) : m_Value(std::forward<Args>(args)...) {}
+    template <typename... Args> explicit TEMutex(Args &&...args) : m_Value(std::forward<Args>(args)...) {}
 
     ~TEMutex() = default;
 
     TEMutex(const TEMutex &) = delete;
     TEMutex &operator=(const TEMutex &) = delete;
 
-    Guard Lock()
-    {
-        return Guard(m_Mutex, m_Value);
-    }
+    Guard Lock() { return Guard(m_Mutex, m_Value); }
 
 private:
     std::mutex m_Mutex;
@@ -67,8 +61,7 @@ private:
 // TERwLock<T> - Read/Write Lock
 // Allows multiple concurrent readers (ReadGuard) or single exclusive writer (WriteGuard).
 // ====================================================================================
-template <typename T>
-class TERwLock
+template <typename T> class TERwLock
 {
 public:
     class ReadGuard
@@ -114,23 +107,16 @@ public:
         T &m_Value;
     };
 
-    template <typename... Args>
-    explicit TERwLock(Args &&...args) : m_Value(std::forward<Args>(args)...) {}
+    template <typename... Args> explicit TERwLock(Args &&...args) : m_Value(std::forward<Args>(args)...) {}
 
     ~TERwLock() = default;
 
     TERwLock(const TERwLock &) = delete;
     TERwLock &operator=(const TERwLock &) = delete;
 
-    ReadGuard Read() const
-    {
-        return ReadGuard(const_cast<std::shared_mutex &>(m_Mutex), m_Value);
-    }
+    ReadGuard Read() const { return ReadGuard(const_cast<std::shared_mutex &>(m_Mutex), m_Value); }
 
-    WriteGuard Write()
-    {
-        return WriteGuard(m_Mutex, m_Value);
-    }
+    WriteGuard Write() { return WriteGuard(m_Mutex, m_Value); }
 
 private:
     mutable std::shared_mutex m_Mutex;
@@ -141,15 +127,11 @@ private:
 // TEChannel<T> - Multi-Producer Single-Consumer (MPSC) Message Channel
 // Thread-safe FIFO message passing.
 // ====================================================================================
-template <typename T>
-class TEChannel
+template <typename T> class TEChannel
 {
 public:
     TEChannel() : m_Closed(false) {}
-    ~TEChannel()
-    {
-        Close();
-    }
+    ~TEChannel() { Close(); }
 
     TEChannel(const TEChannel &) = delete;
     TEChannel &operator=(const TEChannel &) = delete;
@@ -181,9 +163,7 @@ public:
     std::optional<T> Receive()
     {
         std::unique_lock lock(m_Mutex);
-        m_Condition.wait(lock, [this]() {
-            return m_Closed || !m_Queue.empty();
-        });
+        m_Condition.wait(lock, [this]() { return m_Closed || !m_Queue.empty(); });
 
         if (m_Queue.empty())
             return std::nullopt;
@@ -240,35 +220,32 @@ private:
     bool m_Closed;
 };
 
-
 // ====================================================================================
 // Threading & Task Submission Macros
 // ====================================================================================
 
 // === INIT MACROS ===
-#define INIT_MAIN_THREAD()     TaskSystem::InitMainThread()
-#define INIT_RENDER_THREAD()   TaskSystem::InitRenderThread()
+#define INIT_MAIN_THREAD() TaskSystem::InitMainThread()
+#define INIT_RENDER_THREAD() TaskSystem::InitRenderThread()
 #define INIT_GAMEPLAY_THREAD() TaskSystem::InitGameplayThread()
-#define INIT_AI_THREAD()       TaskSystem::InitAIThread()
-#define INIT_CALC_THREAD()     TaskSystem::InitCalcThread()
-#define INIT_WIDGET_THREAD()   TaskSystem::InitWidgetThread()
+#define INIT_AI_THREAD() TaskSystem::InitAIThread()
+#define INIT_CALC_THREAD() TaskSystem::InitCalcThread()
+#define INIT_WIDGET_THREAD() TaskSystem::InitWidgetThread()
 
 // === ENABLE/DISABLE MACROS ===
-#define ENABLE_THREAD(type)    TaskSystem::SetThreadEnabled(TaskType::type, true)
-#define DISABLE_THREAD(type)   TaskSystem::SetThreadEnabled(TaskType::type, false)
+#define ENABLE_THREAD(type) TaskSystem::SetThreadEnabled(TaskType::type, true)
+#define DISABLE_THREAD(type) TaskSystem::SetThreadEnabled(TaskType::type, false)
 
 // === SUBMIT JOB MACROS ===
-#define SUBMIT_MAIN(job)       TaskSystem::Submit(TaskType::MAIN, job)
-#define SUBMIT_RENDER(job)     TaskSystem::Submit(TaskType::RENDER, job)
-#define SUBMIT_GAMEPLAY(job)   TaskSystem::Submit(TaskType::GAMEPLAY, job)
-#define SUBMIT_AI(job)         TaskSystem::Submit(TaskType::AI, job)
-#define SUBMIT_CALC(job)       TaskSystem::Submit(TaskType::CALC, job)
-#define SUBMIT_WIDGET(job)     TaskSystem::Submit(TaskType::WIDGET, job)
+#define SUBMIT_MAIN(job) TaskSystem::Submit(TaskType::MAIN, job)
+#define SUBMIT_RENDER(job) TaskSystem::Submit(TaskType::RENDER, job)
+#define SUBMIT_GAMEPLAY(job) TaskSystem::Submit(TaskType::GAMEPLAY, job)
+#define SUBMIT_AI(job) TaskSystem::Submit(TaskType::AI, job)
+#define SUBMIT_CALC(job) TaskSystem::Submit(TaskType::CALC, job)
+#define SUBMIT_WIDGET(job) TaskSystem::Submit(TaskType::WIDGET, job)
 
 // === RESTART MACRO ===
-#define RESTART_THREAD(type)   TaskSystem::RestartThread(TaskType::type)
+#define RESTART_THREAD(type) TaskSystem::RestartThread(TaskType::type)
 
 // === DEBUG LOG ===
-#define THREAD_LOG(name) \
-    std::cout << "[THREAD] " << name << " | ID: " << std::this_thread::get_id() << std::endl;
-
+#define THREAD_LOG(name) std::cout << "[THREAD] " << name << " | ID: " << std::this_thread::get_id() << std::endl;

@@ -1,10 +1,10 @@
-#include "Core/PreRequisites.h"
 #include "Core/Plugin/PluginManager.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Threading/Threading.hpp"
-#include "Utils/TEFileSystem.hpp"
 #include "Utils/PlatformUtils.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -17,7 +17,6 @@
 #include <unistd.h>
 #endif
 #endif
-
 
 static TEString GetSharedLibraryName(const TEString &name)
 {
@@ -76,17 +75,17 @@ static TEString ResolvePluginLibraryPath(const PluginInfo &info, const TEString 
     return descriptorPath.GetParentPath() / libName;
 }
 
-using CreatePluginFn = void (*)(TERef<IPlugin>&);
+using CreatePluginFn = void (*)(TERef<IPlugin> &);
 
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Settings/EngineSettingsRegistry.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Editor/Panels/IEditorPanel.hpp"
-#include "Editor/EditorToolbarRegistry.hpp"
 #include "Editor/EditorMenubarRegistry.hpp"
-#include "Editor/ViewportOverlayRegistry.hpp"
 #include "Editor/EditorSettingsRegistry.hpp"
+#include "Editor/EditorToolbarRegistry.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include "Editor/ProjectSettingsRegistry.hpp"
+#include "Editor/ViewportOverlayRegistry.hpp"
 
 static TEChannel<PluginProgressMessage> s_AsyncProgressChannel;
 static TEScope<ThreadPool> s_AsyncLoadingPool = nullptr;
@@ -163,67 +162,69 @@ void PluginManager::StartAsyncLoading()
         s_AsyncLoadingPool = CreateScope<ThreadPool>(1);
     }
 
-    s_AsyncLoadingPool->Enqueue([]() {
-        size_t totalEnabled = 0;
-        for (const auto &p : s_DiscoveredPlugins)
+    s_AsyncLoadingPool->Enqueue(
+        []()
         {
-            if (p.Enabled)
-                totalEnabled++;
-        }
+            size_t totalEnabled = 0;
+            for (const auto &p : s_DiscoveredPlugins)
+            {
+                if (p.Enabled)
+                    totalEnabled++;
+            }
 
-        if (totalEnabled == 0 || s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
-        {
+            if (totalEnabled == 0 || s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
+            {
+                s_FullyLoaded = true;
+                s_AsyncLoadingComplete = true;
+                PluginProgressMessage msg;
+                msg.PluginName = "Ready";
+                msg.LoadedCount = 0;
+                msg.TotalCount = 0;
+                msg.IsComplete = true;
+                s_AsyncProgressChannel.Send(msg);
+                return;
+            }
+
+            size_t loaded = 0;
+            for (size_t i = 0; i < s_DiscoveredPlugins.Size(); ++i)
+            {
+                if (s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
+                    return;
+
+                const auto &info = s_DiscoveredPlugins[i];
+                if (!info.Enabled)
+                    continue;
+
+                PluginProgressMessage startMsg;
+                startMsg.PluginName = info.Name;
+                startMsg.LoadedCount = loaded;
+                startMsg.TotalCount = totalEnabled;
+                startMsg.IsComplete = false;
+                s_AsyncProgressChannel.Send(startMsg);
+
+                LoadPlugin(info.Path);
+                loaded = s_LoadedPluginInstances.Size();
+
+                if (s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
+                    return;
+
+                PluginProgressMessage loadedMsg;
+                loadedMsg.PluginName = info.Name;
+                loadedMsg.LoadedCount = loaded;
+                loadedMsg.TotalCount = totalEnabled;
+                loadedMsg.IsComplete = false;
+                s_AsyncProgressChannel.Send(loadedMsg);
+            }
+
             s_FullyLoaded = true;
             s_AsyncLoadingComplete = true;
-            PluginProgressMessage msg;
-            msg.PluginName = "Ready";
-            msg.LoadedCount = 0;
-            msg.TotalCount = 0;
-            msg.IsComplete = true;
-            s_AsyncProgressChannel.Send(msg);
-            return;
-        }
-
-        size_t loaded = 0;
-        for (size_t i = 0; i < s_DiscoveredPlugins.Size(); ++i)
-        {
-            if (s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
-                return;
-
-            const auto &info = s_DiscoveredPlugins[i];
-            if (!info.Enabled)
-                continue;
-
-            PluginProgressMessage startMsg;
-            startMsg.PluginName = info.Name;
-            startMsg.LoadedCount = loaded;
-            startMsg.TotalCount = totalEnabled;
-            startMsg.IsComplete = false;
-            s_AsyncProgressChannel.Send(startMsg);
-
-            LoadPlugin(info.Path);
-            loaded = s_LoadedPluginInstances.Size();
-
-            if (s_AsyncLoadingCancelled.load(std::memory_order_relaxed))
-                return;
-
-            PluginProgressMessage loadedMsg;
-            loadedMsg.PluginName = info.Name;
-            loadedMsg.LoadedCount = loaded;
-            loadedMsg.TotalCount = totalEnabled;
-            loadedMsg.IsComplete = false;
-            s_AsyncProgressChannel.Send(loadedMsg);
-        }
-
-        s_FullyLoaded = true;
-        s_AsyncLoadingComplete = true;
-        PluginProgressMessage finalMsg;
-        finalMsg.PluginName = "Ready";
-        finalMsg.LoadedCount = loaded;
-        finalMsg.TotalCount = totalEnabled;
-        finalMsg.IsComplete = true;
-        s_AsyncProgressChannel.Send(finalMsg);
-    });
+            PluginProgressMessage finalMsg;
+            finalMsg.PluginName = "Ready";
+            finalMsg.LoadedCount = loaded;
+            finalMsg.TotalCount = totalEnabled;
+            finalMsg.IsComplete = true;
+            s_AsyncProgressChannel.Send(finalMsg);
+        });
 }
 
 void PluginManager::CancelAsyncLoading()
@@ -243,15 +244,9 @@ bool PluginManager::TryGetAsyncProgress(PluginProgressMessage &outMsg)
     return receivedAny;
 }
 
-bool PluginManager::IsAsyncLoadingComplete()
-{
-    return s_AsyncLoadingComplete.load();
-}
+bool PluginManager::IsAsyncLoadingComplete() { return s_AsyncLoadingComplete.load(); }
 
-bool PluginManager::IsFullyLoaded()
-{
-    return s_FullyLoaded;
-}
+bool PluginManager::IsFullyLoaded() { return s_FullyLoaded; }
 
 float PluginManager::GetLoadProgress()
 {
@@ -407,27 +402,29 @@ bool PluginManager::ParsePluginDescriptor(const TEString &path, PluginInfo &outI
     outInfo.Path = path;
     outInfo.Enabled = true; // Default
 
-    bool success = TEFileSystem::ForEachLine(path, [&outInfo](const TEString &line) {
-        int colon = line.Find(":");
-        if (colon < 0)
-            return true;
+    bool success = TEFileSystem::ForEachLine(path,
+                                             [&outInfo](const TEString &line)
+                                             {
+                                                 int colon = line.Find(":");
+                                                 if (colon < 0)
+                                                     return true;
 
-        TEString key = line.Left(colon).Trim();
-        TEString val = line.Mid(colon + 1).Trim();
+                                                 TEString key = line.Left(colon).Trim();
+                                                 TEString val = line.Mid(colon + 1).Trim();
 
-        if (key == "Name")
-            outInfo.Name = val;
-        else if (key == "Version")
-            outInfo.Version = val;
-        else if (key == "Author")
-            outInfo.Author = val;
-        else if (key == "Description")
-            outInfo.Description = val;
-        else if (key == "Enabled")
-            outInfo.Enabled = (val == "true" || val == "1");
+                                                 if (key == "Name")
+                                                     outInfo.Name = val;
+                                                 else if (key == "Version")
+                                                     outInfo.Version = val;
+                                                 else if (key == "Author")
+                                                     outInfo.Author = val;
+                                                 else if (key == "Description")
+                                                     outInfo.Description = val;
+                                                 else if (key == "Enabled")
+                                                     outInfo.Enabled = (val == "true" || val == "1");
 
-        return true;
-    });
+                                                 return true;
+                                             });
 
     return success && !outInfo.Name.IsEmpty();
 }
@@ -546,18 +543,20 @@ void PluginManager::SetPluginEnabled(const TEString &name, bool enabled)
             // Rewrite descriptor to persist state across restarts
             TEArray<TEString> lines;
             bool hasEnabled = false;
-            TEFileSystem::ForEachLine(info.Path, [&lines, &hasEnabled, enabled](const TEString &line) {
-                if (line.StartsWith("Enabled:"))
-                {
-                    lines.push_back("Enabled: " + TEString(enabled ? "true" : "false"));
-                    hasEnabled = true;
-                }
-                else
-                {
-                    lines.push_back(line);
-                }
-                return true;
-            });
+            TEFileSystem::ForEachLine(info.Path,
+                                      [&lines, &hasEnabled, enabled](const TEString &line)
+                                      {
+                                          if (line.StartsWith("Enabled:"))
+                                          {
+                                              lines.push_back("Enabled: " + TEString(enabled ? "true" : "false"));
+                                              hasEnabled = true;
+                                          }
+                                          else
+                                          {
+                                              lines.push_back(line);
+                                          }
+                                          return true;
+                                      });
 
             if (!hasEnabled)
             {
@@ -585,4 +584,3 @@ void PluginManager::SetPluginEnabled(const TEString &name, bool enabled)
         }
     }
 }
-

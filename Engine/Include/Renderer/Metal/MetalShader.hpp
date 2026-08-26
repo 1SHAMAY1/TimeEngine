@@ -25,4 +25,3 @@ private:
     void *m_Library = nullptr;
     void *m_PipelineState = nullptr;
 };
-

@@ -27,4 +27,3 @@ public:
     virtual bool Save(const TEString &configDir) { return true; }
     virtual bool Load(const TEString &configDir) { return true; }
 };
-

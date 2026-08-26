@@ -1,20 +1,16 @@
+#include "Utils/TEString.hpp"
 #include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
-#include "Utils/TEString.hpp"
 #include "Utils/MathUtils.hpp"
 #include <cctype>
 #include <iomanip>
 #include <regex>
 
-
 // ==========================================
 // TELocalizationManager Implementation
 // ==========================================
 
-TELocalizationManager::TELocalizationManager()
-    : m_CurrentCulture("en-US")
-{
-}
+TELocalizationManager::TELocalizationManager() : m_CurrentCulture("en-US") {}
 
 TELocalizationManager &TELocalizationManager::Get()
 {
@@ -34,16 +30,18 @@ std::string TELocalizationManager::GetCurrentCulture() const
     return m_CurrentCulture;
 }
 
-void TELocalizationManager::RegisterStringTable(const std::string &culture, const std::string &ns, const std::string &key, const std::string &translation)
+void TELocalizationManager::RegisterStringTable(const std::string &culture, const std::string &ns,
+                                                const std::string &key, const std::string &translation)
 {
     std::lock_guard<std::mutex> lock(m_Mutex);
     m_Tables[culture][ns][key] = translation;
 }
 
-std::string TELocalizationManager::GetLocalizedString(const std::string &ns, const std::string &key, const std::string &defaultVal) const
+std::string TELocalizationManager::GetLocalizedString(const std::string &ns, const std::string &key,
+                                                      const std::string &defaultVal) const
 {
     std::lock_guard<std::mutex> lock(m_Mutex);
-    
+
     // Check current culture table
     auto cultureIt = m_Tables.find(m_CurrentCulture);
     if (cultureIt != m_Tables.end())
@@ -107,33 +105,16 @@ static inline uint64_t ComputeFNV1a64(const char *data, size_t length)
     return hash;
 }
 
-void TEString::ComputeHash()
-{
-    m_Hash = ComputeFNV1a64(m_Data.data(), m_Data.length());
-}
+void TEString::ComputeHash() { m_Hash = ComputeFNV1a64(m_Data.data(), m_Data.length()); }
 
 // Constructors
-TEString::TEString()
-    : m_Data(""), m_Hash(ComputeFNV1a64("", 0))
-{
-}
+TEString::TEString() : m_Data(""), m_Hash(ComputeFNV1a64("", 0)) {}
 
-TEString::TEString(const char *str)
-    : m_Data(str ? str : "")
-{
-    ComputeHash();
-}
+TEString::TEString(const char *str) : m_Data(str ? str : "") { ComputeHash(); }
 
-TEString::TEString(const char *str, size_t length)
-    : m_Data(str ? str : "", length)
-{
-    ComputeHash();
-}
+TEString::TEString(const char *str, size_t length) : m_Data(str ? str : "", length) { ComputeHash(); }
 
-TEString::TEString(const wchar_t *wstr)
-    : TEString(wstr, wstr ? wcslen(wstr) : 0)
-{
-}
+TEString::TEString(const wchar_t *wstr) : TEString(wstr, wstr ? wcslen(wstr) : 0) {}
 
 TEString::TEString(const wchar_t *wstr, size_t length)
 {
@@ -172,53 +153,30 @@ TEString::TEString(const wchar_t *wstr, size_t length)
     ComputeHash();
 }
 
-TEString TEString::FromWide(const wchar_t *wstr)
-{
-    return TEString(wstr);
-}
+TEString TEString::FromWide(const wchar_t *wstr) { return TEString(wstr); }
 
-TEString::TEString(const std::string &str)
-    : m_Data(str)
-{
-    ComputeHash();
-}
+TEString::TEString(const std::string &str) : m_Data(str) { ComputeHash(); }
 
-TEString::TEString(std::string &&str) noexcept
-    : m_Data(std::move(str))
-{
-    ComputeHash();
-}
+TEString::TEString(std::string &&str) noexcept : m_Data(std::move(str)) { ComputeHash(); }
 
-TEString::TEString(std::string_view sv)
-    : m_Data(sv)
-{
-    ComputeHash();
-}
+TEString::TEString(std::string_view sv) : m_Data(sv) { ComputeHash(); }
 
 TEString::TEString(const TELocalizedMeta &meta)
-    : m_Namespace(meta.Namespace)
-    , m_Key(meta.Key)
-    , m_SourceText(meta.SourceText)
+    : m_Namespace(meta.Namespace), m_Key(meta.Key), m_SourceText(meta.SourceText)
 {
     m_Data = TELocalizationManager::Get().GetLocalizedString(m_Namespace, m_Key, m_SourceText);
     ComputeHash();
 }
 
 TEString::TEString(const TEString &other)
-    : m_Data(other.m_Data)
-    , m_Hash(other.m_Hash)
-    , m_Namespace(other.m_Namespace)
-    , m_Key(other.m_Key)
-    , m_SourceText(other.m_SourceText)
+    : m_Data(other.m_Data), m_Hash(other.m_Hash), m_Namespace(other.m_Namespace), m_Key(other.m_Key),
+      m_SourceText(other.m_SourceText)
 {
 }
 
 TEString::TEString(TEString &&other) noexcept
-    : m_Data(std::move(other.m_Data))
-    , m_Hash(other.m_Hash)
-    , m_Namespace(std::move(other.m_Namespace))
-    , m_Key(std::move(other.m_Key))
-    , m_SourceText(std::move(other.m_SourceText))
+    : m_Data(std::move(other.m_Data)), m_Hash(other.m_Hash), m_Namespace(std::move(other.m_Namespace)),
+      m_Key(std::move(other.m_Key)), m_SourceText(std::move(other.m_SourceText))
 {
     other.m_Hash = ComputeFNV1a64("", 0);
 }
@@ -290,16 +248,14 @@ void TEString::Clear()
     ComputeHash();
 }
 
-void TEString::Shrink()
-{
-    m_Data.shrink_to_fit();
-}
+void TEString::Shrink() { m_Data.shrink_to_fit(); }
 
 void TEString::AutoCompact(size_t thresholdRatio)
 {
     size_t cap = m_Data.capacity();
     size_t len = m_Data.length();
-    // Only compact if capacity is excessively bloated (> 256 bytes) and more than thresholdRatio times the current length
+    // Only compact if capacity is excessively bloated (> 256 bytes) and more than thresholdRatio times the current
+    // length
     if (cap > 256 && (len == 0 || cap >= len * thresholdRatio))
     {
         m_Data.shrink_to_fit();
@@ -322,14 +278,12 @@ static inline bool CaseInsensitiveEqual(char a, char b)
     return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 }
 
-bool TEString::Contains(const TEString &sub, ESearchCase searchCase) const
-{
-    return Find(sub, searchCase) != -1;
-}
+bool TEString::Contains(const TEString &sub, ESearchCase searchCase) const { return Find(sub, searchCase) != -1; }
 
 bool TEString::Contains(const char *sub, ESearchCase searchCase) const
 {
-    if (!sub) return false;
+    if (!sub)
+        return false;
     return Find(TEString(sub), searchCase) != -1;
 }
 
@@ -350,7 +304,8 @@ bool TEString::StartsWith(const TEString &prefix, ESearchCase searchCase) const
 
 bool TEString::StartsWith(const char *prefix, ESearchCase searchCase) const
 {
-    if (!prefix) return false;
+    if (!prefix)
+        return false;
     return StartsWith(TEString(prefix), searchCase);
 }
 
@@ -372,7 +327,8 @@ bool TEString::EndsWith(const TEString &suffix, ESearchCase searchCase) const
 
 bool TEString::EndsWith(const char *suffix, ESearchCase searchCase) const
 {
-    if (!suffix) return false;
+    if (!suffix)
+        return false;
     return EndsWith(TEString(suffix), searchCase);
 }
 
@@ -398,11 +354,8 @@ int TEString::Find(const TEString &sub, ESearchCase searchCase, ESearchDir searc
     }
     else
     {
-        auto it = std::search(
-            m_Data.begin() + startIdx, m_Data.end(),
-            sub.m_Data.begin(), sub.m_Data.end(),
-            CaseInsensitiveEqual
-        );
+        auto it = std::search(m_Data.begin() + startIdx, m_Data.end(), sub.m_Data.begin(), sub.m_Data.end(),
+                              CaseInsensitiveEqual);
         if (it != m_Data.end())
         {
             return static_cast<int>(std::distance(m_Data.begin(), it));
@@ -423,11 +376,8 @@ int TEString::FindLast(const TEString &sub, ESearchCase searchCase) const
     }
     else
     {
-        auto it = std::find_end(
-            m_Data.begin(), m_Data.end(),
-            sub.m_Data.begin(), sub.m_Data.end(),
-            CaseInsensitiveEqual
-        );
+        auto it =
+            std::find_end(m_Data.begin(), m_Data.end(), sub.m_Data.begin(), sub.m_Data.end(), CaseInsensitiveEqual);
         if (it != m_Data.end())
         {
             return static_cast<int>(std::distance(m_Data.begin(), it));
@@ -513,20 +463,11 @@ TEString TEString::Trim() const
     return TEString(m_Data.substr(start, end - start + 1));
 }
 
-void TEString::TrimStartInline()
-{
-    *this = TrimStart();
-}
+void TEString::TrimStartInline() { *this = TrimStart(); }
 
-void TEString::TrimEndInline()
-{
-    *this = TrimEnd();
-}
+void TEString::TrimEndInline() { *this = TrimEnd(); }
 
-void TEString::TrimInline()
-{
-    *this = Trim();
-}
+void TEString::TrimInline() { *this = Trim(); }
 
 TEString TEString::Replace(const TEString &from, const TEString &to, ESearchCase searchCase) const
 {
@@ -625,10 +566,7 @@ TEArray<TEString> TEString::Split(const TEString &delimiter) const
     return result;
 }
 
-TEArray<TEString> TEString::Split(char delimiter) const
-{
-    return Split(TEString(std::string(1, delimiter)));
-}
+TEArray<TEString> TEString::Split(char delimiter) const { return Split(TEString(std::string(1, delimiter))); }
 
 TEString TEString::Join(const TEArray<TEString> &segments, const TEString &delimiter)
 {
@@ -701,20 +639,11 @@ double TEString::ToDouble() const
     }
 }
 
-TEString TEString::FromBool(bool val)
-{
-    return val ? "true" : "false";
-}
+TEString TEString::FromBool(bool val) { return val ? "true" : "false"; }
 
-TEString TEString::FromInt(int val)
-{
-    return std::to_string(val);
-}
+TEString TEString::FromInt(int val) { return std::to_string(val); }
 
-TEString TEString::FromInt64(int64_t val)
-{
-    return std::to_string(val);
-}
+TEString TEString::FromInt64(int64_t val) { return std::to_string(val); }
 
 TEString TEString::FromFloat(float val, int precision)
 {
@@ -730,15 +659,9 @@ TEString TEString::FromDouble(double val, int precision)
     return ss.str();
 }
 
-TEString TEString::FromVector(const TEVector &v)
-{
-    return TEString::Printf("X=%.3f Y=%.3f Z=%.3f", v.x, v.y, v.z);
-}
+TEString TEString::FromVector(const TEVector &v) { return TEString::Printf("X=%.3f Y=%.3f Z=%.3f", v.x, v.y, v.z); }
 
-TEString TEString::FromVector2(const TEVector2 &v)
-{
-    return TEString::Printf("X=%.3f Y=%.3f", v.x, v.y);
-}
+TEString TEString::FromVector2(const TEVector2 &v) { return TEString::Printf("X=%.3f Y=%.3f", v.x, v.y); }
 
 TEString TEString::FromVector4(const TEVector4 &v)
 {
@@ -748,7 +671,8 @@ TEString TEString::FromVector4(const TEVector4 &v)
 // Printf
 TEString TEString::Printf(const char *fmt, ...)
 {
-    if (!fmt) return TEString();
+    if (!fmt)
+        return TEString();
 
     va_list args;
     va_start(args, fmt);
@@ -782,10 +706,7 @@ TEString TEString::FromTable(const std::string &ns, const std::string &key, cons
     return TEString(meta);
 }
 
-TEString TEString::AsCultureInvariant(const std::string &str)
-{
-    return TEString(str);
-}
+TEString TEString::AsCultureInvariant(const std::string &str) { return TEString(str); }
 
 TEString TEString::FormatText(const TEString &pattern, const std::unordered_map<std::string, TEString> &args)
 {
@@ -850,8 +771,10 @@ int TEString::Compare(const TEString &other, ESearchCase searchCase) const
             if (c1 != c2)
                 return c1 - c2;
         }
-        if (m_Data.length() < other.m_Data.length()) return -1;
-        if (m_Data.length() > other.m_Data.length()) return 1;
+        if (m_Data.length() < other.m_Data.length())
+            return -1;
+        if (m_Data.length() > other.m_Data.length())
+            return 1;
         return 0;
     }
 }
@@ -931,10 +854,7 @@ TEString TEString::operator/(const TEString &rhs) const
         return TEString(lhsStr + rhsStr);
 }
 
-TEString TEString::operator/(const char *rhs) const
-{
-    return *this / TEString(rhs ? rhs : "");
-}
+TEString TEString::operator/(const char *rhs) const { return *this / TEString(rhs ? rhs : ""); }
 
 TEString &TEString::operator/=(const TEString &rhs)
 {
@@ -1015,10 +935,7 @@ TEString TEString::GetExtension() const
     return TEString(fn.substr(dot));
 }
 
-bool TEString::HasExtension() const
-{
-    return !GetExtension().IsEmpty();
-}
+bool TEString::HasExtension() const { return !GetExtension().IsEmpty(); }
 
 TEString TEString::ReplaceExtension(const TEString &newExt) const
 {
@@ -1049,10 +966,7 @@ bool TEString::IsAbsolute() const
     return m_Data[0] == '/' || m_Data[0] == '\\';
 }
 
-bool TEString::IsRelative() const
-{
-    return !IsAbsolute();
-}
+bool TEString::IsRelative() const { return !IsAbsolute(); }
 
 TEString TEString::LexicallyNormal() const
 {
@@ -1068,5 +982,3 @@ TEString TEString::LexicallyNormal() const
 
     return TEString(result);
 }
-
-

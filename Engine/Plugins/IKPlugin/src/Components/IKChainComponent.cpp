@@ -1,7 +1,7 @@
 #include "IKChainComponent.hpp"
 #include "../Solvers/TwoBoneIKSolver2D.hpp"
-#include "Core/Scene/TransformComponent.hpp"
 #include "Core/Scene/EntityManager.hpp"
+#include "Core/Scene/TransformComponent.hpp"
 
 void IKChain2DComponent::OnUpdate(float dt)
 {
@@ -15,7 +15,7 @@ void IKChain2DComponent::OnUpdate(float dt)
     TEVector2 rootPos(0.0f, 0.0f);
     if (owner.HasComponent<TransformComponent>())
     {
-        auto* tc = owner.GetComponent<TransformComponent>();
+        auto *tc = owner.GetComponent<TransformComponent>();
         if (tc)
             rootPos = TEVector2(tc->Transform.Position.x, tc->Transform.Position.y);
     }

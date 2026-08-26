@@ -1,13 +1,14 @@
 #pragma once
 
+#include "../Core/AnimationTrack.hpp"
+#include "../Core/BoneHierarchy.hpp"
+#include "../Core/SkinTable.hpp"
+#include "Core/Asset/Asset.hpp"
 #include <memory>
 #include <unordered_map>
-#include "Core/Asset/Asset.hpp"
-#include "../Core/BoneHierarchy.hpp"
-#include "../Core/AnimationTrack.hpp"
-#include "../Core/SkinTable.hpp"
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 class SkeletalDataAsset : public Asset
 {
@@ -29,19 +30,19 @@ public:
     virtual void OnContentBrowserCreate(const TEString &path) override;
 
     // Rig Data
-    BoneHierarchy& GetHierarchy() { return m_Hierarchy; }
-    const BoneHierarchy& GetHierarchy() const { return m_Hierarchy; }
-    void SetHierarchy(const BoneHierarchy& hierarchy) { m_Hierarchy = hierarchy; }
+    BoneHierarchy &GetHierarchy() { return m_Hierarchy; }
+    const BoneHierarchy &GetHierarchy() const { return m_Hierarchy; }
+    void SetHierarchy(const BoneHierarchy &hierarchy) { m_Hierarchy = hierarchy; }
 
     // Skins
-    SkinData& GetDefaultSkin() { return m_DefaultSkin; }
-    const SkinData& GetDefaultSkin() const { return m_DefaultSkin; }
-    void SetDefaultSkin(const SkinData& skin) { m_DefaultSkin = skin; }
+    SkinData &GetDefaultSkin() { return m_DefaultSkin; }
+    const SkinData &GetDefaultSkin() const { return m_DefaultSkin; }
+    void SetDefaultSkin(const SkinData &skin) { m_DefaultSkin = skin; }
 
     // Animations
-    void AddAnimation(const TEString& name, TERef<AnimationClip> clip);
-    TERef<AnimationClip> GetAnimation(const TEString& name) const;
-    const TEMap<TEString, TERef<AnimationClip>>& GetAnimations() const { return m_Animations; }
+    void AddAnimation(const TEString &name, TERef<AnimationClip> clip);
+    TERef<AnimationClip> GetAnimation(const TEString &name) const;
+    const TEMap<TEString, TERef<AnimationClip>> &GetAnimations() const { return m_Animations; }
 
     void SetName(const TEString &name) { m_Name = name; }
     void SetHandle(AssetHandle handle) { m_Handle = handle; }

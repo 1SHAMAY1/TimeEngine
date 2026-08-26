@@ -4,7 +4,8 @@
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 SoundGraphAssetEditor::SoundGraphAssetEditor()
 {
@@ -12,7 +13,8 @@ SoundGraphAssetEditor::SoundGraphAssetEditor()
     m_Evaluator = CreateScope<SoundGraphEvaluator>(m_ActiveGraph);
 
     // Wire virtual keyboard callbacks
-    m_Keyboard.OnNoteOn = [this](int midiNote, float velocity) {
+    m_Keyboard.OnNoteOn = [this](int midiNote, float velocity)
+    {
         if (m_Evaluator)
         {
             m_Evaluator->TriggerNote(midiNote, velocity);
@@ -20,7 +22,8 @@ SoundGraphAssetEditor::SoundGraphAssetEditor()
         }
     };
 
-    m_Keyboard.OnNoteOff = [this]() {
+    m_Keyboard.OnNoteOff = [this]()
+    {
         if (m_Evaluator)
             m_Evaluator->TriggerNoteOff();
     };
@@ -29,7 +32,9 @@ SoundGraphAssetEditor::SoundGraphAssetEditor()
 TEString SoundGraphAssetEditor::CreateDefaultTemplate(const TEString &name) const
 {
     return "{\n"
-           "  \"Name\": \"" + name + "\",\n"
+           "  \"Name\": \"" +
+           name +
+           "\",\n"
            "  \"AssetType\": \"SoundGraph\",\n"
            "  \"Description\": \"Procedural Audio DSP Graph\",\n"
            "  \"Nodes\": []\n"
@@ -169,4 +174,3 @@ void SoundGraphAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max)
 TE_REGISTER_ASSET_EDITOR(SoundGraphAssetEditor);
 
 } // namespace SoundStudio
-

@@ -1,8 +1,8 @@
 #include "IKMCPTools.hpp"
-#include "../Solvers/TwoBoneIKSolver2D.hpp"
 #include "../Solvers/FABRIKSolver2D.hpp"
-#include "Utils/TEString.hpp"
+#include "../Solvers/TwoBoneIKSolver2D.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/TEString.hpp"
 
 #if defined(TE_HAS_PLUGIN_MCPPLUGIN) || defined(TE_PLUGIN_MCPPLUGIN) || 1
 #include "../../../MCPPlugin/src/MCPToolRegistry.hpp"
@@ -19,7 +19,8 @@ static TEString IKSolveTwoBone2DHandler(const TEString &paramsJson)
     float ty = 0.0f;
     bool bendPos = true;
 
-    auto extractFloat = [&](const TEString& key, float defaultVal) -> float {
+    auto extractFloat = [&](const TEString &key, float defaultVal) -> float
+    {
         size_t pos = jsonStr.Find("\"" + key + "\"");
         if (pos != TEString::npos)
         {
@@ -61,14 +62,17 @@ static TEString IKSolveTwoBone2DHandler(const TEString &paramsJson)
 }
 
 // 1. ik_solve_twobone2d
-TE_REGISTER_MCP_TOOL(
-    ik_solve_twobone2d,
-    "Solve analytical 2-Bone Inverse Kinematics in 2D given root position, bone lengths, target position, and bend direction.",
-    "{\"type\":\"object\",\"properties\":{\"root_x\":{\"type\":\"number\"},\"root_y\":{\"type\":\"number\"},\"length_a\":{\"type\":\"number\"},\"length_b\":{\"type\":\"number\"},\"target_x\":{\"type\":\"number\"},\"target_y\":{\"type\":\"number\"},\"bend_positive\":{\"type\":\"boolean\"}},\"required\":[\"root_x\",\"root_y\",\"length_a\",\"length_b\",\"target_x\",\"target_y\"]}",
-    IKSolveTwoBone2DHandler
-);
+TE_REGISTER_MCP_TOOL(ik_solve_twobone2d,
+                     "Solve analytical 2-Bone Inverse Kinematics in 2D given root position, bone lengths, target "
+                     "position, and bend direction.",
+                     "{\"type\":\"object\",\"properties\":{\"root_x\":{\"type\":\"number\"},\"root_y\":{\"type\":"
+                     "\"number\"},\"length_a\":{\"type\":\"number\"},\"length_b\":{\"type\":\"number\"},\"target_x\":{"
+                     "\"type\":\"number\"},\"target_y\":{\"type\":\"number\"},\"bend_positive\":{\"type\":\"boolean\"}}"
+                     ",\"required\":[\"root_x\",\"root_y\",\"length_a\",\"length_b\",\"target_x\",\"target_y\"]}",
+                     IKSolveTwoBone2DHandler);
 
-namespace IK {
+namespace IK
+{
 
 void IKMCPTools::RegisterTools()
 {

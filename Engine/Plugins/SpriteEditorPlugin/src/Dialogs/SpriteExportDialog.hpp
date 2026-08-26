@@ -3,7 +3,6 @@
 #include "SpriteEditorTypes.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 class SpriteMode;
 
 class SpriteExportDialog
@@ -34,4 +33,3 @@ private:
     int m_SheetCols = 4;
     int m_SheetRows = 1;
 };
-

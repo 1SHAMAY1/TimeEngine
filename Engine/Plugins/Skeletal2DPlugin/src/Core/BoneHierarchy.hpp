@@ -1,15 +1,16 @@
 #pragma once
 
-#include <vector>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "Utils/TEString.hpp"
-#include "Utils/MathUtils.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Renderer/Texture.hpp"
+#include "Utils/MathUtils.hpp"
+#include "Utils/TEString.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <unordered_map>
+#include <vector>
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
 struct BoneTransform
 {
@@ -45,7 +46,7 @@ struct BoneNode
 class BoneHierarchy
 {
 public:
-    int AddBone(const TEString& name, int parentIndex, const BoneTransform& restPose, float length = 50.0f)
+    int AddBone(const TEString &name, int parentIndex, const BoneTransform &restPose, float length = 50.0f)
     {
         int index = static_cast<int>(m_Bones.size());
         BoneNode node;
@@ -67,7 +68,7 @@ public:
         return index;
     }
 
-    int FindBoneIndex(const TEString& name) const
+    int FindBoneIndex(const TEString &name) const
     {
         auto it = m_BoneNameToIndex.find(name.c_str());
         if (it != m_BoneNameToIndex.end())
@@ -75,43 +76,40 @@ public:
         return -1;
     }
 
-    BoneNode* GetBone(int index)
+    BoneNode *GetBone(int index)
     {
         if (index >= 0 && index < static_cast<int>(m_Bones.size()))
             return &m_Bones[index];
         return nullptr;
     }
 
-    const BoneNode* GetBone(int index) const
+    const BoneNode *GetBone(int index) const
     {
         if (index >= 0 && index < static_cast<int>(m_Bones.size()))
             return &m_Bones[index];
         return nullptr;
     }
 
-    BoneNode* GetBone(const TEString& name)
-    {
-        return GetBone(FindBoneIndex(name));
-    }
+    BoneNode *GetBone(const TEString &name) { return GetBone(FindBoneIndex(name)); }
 
-    const TEArray<BoneNode>& GetBones() const { return m_Bones; }
-    TEArray<BoneNode>& GetBones() { return m_Bones; }
+    const TEArray<BoneNode> &GetBones() const { return m_Bones; }
+    TEArray<BoneNode> &GetBones() { return m_Bones; }
     size_t GetBoneCount() const { return m_Bones.size(); }
 
     void CalculateBindPoseMatrices()
     {
         UpdateWorldMatrices(glm::mat4(1.0f));
-        for (auto& bone : m_Bones)
+        for (auto &bone : m_Bones)
         {
             bone.InverseBindPose = glm::inverse(bone.WorldMatrix);
         }
     }
 
-    void UpdateWorldMatrices(const glm::mat4& rootTransform)
+    void UpdateWorldMatrices(const glm::mat4 &rootTransform)
     {
         for (size_t i = 0; i < m_Bones.size(); ++i)
         {
-            auto& bone = m_Bones[i];
+            auto &bone = m_Bones[i];
             glm::mat4 localMat = bone.LocalPose.ToMatrix();
 
             if (bone.ParentIndex >= 0 && bone.ParentIndex < static_cast<int>(m_Bones.size()))
@@ -127,7 +125,7 @@ public:
 
     void ResetToRestPose()
     {
-        for (auto& bone : m_Bones)
+        for (auto &bone : m_Bones)
         {
             bone.LocalPose = bone.RestPose;
         }

@@ -6,7 +6,6 @@
 #include "Renderer/Renderer2D.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 class CircleComponent : public ProceduralSpriteComponent
 {
 public:
@@ -53,16 +52,10 @@ public:
         if (!bIsVisible || !renderer)
             return;
 
-        TERef<Material> renderMat = material ? material : Material::GetDefault();
-        if (renderMat)
-        {
-            renderMat->SetColor(BaseColor);
-
-            TEVector2 worldPos = {worldModel.m[3][0], worldModel.m[3][1]};
-            float scaleX = worldModel.m[0][0], scaleY = worldModel.m[0][1], scaleZ = worldModel.m[0][2];
-            float radius = Radius * Sqrt(scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ);
-            renderer->SubmitCircle(worldPos, radius, renderMat);
-        }
+        TEVector2 worldPos = {worldModel.m[3][0], worldModel.m[3][1]};
+        float scaleX = worldModel.m[0][0], scaleY = worldModel.m[0][1], scaleZ = worldModel.m[0][2];
+        float radius = Radius * Sqrt(scaleX * scaleX + scaleY * scaleY + scaleZ * scaleZ);
+        renderer->SubmitCircle(worldPos, radius, BaseColor, material);
     }
 };
 
@@ -74,4 +67,3 @@ T_REGISTER_PROPERTY(CircleComponent, bool, bIsVisible, "Visible")
 T_REGISTER_PRESET(Circle, "Circle", "Shapes",
                   ([](EntityID id, EntityManager *em) { em->AddComponent<CircleComponent>(id); }))
 #endif
-

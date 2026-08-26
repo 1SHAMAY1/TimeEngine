@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <cstring>
 
-
 // Type of collision shape
 enum class CollisionType : uint8_t
 {
@@ -88,4 +87,3 @@ struct CollisionShape
     CollisionShape(const BoundsTriangle &t) : type(CollisionType::Triangle), triangle(t) {}
     CollisionShape(const BoundsPolygon &p) : type(CollisionType::Polygon), polygon(p) {}
 };
-

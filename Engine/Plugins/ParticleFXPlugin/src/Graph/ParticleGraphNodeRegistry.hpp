@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphNode.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/Graph/NodePalettePopup.hpp"
-
 
 class ParticleGraphNodeRegistry
 {

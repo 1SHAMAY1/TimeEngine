@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/AnimatedSpriteComponent.hpp"
+#include "Core/PreRequisites.h"
 
 AnimatedSpriteComponent::AnimatedSpriteComponent()
 {
@@ -91,15 +91,9 @@ void AnimatedSpriteComponent::Play(const TEString &clipName)
     m_IsReversing = false;
 }
 
-void AnimatedSpriteComponent::Pause()
-{
-    m_IsPlaying = false;
-}
+void AnimatedSpriteComponent::Pause() { m_IsPlaying = false; }
 
-void AnimatedSpriteComponent::Resume()
-{
-    m_IsPlaying = true;
-}
+void AnimatedSpriteComponent::Resume() { m_IsPlaying = true; }
 
 void AnimatedSpriteComponent::Stop()
 {
@@ -108,15 +102,9 @@ void AnimatedSpriteComponent::Stop()
     m_FrameTimer = 0.0f;
 }
 
-void AnimatedSpriteComponent::AddClip(const AnimationClip &clip)
-{
-    m_Clips.Add(clip.Name, clip);
-}
+void AnimatedSpriteComponent::AddClip(const AnimationClip &clip) { m_Clips.Add(clip.Name, clip); }
 
-const AnimationClip *AnimatedSpriteComponent::GetClip(const TEString &name) const
-{
-    return m_Clips.Find(name);
-}
+const AnimationClip *AnimatedSpriteComponent::GetClip(const TEString &name) const { return m_Clips.Find(name); }
 
 TEVector4 AnimatedSpriteComponent::GetCurrentUVRect() const
 {

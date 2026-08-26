@@ -4,7 +4,6 @@
 #include "Editor/ISavable.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 using AssetHandle = uint64_t;
 
 class TE_API Asset : public ISavable
@@ -25,8 +24,7 @@ public:
     virtual TEString GetDefaultIconPath() const { return "Resources/Editor/FileIcon.png"; }
     virtual TEVector2 GetDefaultIconSize() const { return {64.0f, 64.0f}; }
 
-    virtual void SetIcon(const TEString &path, const TEVector2 &size = {64.0f, 64.0f},
-                         const TEString &extension = "")
+    virtual void SetIcon(const TEString &path, const TEVector2 &size = {64.0f, 64.0f}, const TEString &extension = "")
     {
         // This now just acts as an interface helper if needed,
         // but the metadata is primarily retrieved via virtual overrides.
@@ -44,7 +42,10 @@ public:
 
     // ISavable Interface Overrides
     TEString GetSavableID() const override { return !m_AssetPath.empty() ? m_AssetPath : GetName(); }
-    TEString GetSavableDisplayName() const override { return (!m_AssetPath.empty() ? m_AssetPath : GetName()).GetFilename(); }
+    TEString GetSavableDisplayName() const override
+    {
+        return (!m_AssetPath.empty() ? m_AssetPath : GetName()).GetFilename();
+    }
     TEString GetSavableType() const override { return GetType(); }
     TEString GetSavablePath() const override { return m_AssetPath; }
     bool Save() override
@@ -59,4 +60,3 @@ public:
 protected:
     TEString m_AssetPath;
 };
-

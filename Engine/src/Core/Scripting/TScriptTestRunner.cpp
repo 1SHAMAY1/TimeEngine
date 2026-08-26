@@ -1,14 +1,15 @@
+#include "Core/Log.h"
 #include "Core/PreRequisites.h"
+#include "Core/Scripting/TScriptAsset.hpp"
+#include "Core/Scripting/TScriptInterpreter.hpp"
 #include "Core/Scripting/TScriptLexer.hpp"
 #include "Core/Scripting/TScriptParser.hpp"
-#include "Core/Scripting/TScriptInterpreter.hpp"
-#include "Core/Scripting/TScriptAsset.hpp"
-#include "Core/Log.h"
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
-void TestLexer() {
+void TestLexer()
+{
     TEString code = R"(
         // Line comment
         # Python comment
@@ -25,7 +26,8 @@ void TestLexer() {
     std::cout << "[TestLexer] Passed. Tokens count: " << tokens.size() << std::endl;
 }
 
-void TestParserAndInterpreter() {
+void TestParserAndInterpreter()
+{
     TEString code = R"(
         class TestScript : TComponent
             T_REGISTER_PROPERTY(float, speed, 150.0)
@@ -61,11 +63,11 @@ void TestParserAndInterpreter() {
     std::cout << "[TestParserAndInterpreter] Passed!" << std::endl;
 }
 
-int main() {
+int main()
+{
     std::cout << "--- Running TScript Standalone Tests ---" << std::endl;
     TestLexer();
     TestParserAndInterpreter();
     std::cout << "--- All TScript Tests Succeeded ---" << std::endl;
     return 0;
 }
-

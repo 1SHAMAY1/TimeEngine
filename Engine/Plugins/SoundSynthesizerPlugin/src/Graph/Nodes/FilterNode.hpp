@@ -3,7 +3,8 @@
 #include "../../DSP/BiquadFilter.hpp"
 #include "../SoundGraphNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class FilterNode : public SoundGraphNode
 {

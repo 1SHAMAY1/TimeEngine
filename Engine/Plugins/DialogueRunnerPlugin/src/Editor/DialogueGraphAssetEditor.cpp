@@ -1,7 +1,6 @@
 #include "DialogueGraphAssetEditor.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
 void DialogueGraphAssetEditor::DrawToolbar(DialogueTreeAsset &asset, const TEString &assetPath)
 {
     TimeGUI::PushStyleColor(TimeGUI::TimeGUICol_ChildBg, TEColor(0.15f, 0.15f, 0.18f, 1.0f));
@@ -170,7 +169,6 @@ void DialogueGraphAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &m
     float bw = w * 0.26f;
     float bh = h * 0.18f;
     dl.AddRectFilled(TEVector2(cx - bw, cy - bh), TEVector2(cx + bw, cy + bh), IM_COL32(255, 140, 170, 255), 3.0f);
-    dl.AddTriangleFilled(TEVector2(cx - bw * 0.5f, cy + bh), TEVector2(cx, cy + bh), TEVector2(cx - bw * 0.7f, cy + bh + h * 0.12f),
-                         IM_COL32(255, 140, 170, 255));
+    dl.AddTriangleFilled(TEVector2(cx - bw * 0.5f, cy + bh), TEVector2(cx, cy + bh),
+                         TEVector2(cx - bw * 0.7f, cy + bh + h * 0.12f), IM_COL32(255, 140, 170, 255));
 }
-

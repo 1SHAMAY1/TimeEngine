@@ -1,7 +1,6 @@
 #pragma once
 #include "Editor/EditorMode.hpp"
 
-
 class SelectionMode : public EditorMode
 {
 public:
@@ -34,4 +33,3 @@ inline void InitEditorModes()
         EditorModeRegistry::SetActiveMode(EditorModeRegistry::GetModes()[0]->GetName());
     }
 }
-

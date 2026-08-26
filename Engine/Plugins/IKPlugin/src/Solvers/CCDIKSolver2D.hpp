@@ -1,16 +1,18 @@
 #pragma once
 
-#include <cmath>
-#include <algorithm>
-#include "Utils/MathUtils.hpp"
 #include "IIKSolver.hpp"
+#include "Utils/MathUtils.hpp"
+#include <algorithm>
+#include <cmath>
 
-namespace IK {
+namespace IK
+{
 
 class CCDIKSolver2D
 {
 public:
-    static bool Solve(TEArray<IKJoint2D>& joints, const TEVector2& target, int maxIterations = 10, float tolerance = 0.5f)
+    static bool Solve(TEArray<IKJoint2D> &joints, const TEVector2 &target, int maxIterations = 10,
+                      float tolerance = 0.5f)
     {
         if (joints.size() < 2)
             return false;
@@ -48,7 +50,8 @@ public:
                     for (size_t j = i + 1; j < joints.size(); ++j)
                     {
                         float a = joints[j - 1].Angle;
-                        joints[j].Position = joints[j - 1].Position + TEVector2(std::cos(a), std::sin(a)) * joints[j - 1].Length;
+                        joints[j].Position =
+                            joints[j - 1].Position + TEVector2(std::cos(a), std::sin(a)) * joints[j - 1].Length;
                     }
                     endEffector = joints.back().Position;
                 }

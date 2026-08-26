@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GameFrameWork/TComponent.hpp"
-#include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/AI/StateTreeEvaluator.hpp"
 #include "Core/Asset/StateTreeAsset.hpp"
+#include "Core/Scene/ComponentRegistry.hpp"
+#include "GameFrameWork/TComponent.hpp"
 
 TE_CLASS()
 class TE_API StateTreeComponent : public TComponent
@@ -46,7 +46,6 @@ private:
 #ifdef TE_EDITOR
 T_REGISTER_COMPONENT(StateTreeComponent, "State Tree Component")
 T_REGISTER_PROPERTY(StateTreeComponent, AssetHandle, StateTreeAssetHandle, "State Tree Asset")
-T_REGISTER_PRESET(StateTreePreset, "State Tree Component", "AI", [](EntityID id, EntityManager *em) {
-    em->AddComponent<StateTreeComponent>(id);
-})
+T_REGISTER_PRESET(StateTreePreset, "State Tree Component", "AI",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<StateTreeComponent>(id); })
 #endif

@@ -3,7 +3,6 @@
 #include <cctype>
 #include <sstream>
 
-
 TEColor RichTextParser::ParseColor(const TEString &colorStr)
 {
     TEString str = colorStr;
@@ -32,16 +31,26 @@ TEColor RichTextParser::ParseColor(const TEString &colorStr)
     // Named colors
     TEString lower = str;
     std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
-    if (lower == "red") return TEColor(1.0f, 0.0f, 0.0f, 1.0f);
-    if (lower == "green") return TEColor(0.0f, 1.0f, 0.0f, 1.0f);
-    if (lower == "blue") return TEColor(0.0f, 0.4f, 1.0f, 1.0f);
-    if (lower == "yellow" || lower == "gold") return TEColor(1.0f, 0.84f, 0.0f, 1.0f);
-    if (lower == "cyan") return TEColor(0.0f, 1.0f, 1.0f, 1.0f);
-    if (lower == "magenta" || lower == "pink") return TEColor(1.0f, 0.2f, 0.8f, 1.0f);
-    if (lower == "white") return TEColor(1.0f, 1.0f, 1.0f, 1.0f);
-    if (lower == "black") return TEColor(0.0f, 0.0f, 0.0f, 1.0f);
-    if (lower == "gray" || lower == "grey") return TEColor(0.5f, 0.5f, 0.5f, 1.0f);
-    if (lower == "orange") return TEColor(1.0f, 0.5f, 0.0f, 1.0f);
+    if (lower == "red")
+        return TEColor(1.0f, 0.0f, 0.0f, 1.0f);
+    if (lower == "green")
+        return TEColor(0.0f, 1.0f, 0.0f, 1.0f);
+    if (lower == "blue")
+        return TEColor(0.0f, 0.4f, 1.0f, 1.0f);
+    if (lower == "yellow" || lower == "gold")
+        return TEColor(1.0f, 0.84f, 0.0f, 1.0f);
+    if (lower == "cyan")
+        return TEColor(0.0f, 1.0f, 1.0f, 1.0f);
+    if (lower == "magenta" || lower == "pink")
+        return TEColor(1.0f, 0.2f, 0.8f, 1.0f);
+    if (lower == "white")
+        return TEColor(1.0f, 1.0f, 1.0f, 1.0f);
+    if (lower == "black")
+        return TEColor(0.0f, 0.0f, 0.0f, 1.0f);
+    if (lower == "gray" || lower == "grey")
+        return TEColor(0.5f, 0.5f, 0.5f, 1.0f);
+    if (lower == "orange")
+        return TEColor(1.0f, 0.5f, 0.0f, 1.0f);
 
     return TEColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -63,10 +72,9 @@ static void ParseAttributes(const TEString &attrStr, TEMap<TEString, TEString> &
     }
 }
 
-TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
-                                           const TERef<RichTextTable> &styleTable,
-                                           const RichTextStyle &defaultStyle,
-                                           const TEMap<TEString, TEString> &variables)
+TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText, const TERef<RichTextTable> &styleTable,
+                                            const RichTextStyle &defaultStyle,
+                                            const TEMap<TEString, TEString> &variables)
 {
     // Step 1: Dynamic Localization Resolution
     TEString localized = markupText.ResolveLocalized();
@@ -89,7 +97,8 @@ TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
     const TEString &src = resolvedText.ToStdString();
     size_t i = 0;
 
-    auto flushBuffer = [&]() {
+    auto flushBuffer = [&]()
+    {
         if (!currentBuffer.empty())
         {
             RichTextSpan span;
@@ -200,10 +209,14 @@ TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
                 else if (tagContent.find("align=") == 0)
                 {
                     TEString alignVal = tagContent.substr(6);
-                    if (alignVal == "center") currentAlign = ERichTextAlign::Center;
-                    else if (alignVal == "right") currentAlign = ERichTextAlign::Right;
-                    else if (alignVal == "justify") currentAlign = ERichTextAlign::Justify;
-                    else currentAlign = ERichTextAlign::Left;
+                    if (alignVal == "center")
+                        currentAlign = ERichTextAlign::Center;
+                    else if (alignVal == "right")
+                        currentAlign = ERichTextAlign::Right;
+                    else if (alignVal == "justify")
+                        currentAlign = ERichTextAlign::Justify;
+                    else
+                        currentAlign = ERichTextAlign::Left;
                     alignStack.push(currentAlign);
                     styleStack.push(currentStyle);
                 }
@@ -222,8 +235,10 @@ TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
                     currentStyle.Effect = ERichTextEffect::Wave;
                     TEMap<TEString, TEString> attrs;
                     ParseAttributes(tagContent, attrs);
-                    if (attrs.count("amp")) currentStyle.EffectParams.x = std::stof(attrs["amp"]);
-                    if (attrs.count("speed")) currentStyle.EffectParams.y = std::stof(attrs["speed"]);
+                    if (attrs.count("amp"))
+                        currentStyle.EffectParams.x = std::stof(attrs["amp"]);
+                    if (attrs.count("speed"))
+                        currentStyle.EffectParams.y = std::stof(attrs["speed"]);
                     styleStack.push(currentStyle);
                 }
                 else if (tagContent.find("shake") == 0)
@@ -231,8 +246,10 @@ TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
                     currentStyle.Effect = ERichTextEffect::Shake;
                     TEMap<TEString, TEString> attrs;
                     ParseAttributes(tagContent, attrs);
-                    if (attrs.count("intensity")) currentStyle.EffectParams.x = std::stof(attrs["intensity"]);
-                    if (attrs.count("speed")) currentStyle.EffectParams.y = std::stof(attrs["speed"]);
+                    if (attrs.count("intensity"))
+                        currentStyle.EffectParams.x = std::stof(attrs["intensity"]);
+                    if (attrs.count("speed"))
+                        currentStyle.EffectParams.y = std::stof(attrs["speed"]);
                     styleStack.push(currentStyle);
                 }
                 else if (tagContent.find("rainbow") == 0)
@@ -240,7 +257,8 @@ TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
                     currentStyle.Effect = ERichTextEffect::Rainbow;
                     TEMap<TEString, TEString> attrs;
                     ParseAttributes(tagContent, attrs);
-                    if (attrs.count("speed")) currentStyle.EffectParams.x = std::stof(attrs["speed"]);
+                    if (attrs.count("speed"))
+                        currentStyle.EffectParams.x = std::stof(attrs["speed"]);
                     styleStack.push(currentStyle);
                 }
                 else if (tagContent.find("typewriter") == 0)
@@ -248,7 +266,8 @@ TEArray<RichTextSpan> RichTextParser::Parse(const TEString &markupText,
                     currentStyle.Effect = ERichTextEffect::Typewriter;
                     TEMap<TEString, TEString> attrs;
                     ParseAttributes(tagContent, attrs);
-                    if (attrs.count("speed")) currentStyle.EffectParams.x = std::stof(attrs["speed"]);
+                    if (attrs.count("speed"))
+                        currentStyle.EffectParams.x = std::stof(attrs["speed"]);
                     styleStack.push(currentStyle);
                 }
                 else if (tagContent.find("icon=") == 0 || tagContent.find("sprite=") == 0)
@@ -323,4 +342,3 @@ TEString RichTextParser::StripTags(const TEString &markupText)
 
     return TEString(result);
 }
-

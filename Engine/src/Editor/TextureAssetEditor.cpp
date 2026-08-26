@@ -1,14 +1,13 @@
-#include "Core/PreRequisites.h"
 #include "Editor/TextureAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 
 #include "Core/Log.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Renderer/Texture.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include "Utils/PlatformUtils.hpp"
-#include "Utils/TimeGUI.hpp"
 #include "Utils/TEFileSystem.hpp"
-
+#include "Utils/TimeGUI.hpp"
 
 void TextureAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -193,12 +192,11 @@ void TextureAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) co
 
     // Sun
     dl.AddCircleFilled(TEVector2(iMin.x + (iMax.x - iMin.x) * 0.72f, iMin.y + (iMax.y - iMin.y) * 0.32f),
-                      (iMax.x - iMin.x) * 0.14f, IM_COL32(255, 220, 80, 255));
+                       (iMax.x - iMin.x) * 0.14f, IM_COL32(255, 220, 80, 255));
     // Mountain Peak
     dl.AddTriangleFilled(TEVector2(iMin.x + (iMax.x - iMin.x) * 0.15f, iMax.y),
                          TEVector2(iMin.x + (iMax.x - iMin.x) * 0.50f, iMin.y + (iMax.y - iMin.y) * 0.40f),
-                         TEVector2(iMin.x + (iMax.x - iMin.x) * 0.85f, iMax.y),
-                         IM_COL32(60, 180, 140, 255));
+                         TEVector2(iMin.x + (iMax.x - iMin.x) * 0.85f, iMax.y), IM_COL32(60, 180, 140, 255));
 }
 
 TE_REGISTER_ASSET_EDITOR(TextureAssetEditor);

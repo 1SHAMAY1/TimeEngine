@@ -5,23 +5,13 @@
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 
+void VectorEditorSubmode::OnEnter(SpriteMode *mode) {}
 
-void VectorEditorSubmode::OnEnter(SpriteMode *mode)
-{
-}
+void VectorEditorSubmode::OnUpdate(float dt, SpriteMode *mode) {}
 
-void VectorEditorSubmode::OnUpdate(float dt, SpriteMode *mode)
-{
-}
+void VectorEditorSubmode::OnExit(SpriteMode *mode) {}
 
-void VectorEditorSubmode::OnExit(SpriteMode *mode)
-{
-}
-
-bool VectorEditorSubmode::OnShortcut(const TEString &shortcutId, SpriteMode *mode)
-{
-    return false;
-}
+bool VectorEditorSubmode::OnShortcut(const TEString &shortcutId, SpriteMode *mode) { return false; }
 
 void VectorEditorSubmode::OnTimeGUIRender(SpriteEditorLayer *layer, SpriteMode *mode)
 {
@@ -52,7 +42,7 @@ void VectorEditorSubmode::DrawToolSidebar(SpriteMode *mode)
     TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "VECTOR TOOLS");
     TimeGUI::Separator();
 
-    auto ToolBtn = [&](const TEString& label, VectorShapeType type)
+    auto ToolBtn = [&](const TEString &label, VectorShapeType type)
     {
         bool active = (mode->m_ActiveVectorTool == type);
         if (active)
@@ -171,4 +161,3 @@ void VectorEditorSubmode::DrawPropertiesSidebar(SpriteMode *mode)
 
     TimeGUI::EndChild();
 }
-

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "GameFrameWork/GameplayUtils.hpp"
 #include "Core/Core.h"
+#include "GameFrameWork/GameplayUtils.hpp"
 #include "Runtime/NarrativeBlackboard.hpp"
-
 
 class NarrativeStringTable
 {
@@ -35,4 +34,3 @@ private:
     // Language -> (Key -> LocalizedText)
     TEMap<TEString, TEMap<TEString, TEString>> m_Tables;
 };
-

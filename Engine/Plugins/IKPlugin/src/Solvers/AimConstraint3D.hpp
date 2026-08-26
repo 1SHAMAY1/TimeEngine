@@ -1,18 +1,19 @@
 #pragma once
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace IK {
+namespace IK
+{
 
 class AimConstraint3D
 {
 public:
-    static glm::quat Solve(const glm::vec3& boneWorldPos, const glm::vec3& targetWorldPos,
-                           const glm::vec3& aimAxis = glm::vec3(0.0f, 0.0f, 1.0f),
-                           const glm::vec3& upVector = glm::vec3(0.0f, 1.0f, 0.0f))
+    static glm::quat Solve(const glm::vec3 &boneWorldPos, const glm::vec3 &targetWorldPos,
+                           const glm::vec3 &aimAxis = glm::vec3(0.0f, 0.0f, 1.0f),
+                           const glm::vec3 &upVector = glm::vec3(0.0f, 1.0f, 0.0f))
     {
         glm::vec3 toTarget = targetWorldPos - boneWorldPos;
         if (glm::length(toTarget) < 0.0001f)

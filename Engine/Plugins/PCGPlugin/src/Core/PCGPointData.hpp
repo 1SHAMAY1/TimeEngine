@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/PCGPoint.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
 
 class PCGPointData

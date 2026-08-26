@@ -1,6 +1,7 @@
 #include "OscillatorNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 OscillatorNode::OscillatorNode()
 {

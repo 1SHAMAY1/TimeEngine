@@ -4,9 +4,7 @@
 #include "Nodes/PCGNodeRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 
-PCGGraphAssetEditor::PCGGraphAssetEditor()
-{
-}
+PCGGraphAssetEditor::PCGGraphAssetEditor() {}
 
 void PCGGraphAssetEditor::DrawToolbar(PCGGraphAsset &asset, const TEString &assetPath)
 {
@@ -55,7 +53,8 @@ void PCGGraphAssetEditor::DrawNodeInspector(Graph &graph)
         return;
     }
 
-    TimeGUI::TextColored(TEColor(0.95f, 0.75f, 0.2f, 1.0f), "Node: %s (ID: %llu)", selected->Title.c_str(), selected->ID);
+    TimeGUI::TextColored(TEColor(0.95f, 0.75f, 0.2f, 1.0f), "Node: %s (ID: %llu)", selected->Title.c_str(),
+                         selected->ID);
     TimeGUI::Text("Type: %s | Category: %s", selected->NodeType.c_str(), selected->Category.c_str());
     TimeGUI::Separator();
 

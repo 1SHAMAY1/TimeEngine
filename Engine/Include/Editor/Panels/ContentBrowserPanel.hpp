@@ -1,8 +1,7 @@
 #pragma once
-#include "Editor/Panels/IEditorPanel.hpp"
 #include "Editor/AssetEditor.hpp"
+#include "Editor/Panels/IEditorPanel.hpp"
 #include <memory>
-
 
 class TE_API ContentBrowserPanel : public IEditorPanel
 {
@@ -64,4 +63,3 @@ private:
     TERef<class Texture> m_FolderIcon;
     TERef<class Texture> m_LeftArrowIcon;
 };
-

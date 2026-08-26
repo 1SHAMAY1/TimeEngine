@@ -1,26 +1,25 @@
-#include "Core/PreRequisites.h"
 #include "Layers/LogoLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
 #include "Core/Plugin/PluginManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 
-
-LogoLayer::LogoLayer(const TEString &name)
-    : Layer(name), m_ShouldClose(false)
+LogoLayer::LogoLayer(const TEString &name) : Layer(name), m_ShouldClose(false)
 {
     m_StatusText = "Discovering Engine Plugins...";
     PluginManager::StartAsyncLoading();
 }
 
-LogoLayer::~LogoLayer()
-{
-}
+LogoLayer::~LogoLayer() {}
+
+void LogoLayer::OnAttach() { TE_CORE_INFO("[LogoLayer] OnAttach called. Starting welcome animation."); }
 
 void LogoLayer::OnWelcomeAnimationComplete()
 {
+    TE_CORE_INFO("[LogoLayer] OnWelcomeAnimationComplete fired.");
     m_ShouldBroadcast = true;
     m_ShouldClose = true;
 }
@@ -31,11 +30,14 @@ void LogoLayer::OnTimeGUIRender()
     float dt = io.DeltaTime > 0.0f ? io.DeltaTime : 0.016f;
     m_Time += dt;
 
-    // ── Asynchronous Plugin Loading (Zero Main-Thread Blocking) ────────────────
+    static float s_LastLogTime = 0.0f;
+    bool shouldLogHeartbeat = (m_Time - s_LastLogTime) >= 1.0f;
+
+    // ── Asynchronous Plugin Loading (Real-time queue draining) ────────────────
     if (!m_PluginsLoaded)
     {
         PluginProgressMessage progress;
-        if (PluginManager::TryGetAsyncProgress(progress))
+        while (PluginManager::TryGetAsyncProgress(progress))
         {
             if (progress.TotalCount > 0)
             {
@@ -56,14 +58,18 @@ void LogoLayer::OnTimeGUIRender()
                 m_TargetProgress = 1.0f;
                 m_StatusText = "Ready. Launching Workspace...";
                 m_FinishTime = m_Time;
+                TE_CORE_INFO("[LogoLayer] Async plugin loading complete! FinishTime: %.2fs", m_FinishTime);
+                break;
             }
         }
-        else if (PluginManager::IsAsyncLoadingComplete() || PluginManager::IsFullyLoaded())
+
+        if (!m_PluginsLoaded && (PluginManager::IsAsyncLoadingComplete() || PluginManager::IsFullyLoaded()))
         {
             m_PluginsLoaded = true;
             m_TargetProgress = 1.0f;
             m_StatusText = "Ready. Launching Workspace...";
             m_FinishTime = m_Time;
+            TE_CORE_INFO("[LogoLayer] PluginManager reports fully loaded! FinishTime: %.2fs", m_FinishTime);
         }
     }
 
@@ -86,8 +92,16 @@ void LogoLayer::OnTimeGUIRender()
         if (alpha <= 0.0f && !m_AnimationFinished)
         {
             m_AnimationFinished = true;
+            TE_CORE_INFO("[LogoLayer] Welcome animation finished (Alpha <= 0.0). Triggering completion.");
             OnWelcomeAnimationComplete();
         }
+    }
+
+    if (shouldLogHeartbeat)
+    {
+        s_LastLogTime = m_Time;
+        TE_CORE_INFO("[LogoLayer] Heartbeat | Time: %.2fs | Progress: %.1f%% | Alpha: %.2f | Status: %s", m_Time,
+                     m_DisplayProgress * 100.0f, alpha, m_StatusText.c_str());
     }
 
     // ── Render Loading Screen Visuals ─────────────────────────────────────────
@@ -95,6 +109,14 @@ void LogoLayer::OnTimeGUIRender()
     TEVector2 screenPos = viewport.Pos;
     TEVector2 screenSize = viewport.Size;
     TEVector2 center = screenPos + screenSize * 0.5f;
+
+    static bool s_LoggedViewport = false;
+    if (!s_LoggedViewport && screenSize.x > 0.0f)
+    {
+        TE_CORE_INFO("[LogoLayer] Main Viewport: (%.1f, %.1f) - Size: (%.1f, %.1f) - Center: (%.1f, %.1f)", screenPos.x,
+                     screenPos.y, screenSize.x, screenSize.y, center.x, center.y);
+        s_LoggedViewport = true;
+    }
 
     TimeGUI::TimeGUIDrawList drawList = TimeGUI::GetBackgroundDrawList();
 
@@ -111,16 +133,21 @@ void LogoLayer::OnTimeGUIRender()
     float radius = 56.0f;
 
     // Glowing Neon Rings
-    TimeGUIColor32 softBlueGlow = TimeGUI::GetColorU32(TEColor(0.0f, 0.65f, 1.0f, alpha * (0.25f + 0.35f * blueRingGlowPulse)));
-    TimeGUIColor32 brightCyanRing = TimeGUI::GetColorU32(TEColor(0.0f, 0.90f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
+    TimeGUIColor32 softBlueGlow =
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.65f, 1.0f, alpha * (0.25f + 0.35f * blueRingGlowPulse)));
+    TimeGUIColor32 brightCyanRing =
+        TimeGUI::GetColorU32(TEColor(0.0f, 0.90f, 1.0f, alpha * (0.75f + 0.25f * blueRingGlowPulse)));
 
     drawList.AddCircle(center, radius + 4.0f, softBlueGlow, 64, 6.0f);
     drawList.AddCircle(center, radius, brightCyanRing, 64, 2.2f);
 
     // Minimalist Clock Hands
-    TimeGUIColor32 redHandColor = TimeGUI::GetColorU32(TEColor(0.95f, 0.25f, 0.25f, alpha * (0.4f + 0.6f * redHandFade)));
-    TimeGUIColor32 whiteHandColor = TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha * (0.4f + 0.6f * whiteHandFade)));
-    TimeGUIColor32 grayHandColor = TimeGUI::GetColorU32(TEColor(0.6f, 0.68f, 0.78f, alpha * (0.4f + 0.6f * grayHandFade)));
+    TimeGUIColor32 redHandColor =
+        TimeGUI::GetColorU32(TEColor(0.95f, 0.25f, 0.25f, alpha * (0.4f + 0.6f * redHandFade)));
+    TimeGUIColor32 whiteHandColor =
+        TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha * (0.4f + 0.6f * whiteHandFade)));
+    TimeGUIColor32 grayHandColor =
+        TimeGUI::GetColorU32(TEColor(0.6f, 0.68f, 0.78f, alpha * (0.4f + 0.6f * grayHandFade)));
     TimeGUIColor32 centerPinColor = TimeGUI::GetColorU32(TEColor(1.0f, 1.0f, 1.0f, alpha));
 
     drawList.AddLine(center, center + TEVector2(radius * 0.70f, 0.0f), redHandColor, 2.2f);
@@ -153,21 +180,24 @@ void LogoLayer::OnTimeGUIRender()
     float filledW = screenSize.x * Clamp(m_DisplayProgress, 0.0f, 1.0f);
     if (filledW > 0.0f)
     {
-        drawList.AddRectFilled(barMin, TEVector2(barMin.x + filledW, barMax.y), TimeGUI::GetColorU32(TEColor(0.0f, 0.85f, 1.0f, alpha)));
+        drawList.AddRectFilled(barMin, TEVector2(barMin.x + filledW, barMax.y),
+                               TimeGUI::GetColorU32(TEColor(0.0f, 0.85f, 1.0f, alpha)));
         // Subtle top glow accent line on the progress bar
-        drawList.AddLine(TEVector2(barMin.x, barMin.y), TEVector2(barMin.x + filledW, barMin.y), TimeGUI::GetColorU32(TEColor(0.3f, 0.95f, 1.0f, alpha * 0.7f)), 1.5f);
+        drawList.AddLine(TEVector2(barMin.x, barMin.y), TEVector2(barMin.x + filledW, barMin.y),
+                         TimeGUI::GetColorU32(TEColor(0.3f, 0.95f, 1.0f, alpha * 0.7f)), 1.5f);
     }
 
     // ── Broadcast & Layer Removal ─────────────────────────────────────────────
     if (m_ShouldBroadcast)
     {
         m_ShouldBroadcast = false;
+        TE_CORE_INFO("[LogoLayer] Broadcasting LogoFinishedDelegate...");
         LogoFinishedDelegate.Broadcast();
     }
 
     if (m_ShouldClose && !m_ShouldBroadcast && !m_IsBeingRemoved)
     {
-        TE_CORE_INFO("Startup Loading finished. Launching Workspace.");
+        TE_CORE_INFO("[LogoLayer] Startup Loading finished. Marking LogoLayer for removal.");
         m_IsBeingRemoved = true;
         Application::Get().MarkLayerForRemoval(shared_from_this());
     }
@@ -175,6 +205,7 @@ void LogoLayer::OnTimeGUIRender()
 
 void LogoLayer::OnDetach()
 {
+    TE_CORE_INFO("[LogoLayer] OnDetach called. Cleaning up.");
     m_Time = 0.0f;
     m_DisplayProgress = 0.0f;
     m_TargetProgress = 0.0f;

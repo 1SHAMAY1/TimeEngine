@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphNode.hpp"
-
+#include "Core/PreRequisites.h"
 
 class ParticleEmitterRootNode : public GraphNode
 {
@@ -19,10 +18,14 @@ public:
         SetProperty("BlendMode", "Additive"); // Normal, Additive, Multiply
         SetProperty("TexturePath", "");
 
-        InputPins.Add(GraphPin(0, 0, "Spawn", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)), PinDirection::Input));
-        InputPins.Add(GraphPin(0, 0, "Update", GraphPinType::Custom("ParticleUpdate", TEColor(0.2f, 0.7f, 0.9f, 1.0f)), PinDirection::Input));
-        InputPins.Add(GraphPin(0, 0, "Forces", GraphPinType::Custom("ParticleForce", TEColor(0.8f, 0.3f, 0.8f, 1.0f)), PinDirection::Input));
-        InputPins.Add(GraphPin(0, 0, "Render", GraphPinType::Custom("ParticleRender", TEColor(0.3f, 0.8f, 0.4f, 1.0f)), PinDirection::Input));
+        InputPins.Add(GraphPin(0, 0, "Spawn", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)),
+                               PinDirection::Input));
+        InputPins.Add(GraphPin(0, 0, "Update", GraphPinType::Custom("ParticleUpdate", TEColor(0.2f, 0.7f, 0.9f, 1.0f)),
+                               PinDirection::Input));
+        InputPins.Add(GraphPin(0, 0, "Forces", GraphPinType::Custom("ParticleForce", TEColor(0.8f, 0.3f, 0.8f, 1.0f)),
+                               PinDirection::Input));
+        InputPins.Add(GraphPin(0, 0, "Render", GraphPinType::Custom("ParticleRender", TEColor(0.3f, 0.8f, 0.4f, 1.0f)),
+                               PinDirection::Input));
     }
 };
 
@@ -41,7 +44,8 @@ public:
         SetProperty("BurstCount", "0");
 
         InputPins.Add(GraphPin(0, 0, "Rate", GraphPinType::Float(), PinDirection::Input, "50.0"));
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)),
+                                PinDirection::Output));
     }
 };
 
@@ -61,7 +65,8 @@ public:
         SetProperty("ExtentsY", "1.0");
 
         InputPins.Add(GraphPin(0, 0, "Offset", GraphPinType::Float2(), PinDirection::Input, "0,0"));
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)),
+                                PinDirection::Output));
     }
 };
 
@@ -81,7 +86,8 @@ public:
         SetProperty("AngleSpread", "45.0");
 
         InputPins.Add(GraphPin(0, 0, "Direction", GraphPinType::Float2(), PinDirection::Input, "0,1"));
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleSpawn", TEColor(0.9f, 0.6f, 0.2f, 1.0f)),
+                                PinDirection::Output));
     }
 };
 
@@ -99,7 +105,8 @@ public:
         SetProperty("StartColor", "1,0.8,0.2,1");
         SetProperty("EndColor", "1,0.1,0.0,0");
 
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleUpdate", TEColor(0.2f, 0.7f, 0.9f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleUpdate", TEColor(0.2f, 0.7f, 0.9f, 1.0f)),
+                                PinDirection::Output));
     }
 };
 
@@ -117,7 +124,8 @@ public:
         SetProperty("StartSize", "1.0");
         SetProperty("EndSize", "0.0");
 
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleUpdate", TEColor(0.2f, 0.7f, 0.9f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleUpdate", TEColor(0.2f, 0.7f, 0.9f, 1.0f)),
+                                PinDirection::Output));
     }
 };
 
@@ -136,7 +144,8 @@ public:
         SetProperty("Strength", "4.0");
 
         InputPins.Add(GraphPin(0, 0, "Strength", GraphPinType::Float(), PinDirection::Input, "4.0"));
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleForce", TEColor(0.8f, 0.3f, 0.8f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleForce", TEColor(0.8f, 0.3f, 0.8f, 1.0f)),
+                                PinDirection::Output));
     }
 };
 
@@ -155,6 +164,7 @@ public:
         SetProperty("Friction", "0.1");
         SetProperty("KillOnContact", "false");
 
-        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleForce", TEColor(0.8f, 0.3f, 0.8f, 1.0f)), PinDirection::Output));
+        OutputPins.Add(GraphPin(0, 0, "Out", GraphPinType::Custom("ParticleForce", TEColor(0.8f, 0.3f, 0.8f, 1.0f)),
+                                PinDirection::Output));
     }
 };

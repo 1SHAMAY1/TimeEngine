@@ -1,65 +1,60 @@
-#include "Core/PreRequisites.h"
 #include "UI/Widgets/UITextBox.hpp"
+#include "Core/PreRequisites.h"
 #include "Input/ShortcutManager.hpp"
 #include "Utils/TimeGUI.hpp"
 
-UITextBox::UITextBox(const TEString &placeholder, const TEString &id)
-    : UIWidget(id), m_Placeholder(placeholder)
+UITextBox::UITextBox(const TEString &placeholder, const TEString &id) : UIWidget(id), m_Placeholder(placeholder)
 {
     m_Text.Reserve(256);
     SetupShortcutListener();
 }
 
-UITextBox::~UITextBox()
-{
-    RemoveShortcutListener();
-}
+UITextBox::~UITextBox() { RemoveShortcutListener(); }
 
 void UITextBox::SetupShortcutListener()
 {
     m_ListenerName = "UITextBox_" + m_ID;
-    ShortcutManager::AddListener(m_ListenerName, [this](const TEString &shortcutId) -> bool {
-        if (!m_IsFocused)
-            return false;
+    ShortcutManager::AddListener(m_ListenerName,
+                                 [this](const TEString &shortcutId) -> bool
+                                 {
+                                     if (!m_IsFocused)
+                                         return false;
 
-        if (shortcutId == "Editor_SelectAll")
-        {
-            SelectAll();
-            return true;
-        }
-        else if (shortcutId == "Editor_Copy")
-        {
-            Copy();
-            return true;
-        }
-        else if (shortcutId == "Editor_Cut")
-        {
-            Cut();
-            return true;
-        }
-        else if (shortcutId == "Editor_Paste")
-        {
-            Paste();
-            return true;
-        }
-        else if (shortcutId == "Editor_Undo")
-        {
-            Undo();
-            return true;
-        }
-        else if (shortcutId == "Editor_Redo")
-        {
-            Redo();
-            return true;
-        }
-        return false;
-    });
+                                     if (shortcutId == "Editor_SelectAll")
+                                     {
+                                         SelectAll();
+                                         return true;
+                                     }
+                                     else if (shortcutId == "Editor_Copy")
+                                     {
+                                         Copy();
+                                         return true;
+                                     }
+                                     else if (shortcutId == "Editor_Cut")
+                                     {
+                                         Cut();
+                                         return true;
+                                     }
+                                     else if (shortcutId == "Editor_Paste")
+                                     {
+                                         Paste();
+                                         return true;
+                                     }
+                                     else if (shortcutId == "Editor_Undo")
+                                     {
+                                         Undo();
+                                         return true;
+                                     }
+                                     else if (shortcutId == "Editor_Redo")
+                                     {
+                                         Redo();
+                                         return true;
+                                     }
+                                     return false;
+                                 });
 }
 
-void UITextBox::RemoveShortcutListener()
-{
-    ShortcutManager::RemoveListener(m_ListenerName);
-}
+void UITextBox::RemoveShortcutListener() { ShortcutManager::RemoveListener(m_ListenerName); }
 
 void UITextBox::SetText(const TEString &text)
 {
@@ -73,20 +68,11 @@ void UITextBox::SetText(const TEString &text)
     }
 }
 
-void UITextBox::Clear()
-{
-    SetText("");
-}
+void UITextBox::Clear() { SetText(""); }
 
-void UITextBox::Focus()
-{
-    m_FocusRequested = true;
-}
+void UITextBox::Focus() { m_FocusRequested = true; }
 
-void UITextBox::SelectAll()
-{
-    m_SelectAllRequested = true;
-}
+void UITextBox::SelectAll() { m_SelectAllRequested = true; }
 
 void UITextBox::Copy()
 {

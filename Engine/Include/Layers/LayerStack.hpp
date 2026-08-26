@@ -4,7 +4,6 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Layer.hpp"
 
-
 // Transparent iterator yielding Layer* for seamless compatibility with engine loops
 template <typename IterType> class LayerIterator
 {
@@ -76,4 +75,3 @@ private:
     TEArray<TERef<Layer>> m_LayersToRemove;
     unsigned int m_LayerInsertIndex = 0;
 };
-

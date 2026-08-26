@@ -2,7 +2,6 @@
 #include "Editor/Panels/IEditorPanel.hpp"
 #include <memory>
 
-
 class TE_API PluginsPanel : public IEditorPanel
 {
 public:
@@ -15,4 +14,3 @@ public:
 private:
     TERef<class UISearchBar> m_SearchBar;
 };
-

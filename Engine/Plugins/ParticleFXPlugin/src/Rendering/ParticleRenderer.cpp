@@ -1,23 +1,18 @@
 #include "ParticleRenderer.hpp"
 #include "ParticleShaders.hpp"
+#include "Renderer/IndexBuffer.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Texture.hpp"
 #include "Renderer/VertexBuffer.hpp"
-#include "Renderer/IndexBuffer.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-
 ParticleRenderer::ParticleRenderer(uint32_t maxParticles)
-    : m_MaxParticles(maxParticles),
-      m_MaxVertices(maxParticles * 4),
-      m_MaxIndices(maxParticles * 6)
+    : m_MaxParticles(maxParticles), m_MaxVertices(maxParticles * 4), m_MaxIndices(maxParticles * 6)
 {
     m_VertexBufferBase.Reserve(m_MaxVertices);
 }
 
-ParticleRenderer::~ParticleRenderer()
-{
-}
+ParticleRenderer::~ParticleRenderer() {}
 
 void ParticleRenderer::Init()
 {
@@ -59,8 +54,7 @@ void ParticleRenderer::Begin(const glm::mat4 &viewProjection)
     m_IndexCount = 0;
 }
 
-void ParticleRenderer::Render(const ParticlePool &pool, EParticleBlendMode blendMode,
-                              const TERef<Texture2D> &texture)
+void ParticleRenderer::Render(const ParticlePool &pool, EParticleBlendMode blendMode, const TERef<Texture2D> &texture)
 {
     // Apply Blend Mode
     if (blendMode == EParticleBlendMode::Additive)
@@ -74,18 +68,9 @@ void ParticleRenderer::Render(const ParticlePool &pool, EParticleBlendMode blend
 
     // Quad vertex offsets
     static const glm::vec4 quadPositions[4] = {
-        {-0.5f, -0.5f, 0.0f, 1.0f},
-        { 0.5f, -0.5f, 0.0f, 1.0f},
-        { 0.5f,  0.5f, 0.0f, 1.0f},
-        {-0.5f,  0.5f, 0.0f, 1.0f}
-    };
+        {-0.5f, -0.5f, 0.0f, 1.0f}, {0.5f, -0.5f, 0.0f, 1.0f}, {0.5f, 0.5f, 0.0f, 1.0f}, {-0.5f, 0.5f, 0.0f, 1.0f}};
 
-    static const glm::vec2 texCoords[4] = {
-        {0.0f, 0.0f},
-        {1.0f, 0.0f},
-        {1.0f, 1.0f},
-        {0.0f, 1.0f}
-    };
+    static const glm::vec2 texCoords[4] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 
     for (const auto &p : pool.GetParticles())
     {
@@ -139,7 +124,8 @@ void ParticleRenderer::Flush()
     m_Shader->SetUniformMat4("u_ViewProjection", m_ViewProjection);
 
     m_VBO->Bind();
-    m_VBO->SetData(reinterpret_cast<float*>(m_VertexBufferBase.Data()), (uint32_t)(m_VertexBufferBase.Num() * sizeof(ParticleVertex)));
+    m_VBO->SetData(reinterpret_cast<float *>(m_VertexBufferBase.Data()),
+                   (uint32_t)(m_VertexBufferBase.Num() * sizeof(ParticleVertex)));
     m_VAO->Bind();
     RenderCommand::DrawIndexed(m_VAO->GetRendererID(), m_IndexCount);
 
@@ -152,4 +138,3 @@ void ParticleRenderer::End()
     Flush();
     RenderCommand::SetBlendMode(0); // Reset to Alpha Blend
 }
-

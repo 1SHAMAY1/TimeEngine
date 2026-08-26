@@ -1,8 +1,7 @@
 #pragma once
-#include "UI/UIWidget.hpp"
 #include "Renderer/Texture.hpp"
+#include "UI/UIWidget.hpp"
 #include <functional>
-
 
 struct UITileItem
 {
@@ -22,10 +21,10 @@ public:
     UITileView(const TEVector2 &tileSize = {96.0f, 110.0f}, const TEString &id = "##UITileView");
 
     void SetItems(const TEArray<UITileItem> &items) { m_Items = items; }
-    const TEArray<UITileItem>& GetItems() const { return m_Items; }
+    const TEArray<UITileItem> &GetItems() const { return m_Items; }
 
     void SetTileSize(const TEVector2 &size) { m_TileSize = size; }
-    const TEVector2& GetTileSize() const { return m_TileSize; }
+    const TEVector2 &GetTileSize() const { return m_TileSize; }
 
     void SetSelectedItem(const TEString &id)
     {
@@ -40,10 +39,7 @@ public:
             m_SelectedIDs.Add(id);
         m_LastClickedID = id;
     }
-    void RemoveSelectedItem(const TEString &id)
-    {
-        m_SelectedIDs.Remove(id);
-    }
+    void RemoveSelectedItem(const TEString &id) { m_SelectedIDs.Remove(id); }
     void ToggleSelectedItem(const TEString &id)
     {
         if (m_SelectedIDs.Contains(id))
@@ -63,11 +59,8 @@ public:
         m_SelectedIDs.Clear();
         m_LastClickedID = "";
     }
-    bool IsItemSelected(const TEString &id) const
-    {
-        return m_SelectedIDs.Contains(id);
-    }
-    const TESet<TEString>& GetSelectedItems() const { return m_SelectedIDs; }
+    bool IsItemSelected(const TEString &id) const { return m_SelectedIDs.Contains(id); }
+    const TESet<TEString> &GetSelectedItems() const { return m_SelectedIDs; }
     TEString GetSelectedItem() const
     {
         if (m_SelectedIDs.IsEmpty())
@@ -78,9 +71,9 @@ public:
 
     void DrawSelf() override;
 
-    std::function<void(const UITileItem&)> OnItemClicked;
-    std::function<void(const UITileItem&)> OnItemDoubleClicked;
-    std::function<void(const UITileItem&)> OnItemContextMenu;
+    std::function<void(const UITileItem &)> OnItemClicked;
+    std::function<void(const UITileItem &)> OnItemDoubleClicked;
+    std::function<void(const UITileItem &)> OnItemContextMenu;
 
 private:
     TEVector2 m_TileSize;
@@ -88,4 +81,3 @@ private:
     TESet<TEString> m_SelectedIDs;
     TEString m_LastClickedID;
 };
-

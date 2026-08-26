@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Asset/MaterialAsset.hpp"
 #include "Asset/MaterialInstanceAsset.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEString.hpp"
-
 
 class MaterialAssetSerializer
 {

@@ -4,7 +4,8 @@
 #include "../../DSP/FreeverbReverb.hpp"
 #include "../SoundGraphNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class DelayNode : public SoundGraphNode
 {

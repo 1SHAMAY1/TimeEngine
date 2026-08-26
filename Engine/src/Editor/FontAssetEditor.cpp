@@ -1,10 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Editor/FontAssetEditor.hpp"
 #include "Core/Asset/FontAsset.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 void FontAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -15,7 +14,8 @@ void FontAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::TextColored(TEColor(0.2f, 0.8f, 1.0f, 1.0f), "FontAsset: %s", fontAsset->GetName().c_str());
     TimeGUI::SameLine();
     TimeGUI::TextDisabled("(Pixel Size: %.1f | Line Height: %.1f | Ascent: %.1f | Descent: %.1f)",
-                          fontAsset->GetPixelSize(), fontAsset->GetLineHeight(), fontAsset->GetAscent(), fontAsset->GetDescent());
+                          fontAsset->GetPixelSize(), fontAsset->GetLineHeight(), fontAsset->GetAscent(),
+                          fontAsset->GetDescent());
 
     TimeGUI::Separator();
 
@@ -106,9 +106,8 @@ void FontAssetEditor::DrawEditor(EditorTab &tab)
                 float x1 = x0 + glyph.Width * s_TestScale;
                 float y1 = y0 + glyph.Height * s_TestScale;
 
-                drawList.AddImage(texId, TEVector2(x0, y0), TEVector2(x1, y1),
-                                  TEVector2(glyph.UV.x, glyph.UV.y), TEVector2(glyph.UV.z, glyph.UV.w),
-                                  TIMEGUI_COL32(255, 255, 255, 255));
+                drawList.AddImage(texId, TEVector2(x0, y0), TEVector2(x1, y1), TEVector2(glyph.UV.x, glyph.UV.y),
+                                  TEVector2(glyph.UV.z, glyph.UV.w), TIMEGUI_COL32(255, 255, 255, 255));
 
                 cursorX += glyph.AdvanceX * s_TestScale;
             }
@@ -159,4 +158,3 @@ void FontAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) const
 }
 
 TE_REGISTER_ASSET_EDITOR(FontAssetEditor);
-

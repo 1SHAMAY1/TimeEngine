@@ -3,11 +3,7 @@
 #include "Graph/ParticleGraphNodes.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
-ParticleGraphAssetEditor::ParticleGraphAssetEditor()
-    : m_Graph("Particle System Graph")
-{
-}
+ParticleGraphAssetEditor::ParticleGraphAssetEditor() : m_Graph("Particle System Graph") {}
 
 void ParticleGraphAssetEditor::DrawEditor(EditorTab &tab)
 {

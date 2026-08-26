@@ -12,8 +12,6 @@
 #include <cstring>
 #include <functional>
 
-
-
 enum class SpriteCreationMode
 {
     Code,
@@ -134,4 +132,3 @@ inline size_t FindIgnoreCase(const TEString &str, const TEString &target)
     }
     return TEString::npos;
 }
-

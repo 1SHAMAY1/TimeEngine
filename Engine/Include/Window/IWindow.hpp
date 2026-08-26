@@ -42,4 +42,3 @@ public:
 
     static TEScope<IWindow> Create(const WindowProps &props = WindowProps());
 };
-

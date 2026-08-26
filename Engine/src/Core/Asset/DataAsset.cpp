@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/DataAsset.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 
@@ -44,16 +44,44 @@ DataPropertyValue DataPropertyValue::FromString(EDataPropertyType type, const TE
     switch (type)
     {
     case EDataPropertyType::Int:
-        try { val.IntVal = std::stoi(str.c_str()); } catch (...) { val.IntVal = 0; }
+        try
+        {
+            val.IntVal = std::stoi(str.c_str());
+        }
+        catch (...)
+        {
+            val.IntVal = 0;
+        }
         break;
     case EDataPropertyType::Int64:
-        try { val.Int64Val = std::stoll(str.c_str()); } catch (...) { val.Int64Val = 0; }
+        try
+        {
+            val.Int64Val = std::stoll(str.c_str());
+        }
+        catch (...)
+        {
+            val.Int64Val = 0;
+        }
         break;
     case EDataPropertyType::Float:
-        try { val.FloatVal = std::stof(str.c_str()); } catch (...) { val.FloatVal = 0.0f; }
+        try
+        {
+            val.FloatVal = std::stof(str.c_str());
+        }
+        catch (...)
+        {
+            val.FloatVal = 0.0f;
+        }
         break;
     case EDataPropertyType::Double:
-        try { val.DoubleVal = std::stod(str.c_str()); } catch (...) { val.DoubleVal = 0.0; }
+        try
+        {
+            val.DoubleVal = std::stod(str.c_str());
+        }
+        catch (...)
+        {
+            val.DoubleVal = 0.0;
+        }
         break;
     case EDataPropertyType::Bool:
         val.BoolVal = (str == "true" || str == "1");
@@ -66,8 +94,20 @@ DataPropertyValue DataPropertyValue::FromString(EDataPropertyType type, const TE
         TEArray<TEString> parts = str.Split(' ');
         if (parts.Num() >= 2)
         {
-            try { val.Vec2Val.x = std::stof(parts[0].c_str()); } catch (...) {}
-            try { val.Vec2Val.y = std::stof(parts[1].c_str()); } catch (...) {}
+            try
+            {
+                val.Vec2Val.x = std::stof(parts[0].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                val.Vec2Val.y = std::stof(parts[1].c_str());
+            }
+            catch (...)
+            {
+            }
         }
         break;
     }
@@ -76,10 +116,34 @@ DataPropertyValue DataPropertyValue::FromString(EDataPropertyType type, const TE
         TEArray<TEString> parts = str.Split(' ');
         if (parts.Num() >= 4)
         {
-            try { val.Vec4Val.x = std::stof(parts[0].c_str()); } catch (...) {}
-            try { val.Vec4Val.y = std::stof(parts[1].c_str()); } catch (...) {}
-            try { val.Vec4Val.z = std::stof(parts[2].c_str()); } catch (...) {}
-            try { val.Vec4Val.w = std::stof(parts[3].c_str()); } catch (...) {}
+            try
+            {
+                val.Vec4Val.x = std::stof(parts[0].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                val.Vec4Val.y = std::stof(parts[1].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                val.Vec4Val.z = std::stof(parts[2].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                val.Vec4Val.w = std::stof(parts[3].c_str());
+            }
+            catch (...)
+            {
+            }
         }
         break;
     }
@@ -89,16 +153,47 @@ DataPropertyValue DataPropertyValue::FromString(EDataPropertyType type, const TE
         float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
         if (parts.Num() >= 4)
         {
-            try { r = std::stof(parts[0].c_str()); } catch (...) {}
-            try { g = std::stof(parts[1].c_str()); } catch (...) {}
-            try { b = std::stof(parts[2].c_str()); } catch (...) {}
-            try { a = std::stof(parts[3].c_str()); } catch (...) {}
+            try
+            {
+                r = std::stof(parts[0].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                g = std::stof(parts[1].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                b = std::stof(parts[2].c_str());
+            }
+            catch (...)
+            {
+            }
+            try
+            {
+                a = std::stof(parts[3].c_str());
+            }
+            catch (...)
+            {
+            }
         }
         val.ColorVal = TEColor(r, g, b, a);
         break;
     }
     case EDataPropertyType::AssetHandle:
-        try { val.HandleVal = std::stoull(str.c_str()); } catch (...) { val.HandleVal = 0; }
+        try
+        {
+            val.HandleVal = std::stoull(str.c_str());
+        }
+        catch (...)
+        {
+            val.HandleVal = 0;
+        }
         break;
     }
     return val;
@@ -134,27 +229,32 @@ static TEString PropertyTypeToString(EDataPropertyType type)
 
 static EDataPropertyType StringToPropertyType(const TEString &str)
 {
-    if (str == "int") return EDataPropertyType::Int;
-    if (str == "int64") return EDataPropertyType::Int64;
-    if (str == "float") return EDataPropertyType::Float;
-    if (str == "double") return EDataPropertyType::Double;
-    if (str == "bool") return EDataPropertyType::Bool;
-    if (str == "string") return EDataPropertyType::String;
-    if (str == "vector2") return EDataPropertyType::Vector2;
-    if (str == "vector4") return EDataPropertyType::Vector4;
-    if (str == "color") return EDataPropertyType::Color;
-    if (str == "AssetHandle") return EDataPropertyType::AssetHandle;
+    if (str == "int")
+        return EDataPropertyType::Int;
+    if (str == "int64")
+        return EDataPropertyType::Int64;
+    if (str == "float")
+        return EDataPropertyType::Float;
+    if (str == "double")
+        return EDataPropertyType::Double;
+    if (str == "bool")
+        return EDataPropertyType::Bool;
+    if (str == "string")
+        return EDataPropertyType::String;
+    if (str == "vector2")
+        return EDataPropertyType::Vector2;
+    if (str == "vector4")
+        return EDataPropertyType::Vector4;
+    if (str == "color")
+        return EDataPropertyType::Color;
+    if (str == "AssetHandle")
+        return EDataPropertyType::AssetHandle;
     return EDataPropertyType::String;
 }
 
-DataAsset::DataAsset()
-{
-}
+DataAsset::DataAsset() {}
 
-DataAsset::DataAsset(const TEString &name, const TEString &typeName)
-    : m_Name(name), m_DataAssetTypeName(typeName)
-{
-}
+DataAsset::DataAsset(const TEString &name, const TEString &typeName) : m_Name(name), m_DataAssetTypeName(typeName) {}
 
 TERef<Asset> DataAsset::Clone() const
 {
@@ -174,28 +274,31 @@ bool DataAsset::LoadFromFile(const TEString &path)
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Properties.Clear();
 
-    bool success = TEFileSystem::ForEachLine(path, [this](const TEString &line) {
-        if (line.StartsWith("DataAsset: "))
-        {
-            m_Name = line.Mid(11).Trim();
-        }
-        else if (line.StartsWith("Type: "))
-        {
-            m_DataAssetTypeName = line.Mid(6).Trim();
-        }
-        else if (line.StartsWith("Property: "))
-        {
-            TEString content = line.Mid(10);
-            TEArray<TEString> parts = content.Split('|');
-            if (parts.Num() >= 3)
-            {
-                EDataPropertyType type = StringToPropertyType(parts[1]);
-                DataPropertyValue val = DataPropertyValue::FromString(type, parts[2]);
-                m_Properties[parts[0]] = val;
-            }
-        }
-        return true;
-    });
+    bool success = TEFileSystem::ForEachLine(path,
+                                             [this](const TEString &line)
+                                             {
+                                                 if (line.StartsWith("DataAsset: "))
+                                                 {
+                                                     m_Name = line.Mid(11).Trim();
+                                                 }
+                                                 else if (line.StartsWith("Type: "))
+                                                 {
+                                                     m_DataAssetTypeName = line.Mid(6).Trim();
+                                                 }
+                                                 else if (line.StartsWith("Property: "))
+                                                 {
+                                                     TEString content = line.Mid(10);
+                                                     TEArray<TEString> parts = content.Split('|');
+                                                     if (parts.Num() >= 3)
+                                                     {
+                                                         EDataPropertyType type = StringToPropertyType(parts[1]);
+                                                         DataPropertyValue val =
+                                                             DataPropertyValue::FromString(type, parts[2]);
+                                                         m_Properties[parts[0]] = val;
+                                                     }
+                                                 }
+                                                 return true;
+                                             });
 
     return success;
 }
@@ -215,7 +318,8 @@ bool DataAsset::SaveToFile(const TEString &path)
 
     for (const auto &[key, val] : m_Properties)
     {
-        hout << "Property: " << key.c_str() << "|" << PropertyTypeToString(val.Type).c_str() << "|" << val.ToString().c_str() << "\n";
+        hout << "Property: " << key.c_str() << "|" << PropertyTypeToString(val.Type).c_str() << "|"
+             << val.ToString().c_str() << "\n";
     }
 
     hout.close();
@@ -228,10 +332,7 @@ void DataAsset::OnContentBrowserCreate(const TEString &path)
     SaveToFile(path);
 }
 
-bool DataAsset::HasProperty(const TEString &propName) const
-{
-    return m_Properties.Find(propName) != nullptr;
-}
+bool DataAsset::HasProperty(const TEString &propName) const { return m_Properties.Find(propName) != nullptr; }
 
 void DataAsset::SetProperty(const TEString &propName, const DataPropertyValue &value)
 {
@@ -246,10 +347,7 @@ DataPropertyValue DataAsset::GetProperty(const TEString &propName) const
     return DataPropertyValue{};
 }
 
-void DataAsset::RemoveProperty(const TEString &propName)
-{
-    m_Properties.Remove(propName);
-}
+void DataAsset::RemoveProperty(const TEString &propName) { m_Properties.Remove(propName); }
 
 int DataAsset::GetInt(const TEString &propName, int defaultVal) const
 {
@@ -434,4 +532,3 @@ bool DataAsset::DeserializeRowString(const TEString &rowStr)
     }
     return true;
 }
-

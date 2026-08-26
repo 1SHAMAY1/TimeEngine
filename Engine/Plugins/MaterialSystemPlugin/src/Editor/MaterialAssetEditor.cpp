@@ -5,10 +5,7 @@
 #include "Graph/MaterialNodeRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 
-
-MaterialAssetEditor::MaterialAssetEditor()
-{
-}
+MaterialAssetEditor::MaterialAssetEditor() {}
 
 void MaterialAssetEditor::DrawDetailsPanel(Graph &graph, const TERef<GraphNode> &selectedNode)
 {

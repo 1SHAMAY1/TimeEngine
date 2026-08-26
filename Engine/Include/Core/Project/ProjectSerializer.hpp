@@ -2,7 +2,6 @@
 
 #include "Core/Project/Project.hpp"
 
-
 class TE_API ProjectSerializer
 {
 public:

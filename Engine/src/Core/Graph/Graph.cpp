@@ -1,15 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "Core/Graph/Graph.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include <queue>
-
 
 Graph::Graph(const TEString &name) : m_Name(name) {}
 
-uint64_t Graph::GenerateID()
-{
-    return m_NextID++;
-}
+uint64_t Graph::GenerateID() { return m_NextID++; }
 
 TERef<GraphNode> Graph::AddNode(const TERef<GraphNode> &node)
 {

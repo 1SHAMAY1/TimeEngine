@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanVertexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include <iostream>
-
 
 VulkanVertexBuffer::VulkanVertexBuffer(float *vertices, uint32_t size)
 {
@@ -57,4 +56,3 @@ void VulkanVertexBuffer::SetData(float *vertices, uint32_t size) const
         vkUnmapMemory(device, m_Memory);
     }
 }
-

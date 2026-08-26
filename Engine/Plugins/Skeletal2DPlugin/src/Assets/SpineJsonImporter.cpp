@@ -3,9 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-namespace Skeletal2D {
+namespace Skeletal2D
+{
 
-TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonFile(const TEString& jsonPath, const TEString& atlasPath)
+TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonFile(const TEString &jsonPath, const TEString &atlasPath)
 {
     std::ifstream file(jsonPath.c_str());
     if (!file.is_open())
@@ -36,7 +37,7 @@ TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonFile(const TEString& j
     return ImportFromJsonString(content, assetName);
 }
 
-TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonString(const TEString& jsonContent, const TEString& name)
+TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonString(const TEString &jsonContent, const TEString &name)
 {
     auto asset = CreateRef<SkeletalDataAsset>();
     asset->SetName(name);
@@ -144,7 +145,8 @@ TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonString(const TEString&
     idleClip->IsLooping = true;
     asset->AddAnimation("idle", idleClip);
 
-    TE_CORE_INFO("[SpineJsonImporter] Successfully imported Spine JSON '{0}' with {1} bones.", name.c_str(), hierarchy.GetBoneCount());
+    TE_CORE_INFO("[SpineJsonImporter] Successfully imported Spine JSON '{0}' with {1} bones.", name.c_str(),
+                 hierarchy.GetBoneCount());
     return asset;
 }
 

@@ -1,9 +1,7 @@
 #pragma once
-#include "ParticlePool.hpp"
 #include "Modules/ParticleModule.hpp"
 #include "Modules/SpawnModules.hpp"
-
-
+#include "ParticlePool.hpp"
 
 class ParticleSpawner
 {
@@ -14,10 +12,7 @@ public:
             m_Modules.Add(module);
     }
 
-    void ClearModules()
-    {
-        m_Modules.clear();
-    }
+    void ClearModules() { m_Modules.clear(); }
 
     void Spawn(EmitterContext &ctx, ParticlePool &pool, float dt)
     {
@@ -61,4 +56,3 @@ public:
 private:
     TEArray<TERef<ParticleModule>> m_Modules;
 };
-

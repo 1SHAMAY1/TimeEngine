@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Core/Settings/GeneralEngineSettings.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Settings/GeneralEngineSettings.hpp"
 #include "Layers/Layer.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 /**
  * EngineSettingsLayer - UI layer for managing engine settings
@@ -140,4 +139,3 @@ private:
     TEVector4 m_ErrorColor = TEVector4(1.0f, 0.0f, 0.0f, 1.0f);
     TEVector4 m_SuccessColor = TEVector4(0.0f, 1.0f, 0.0f, 1.0f);
 };
-

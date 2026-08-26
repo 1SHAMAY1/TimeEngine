@@ -1,17 +1,16 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/RenderBatcher.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/ProfilingLayer.hpp"
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 #include <chrono>
 
-
 void RenderBatcher::Begin() { m_DrawCommands.Empty(); }
 
-void RenderBatcher::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material,
-                           const glm::mat4 &transform, uint32_t indexCount, int blendMode)
+void RenderBatcher::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const glm::mat4 &transform,
+                           uint32_t indexCount, int blendMode, const TEColor &color)
 {
-    m_DrawCommands.Add({vao, material, transform, indexCount, blendMode});
+    m_DrawCommands.Add({vao, material, transform, color, indexCount, blendMode});
 }
 
 void RenderBatcher::End()
@@ -57,8 +56,9 @@ void RenderBatcher::Flush()
             ShaderLibrary::SetViewProjection(cmd.material->GetShader().get(), m_ViewProjection);
             lastMaterial = cmd.material;
         }
-        // Set transform uniform
+        // Set transform and color uniforms directly per draw command
         ShaderLibrary::SetTransform(cmd.material->GetShader().get(), cmd.transform);
+        ShaderLibrary::SetColor(cmd.material->GetShader().get(), cmd.color);
         cmd.vertexArray->Bind();
         RenderCommand::DrawIndexed(cmd.vertexArray->GetRendererID(), cmd.indexCount);
 
@@ -85,4 +85,3 @@ void RenderBatcher::Flush()
         profiler->RecordVertex(totalVertices);
     }
 }
-

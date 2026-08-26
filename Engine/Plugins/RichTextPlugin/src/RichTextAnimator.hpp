@@ -3,7 +3,6 @@
 #include "RichTextLayout.hpp"
 #include "RichTextTypes.hpp"
 
-
 class RichTextAnimator
 {
 public:
@@ -13,4 +12,3 @@ public:
     static void AnimateLayout(RichTextLayoutResult &layout, float totalTime, float deltaTime,
                               float typewriterProgress = 1.0f);
 };
-

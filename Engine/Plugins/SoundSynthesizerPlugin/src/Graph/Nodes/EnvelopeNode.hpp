@@ -3,7 +3,8 @@
 #include "../../DSP/ADSREnvelope.hpp"
 #include "../SoundGraphNode.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class ADSREnvelopeNode : public SoundGraphNode
 {

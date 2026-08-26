@@ -8,7 +8,6 @@
 #include "Utils/TimeGUI.hpp"
 #include <functional>
 
-
 struct SpriteScriptContext
 {
     TimeGUI::TimeGUIDrawList DrawList;

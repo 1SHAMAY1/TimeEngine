@@ -1,6 +1,7 @@
 #include "MathNodes.hpp"
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 GainNode::GainNode()
 {

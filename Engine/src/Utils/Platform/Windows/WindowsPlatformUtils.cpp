@@ -5,7 +5,6 @@
 #include <shlobj.h>
 #include <windows.h>
 
-
 TEString PlatformUtils::OpenFolder(const char *initialPath)
 {
     // Simple Windows Folder Picker using SHBrowseForFolder (Older but works without complex COM setup for now)
@@ -84,8 +83,8 @@ TEString PlatformUtils::SaveFile(const char *filter)
     return TEString();
 }
 
-bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TEString &appName,
-                                            const TEString &appPath, const TEString &description)
+bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TEString &appName, const TEString &appPath,
+                                            const TEString &description)
 {
     HKEY hKey;
 
@@ -185,7 +184,8 @@ TEString PlatformUtils::GetExecutablePath()
     return TEString(buffer.c_str());
 }
 
-bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString &commandLineArgs, uint32_t *outProcessId)
+bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString &commandLineArgs,
+                                  uint32_t *outProcessId)
 {
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
@@ -196,18 +196,7 @@ bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString
     TEString fullCommand = "\"" + executablePath + "\" " + commandLineArgs;
     TEArray<char> cmdBuffer(fullCommand.c_str(), fullCommand.c_str() + fullCommand.length() + 1);
 
-    BOOL success = CreateProcessA(
-        NULL,
-        cmdBuffer.data(),
-        NULL,
-        NULL,
-        FALSE,
-        0,
-        NULL,
-        NULL,
-        &si,
-        &pi
-    );
+    BOOL success = CreateProcessA(NULL, cmdBuffer.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 
     if (success)
     {
@@ -252,4 +241,3 @@ bool PlatformUtils::KillProcess(uint32_t processId)
     CloseHandle(hProcess);
     return result == TRUE;
 }
-

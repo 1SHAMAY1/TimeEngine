@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/CharacterBody2DComponent.hpp"
 #include "Core/Collision/CollisionComponent.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/TransformComponent.hpp"
 #include <cmath>
 
@@ -35,7 +35,8 @@ void CharacterBody2DComponent::MoveAndSlide(float dt)
         if (moveLen < 0.0001f)
             break;
 
-        TEVector2 nextPos = {transform->Transform.Position.x + currentMove.x, transform->Transform.Position.y + currentMove.y};
+        TEVector2 nextPos = {transform->Transform.Position.x + currentMove.x,
+                             transform->Transform.Position.y + currentMove.y};
 
         // Simple ground & wall probe check
         transform->Transform.Position.x = nextPos.x;

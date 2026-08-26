@@ -123,7 +123,8 @@ bool PCGSimplexNoiseNode::Execute(PCGExecutionContext &ctx)
 
         for (int oct = 0; oct < octaves; ++oct)
         {
-            total += Perlin2D(pt.Position.x * currentFreq, pt.Position.y * currentFreq, ctx.Seed + oct * 31) * amplitude;
+            total +=
+                Perlin2D(pt.Position.x * currentFreq, pt.Position.y * currentFreq, ctx.Seed + oct * 31) * amplitude;
             maxAmp += amplitude;
             amplitude *= 0.5f;
             currentFreq *= 2.0f;
@@ -243,7 +244,8 @@ bool PCGElevationSlopeNode::Execute(PCGExecutionContext &ctx)
         {
             // Compute simulated slope from normal rotation
             glm::vec3 up = pt.Rotation * glm::vec3(0.0f, 1.0f, 0.0f);
-            float slopeAngle = std::acos(std::clamp(glm::dot(up, glm::vec3(0.0f, 1.0f, 0.0f)), -1.0f, 1.0f)) * (180.0f / 3.1415927f);
+            float slopeAngle =
+                std::acos(std::clamp(glm::dot(up, glm::vec3(0.0f, 1.0f, 0.0f)), -1.0f, 1.0f)) * (180.0f / 3.1415927f);
 
             if (slopeAngle <= maxSlope)
             {

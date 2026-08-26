@@ -1,7 +1,6 @@
 #pragma once
 #include "Editor/AssetEditor.hpp"
 
-
 class TE_API TextureAssetEditor : public AssetEditor
 {
 public:
@@ -13,5 +12,3 @@ public:
     virtual void DrawEditor(EditorTab &tab) override;
     virtual void DrawIcon(const TEVector2 &min, const TEVector2 &max) const override;
 };
-
-

@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphNode.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
 #include <functional>
-
 
 struct TE_API NodePaletteEntry
 {
@@ -24,8 +23,8 @@ public:
 
     void Clear();
     void RegisterNode(const NodePaletteEntry &entry);
-    void RegisterNode(const TEString &name, const TEString &category, const TEString &nodeType,
-                      const TEString &desc, std::function<TERef<GraphNode>()> factory);
+    void RegisterNode(const TEString &name, const TEString &category, const TEString &nodeType, const TEString &desc,
+                      std::function<TERef<GraphNode>()> factory);
 
     void Open(const TEVector2 &spawnGraphPos);
     bool IsOpen() const { return m_IsOpen; }

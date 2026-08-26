@@ -1,7 +1,6 @@
 #pragma once
-#include "MovementComponentBase.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
-
+#include "MovementComponentBase.hpp"
 
 enum class EPlayerMovementMode
 {
@@ -49,8 +48,6 @@ T_REGISTER_PROPERTY(PlayerMovementComponent2D, float, MaxSpeed, "Max Speed")
 T_REGISTER_PROPERTY(PlayerMovementComponent2D, float, Acceleration, "Acceleration")
 T_REGISTER_PROPERTY(PlayerMovementComponent2D, float, Friction, "Friction")
 T_REGISTER_PROPERTY(PlayerMovementComponent2D, float, JumpForce, "Jump Force")
-T_REGISTER_PRESET(PlayerMovement2D, "Player Movement 2D", "Gameplay", [](EntityID id, EntityManager *em) {
-    em->AddComponent<PlayerMovementComponent2D>(id);
-})
+T_REGISTER_PRESET(PlayerMovement2D, "Player Movement 2D", "Gameplay",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<PlayerMovementComponent2D>(id); })
 #endif
-

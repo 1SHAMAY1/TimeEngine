@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Renderer2D.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/LightComponent.hpp"
 #include "Renderer/IndexBuffer.hpp"
 #include "Renderer/Material.hpp"
@@ -8,7 +8,6 @@
 #include "Renderer/VertexBuffer.hpp"
 #include "Utils/MathUtils.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-
 
 Renderer2D::Renderer2D()
 {
@@ -34,8 +33,8 @@ void Renderer2D::BeginFrame(const TEMatrix4 &viewProjection)
     m_Batcher.Begin();
 }
 
-void Renderer2D::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material,
-                        const TEMatrix4 &transform, uint32_t indexCount)
+void Renderer2D::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const TEMatrix4 &transform,
+                        uint32_t indexCount)
 {
     m_Batcher.Submit(vao, material, reinterpret_cast<const glm::mat4 &>(transform), indexCount);
 }
@@ -68,26 +67,46 @@ void Renderer2D::Flush() { m_Batcher.Flush(); }
 
 void Renderer2D::SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TERef<Material> &material)
 {
+    SubmitQuad(position, size, TEColor::White(), material);
+}
+
+void Renderer2D::SubmitQuad(const TEVector2 &position, const TEVector2 &size, const TEColor &color,
+                            const TERef<Material> &material)
+{
     TETransform transform;
     transform.Position = TEVector(position.x, position.y, 0.0f);
     transform.Scale = TEScale(size.x, size.y, 1.0f);
-    SubmitQuad(transform.GetMatrix(), material);
+    SubmitQuad(transform.GetMatrix(), color, material);
 }
 
 void Renderer2D::SubmitQuad(const TEMatrix4 &transform, const TERef<Material> &material, int blendMode)
 {
-    if (blendMode == 0)
+    SubmitQuad(transform, TEColor::White(), material, blendMode);
+}
+
+void Renderer2D::SubmitQuad(const TEMatrix4 &transform, const TEColor &color, const TERef<Material> &material,
+                            int blendMode)
+{
+    auto renderMat = material ? material : Material::GetDefault();
+    if (blendMode == 0 && renderMat)
     {
-        material->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
-        material->SetUniform("u_AmbientSky", reinterpret_cast<const glm::vec4 &>(m_AmbientSky.GetValue()));
-        material->SetUniform("u_AmbientGround", reinterpret_cast<const glm::vec4 &>(m_AmbientGround.GetValue()));
+        renderMat->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
+        renderMat->SetUniform("u_AmbientSky", reinterpret_cast<const glm::vec4 &>(m_AmbientSky.GetValue()));
+        renderMat->SetUniform("u_AmbientGround", reinterpret_cast<const glm::vec4 &>(m_AmbientGround.GetValue()));
     }
-    m_Batcher.Submit(m_UnitQuadVAO, material, reinterpret_cast<const glm::mat4 &>(transform), 6, blendMode);
+    m_Batcher.Submit(m_UnitQuadVAO, renderMat, reinterpret_cast<const glm::mat4 &>(transform), 6, blendMode, color);
 }
 
 void Renderer2D::SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3,
                                 const TERef<Material> &material)
 {
+    SubmitTriangle(p1, p2, p3, TEColor::White(), material);
+}
+
+void Renderer2D::SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const TEVector2 &p3, const TEColor &color,
+                                const TERef<Material> &material)
+{
+    auto renderMat = material ? material : Material::GetDefault();
     float vertices[] = {p1.x, p1.y, 0.0f, p2.x, p2.y, 0.0f, p3.x, p3.y, 0.0f};
     uint32_t indices[] = {0, 1, 2};
     auto vao = VertexArray::Create();
@@ -97,14 +116,24 @@ void Renderer2D::SubmitTriangle(const TEVector2 &p1, const TEVector2 &p2, const 
     vbo->Bind();
     vao->AddVertexBuffer(vbo);
     vao->SetIndexBuffer(ibo);
-    material->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
-    material->SetUniform("u_AmbientSky", m_AmbientSky);
-    material->SetUniform("u_AmbientGround", m_AmbientGround);
-    m_Batcher.Submit(vao, material, glm::mat4(1.0f), 3);
+    if (renderMat)
+    {
+        renderMat->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
+        renderMat->SetUniform("u_AmbientSky", m_AmbientSky);
+        renderMat->SetUniform("u_AmbientGround", m_AmbientGround);
+    }
+    m_Batcher.Submit(vao, renderMat, glm::mat4(1.0f), 3, 0, color);
 }
 
 void Renderer2D::SubmitCircle(const TEVector2 &center, float radius, const TERef<Material> &material)
 {
+    SubmitCircle(center, radius, TEColor::White(), material);
+}
+
+void Renderer2D::SubmitCircle(const TEVector2 &center, float radius, const TEColor &color,
+                              const TERef<Material> &material)
+{
+    auto renderMat = material ? material : Material::GetDefault();
     const int segments = 32;
     TEArray<float> vertices;
     vertices.Add(center.x);
@@ -131,10 +160,13 @@ void Renderer2D::SubmitCircle(const TEVector2 &center, float radius, const TERef
     vbo->Bind();
     vao->AddVertexBuffer(vbo);
     vao->SetIndexBuffer(ibo);
-    material->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
-    material->SetUniform("u_AmbientSky", m_AmbientSky);
-    material->SetUniform("u_AmbientGround", m_AmbientGround);
-    m_Batcher.Submit(vao, material, glm::mat4(1.0f), (uint32_t)indices.Num());
+    if (renderMat)
+    {
+        renderMat->SetUniform("u_AmbientIntensity", m_AmbientIntensity);
+        renderMat->SetUniform("u_AmbientSky", m_AmbientSky);
+        renderMat->SetUniform("u_AmbientGround", m_AmbientGround);
+    }
+    m_Batcher.Submit(vao, renderMat, glm::mat4(1.0f), (uint32_t)indices.Num(), 0, color);
 }
 
 void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &position, float rotationRadians)
@@ -154,7 +186,7 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)) *
                               glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
-        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lightMaterial, 1);
+        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), light.Color, lightMaterial, 1);
     }
     else if (light.Type == TELightType::Spot)
     {
@@ -169,7 +201,7 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)) *
                               glm::rotate(glm::mat4(1.0f), rotationRadians, glm::vec3(0.0f, 0.0f, 1.0f)) *
                               glm::scale(glm::mat4(1.0f), glm::vec3(light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
-        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lightMaterial, 1);
+        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), light.Color, lightMaterial, 1);
     }
     else if (light.Type == TELightType::Line)
     {
@@ -185,7 +217,7 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
                                                       position.y + light.LineOffset.y * 0.5f, 0.0f)) *
             glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::scale(glm::mat4(1.0f), glm::vec3(length + light.Radius * 2.0f, light.Radius * 2.0f, 1.0f));
-        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), lightMaterial, 1);
+        SubmitQuad(reinterpret_cast<const TEMatrix4 &>(transform), light.Color, lightMaterial, 1);
     }
 }
 
@@ -330,4 +362,3 @@ void Renderer2D::SubmitCircleOutline(const TEVector2 &center, float radius, floa
 }
 
 TERef<Renderer2D> Renderer2D::Create() { return CreateRef<Renderer2D>(); }
-

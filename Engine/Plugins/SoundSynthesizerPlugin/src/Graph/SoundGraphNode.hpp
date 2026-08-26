@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../DSP/AudioDSPContext.hpp"
-#include "SoundPinTypes.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "SoundPinTypes.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
 #include <map>
 #include <vector>
 
-namespace SoundStudio {
+namespace SoundStudio
+{
 
 class SoundGraphNode
 {

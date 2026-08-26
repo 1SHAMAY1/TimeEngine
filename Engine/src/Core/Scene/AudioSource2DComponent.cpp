@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/AudioSource2DComponent.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 
@@ -22,10 +22,7 @@ void AudioSource2DComponent::OnInitialize()
     }
 }
 
-void AudioSource2DComponent::OnAttach()
-{
-    TComponent::OnAttach();
-}
+void AudioSource2DComponent::OnAttach() { TComponent::OnAttach(); }
 
 void AudioSource2DComponent::OnDetach()
 {

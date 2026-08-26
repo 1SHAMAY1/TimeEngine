@@ -1,8 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Layers/ProfilingButtonLayer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
-
 
 ProfilingButtonLayer::ProfilingButtonLayer() : Layer("ProfilingButtonLayer")
 {
@@ -99,4 +98,3 @@ void ProfilingButtonLayer::CreateFloatingProfilingWindow()
     m_ProfilingLayer->RecordVertex(3);
     m_ProfilingLayer->RecordShader(1);
 }
-

@@ -3,7 +3,6 @@
 #include "Core/PreRequisites.h"
 #include <cstdint>
 
-
 struct TE_API GraphConnection
 {
     uint64_t ID = 0;

@@ -5,20 +5,34 @@
 #include <cmath>
 #include <sstream>
 
-
 // ── Node type colour palette ──────────────────────────────────────────────────
 static unsigned int GetNodeHeaderColor(NarrativeNodeType type)
 {
     switch (type)
     {
-    case NarrativeNodeType::Entry:    return TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f/255.0f,  160.0f/255.0f, 80.0f/255.0f,  1.0f)); // Green
-    case NarrativeNodeType::Dialogue: return TimeGUI::ColorConvertFloat4ToU32(TEVector4(55.0f/255.0f,  110.0f/255.0f, 195.0f/255.0f, 1.0f)); // Blue
-    case NarrativeNodeType::Choice:   return TimeGUI::ColorConvertFloat4ToU32(TEVector4(180.0f/255.0f, 130.0f/255.0f, 40.0f/255.0f,  1.0f)); // Amber
-    case NarrativeNodeType::Condition:return TimeGUI::ColorConvertFloat4ToU32(TEVector4(155.0f/255.0f, 80.0f/255.0f,  190.0f/255.0f, 1.0f)); // Purple
-    case NarrativeNodeType::Action:   return TimeGUI::ColorConvertFloat4ToU32(TEVector4(190.0f/255.0f, 70.0f/255.0f,  60.0f/255.0f,  1.0f)); // Red
-    case NarrativeNodeType::Divert:   return TimeGUI::ColorConvertFloat4ToU32(TEVector4(60.0f/255.0f,  160.0f/255.0f, 170.0f/255.0f, 1.0f)); // Teal
-    case NarrativeNodeType::Exit:     return TimeGUI::ColorConvertFloat4ToU32(TEVector4(100.0f/255.0f, 100.0f/255.0f, 100.0f/255.0f, 1.0f)); // Grey
-    default:                          return TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f/255.0f,  80.0f/255.0f,  80.0f/255.0f,  1.0f));
+    case NarrativeNodeType::Entry:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(80.0f / 255.0f, 160.0f / 255.0f, 80.0f / 255.0f, 1.0f)); // Green
+    case NarrativeNodeType::Dialogue:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(55.0f / 255.0f, 110.0f / 255.0f, 195.0f / 255.0f, 1.0f)); // Blue
+    case NarrativeNodeType::Choice:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(180.0f / 255.0f, 130.0f / 255.0f, 40.0f / 255.0f, 1.0f)); // Amber
+    case NarrativeNodeType::Condition:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(155.0f / 255.0f, 80.0f / 255.0f, 190.0f / 255.0f, 1.0f)); // Purple
+    case NarrativeNodeType::Action:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(190.0f / 255.0f, 70.0f / 255.0f, 60.0f / 255.0f, 1.0f)); // Red
+    case NarrativeNodeType::Divert:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(60.0f / 255.0f, 160.0f / 255.0f, 170.0f / 255.0f, 1.0f)); // Teal
+    case NarrativeNodeType::Exit:
+        return TimeGUI::ColorConvertFloat4ToU32(
+            TEVector4(100.0f / 255.0f, 100.0f / 255.0f, 100.0f / 255.0f, 1.0f)); // Grey
+    default:
+        return TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f / 255.0f, 80.0f / 255.0f, 80.0f / 255.0f, 1.0f));
     }
 }
 
@@ -26,35 +40,41 @@ static const char *NodeTypeIcon(NarrativeNodeType type)
 {
     switch (type)
     {
-    case NarrativeNodeType::Entry:     return "▶  Entry";
-    case NarrativeNodeType::Dialogue:  return "💬 Dialogue";
-    case NarrativeNodeType::Choice:    return "⚡ Choices";
-    case NarrativeNodeType::Condition: return "❓ Condition";
-    case NarrativeNodeType::Action:    return "⚙  Action";
-    case NarrativeNodeType::Divert:    return "→  Divert";
-    case NarrativeNodeType::Exit:      return "■  Exit";
-    default:                           return "Node";
+    case NarrativeNodeType::Entry:
+        return "▶  Entry";
+    case NarrativeNodeType::Dialogue:
+        return "💬 Dialogue";
+    case NarrativeNodeType::Choice:
+        return "⚡ Choices";
+    case NarrativeNodeType::Condition:
+        return "❓ Condition";
+    case NarrativeNodeType::Action:
+        return "⚙  Action";
+    case NarrativeNodeType::Divert:
+        return "→  Divert";
+    case NarrativeNodeType::Exit:
+        return "■  Exit";
+    default:
+        return "Node";
     }
 }
 
 // ── Coordinate helpers ────────────────────────────────────────────────────────
 TEVector2 DialogueGraphCanvas::WorldToCanvas(const TEVector2 &wp, const TEVector2 &origin, float zoom) const
 {
-    return TEVector2(origin.x + m_ScrollOffset.x + wp.x * zoom,
-                     origin.y + m_ScrollOffset.y + wp.y * zoom);
+    return TEVector2(origin.x + m_ScrollOffset.x + wp.x * zoom, origin.y + m_ScrollOffset.y + wp.y * zoom);
 }
 
 TEVector2 DialogueGraphCanvas::CanvasToWorld(const TEVector2 &sp, const TEVector2 &origin, float zoom) const
 {
-    return TEVector2((sp.x - origin.x - m_ScrollOffset.x) / zoom,
-                     (sp.y - origin.y - m_ScrollOffset.y) / zoom);
+    return TEVector2((sp.x - origin.x - m_ScrollOffset.x) / zoom, (sp.y - origin.y - m_ScrollOffset.y) / zoom);
 }
 
-static constexpr float k_PinRadius  = 6.0f;
+static constexpr float k_PinRadius = 6.0f;
 static constexpr float k_PinOffsetX = 10.0f;
 
-TEVector2 DialogueGraphCanvas::GetPinScreenPos(const DialogueGraph &graph, uint64_t pinId,
-                                               const TEVector2 &origin, float zoom) const
+TEVector2 DialogueGraphCanvas::GetPinScreenPos(const DialogueGraph &graph, uint64_t pinId, const TEVector2 &origin,
+                                               float zoom) const
 {
     for (size_t n = 0; n < graph.GetNodes().Size(); ++n)
     {
@@ -62,7 +82,7 @@ TEVector2 DialogueGraphCanvas::GetPinScreenPos(const DialogueGraph &graph, uint6
         TEVector2 nodeScreen = WorldToCanvas(node.Position, origin, zoom);
 
         float headerH = 22.0f * zoom;
-        float rowH    = 20.0f * zoom;
+        float rowH = 20.0f * zoom;
 
         for (size_t p = 0; p < node.InputPins.Size(); ++p)
         {
@@ -88,8 +108,10 @@ TEVector2 DialogueGraphCanvas::GetPinScreenPos(const DialogueGraph &graph, uint6
 void DialogueGraphCanvas::DrawGrid(const TEVector2 &canvasPos, const TEVector2 &canvasSize)
 {
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
-    unsigned int minor = TimeGUI::ColorConvertFloat4ToU32(TEVector4(55.0f/255.0f, 55.0f/255.0f, 60.0f/255.0f, 1.0f));
-    unsigned int major = TimeGUI::ColorConvertFloat4ToU32(TEVector4(75.0f/255.0f, 75.0f/255.0f, 85.0f/255.0f, 1.0f));
+    unsigned int minor =
+        TimeGUI::ColorConvertFloat4ToU32(TEVector4(55.0f / 255.0f, 55.0f / 255.0f, 60.0f / 255.0f, 1.0f));
+    unsigned int major =
+        TimeGUI::ColorConvertFloat4ToU32(TEVector4(75.0f / 255.0f, 75.0f / 255.0f, 85.0f / 255.0f, 1.0f));
 
     float gridMinor = 20.0f * m_Zoom;
     float gridMajor = 100.0f * m_Zoom;
@@ -97,15 +119,13 @@ void DialogueGraphCanvas::DrawGrid(const TEVector2 &canvasPos, const TEVector2 &
     for (float x = fmodf(m_ScrollOffset.x, gridMinor); x < canvasSize.x; x += gridMinor)
     {
         bool isMaj = fmodf(x + canvasSize.x, gridMajor) < gridMinor;
-        dl.AddLine(TEVector2(canvasPos.x + x, canvasPos.y),
-                   TEVector2(canvasPos.x + x, canvasPos.y + canvasSize.y),
+        dl.AddLine(TEVector2(canvasPos.x + x, canvasPos.y), TEVector2(canvasPos.x + x, canvasPos.y + canvasSize.y),
                    isMaj ? major : minor, isMaj ? 1.5f : 0.8f);
     }
     for (float y = fmodf(m_ScrollOffset.y, gridMinor); y < canvasSize.y; y += gridMinor)
     {
         bool isMaj = fmodf(y + canvasSize.y, gridMajor) < gridMinor;
-        dl.AddLine(TEVector2(canvasPos.x, canvasPos.y + y),
-                   TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + y),
+        dl.AddLine(TEVector2(canvasPos.x, canvasPos.y + y), TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + y),
                    isMaj ? major : minor, isMaj ? 1.5f : 0.8f);
     }
 }
@@ -129,9 +149,10 @@ void DialogueGraphCanvas::DrawConnections(const DialogueGraph &graph, const TEVe
     {
         const auto &conn = graph.GetConnections()[i];
         TEVector2 from = GetPinScreenPos(graph, conn.SourcePinID, origin, zoom);
-        TEVector2 to   = GetPinScreenPos(graph, conn.TargetPinID, origin, zoom);
+        TEVector2 to = GetPinScreenPos(graph, conn.TargetPinID, origin, zoom);
 
-        unsigned int col = TimeGUI::ColorConvertFloat4ToU32(TEVector4(160.0f/255.0f, 160.0f/255.0f, 200.0f/255.0f, 0.8f));
+        unsigned int col =
+            TimeGUI::ColorConvertFloat4ToU32(TEVector4(160.0f / 255.0f, 160.0f / 255.0f, 200.0f / 255.0f, 0.8f));
 
         const auto *srcNode = graph.FindNode(conn.SourceNodeID);
         if (srcNode)
@@ -152,16 +173,14 @@ void DialogueGraphCanvas::DrawPendingLink(const TEVector2 &origin, float zoom)
 
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
     TEVector2 mousePos = TimeGUI::GetMousePos();
-    DrawBezier(dl,
-               m_PendingLink.DragStart,
-               mousePos,
-               TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f/255.0f, 200.0f/255.0f, 100.0f/255.0f, 0.8f)),
+    DrawBezier(dl, m_PendingLink.DragStart, mousePos,
+               TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f / 255.0f, 200.0f / 255.0f, 100.0f / 255.0f, 0.8f)),
                2.0f * zoom);
 }
 
 // ── Single node ───────────────────────────────────────────────────────────────
-void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node,
-                                   const TEVector2 &origin, float zoom, uint64_t highlightNodeID)
+void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node, const TEVector2 &origin, float zoom,
+                                   uint64_t highlightNodeID)
 {
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
 
@@ -172,7 +191,7 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
     TEVector2 tl(nodeScreen.x, nodeScreen.y);
     TEVector2 br(nodeScreen.x + w, nodeScreen.y + h);
 
-    bool isSelected   = (node.ID == m_SelectedNodeID);
+    bool isSelected = (node.ID == m_SelectedNodeID);
     bool isHighlighted = (highlightNodeID != 0 && node.ID == highlightNodeID);
 
     // Shadow
@@ -180,7 +199,8 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
                      TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.0f, 0.0f, 0.0f, 0.35f)), 8.0f * zoom);
 
     // Body
-    unsigned int bodyCol = TimeGUI::ColorConvertFloat4ToU32(TEVector4(38.0f/255.0f, 38.0f/255.0f, 45.0f/255.0f, 1.0f));
+    unsigned int bodyCol =
+        TimeGUI::ColorConvertFloat4ToU32(TEVector4(38.0f / 255.0f, 38.0f / 255.0f, 45.0f / 255.0f, 1.0f));
     dl.AddRectFilled(tl, br, bodyCol, 8.0f * zoom);
 
     // Selection / Highlight glow
@@ -188,13 +208,13 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
     {
         float alpha = 0.8f;
         dl.AddRect(TEVector2(tl.x - 3, tl.y - 3), TEVector2(br.x + 3, br.y + 3),
-                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f/255.0f, 240.0f/255.0f, 100.0f/255.0f, alpha)),
+                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f / 255.0f, 240.0f / 255.0f, 100.0f / 255.0f, alpha)),
                    10.0f * zoom, 0, 3.0f);
     }
     else if (isSelected)
     {
         dl.AddRect(TEVector2(tl.x - 2, tl.y - 2), TEVector2(br.x + 2, br.y + 2),
-                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(220.0f/255.0f, 200.0f/255.0f, 60.0f/255.0f, 1.0f)),
+                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(220.0f / 255.0f, 200.0f / 255.0f, 60.0f / 255.0f, 1.0f)),
                    10.0f * zoom, 0, 2.5f);
     }
 
@@ -207,7 +227,7 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
     // Header text
     TEString headerText = node.Title.empty() ? NodeTypeIcon(node.Type) : node.Title;
     dl.AddText(TEVector2(tl.x + 6 * zoom, tl.y + 4 * zoom),
-               TimeGUI::ColorConvertFloat4ToU32(TEVector4(240.0f/255.0f, 240.0f/255.0f, 240.0f/255.0f, 1.0f)),
+               TimeGUI::ColorConvertFloat4ToU32(TEVector4(240.0f / 255.0f, 240.0f / 255.0f, 240.0f / 255.0f, 1.0f)),
                headerText);
 
     // Preview text (dialogue / speaker)
@@ -219,45 +239,47 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
         TEString speakerLine = node.Speaker.empty() ? "" : node.Speaker + ":";
         if (!speakerLine.empty())
         {
-            dl.AddText(TEVector2(tl.x + 8 * zoom, contentY),
-                       TimeGUI::ColorConvertFloat4ToU32(TEVector4(120.0f/255.0f, 190.0f/255.0f, 255.0f/255.0f, 0.85f)),
-                       speakerLine);
+            dl.AddText(
+                TEVector2(tl.x + 8 * zoom, contentY),
+                TimeGUI::ColorConvertFloat4ToU32(TEVector4(120.0f / 255.0f, 190.0f / 255.0f, 255.0f / 255.0f, 0.85f)),
+                speakerLine);
             contentY += rowH * 0.8f;
         }
         TEString preview = node.Text.size() > 36 ? node.Text.substr(0, 36) + "…" : node.Text;
         dl.AddText(TEVector2(tl.x + 8 * zoom, contentY),
-                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(210.0f/255.0f, 210.0f/255.0f, 210.0f/255.0f, 0.8f)),
+                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(210.0f / 255.0f, 210.0f / 255.0f, 210.0f / 255.0f, 0.8f)),
                    preview);
     }
     else if (node.Type == NarrativeNodeType::Choice)
     {
         for (size_t c = 0; c < std::min((size_t)node.Choices.Size(), (size_t)3); ++c)
         {
-            TEString line = "• " + (node.Choices[c].Text.size() > 28 ?
-                               node.Choices[c].Text.substr(0, 28) + "…" : node.Choices[c].Text);
-            dl.AddText(TEVector2(tl.x + 8 * zoom, contentY + c * rowH * 0.85f),
-                       TimeGUI::ColorConvertFloat4ToU32(TEVector4(250.0f/255.0f, 215.0f/255.0f, 100.0f/255.0f, 0.8f)),
-                       line);
+            TEString line = "• " + (node.Choices[c].Text.size() > 28 ? node.Choices[c].Text.substr(0, 28) + "…"
+                                                                     : node.Choices[c].Text);
+            dl.AddText(
+                TEVector2(tl.x + 8 * zoom, contentY + c * rowH * 0.85f),
+                TimeGUI::ColorConvertFloat4ToU32(TEVector4(250.0f / 255.0f, 215.0f / 255.0f, 100.0f / 255.0f, 0.8f)),
+                line);
         }
     }
     else if (node.Type == NarrativeNodeType::Condition)
     {
         TEString cond = node.ConditionVar + " ? " + node.ConditionValue.AsString();
         dl.AddText(TEVector2(tl.x + 8 * zoom, contentY),
-                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f/255.0f, 160.0f/255.0f, 240.0f/255.0f, 0.8f)),
+                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f / 255.0f, 160.0f / 255.0f, 240.0f / 255.0f, 0.8f)),
                    cond);
     }
     else if (node.Type == NarrativeNodeType::Action)
     {
         TEString action = node.ActionVar + " → " + node.ActionValue.AsString();
         dl.AddText(TEVector2(tl.x + 8 * zoom, contentY),
-                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(255.0f/255.0f, 150.0f/255.0f, 130.0f/255.0f, 0.8f)),
+                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(255.0f / 255.0f, 150.0f / 255.0f, 130.0f / 255.0f, 0.8f)),
                    action);
     }
     else if (node.Type == NarrativeNodeType::Divert)
     {
         dl.AddText(TEVector2(tl.x + 8 * zoom, contentY),
-                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(100.0f/255.0f, 220.0f/255.0f, 220.0f/255.0f, 0.8f)),
+                   TimeGUI::ColorConvertFloat4ToU32(TEVector4(100.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 0.8f)),
                    node.DivertTargetKnot);
     }
 
@@ -269,11 +291,13 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
     {
         float cy = pinY + p * rowH + rowH * 0.5f;
         TEVector2 pinCenter(tl.x - k_PinOffsetX, cy);
-        dl.AddCircleFilled(pinCenter, k_PinRadius * zoom,
-                           TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f/255.0f, 160.0f/255.0f, 80.0f/255.0f, 1.0f)));
-        dl.AddCircle(pinCenter, k_PinRadius * zoom,
-                     TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f/255.0f, 220.0f/255.0f, 200.0f/255.0f, 1.0f)),
-                     12, 1.5f);
+        dl.AddCircleFilled(
+            pinCenter, k_PinRadius * zoom,
+            TimeGUI::ColorConvertFloat4ToU32(TEVector4(80.0f / 255.0f, 160.0f / 255.0f, 80.0f / 255.0f, 1.0f)));
+        dl.AddCircle(
+            pinCenter, k_PinRadius * zoom,
+            TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f / 255.0f, 220.0f / 255.0f, 200.0f / 255.0f, 1.0f)), 12,
+            1.5f);
     }
 
     // Output pins (right side)
@@ -281,20 +305,23 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
     {
         float cy = pinY + p * rowH + rowH * 0.5f;
         TEVector2 pinCenter(br.x + k_PinOffsetX, cy);
-        unsigned int pinCol = node.OutputPins[p].Type.GetKind() == GraphPinKind::Custom
-                           ? TimeGUI::ColorConvertFloat4ToU32(TEVector4(230.0f/255.0f, 180.0f/255.0f, 40.0f/255.0f, 1.0f))
-                           : TimeGUI::ColorConvertFloat4ToU32(TEVector4(70.0f/255.0f, 130.0f/255.0f, 210.0f/255.0f, 1.0f));
+        unsigned int pinCol =
+            node.OutputPins[p].Type.GetKind() == GraphPinKind::Custom
+                ? TimeGUI::ColorConvertFloat4ToU32(TEVector4(230.0f / 255.0f, 180.0f / 255.0f, 40.0f / 255.0f, 1.0f))
+                : TimeGUI::ColorConvertFloat4ToU32(TEVector4(70.0f / 255.0f, 130.0f / 255.0f, 210.0f / 255.0f, 1.0f));
         dl.AddCircleFilled(pinCenter, k_PinRadius * zoom, pinCol);
-        dl.AddCircle(pinCenter, k_PinRadius * zoom,
-                     TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f/255.0f, 200.0f/255.0f, 230.0f/255.0f, 1.0f)),
-                     12, 1.5f);
+        dl.AddCircle(
+            pinCenter, k_PinRadius * zoom,
+            TimeGUI::ColorConvertFloat4ToU32(TEVector4(200.0f / 255.0f, 200.0f / 255.0f, 230.0f / 255.0f, 1.0f)), 12,
+            1.5f);
 
         const TEString &pName = node.OutputPins[p].Name;
         if (!pName.empty() && node.OutputPins.Size() > 1)
         {
-            dl.AddText(TEVector2(br.x + k_PinOffsetX + 9 * zoom, cy - 7 * zoom),
-                       TimeGUI::ColorConvertFloat4ToU32(TEVector4(180.0f/255.0f, 180.0f/255.0f, 180.0f/255.0f, 0.8f)),
-                       pName);
+            dl.AddText(
+                TEVector2(br.x + k_PinOffsetX + 9 * zoom, cy - 7 * zoom),
+                TimeGUI::ColorConvertFloat4ToU32(TEVector4(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 0.8f)),
+                pName);
         }
     }
 
@@ -304,7 +331,7 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
     TimeGUI::InvisibleButton("##node", TEVector2(w, h));
 
     bool nodeHovered = TimeGUI::IsItemHovered();
-    bool nodeActive  = TimeGUI::IsItemActive();
+    bool nodeActive = TimeGUI::IsItemActive();
 
     // Selection
     if (TimeGUI::IsItemClicked(0))
@@ -344,14 +371,13 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
         float cy = tl.y + headerH + p * rowH + rowH * 0.5f;
         TEVector2 pinCenter(br.x + k_PinOffsetX, cy);
         TEVector2 mousePos = TimeGUI::GetMousePos();
-        float dist = sqrtf(powf(mousePos.x - pinCenter.x, 2) +
-                           powf(mousePos.y - pinCenter.y, 2));
+        float dist = sqrtf(powf(mousePos.x - pinCenter.x, 2) + powf(mousePos.y - pinCenter.y, 2));
         if (dist < k_PinRadius * zoom * 2.5f && TimeGUI::IsMouseClicked(0))
         {
-            m_PendingLink.bIsActive   = true;
+            m_PendingLink.bIsActive = true;
             m_PendingLink.SourceNodeID = node.ID;
-            m_PendingLink.SourcePinID  = node.OutputPins[p].ID;
-            m_PendingLink.DragStart    = pinCenter;
+            m_PendingLink.SourcePinID = node.OutputPins[p].ID;
+            m_PendingLink.DragStart = pinCenter;
         }
     }
 
@@ -363,13 +389,11 @@ void DialogueGraphCanvas::DrawNode(DialogueGraph &graph, DialogueGraphNode &node
             float cy = tl.y + headerH + p * rowH + rowH * 0.5f;
             TEVector2 pinCenter(tl.x - k_PinOffsetX, cy);
             TEVector2 mousePos = TimeGUI::GetMousePos();
-            float dist = sqrtf(powf(mousePos.x - pinCenter.x, 2) +
-                               powf(mousePos.y - pinCenter.y, 2));
+            float dist = sqrtf(powf(mousePos.x - pinCenter.x, 2) + powf(mousePos.y - pinCenter.y, 2));
             if (dist < k_PinRadius * zoom * 3.5f && node.ID != m_PendingLink.SourceNodeID)
             {
                 PushUndoState(graph);
-                graph.Connect(m_PendingLink.SourceNodeID, m_PendingLink.SourcePinID,
-                              node.ID, node.InputPins[p].ID);
+                graph.Connect(m_PendingLink.SourceNodeID, m_PendingLink.SourcePinID, node.ID, node.InputPins[p].ID);
                 m_bIsDirty = true;
                 break;
             }
@@ -394,14 +418,15 @@ void DialogueGraphCanvas::DrawContextMenu(DialogueGraph &graph, const TEVector2 
         TimeGUI::Text("Add Node");
         TimeGUI::Separator();
 
-        struct NodeEntry { const TEString& label; NarrativeNodeType type; };
+        struct NodeEntry
+        {
+            const TEString &label;
+            NarrativeNodeType type;
+        };
         NodeEntry entries[] = {
-            { "💬 Dialogue Line",     NarrativeNodeType::Dialogue  },
-            { "⚡ Branching Choices", NarrativeNodeType::Choice    },
-            { "❓ Condition Check",   NarrativeNodeType::Condition },
-            { "⚙  Action / Event",   NarrativeNodeType::Action    },
-            { "→  Divert / Jump",     NarrativeNodeType::Divert    },
-            { "■  Exit Conversation", NarrativeNodeType::Exit      },
+            {"💬 Dialogue Line", NarrativeNodeType::Dialogue},    {"⚡ Branching Choices", NarrativeNodeType::Choice},
+            {"❓ Condition Check", NarrativeNodeType::Condition}, {"⚙  Action / Event", NarrativeNodeType::Action},
+            {"→  Divert / Jump", NarrativeNodeType::Divert},      {"■  Exit Conversation", NarrativeNodeType::Exit},
         };
 
         for (const auto &e : entries)
@@ -430,16 +455,17 @@ void DialogueGraphCanvas::DrawContextMenu(DialogueGraph &graph, const TEVector2 
 // ── Main Draw ─────────────────────────────────────────────────────────────────
 void DialogueGraphCanvas::Draw(DialogueGraph &graph, uint64_t highlightNodeID)
 {
-    TEVector2 canvasPos  = TimeGUI::GetCursorScreenPos();
+    TEVector2 canvasPos = TimeGUI::GetCursorScreenPos();
     TEVector2 canvasSize = TimeGUI::GetContentRegionAvail();
-    if (canvasSize.x < 50.0f) canvasSize.x = 50.0f;
-    if (canvasSize.y < 50.0f) canvasSize.y = 50.0f;
+    if (canvasSize.x < 50.0f)
+        canvasSize.x = 50.0f;
+    if (canvasSize.y < 50.0f)
+        canvasSize.y = 50.0f;
 
     // Background
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
-    dl.AddRectFilled(canvasPos,
-                     TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
-                     TimeGUI::ColorConvertFloat4ToU32(TEVector4(28.0f/255.0f, 28.0f/255.0f, 33.0f/255.0f, 1.0f)));
+    dl.AddRectFilled(canvasPos, TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
+                     TimeGUI::ColorConvertFloat4ToU32(TEVector4(28.0f / 255.0f, 28.0f / 255.0f, 33.0f / 255.0f, 1.0f)));
 
     DrawGrid(canvasPos, canvasSize);
     DrawConnections(graph, canvasPos, m_Zoom);
@@ -522,10 +548,7 @@ void DialogueGraphCanvas::PushUndoState(const DialogueGraph &graph)
     m_UndoStack.push_back(std::move(state));
 }
 
-bool DialogueGraphCanvas::CanUndo() const
-{
-    return !m_UndoStack.empty();
-}
+bool DialogueGraphCanvas::CanUndo() const { return !m_UndoStack.empty(); }
 
 void DialogueGraphCanvas::Undo(DialogueGraph &graph)
 {
@@ -536,4 +559,3 @@ void DialogueGraphCanvas::Undo(DialogueGraph &graph)
     DialogueTreeSerializer::DeserializeFromNativeText(graph, state.SerializedGraph);
     m_bIsDirty = true;
 }
-

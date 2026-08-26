@@ -3,7 +3,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Utils/MathUtils.hpp"
 
-
 TE_CLASS()
 class TE_API PlayerCameraComponent : public TComponent
 {
@@ -53,8 +52,6 @@ T_REGISTER_PROPERTY(PlayerCameraComponent, bool, bFollowOwner, "Follow Owner")
 T_REGISTER_PROPERTY(PlayerCameraComponent, float, SmoothSpeed, "Smooth Speed")
 T_REGISTER_PROPERTY(PlayerCameraComponent, TEVector2, FollowOffset, "Follow Offset")
 T_REGISTER_PROPERTY(PlayerCameraComponent, float, OrthographicSize, "Orthographic Size")
-T_REGISTER_PRESET(PlayerCamera, "Player Dedicated Camera", "Camera", [](EntityID id, EntityManager *em) {
-    em->AddComponent<PlayerCameraComponent>(id);
-})
+T_REGISTER_PRESET(PlayerCamera, "Player Dedicated Camera", "Camera",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<PlayerCameraComponent>(id); })
 #endif
-

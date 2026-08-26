@@ -3,11 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-namespace Skeletal2D {
-
-SkeletalDataAsset::SkeletalDataAsset()
+namespace Skeletal2D
 {
-}
+
+SkeletalDataAsset::SkeletalDataAsset() {}
 
 TERef<Asset> SkeletalDataAsset::Clone() const
 {
@@ -19,7 +18,7 @@ TERef<Asset> SkeletalDataAsset::Clone() const
     return cloned;
 }
 
-void SkeletalDataAsset::AddAnimation(const TEString& name, TERef<AnimationClip> clip)
+void SkeletalDataAsset::AddAnimation(const TEString &name, TERef<AnimationClip> clip)
 {
     if (clip)
     {
@@ -28,7 +27,7 @@ void SkeletalDataAsset::AddAnimation(const TEString& name, TERef<AnimationClip> 
     }
 }
 
-TERef<AnimationClip> SkeletalDataAsset::GetAnimation(const TEString& name) const
+TERef<AnimationClip> SkeletalDataAsset::GetAnimation(const TEString &name) const
 {
     auto it = m_Animations.find(name.c_str());
     if (it != m_Animations.end())
@@ -36,7 +35,7 @@ TERef<AnimationClip> SkeletalDataAsset::GetAnimation(const TEString& name) const
     return nullptr;
 }
 
-bool SkeletalDataAsset::LoadFromFile(const TEString& path)
+bool SkeletalDataAsset::LoadFromFile(const TEString &path)
 {
     std::ifstream file(path.c_str());
     if (!file.is_open())
@@ -98,7 +97,7 @@ bool SkeletalDataAsset::LoadFromFile(const TEString& path)
     return true;
 }
 
-bool SkeletalDataAsset::SaveToFile(const TEString& path)
+bool SkeletalDataAsset::SaveToFile(const TEString &path)
 {
     std::ofstream file(path.c_str());
     if (!file.is_open())
@@ -113,10 +112,10 @@ bool SkeletalDataAsset::SaveToFile(const TEString& path)
     file << "  \"name\": \"" << m_Name.c_str() << "\",\n";
     file << "  \"bones\": [\n";
 
-    const auto& bones = m_Hierarchy.GetBones();
+    const auto &bones = m_Hierarchy.GetBones();
     for (size_t i = 0; i < bones.size(); ++i)
     {
-        const auto& b = bones[i];
+        const auto &b = bones[i];
         file << "    {\n";
         file << "      \"index\": " << b.Index << ",\n";
         file << "      \"name\": \"" << b.Name.c_str() << "\",\n";
@@ -130,7 +129,7 @@ bool SkeletalDataAsset::SaveToFile(const TEString& path)
     file << "  ],\n";
     file << "  \"animations\": [\n";
     size_t animCount = 0;
-    for (const auto& pair : m_Animations)
+    for (const auto &pair : m_Animations)
     {
         file << "    {\"name\": \"" << pair.first << "\", \"duration\": " << pair.second->Duration << "}"
              << (animCount + 1 < m_Animations.size() ? "," : "") << "\n";
@@ -144,7 +143,7 @@ bool SkeletalDataAsset::SaveToFile(const TEString& path)
     return true;
 }
 
-void SkeletalDataAsset::OnContentBrowserCreate(const TEString& path)
+void SkeletalDataAsset::OnContentBrowserCreate(const TEString &path)
 {
     m_Name = "NewSkeleton";
     // Create default skeleton rig

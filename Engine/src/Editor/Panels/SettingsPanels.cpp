@@ -1,10 +1,9 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/SettingsPanels.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/EditorSettingsRegistry.hpp"
 #include "Editor/ProjectSettingsRegistry.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
-
 
 // ── EditorSettingsPanel ────────────────────────────────────────────────────
 
@@ -57,7 +56,8 @@ void EditorSettingsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         if (m_SelectedIdx >= 0 && m_SelectedIdx < (int)settingsList.size() && settingsList[m_SelectedIdx])
         {
             auto &activeSetting = settingsList[m_SelectedIdx];
-            TimeGUI::TextColored(TEColor(0.2f, 0.7f, 1.0f, 1.0f), "%s > %s", activeSetting->GetCategory().c_str(), activeSetting->GetDisplayName().c_str());
+            TimeGUI::TextColored(TEColor(0.2f, 0.7f, 1.0f, 1.0f), "%s > %s", activeSetting->GetCategory().c_str(),
+                                 activeSetting->GetDisplayName().c_str());
             TimeGUI::Separator();
             TimeGUI::Spacing();
 
@@ -119,7 +119,8 @@ void ProjectSettingsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
         if (m_SelectedIdx >= 0 && m_SelectedIdx < (int)settingsList.size() && settingsList[m_SelectedIdx])
         {
             auto &activeSetting = settingsList[m_SelectedIdx];
-            TimeGUI::TextColored(TEColor(0.2f, 0.7f, 1.0f, 1.0f), "%s > %s", activeSetting->GetCategory().c_str(), activeSetting->GetDisplayName().c_str());
+            TimeGUI::TextColored(TEColor(0.2f, 0.7f, 1.0f, 1.0f), "%s > %s", activeSetting->GetCategory().c_str(),
+                                 activeSetting->GetDisplayName().c_str());
             TimeGUI::Separator();
             TimeGUI::Spacing();
 

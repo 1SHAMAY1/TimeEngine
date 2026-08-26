@@ -9,7 +9,6 @@
 #include <fstream>
 #include <mutex>
 
-
 struct TagValidationIssue
 {
     enum class Severity
@@ -178,10 +177,7 @@ public:
         return tags;
     }
 
-    const TEMap<GameplayTag, TEString> &GetRegisteredTagsMap() const
-    {
-        return m_RegisteredTags;
-    }
+    const TEMap<GameplayTag, TEString> &GetRegisteredTagsMap() const { return m_RegisteredTags; }
 
     size_t GetTagCount() const
     {
@@ -205,107 +201,113 @@ public:
 
         bool inTagsSection = false;
 
-        bool success = TEFileSystem::ForEachLine(filePath, [this, &inTagsSection](const TEString &rawLine) {
-            TEString line = rawLine.Trim();
-
-            // Ignore comments
-            if (line.IsEmpty() || line.StartsWith(";") || line.StartsWith("#"))
-                return true;
-
-            // Section headers
-            if (line.StartsWith("[") && line.EndsWith("]"))
+        bool success = TEFileSystem::ForEachLine(
+            filePath,
+            [this, &inTagsSection](const TEString &rawLine)
             {
-                TEString section = line.Mid(1, line.Length() - 2).ToLower();
-                inTagsSection = (section == "gameplaytags" || section == "tags" || section == "gameplaytag");
-                return true;
-            }
+                TEString line = rawLine.Trim();
 
-            // Parse key-value or raw tags
-            int64_t eqPos = line.Find("=");
-            if (eqPos != -1)
-            {
-                TEString key = line.Mid(0, eqPos).Trim();
-                TEString value = line.Mid(eqPos + 1).Trim();
-                TEString keyLower = key.ToLower();
+                // Ignore comments
+                if (line.IsEmpty() || line.StartsWith(";") || line.StartsWith("#"))
+                    return true;
 
-                if (keyLower == "tag" || keyLower == "gameplaytag")
+                // Section headers
+                if (line.StartsWith("[") && line.EndsWith("]"))
                 {
-                    if (value.StartsWith("(") && value.EndsWith(")"))
+                    TEString section = line.Mid(1, line.Length() - 2).ToLower();
+                    inTagsSection = (section == "gameplaytags" || section == "tags" || section == "gameplaytag");
+                    return true;
+                }
+
+                // Parse key-value or raw tags
+                int64_t eqPos = line.Find("=");
+                if (eqPos != -1)
+                {
+                    TEString key = line.Mid(0, eqPos).Trim();
+                    TEString value = line.Mid(eqPos + 1).Trim();
+                    TEString keyLower = key.ToLower();
+
+                    if (keyLower == "tag" || keyLower == "gameplaytag")
                     {
-                        TEString inner = value.Mid(1, value.Length() - 2);
-                        TEString tagStr, commentStr;
-
-                        int64_t tagKeyPos = inner.Find("Tag=\"");
-                        if (tagKeyPos != -1)
+                        if (value.StartsWith("(") && value.EndsWith(")"))
                         {
-                            int64_t tagStart = tagKeyPos + 5;
-                            int64_t tagEnd = inner.Find("\"", ESearchCase::CaseSensitive, ESearchDir::FromStart, static_cast<int>(tagStart));
-                            if (tagEnd != -1)
-                                tagStr = inner.Mid(tagStart, tagEnd - tagStart);
+                            TEString inner = value.Mid(1, value.Length() - 2);
+                            TEString tagStr, commentStr;
+
+                            int64_t tagKeyPos = inner.Find("Tag=\"");
+                            if (tagKeyPos != -1)
+                            {
+                                int64_t tagStart = tagKeyPos + 5;
+                                int64_t tagEnd = inner.Find("\"", ESearchCase::CaseSensitive, ESearchDir::FromStart,
+                                                            static_cast<int>(tagStart));
+                                if (tagEnd != -1)
+                                    tagStr = inner.Mid(tagStart, tagEnd - tagStart);
+                            }
+
+                            int64_t devKeyPos = inner.Find("DevComment=\"");
+                            if (devKeyPos != -1)
+                            {
+                                int64_t devStart = devKeyPos + 12;
+                                int64_t devEnd = inner.Find("\"", ESearchCase::CaseSensitive, ESearchDir::FromStart,
+                                                            static_cast<int>(devStart));
+                                if (devEnd != -1)
+                                    commentStr = inner.Mid(devStart, devEnd - devStart);
+                            }
+
+                            if (!tagStr.IsEmpty())
+                            {
+                                RegisterTag(tagStr, commentStr);
+                            }
                         }
-
-                        int64_t devKeyPos = inner.Find("DevComment=\"");
-                        if (devKeyPos != -1)
+                        else
                         {
-                            int64_t devStart = devKeyPos + 12;
-                            int64_t devEnd = inner.Find("\"", ESearchCase::CaseSensitive, ESearchDir::FromStart, static_cast<int>(devStart));
-                            if (devEnd != -1)
-                                commentStr = inner.Mid(devStart, devEnd - devStart);
+                            int64_t commaPos = value.Find(",");
+                            if (commaPos != -1)
+                            {
+                                TEString t = value.Mid(0, commaPos).Trim();
+                                TEString c = value.Mid(commaPos + 1).Trim();
+                                RegisterTag(t, c);
+                            }
+                            else
+                            {
+                                RegisterTag(value);
+                            }
                         }
-
-                        if (!tagStr.IsEmpty())
+                    }
+                    else if (keyLower == "taglist")
+                    {
+                        TEArray<TEString> items = value.Split(',');
+                        for (const auto &item : items)
                         {
-                            RegisterTag(tagStr, commentStr);
+                            TEString trimmedItem = item.Trim();
+                            if (!trimmedItem.IsEmpty())
+                            {
+                                RegisterTag(trimmedItem);
+                            }
                         }
                     }
                     else
                     {
-                        int64_t commaPos = value.Find(",");
-                        if (commaPos != -1)
-                        {
-                            TEString t = value.Mid(0, commaPos).Trim();
-                            TEString c = value.Mid(commaPos + 1).Trim();
-                            RegisterTag(t, c);
-                        }
-                        else
-                        {
-                            RegisterTag(value);
-                        }
+                        RegisterTag(key, value);
                     }
                 }
-                else if (keyLower == "taglist")
+                else
                 {
-                    TEArray<TEString> items = value.Split(',');
-                    for (const auto &item : items)
+                    int64_t comma = line.Find(",");
+                    if (comma != -1)
                     {
-                        TEString trimmedItem = item.Trim();
-                        if (!trimmedItem.IsEmpty())
-                        {
-                            RegisterTag(trimmedItem);
-                        }
+                        RegisterTag(line.Mid(0, comma).Trim(), line.Mid(comma + 1).Trim());
+                    }
+                    else
+                    {
+                        RegisterTag(line);
                     }
                 }
-                else
-                {
-                    RegisterTag(key, value);
-                }
-            }
-            else
-            {
-                int64_t comma = line.Find(",");
-                if (comma != -1)
-                {
-                    RegisterTag(line.Mid(0, comma).Trim(), line.Mid(comma + 1).Trim());
-                }
-                else
-                {
-                    RegisterTag(line);
-                }
-            }
-            return true;
-        });
+                return true;
+            });
 
-        TE_CORE_INFO("[GameplayTagManager] Successfully loaded tags from INI file: '{0}' (Total registered: {1})", filePath, m_RegisteredTags.Num());
+        TE_CORE_INFO("[GameplayTagManager] Successfully loaded tags from INI file: '{0}' (Total registered: {1})",
+                     filePath, m_RegisteredTags.Num());
         return success;
     }
 
@@ -384,8 +386,7 @@ public:
             {
                 if (!std::isalnum(static_cast<unsigned char>(c)) && c != '.' && c != '_')
                 {
-                    issues.Add({tag,
-                                TEString("Tag contains invalid character '") + c + "': '" + tagStr + "'",
+                    issues.Add({tag, TEString("Tag contains invalid character '") + c + "': '" + tagStr + "'",
                                 TagValidationIssue::Severity::Warning});
                     break;
                 }
@@ -397,9 +398,7 @@ public:
             {
                 if (m_RegisteredTags.find(parent) == m_RegisteredTags.end())
                 {
-                    issues.Add({tag,
-                                "Missing ancestor parent tag '" + parent.ToString() + "' for tag '" + tagStr +
-                                    "'",
+                    issues.Add({tag, "Missing ancestor parent tag '" + parent.ToString() + "' for tag '" + tagStr + "'",
                                 TagValidationIssue::Severity::Warning});
                 }
                 parent = parent.GetParentTag();
@@ -512,11 +511,9 @@ private:
     TESet<GameplayTag> m_NativeTags;
 };
 
-
 // ===== Native Gameplay Tag Macros =====
 
 #define TE_DECLARE_GAMEPLAY_TAG(TagName) extern const GameplayTag TagName;
 
 #define TE_DEFINE_GAMEPLAY_TAG_COMMENT(TagName, TagString, Comment)                                                    \
     const GameplayTag TagName = GameplayTagManager::Get().RegisterNativeTag(TagString, Comment);
-

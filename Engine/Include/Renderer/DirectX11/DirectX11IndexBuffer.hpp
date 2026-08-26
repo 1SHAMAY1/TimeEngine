@@ -3,7 +3,6 @@
 
 struct ID3D11Buffer;
 
-
 class DirectX11IndexBuffer : public IndexBuffer
 {
 public:
@@ -19,4 +18,3 @@ private:
     ID3D11Buffer *m_Buffer = nullptr;
     uint32_t m_Count = 0;
 };
-

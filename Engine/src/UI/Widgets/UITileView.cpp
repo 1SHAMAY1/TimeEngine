@@ -1,15 +1,11 @@
-#include "Core/PreRequisites.h"
 #include "UI/Widgets/UITileView.hpp"
 #include "Core/KeyCodes.hpp"
+#include "Core/PreRequisites.h"
 #include "Input/Input.hpp"
 #include <algorithm>
 #include <cmath>
 
-
-UITileView::UITileView(const TEVector2 &tileSize, const TEString &id)
-    : UIWidget(id), m_TileSize(tileSize)
-{
-}
+UITileView::UITileView(const TEVector2 &tileSize, const TEString &id) : UIWidget(id), m_TileSize(tileSize) {}
 
 void UITileView::SelectRange(const TEString &fromID, const TEString &toID)
 {
@@ -153,10 +149,12 @@ void UITileView::DrawSelf()
             TEVector2 badgeSize = TimeGUI::CalcTextSize(item.BadgeText);
             float badgeWidth = badgeSize.x + 10.0f;
             float badgeHeight = badgeSize.y + 3.0f;
-            TEVector2 badgeMin = TEVector2(itemMin.x + (itemSize.x - badgeWidth) * 0.5f, itemMax.y - badgeHeight - 6.0f);
+            TEVector2 badgeMin =
+                TEVector2(itemMin.x + (itemSize.x - badgeWidth) * 0.5f, itemMax.y - badgeHeight - 6.0f);
             TEVector2 badgeMax = TEVector2(badgeMin.x + badgeWidth, badgeMin.y + badgeHeight);
 
-            unsigned int col = TimeGUI::GetColorU32(TEColor(item.BadgeColor.x, item.BadgeColor.y, item.BadgeColor.z, item.BadgeColor.w));
+            unsigned int col = TimeGUI::GetColorU32(
+                TEColor(item.BadgeColor.x, item.BadgeColor.y, item.BadgeColor.z, item.BadgeColor.w));
             dl.AddRectFilled(badgeMin, badgeMax, col, 3.0f);
             dl.AddText(TEVector2(badgeMin.x + 5.0f, badgeMin.y + 1.5f), 0xFFFFFFFF, item.BadgeText);
         }
@@ -175,4 +173,3 @@ void UITileView::DrawSelf()
         }
     }
 }
-

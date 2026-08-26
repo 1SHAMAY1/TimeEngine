@@ -1,12 +1,12 @@
-#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
+#include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Window/IWindow.hpp"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <GLFW/glfw3.h>
-
 
 namespace TimeGUI
 {
@@ -709,10 +709,13 @@ void SyncToImGui()
     }
 }
 
+static ImGuiContext *s_ImGuiContext = nullptr;
+
 bool Init(void *nativeWindow)
 {
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    s_ImGuiContext = ImGui::CreateContext();
+    ImGui::SetCurrentContext(s_ImGuiContext);
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -737,34 +740,97 @@ bool Init(void *nativeWindow)
     if (!ImGui_ImplGlfw_InitForOpenGL(window, true))
         return false;
 
-    if (!ImGui_ImplOpenGL3_Init("#version 410"))
-        return false;
-
     return true;
+}
+
+static bool s_OpenGLBackendInitialized = false;
+
+bool InitOpenGLBackend()
+{
+    if (s_OpenGLBackendInitialized)
+        return true;
+    if (!ImGui_ImplOpenGL3_Init(nullptr))
+        return false;
+    s_OpenGLBackendInitialized = ImGui_ImplOpenGL3_CreateDeviceObjects();
+    return s_OpenGLBackendInitialized;
+}
+
+void ShutdownOpenGLBackend()
+{
+    if (s_OpenGLBackendInitialized)
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        s_OpenGLBackendInitialized = false;
+    }
+}
+
+void BindWidgetThreadContext()
+{
+    if (s_ImGuiContext)
+        ImGui::SetCurrentContext(s_ImGuiContext);
 }
 
 void Shutdown()
 {
-    ImGui_ImplOpenGL3_Shutdown();
+    ShutdownOpenGLBackend();
     ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    if (s_ImGuiContext)
+    {
+        ImGui::DestroyContext(s_ImGuiContext);
+        s_ImGuiContext = nullptr;
+    }
 }
 
-void BeginFrame()
+void PrepareGLFWFrame() { ImGui_ImplGlfw_NewFrame(); }
+
+void BeginFrame(uint32_t width, uint32_t height)
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
+    BindWidgetThreadContext();
+
+    ImGuiIO &io = ImGui::GetIO();
+    if (width > 0 && height > 0)
+    {
+        io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+    }
+
     ImGui::NewFrame();
 }
 
-void EndFrame(uint32_t width, uint32_t height)
+void *EndFrame(uint32_t width, uint32_t height)
 {
     ImGuiIO &io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+    if (width > 0 && height > 0)
+    {
+        io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+    }
 
     ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    return static_cast<void *>(ImGui::GetDrawData());
+}
 
+void RenderDrawData(void *drawData)
+{
+    if (!drawData)
+        return;
+
+    BindWidgetThreadContext();
+
+    auto *data = static_cast<ImDrawData *>(drawData);
+
+    static bool s_LoggedFirstDraw = false;
+    if (!s_LoggedFirstDraw && data->CmdListsCount > 0)
+    {
+        TE_CORE_INFO(
+            "[TimeGUI] First RenderDrawData | CmdLists: %d | Vertices: %d | Indices: %d | DisplaySize: (%.1f, %.1f)",
+            data->CmdListsCount, data->TotalVtxCount, data->TotalIdxCount, data->DisplaySize.x, data->DisplaySize.y);
+        s_LoggedFirstDraw = true;
+    }
+
+    ImGui_ImplOpenGL3_RenderDrawData(data);
+
+    ImGuiIO &io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         void *backup_current_context = IWindow::GetCurrentContext();
@@ -916,10 +982,7 @@ bool BeginChild(const TEString &strId, const TEVector2 &size, bool border, TimeG
 
 void EndChild() { ImGui::EndChild(); }
 
-bool IsPopupOpen(const TEString &strId)
-{
-    return ImGui::IsPopupOpen(strId.c_str());
-}
+bool IsPopupOpen(const TEString &strId) { return ImGui::IsPopupOpen(strId.c_str()); }
 
 bool Button(const TEString &label, float width, float height)
 {
@@ -927,7 +990,10 @@ bool Button(const TEString &label, float width, float height)
 }
 
 bool Button(const TEString &label, const TEVector2 &size) { return ImGui::Button(label.c_str(), size); }
-bool InvisibleButton(const TEString &strId, const TEVector2 &size, int flags) { return ImGui::InvisibleButton(strId.c_str(), size, flags); }
+bool InvisibleButton(const TEString &strId, const TEVector2 &size, int flags)
+{
+    return ImGui::InvisibleButton(strId.c_str(), size, flags);
+}
 
 void TextUnformatted(const TEString &text) { ImGui::TextUnformatted(text.c_str()); }
 
@@ -957,20 +1023,17 @@ bool DragFloat(const TEString &label, float *value, float speed, float min, floa
     return ImGui::DragFloat(label.c_str(), value, speed, min, max, format.c_str(), flags);
 }
 
-bool DragFloat2(const TEString &label, float *v, float speed, float min, float max, const TEString &format,
-                int flags)
+bool DragFloat2(const TEString &label, float *v, float speed, float min, float max, const TEString &format, int flags)
 {
     return ImGui::DragFloat2(label.c_str(), v, speed, min, max, format.c_str(), flags);
 }
 
-bool DragFloat3(const TEString &label, float *v, float speed, float min, float max, const TEString &format,
-                int flags)
+bool DragFloat3(const TEString &label, float *v, float speed, float min, float max, const TEString &format, int flags)
 {
     return ImGui::DragFloat3(label.c_str(), v, speed, min, max, format.c_str(), flags);
 }
 
-bool DragFloat4(const TEString &label, float *v, float speed, float min, float max, const TEString &format,
-                int flags)
+bool DragFloat4(const TEString &label, float *v, float speed, float min, float max, const TEString &format, int flags)
 {
     return ImGui::DragFloat4(label.c_str(), v, speed, min, max, format.c_str(), flags);
 }
@@ -1047,8 +1110,7 @@ bool InputText(const TEString &label, TEString &value, TimeGUIInputTextFlags fla
         value.Reserve(256);
     }
     flags |= TimeGUIInputTextFlags_CallbackResize;
-    bool res = ImGui::InputText(label.c_str(), value.Data(), value.Capacity(),
-                                TranslateInputTextFlags(flags),
+    bool res = ImGui::InputText(label.c_str(), value.Data(), value.Capacity(), TranslateInputTextFlags(flags),
                                 TimeGUI_StringResizeCallback, (void *)&value);
     value.SyncFromBuffer();
     DrawInputTextPulseStrip();
@@ -1081,8 +1143,7 @@ bool InputTextWithHint(const TEString &label, const TEString &hint, TEString &va
     }
     flags |= TimeGUIInputTextFlags_CallbackResize;
     bool res = ImGui::InputTextWithHint(label.c_str(), hint.c_str(), value.Data(), value.Capacity(),
-                                        TranslateInputTextFlags(flags),
-                                        TimeGUI_StringResizeCallback, (void *)&value);
+                                        TranslateInputTextFlags(flags), TimeGUI_StringResizeCallback, (void *)&value);
     value.SyncFromBuffer();
     DrawInputTextPulseStrip();
     if (ImGui::IsItemDeactivatedAfterEdit())
@@ -1106,8 +1167,7 @@ bool InputTextMultiline(const TEString &label, TEString &value, const TEVector2 
         value.Reserve(256);
     }
     flags |= TimeGUIInputTextFlags_CallbackResize;
-    bool res = ImGui::InputTextMultiline(label.c_str(), value.Data(), value.Capacity(),
-                                         ImVec2(size.x, size.y),
+    bool res = ImGui::InputTextMultiline(label.c_str(), value.Data(), value.Capacity(), ImVec2(size.x, size.y),
                                          TranslateInputTextFlags((TimeGUIInputTextFlags)flags),
                                          TimeGUI_StringResizeCallback, (void *)&value);
     value.SyncFromBuffer();
@@ -1249,7 +1309,10 @@ void SetNextWindowPos(const TEVector2 &pos, TimeGUICond cond, const TEVector2 &p
 void SetNextWindowSize(const TEVector2 &size, TimeGUICond cond) { ImGui::SetNextWindowSize(size, TranslateCond(cond)); }
 
 void SetNextWindowContentSize(const TEVector2 &size) { ImGui::SetNextWindowContentSize(size); }
-void SetNextWindowDockID(unsigned int dockId, TimeGUICond cond) { ImGui::SetNextWindowDockID(dockId, TranslateCond(cond)); }
+void SetNextWindowDockID(unsigned int dockId, TimeGUICond cond)
+{
+    ImGui::SetNextWindowDockID(dockId, TranslateCond(cond));
+}
 
 void SetNextItemWidth(float itemWidth) { ImGui::SetNextItemWidth(itemWidth); }
 
@@ -1325,10 +1388,7 @@ TEVector2 GetMouseDragDelta(int button, float lock_threshold)
     return TEVector2(d.x, d.y);
 }
 
-void ResetMouseDragDelta(int button)
-{
-    ImGui::ResetMouseDragDelta(button);
-}
+void ResetMouseDragDelta(int button) { ImGui::ResetMouseDragDelta(button); }
 
 double GetTime() { return ImGui::GetTime(); }
 
@@ -1717,10 +1777,7 @@ bool IsKeyPressed(int key) { return ImGui::IsKeyPressed((ImGuiKey)key); }
 
 bool RadioButton(const TEString &label, bool active) { return ImGui::RadioButton(label.c_str(), active); }
 
-bool RadioButton(const TEString &label, int *v, int v_button)
-{
-    return ImGui::RadioButton(label.c_str(), v, v_button);
-}
+bool RadioButton(const TEString &label, int *v, int v_button) { return ImGui::RadioButton(label.c_str(), v, v_button); }
 
 bool SliderInt(const TEString &label, int *v, int v_min, int v_max, const TEString &format, int flags)
 {
@@ -1737,10 +1794,7 @@ unsigned int ColorConvertFloat4ToU32(const TEVector4 &in) { return ImGui::ColorC
 
 unsigned int GetColorU32(TimeGUICol idx, float alpha_mul) { return ImGui::GetColorU32((ImGuiCol)idx, alpha_mul); }
 
-bool ColorEdit4(const TEString &label, float *col, int flags)
-{
-    return ImGui::ColorEdit4(label.c_str(), col, flags);
-}
+bool ColorEdit4(const TEString &label, float *col, int flags) { return ImGui::ColorEdit4(label.c_str(), col, flags); }
 
 bool ColorButton(const TEString &desc_id, const TEVector4 &col, int flags, const TEVector2 &size)
 {
@@ -1919,21 +1973,14 @@ TEVector2 GetItemRectSize()
     return TEVector2(p.x, p.y);
 }
 
-TEVector2 GetItemRectMax() 
-{ 
+TEVector2 GetItemRectMax()
+{
     ImVec2 p = ImGui::GetItemRectMax();
     return TEVector2(p.x, p.y);
 }
 
-void SaveIniSettingsToDisk(const char *ini_filename)
-{
-    ImGui::SaveIniSettingsToDisk(ini_filename);
-}
+void SaveIniSettingsToDisk(const char *ini_filename) { ImGui::SaveIniSettingsToDisk(ini_filename); }
 
-void LoadIniSettingsFromDisk(const char *ini_filename)
-{
-    ImGui::LoadIniSettingsFromDisk(ini_filename);
-}
+void LoadIniSettingsFromDisk(const char *ini_filename) { ImGui::LoadIniSettingsFromDisk(ini_filename); }
 
-}
-
+} // namespace TimeGUI
