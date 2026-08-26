@@ -19,7 +19,7 @@ public:
     void Recompile();
 
     virtual bool LoadFromFile(const TEString &path) override;
-    virtual bool SaveToFile(const TEString &path);
+    virtual bool SaveToFile(const TEString &path) override;
     virtual TERef<Asset> Clone() const override { return CreateRef<TScriptAsset>(); }
 
     virtual AssetHandle GetHandle() const override { return m_Handle; }

@@ -98,10 +98,10 @@ public:
     void PopulateOverlaysAndPanels();
 
     // Queries
-    TEArray<struct EditorToolbarItem> GetToolbarItemsByAlignment(enum class EditorToolbarAlignment align) const;
-    TEArray<struct ViewportOverlayItem>
-    GetViewportItemsByCornerAndAlignment(enum class ViewportOverlayCorner corner,
-                                         enum class ViewportOverlayAlignment align) const;
+    TEArray<EditorToolbarItem> GetToolbarItemsByAlignment(EditorToolbarAlignment align) const;
+    TEArray<ViewportOverlayItem>
+    GetViewportItemsByCornerAndAlignment(ViewportOverlayCorner corner,
+                                         ViewportOverlayAlignment align) const;
     TEArray<TERef<class IEditorPanel>> GetRegisteredPanels() const;
     TERef<class IEditorPanel> GetPanelByID(const TEString &id) const;
 
