@@ -86,7 +86,7 @@ private:
     int m_SheetRows = 1;
     int m_SheetPadding = 0;
     int m_SheetSpacing = 0;
-    bool m_ExportMetadata = true;
+    bool m_ExportMetadata = false;
     SpriteMetadataFormat m_MetadataFormat = SpriteMetadataFormat::Both;
 
     // Spritesheet Live Playback & Preview State
