@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/CanvasLayerComponent.hpp"
+#include "Core/PreRequisites.h"
 
 void CanvasLayerComponent::OnAttach() {}
 

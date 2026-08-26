@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Camera/PerspectiveCamera.hpp"
+#include "Core/PreRequisites.h"
 
 PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float nearClip, float farClip)
 {

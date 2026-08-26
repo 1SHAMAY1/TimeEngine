@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/TEStringTable.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>

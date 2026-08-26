@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Project/ProjectSerializer.hpp"
 
 TERef<Project> Project::New()

@@ -1,5 +1,5 @@
-﻿#include "Core/PreRequisites.h"
-#include "UI/Widgets/UIToggleSwitch.hpp"
+﻿#include "UI/Widgets/UIToggleSwitch.hpp"
+#include "Core/PreRequisites.h"
 
 UIToggleSwitch::UIToggleSwitch(bool initialState, const TEVector2 &size, const TEString &id)
     : UIWidget(id), m_IsChecked(initialState)

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scripting/TScriptValue.hpp"
+#include "Core/PreRequisites.h"
 
 bool TScriptValue::IsTruthy() const
 {

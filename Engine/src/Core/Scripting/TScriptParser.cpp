@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scripting/TScriptParser.hpp"
+#include "Core/PreRequisites.h"
 #include <cmath>
 
 TScriptParser::TScriptParser(TEArray<TScriptToken> tokens) : m_Tokens(std::move(tokens)) {}

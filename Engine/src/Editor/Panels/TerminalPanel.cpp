@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/TerminalPanel.hpp"
 #include "Core/Plugin/PluginManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Scene/Scene.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"

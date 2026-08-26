@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESIndexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
 
 OpenGLESIndexBuffer::OpenGLESIndexBuffer(uint32_t *indices, uint32_t count) : m_Count(count)

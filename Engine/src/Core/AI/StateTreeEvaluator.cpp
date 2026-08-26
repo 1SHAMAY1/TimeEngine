@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeEvaluator.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 
 StateTreeEvaluator::~StateTreeEvaluator() { Reset(); }
 

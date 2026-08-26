@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLIndexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t *indices, uint32_t Count) : m_Count(Count)

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorMenubarRegistry.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 

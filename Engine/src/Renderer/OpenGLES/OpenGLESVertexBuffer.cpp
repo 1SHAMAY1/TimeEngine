@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESVertexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include <glad/glad.h>
 
 OpenGLESVertexBuffer::OpenGLESVertexBuffer(float *vertices, uint32_t size)

@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scripting/TScriptAsset.hpp"
 #include "Core/Asset/AssetManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 
 TE_REGISTER_ASSET(TScriptAsset)

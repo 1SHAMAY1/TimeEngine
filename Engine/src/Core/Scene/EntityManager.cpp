@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scene/EntityManager.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/TComponent.hpp"
 
 Entity TComponent::GetOwnerEntity() const { return Entity((EntityID)Owner, Manager); }

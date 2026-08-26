@@ -1,5 +1,5 @@
-﻿#include "Core/PreRequisites.h"
-#include "Renderer/Vulkan/VulkanVertexArray.hpp"
+﻿#include "Renderer/Vulkan/VulkanVertexArray.hpp"
+#include "Core/PreRequisites.h"
 #include <iostream>
 
 VulkanVertexArray::VulkanVertexArray() {}

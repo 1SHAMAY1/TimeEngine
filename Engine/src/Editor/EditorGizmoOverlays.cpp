@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/EditorGizmoOverlays.hpp"
+#include "Core/PreRequisites.h"
 #include "Layers/EditorLayer.hpp"
 
 TE_REGISTER_VIEWPORT_OVERLAY(SelectGizmoOverlay);

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/TextureAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 
 #include "Core/Log.h"
 #include "Editor/AssetEditorRegistry.hpp"

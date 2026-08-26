@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/AudioAssetEditor.hpp"
 #include "Core/Audio/AudioEngine.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 

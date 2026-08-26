@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/StringTableAssetEditor.hpp"
 #include "Core/Asset/TEStringTable.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"

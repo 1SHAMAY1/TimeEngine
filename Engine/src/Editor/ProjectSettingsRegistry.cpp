@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/ProjectSettingsRegistry.hpp"
+#include "Core/PreRequisites.h"
 
 ProjectSettingsRegistry &ProjectSettingsRegistry::Instance()
 {

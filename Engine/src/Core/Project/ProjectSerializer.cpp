@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Project/ProjectSerializer.hpp"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 

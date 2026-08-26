@@ -1,6 +1,6 @@
-﻿#include "Core/PreRequisites.h"
-#include "Renderer/SpriteSheetSerializer.hpp"
+﻿#include "Renderer/SpriteSheetSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>

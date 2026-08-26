@@ -1,7 +1,7 @@
-#include "Core/PreRequisites.h"
 #include "Core/Asset/StateTreeAsset.hpp"
 #include "Core/Graph/GraphSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 
 StateTreeAsset::StateTreeAsset() { m_Graph = CreateRef<StateTreeGraph>(m_Name); }
 

@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Scripting/TScriptAsset.hpp"
 #include "Core/Scripting/TScriptInterpreter.hpp"
 #include "Core/Scripting/TScriptLexer.hpp"

@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Layers/ProfilingLayer.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Renderer/RendererContext.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>

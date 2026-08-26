@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/Shader.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLShader.hpp"

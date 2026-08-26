@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Log.h"
+#include "Core/PreRequisites.h"
 #include "Core/Settings/GeneralEngineSettings.hpp"
 #include <chrono>
 #include <cstdio>

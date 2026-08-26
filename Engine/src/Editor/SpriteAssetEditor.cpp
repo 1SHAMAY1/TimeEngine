@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Editor/SpriteAssetEditor.hpp"
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Renderer/Sprite.hpp"
 #include "Renderer/SpriteSerializer.hpp"

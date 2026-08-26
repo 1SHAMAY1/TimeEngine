@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Editor/Panels/ContentBrowserPanel.hpp"
 #include "Core/Asset/AssetManager.hpp"
+#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/AssetEditorRegistry.hpp"

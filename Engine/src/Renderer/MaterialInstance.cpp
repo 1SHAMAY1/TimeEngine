@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/MaterialInstance.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/ShaderLibrary.hpp"
 
 MaterialInstance::MaterialInstance(const TERef<Material> &baseMaterial) : m_BaseMaterial(baseMaterial) {}

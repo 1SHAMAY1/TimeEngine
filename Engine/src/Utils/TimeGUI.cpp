@@ -1,6 +1,6 @@
-﻿#include "Core/PreRequisites.h"
-#include "Utils/TimeGUI.hpp"
+﻿#include "Utils/TimeGUI.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include "Window/IWindow.hpp"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"

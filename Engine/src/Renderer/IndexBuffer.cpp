@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Renderer/IndexBuffer.hpp"
+#include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
 #ifdef TE_SUPPORT_OPENGL
 #include "Renderer/OpenGL/OpenGLIndexBuffer.hpp"

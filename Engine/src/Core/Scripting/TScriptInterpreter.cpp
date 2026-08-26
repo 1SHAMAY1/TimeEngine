@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
 #include "Core/Scripting/TScriptInterpreter.hpp"
 #include "Core/Log.h"
+#include "Core/PreRequisites.h"
 #include <algorithm>
 #include <cmath>
 
