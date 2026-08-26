@@ -93,6 +93,30 @@ if not "%VS_INSTALL_DIR%"=="" (
     )
 )
 
+:: Allow specifying any PlatformToolset via command-line argument or environment variable
+if not "%~1"=="" (
+    set "PlatformToolset=%~1"
+)
+
+:: Auto-detect platform toolset dynamically from VCToolsVersion or MSBuild directory
+if "%PlatformToolset%"=="" if not "%VCToolsVersion%"=="" (
+    for /f "tokens=1,2 delims=." %%a in ("%VCToolsVersion%") do (
+        set "_minor=%%b"
+        setlocal enabledelayedexpansion
+        set "PlatformToolset=v%%a!_minor:~0,1!"
+        for /f "delims=" %%T in ("!PlatformToolset!") do (
+            endlocal
+            set "PlatformToolset=%%T"
+        )
+    )
+)
+if "%PlatformToolset%"=="" if not "%VS_INSTALL_DIR%"=="" (
+    for /d %%P in ("%VS_INSTALL_DIR%\MSBuild\Microsoft\VC\*\Platforms\x64\PlatformToolsets\v*") do (
+        set "PlatformToolset=%%~nxP"
+    )
+)
+if not "%PlatformToolset%"=="" echo [INFO] Detected PlatformToolset: %PlatformToolset%
+
 :: ========== Logger ==========
 echo [=== CMake configure/build: Logger ===]
 cd "%ROOT_DIR%\Vendor\Customizable_Logger"

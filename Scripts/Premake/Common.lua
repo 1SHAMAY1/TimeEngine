@@ -3,6 +3,11 @@
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 filter { "system:windows", "action:vs*" }
+    local customToolset = os.getenv("PlatformToolset")
+    if customToolset and customToolset ~= "" then
+        toolset(customToolset)
+    end
+
     local numProcs = tonumber(os.getenv("NUMBER_OF_PROCESSORS")) or 4
     local safeProcs = math.max(1, numProcs - 2)
     buildoptions { "/MP" .. safeProcs, "/FC", "/we26409", "/we26400", "/we26401" }
