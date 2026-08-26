@@ -10,12 +10,22 @@ filter { "system:windows", "action:vs*" }
 
     local numProcs = tonumber(os.getenv("NUMBER_OF_PROCESSORS")) or 4
     local safeProcs = math.max(1, numProcs - 2)
-    buildoptions { "/MP" .. safeProcs, "/FC", "/we26409", "/we26400", "/we26401" }
-    disablewarnings { "4251", "4275" }
+    if customToolset == "ClangCL" then
+        buildoptions { "/FC", "-gcodeview", "-gcodeview-ghash", "-Wno-unused-command-line-argument" }
+        disablewarnings { "4251", "4275" }
+    else
+        buildoptions { "/MP" .. safeProcs, "/FC", "/we26409", "/we26400", "/we26401" }
+        disablewarnings { "4251", "4275" }
+    end
 filter {}
 
 filter { "system:windows", "action:vs*", "configurations:Debug" }
-    linkoptions { "/DEBUG:FULL" }
+    local customToolset = os.getenv("PlatformToolset")
+    if customToolset == "ClangCL" then
+        linkoptions { "/DEBUG:GHASH" }
+    else
+        linkoptions { "/DEBUG:FULL" }
+    end
 filter {}
 
 filter { "action:gmake*" }
