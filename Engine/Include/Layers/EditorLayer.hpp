@@ -99,9 +99,8 @@ public:
 
     // Queries
     TEArray<EditorToolbarItem> GetToolbarItemsByAlignment(EditorToolbarAlignment align) const;
-    TEArray<ViewportOverlayItem>
-    GetViewportItemsByCornerAndAlignment(ViewportOverlayCorner corner,
-                                         ViewportOverlayAlignment align) const;
+    TEArray<ViewportOverlayItem> GetViewportItemsByCornerAndAlignment(ViewportOverlayCorner corner,
+                                                                      ViewportOverlayAlignment align) const;
     TEArray<TERef<class IEditorPanel>> GetRegisteredPanels() const;
     TERef<class IEditorPanel> GetPanelByID(const TEString &id) const;
 
