@@ -1,5 +1,5 @@
-#include "Core/PreRequisites.h"
 #include "Core/AI/StateTreeGraph.hpp"
+#include "Core/PreRequisites.h"
 
 // StateNode
 StateNode::StateNode()
@@ -8,7 +8,7 @@ StateNode::StateNode()
     Category = "AI";
     NodeType = "StateNode";
     Size = {200.0f, 120.0f};
-    HeaderColor = {0.2f, 0.45f, 0.3f, 1.0f};
+    HeaderColor = TEColor(0.2f, 0.45f, 0.3f, 1.0f);
 
     // Transition Entry Pin (Input)
     InputPins.Add(GraphPin(0, ID, "In", GraphPinType::Flow(), PinDirection::Input));
@@ -51,7 +51,7 @@ StateRootNode::StateRootNode()
     Category = "AI";
     NodeType = "StateRootNode";
     Size = {140.0f, 60.0f};
-    HeaderColor = {0.5f, 0.2f, 0.2f, 1.0f};
+    HeaderColor = TEColor(0.5f, 0.2f, 0.2f, 1.0f);
 
     // Initial State Out Pin
     OutputPins.Add(GraphPin(0, ID, "Start", GraphPinType::Flow(), PinDirection::Output));
@@ -74,10 +74,7 @@ TERef<GraphNode> StateRootNode::Clone() const
 }
 
 // StateTreeGraph
-StateTreeGraph::StateTreeGraph(const TEString &name)
-    : Graph(name)
-{
-}
+StateTreeGraph::StateTreeGraph(const TEString &name) : Graph(name) {}
 
 TERef<StateNode> StateTreeGraph::GetInitialState() const
 {

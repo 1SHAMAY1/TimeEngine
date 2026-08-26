@@ -29,7 +29,7 @@
 #include <variant>       // Type-safe algebraic unions
 #include <vector>        // Dynamic array container
 #if __has_include(<expected>)
-#include <expected>      // C++23 Expected error handling
+#include <expected> // C++23 Expected error handling
 #endif
 
 #ifdef __MINGW32__
@@ -42,8 +42,8 @@
 // Used to support DLL export/import on Windows.
 
 #ifdef _MSC_VER
-#pragma warning(disable: 4251) // class 'xxx' needs to have dll-interface to be used by clients of class 'yyy'
-#pragma warning(disable: 4275) // non dll-interface class 'xxx' used as base for dll-interface class 'yyy'
+#pragma warning(disable : 4251) // class 'xxx' needs to have dll-interface to be used by clients of class 'yyy'
+#pragma warning(disable : 4275) // non dll-interface class 'xxx' used as base for dll-interface class 'yyy'
 #endif
 
 #ifdef TE_PLATFORM_WINDOWS
@@ -69,34 +69,32 @@
 // ====================================================================================
 // Core Smart Pointer Aliases & Factory Functions
 // ====================================================================================
-namespace TE {
+namespace TE
+{
 
-    // Unique Ownership (Exclusive, Move-Only)
-    template<typename T>
-    using TEScope = std::unique_ptr<T>;
+// Unique Ownership (Exclusive, Move-Only)
+template <typename T> using TEScope = std::unique_ptr<T>;
 
-    template<typename T, typename... Args>
-    constexpr TEScope<T> CreateScope(Args&&... args) {
-        return std::make_unique<T>(std::forward<Args>(args)...);
-    }
+template <typename T, typename... Args> constexpr TEScope<T> CreateScope(Args &&...args)
+{
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
 
-    // Shared Ownership (Reference Counted)
-    template<typename T>
-    using TERef = std::shared_ptr<T>;
+// Shared Ownership (Reference Counted)
+template <typename T> using TERef = std::shared_ptr<T>;
 
-    template<typename T, typename... Args>
-    constexpr TERef<T> CreateRef(Args&&... args) {
-        return std::make_shared<T>(std::forward<Args>(args)...);
-    }
+template <typename T, typename... Args> constexpr TERef<T> CreateRef(Args &&...args)
+{
+    return std::make_shared<T>(std::forward<Args>(args)...);
+}
 
-    // Weak Non-Owning Observer (Breaks Reference Cycles)
-    template<typename T>
-    using TEWeakRef = std::weak_ptr<T>;
+// Weak Non-Owning Observer (Breaks Reference Cycles)
+template <typename T> using TEWeakRef = std::weak_ptr<T>;
 
-    // Common short aliases matching engine conventions
-    template<typename T> using Scope = TEScope<T>;
-    template<typename T> using Ref = TERef<T>;
-    template<typename T> using WeakRef = TEWeakRef<T>;
+// Common short aliases matching engine conventions
+template <typename T> using Scope = TEScope<T>;
+template <typename T> using Ref = TERef<T>;
+template <typename T> using WeakRef = TEWeakRef<T>;
 
 } // namespace TE
 
@@ -135,7 +133,7 @@ namespace TE {
     struct Name                                                                                                        \
     {                                                                                                                  \
         TEArray<std::function<void()>> Listeners;                                                                      \
-        void Add(const std::function<void()> &listener) { Listeners.Add(listener); }                                  \
+        void Add(const std::function<void()> &listener) { Listeners.Add(listener); }                                   \
         void Broadcast() const                                                                                         \
         {                                                                                                              \
             for (size_t i = 0; i < Listeners.Num(); ++i)                                                               \
@@ -280,8 +278,9 @@ using HMODULE = void *;
 
 inline HMODULE LoadLibraryW(const wchar_t *wpath)
 {
-    std::wstring ws(wpath);
-    TEString path(ws.begin(), ws.end());
+    if (!wpath)
+        return nullptr;
+    TEString path(wpath);
     return dlopen(path.c_str(), RTLD_NOW);
 }
 #endif
@@ -304,5 +303,7 @@ inline HMODULE LoadLibraryW(const wchar_t *wpath)
 // ====================================================================================
 // Global Engine Namespace Exposure
 // ====================================================================================
-namespace TE {}
+namespace TE
+{
+}
 using namespace TE;

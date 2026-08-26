@@ -8,10 +8,10 @@
 #include <memory>
 
 #if defined(TE_HAS_PLUGIN_GAMEPLAYTAGPLUGIN) || defined(TE_PLUGIN_GAMEPLAYTAGPLUGIN)
-#include "../../Plugins/GameplayTagPlugin/src/GameplayTag.hpp"
-#include "../../Plugins/GameplayTagPlugin/src/GameplayTagContainer.hpp"
-#include "../../Plugins/GameplayTagPlugin/src/GameplayTagManager.hpp"
-#include "../../Plugins/GameplayTagPlugin/src/GameplayTagComponent.hpp"
+#include "../../../Plugins/GameplayTagPlugin/src/GameplayTag.hpp"
+#include "../../../Plugins/GameplayTagPlugin/src/GameplayTagComponent.hpp"
+#include "../../../Plugins/GameplayTagPlugin/src/GameplayTagContainer.hpp"
+#include "../../../Plugins/GameplayTagPlugin/src/GameplayTagManager.hpp"
 #endif
 
 enum class StateTaskStatus

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/PreRequisites.h"
 #include "Core/Graph/GraphPin.hpp"
+#include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
-
 
 class TE_API GraphNode
 {
@@ -19,7 +18,7 @@ public:
     TEString NodeType = "GraphNode";
     TEVector2 Position = {0.0f, 0.0f};
     TEVector2 Size = {180.0f, 100.0f};
-    TEColor HeaderColor = {0.2f, 0.25f, 0.35f, 1.0f};
+    TEColor HeaderColor = TEColor(0.2f, 0.25f, 0.35f, 1.0f);
 
     TEArray<GraphPin> InputPins;
     TEArray<GraphPin> OutputPins;

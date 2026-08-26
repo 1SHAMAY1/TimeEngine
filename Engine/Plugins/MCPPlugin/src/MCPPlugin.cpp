@@ -11,7 +11,6 @@
 //   3. Plugin dispatches tool, sends "event: message\ndata: <json>\n\n" back on SSE stream
 
 #include "MCPPlugin.hpp"
-#include "MCPToolRegistry.hpp"
 #include "Core/Application.h"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Events/KeyEvent.h"
@@ -23,10 +22,10 @@
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/TagComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
-#include "Editor/EditorMode.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Editor/EditorMode.hpp"
 #include "Layers/EditorLayer.hpp"
+#include "MCPToolRegistry.hpp"
 #include "Renderer/RenderCommand.hpp"
 
 #ifdef TE_PLATFORM_WINDOWS
@@ -38,14 +37,13 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
+#include "Utils/TEFileSystem.hpp"
 #include <algorithm>
 #include <cctype>
-#include "Utils/TEFileSystem.hpp"
 #include <fstream>
 #include <sstream>
 #include <thread>
 #include <vector>
-
 
 TE_REGISTER_PLUGIN(MCPPlugin);
 
@@ -124,12 +122,8 @@ void MCPPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const T
     dl.AddCircleFilled(n5, 2.5f, 0xFF55EFC4);
 
     // Central diamond core
-    TEVector2 corePts[4] = {
-        TEVector2(c.x, c.y - 6.0f),
-        TEVector2(c.x + 6.0f, c.y),
-        TEVector2(c.x, c.y + 6.0f),
-        TEVector2(c.x - 6.0f, c.y)
-    };
+    TEVector2 corePts[4] = {TEVector2(c.x, c.y - 6.0f), TEVector2(c.x + 6.0f, c.y), TEVector2(c.x, c.y + 6.0f),
+                            TEVector2(c.x - 6.0f, c.y)};
     dl.AddConvexPolyFilled(corePts, 4, 0xFF00D2D3);
     dl.AddCircleFilled(c, 2.5f, 0xFFFFFFFF);
 }
@@ -266,11 +260,11 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     {
         // Send SSE headers — keep connection alive
         TEString headers = "HTTP/1.1 200 OK\r\n"
-                              "Content-Type: text/event-stream\r\n"
-                              "Cache-Control: no-cache\r\n"
-                              "Connection: keep-alive\r\n"
-                              "Access-Control-Allow-Origin: *\r\n"
-                              "\r\n";
+                           "Content-Type: text/event-stream\r\n"
+                           "Cache-Control: no-cache\r\n"
+                           "Connection: keep-alive\r\n"
+                           "Access-Control-Allow-Origin: *\r\n"
+                           "\r\n";
 #ifdef TE_PLATFORM_WINDOWS
         send((SOCKET)clientSocket, headers.c_str(), (int)headers.size(), 0);
 #endif
@@ -321,11 +315,11 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
     if (method == "OPTIONS")
     {
         TEString resp = "HTTP/1.1 204 No Content\r\n"
-                           "Access-Control-Allow-Origin: *\r\n"
-                           "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
-                           "Access-Control-Allow-Headers: Content-Type\r\n"
-                           "Content-Length: 0\r\n"
-                           "\r\n";
+                        "Access-Control-Allow-Origin: *\r\n"
+                        "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
+                        "Access-Control-Allow-Headers: Content-Type\r\n"
+                        "Content-Length: 0\r\n"
+                        "\r\n";
 #ifdef TE_PLATFORM_WINDOWS
         send((SOCKET)clientSocket, resp.c_str(), (int)resp.size(), 0);
         closesocket((SOCKET)clientSocket);
@@ -430,7 +424,9 @@ void MCPPlugin::HandleConnection(uintptr_t clientSocket)
                 json << "{"
                      << "\"name\":\"" << tools[i].Name << "\","
                      << "\"description\":\"" << tools[i].Description << "\","
-                     << "\"inputSchema\":" << (tools[i].InputSchemaJson.empty() ? "{\"type\":\"object\",\"properties\":{}}" : tools[i].InputSchemaJson)
+                     << "\"inputSchema\":"
+                     << (tools[i].InputSchemaJson.empty() ? "{\"type\":\"object\",\"properties\":{}}"
+                                                          : tools[i].InputSchemaJson)
                      << "}";
             }
 
@@ -523,6 +519,8 @@ TEString MCPPlugin::DispatchToolCall(const TEString &toolName, const TEString &p
         return Tool_SetEntityProperties(paramsJson);
     if (toolName == "add_component")
         return Tool_AddComponent(paramsJson);
+    if (toolName == "delete_screenshot")
+        return Tool_DeleteScreenshot();
     if (toolName == "open_asset_editor")
         return Tool_OpenAssetEditor(paramsJson);
 
@@ -1046,7 +1044,8 @@ TEString MCPPlugin::Tool_SetEntityProperties(const TEString &paramsJson)
                                 size_t pPos = compPropsJson.Find("\"" + propMeta.Name + "\"");
                                 if (pPos != TEString::npos)
                                 {
-                                    size_t colon = compPropsJson.Find(":", ESearchCase::CaseSensitive, ESearchDir::FromStart, (int)pPos);
+                                    size_t colon = compPropsJson.Find(":", ESearchCase::CaseSensitive,
+                                                                      ESearchDir::FromStart, (int)pPos);
                                     if (colon != TEString::npos)
                                     {
                                         size_t valStart = compPropsJson.find_first_not_of(" \t\r\n", colon + 1);
@@ -1062,7 +1061,9 @@ TEString MCPPlugin::Tool_SetEntityProperties(const TEString &paramsJson)
                                                     break;
                                                 }
                                             }
-                                            propVal = compPropsJson.Substr(valStart, valEnd != TEString::npos ? valEnd - valStart : TEString::npos);
+                                            propVal = compPropsJson.Substr(valStart, valEnd != TEString::npos
+                                                                                         ? valEnd - valStart
+                                                                                         : TEString::npos);
                                         }
                                     }
                                 }
@@ -1207,8 +1208,8 @@ TEString MCPPlugin::ReadHttpRequest(uintptr_t socket)
     return result;
 }
 
-void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const TEString &contentType,
-                                 const TEString &body, bool keepAlive)
+void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const TEString &contentType, const TEString &body,
+                                 bool keepAlive)
 {
     TEString statusText = "OK";
     if (statusCode == 202)
@@ -1221,19 +1222,19 @@ void MCPPlugin::SendHttpResponse(uintptr_t socket, int statusCode, const TEStrin
         statusText = "Not Found";
 
     TEString response = "HTTP/1.1 " + TEString::FromInt(statusCode) + " " + statusText +
-                           "\r\n"
-                           "Content-Type: " +
-                           contentType +
-                           "\r\n"
-                           "Content-Length: " +
-                           TEString::FromInt((int)body.size()) +
-                           "\r\n"
-                           "Access-Control-Allow-Origin: *\r\n"
-                           "Connection: " +
-                           (keepAlive ? "keep-alive" : "close") +
-                           "\r\n"
-                           "\r\n" +
-                           body;
+                        "\r\n"
+                        "Content-Type: " +
+                        contentType +
+                        "\r\n"
+                        "Content-Length: " +
+                        TEString::FromInt((int)body.size()) +
+                        "\r\n"
+                        "Access-Control-Allow-Origin: *\r\n"
+                        "Connection: " +
+                        (keepAlive ? "keep-alive" : "close") +
+                        "\r\n"
+                        "\r\n" +
+                        body;
 
 #ifdef TE_PLATFORM_WINDOWS
     send((SOCKET)socket, response.c_str(), (int)response.size(), 0);
@@ -1413,4 +1414,3 @@ TEString MCPPlugin::Tool_OpenAssetEditor(const TEString &paramsJson)
 
     return "\"Opened asset editor for: " + path + "\"";
 }
-

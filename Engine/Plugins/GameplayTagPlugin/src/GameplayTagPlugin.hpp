@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Core/Plugin/IPlugin.hpp"
+#include "GameplayTagManagerLayer.hpp"
 #include <memory>
-
-
-class GameplayTagManagerLayer;
 
 class GameplayTagPlugin : public IPlugin
 {
@@ -24,4 +22,3 @@ public:
 private:
     TEScope<GameplayTagManagerLayer> m_ManagerLayer;
 };
-

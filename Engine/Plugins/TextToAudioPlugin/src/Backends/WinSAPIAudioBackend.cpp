@@ -5,21 +5,27 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+#include <cguid.h>
 #include <windows.h>
+#if defined(__MINGW32__)
+#include <initguid.h>
+#endif
 #include <sapi.h>
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
 #include <sphelper.h>
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 #pragma comment(lib, "sapi.lib")
 #pragma comment(lib, "ole32.lib")
 #endif
 
-WinSAPIAudioBackend::WinSAPIAudioBackend()
-{
-}
+WinSAPIAudioBackend::WinSAPIAudioBackend() {}
 
-WinSAPIAudioBackend::~WinSAPIAudioBackend()
-{
-    Shutdown();
-}
+WinSAPIAudioBackend::~WinSAPIAudioBackend() { Shutdown(); }
 
 bool WinSAPIAudioBackend::Initialize()
 {
