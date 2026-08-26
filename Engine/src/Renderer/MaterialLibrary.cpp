@@ -1,5 +1,5 @@
-#include "Renderer/MaterialLibrary.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/MaterialLibrary.hpp"
 
 TEMap<TEString, TERef<Material>> MaterialLibrary::s_Materials;
 

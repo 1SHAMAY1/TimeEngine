@@ -1,5 +1,5 @@
-#include "Renderer/OpenGL/OpenGLVertexBuffer.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/OpenGL/OpenGLVertexBuffer.hpp"
 #include <glad/glad.h>
 
 #include "Renderer/OpenGL/OpenGLVertexArray.hpp"

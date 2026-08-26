@@ -1,8 +1,8 @@
+#include "Core/PreRequisites.h"
 #include "Layers/LogoLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
 #include "Core/Plugin/PluginManager.hpp"
-#include "Core/PreRequisites.h"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>

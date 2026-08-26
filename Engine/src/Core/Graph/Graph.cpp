@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Core/Graph/Graph.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include <queue>
 
 Graph::Graph(const TEString &name) : m_Name(name) {}

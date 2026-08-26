@@ -1,5 +1,5 @@
-#include "Editor/TScriptAssetEditor.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/TScriptAssetEditor.hpp"
 #include "Core/Scripting/TScriptAsset.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"

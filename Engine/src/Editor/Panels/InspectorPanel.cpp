@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Editor/Panels/InspectorPanel.hpp"
 #include "Core/Asset/AssetManager.hpp"
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/EntityManager.hpp"

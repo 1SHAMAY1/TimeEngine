@@ -1,5 +1,5 @@
-#include "Editor/Panels/SettingsPanels.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/Panels/SettingsPanels.hpp"
 #include "Editor/EditorSettingsRegistry.hpp"
 #include "Editor/ProjectSettingsRegistry.hpp"
 #include "Layers/EditorLayer.hpp"

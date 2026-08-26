@@ -1,5 +1,5 @@
-#include "Editor/ViewportContextMenu.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/ViewportContextMenu.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/Scene.hpp"

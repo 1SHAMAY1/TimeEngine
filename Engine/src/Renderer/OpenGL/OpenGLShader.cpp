@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/OpenGL/OpenGLShader.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>

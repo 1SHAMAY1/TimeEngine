@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Core/Scene/TilemapComponent.hpp"
 #include "Core/Collision/BoxColliderComponent.hpp"
-#include "Core/PreRequisites.h"
 
 TilemapComponent::TilemapComponent() { Resize(GridWidth, GridHeight); }
 

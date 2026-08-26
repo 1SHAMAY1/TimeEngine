@@ -1,6 +1,6 @@
+﻿#include "Core/PreRequisites.h"
 #include "Core/Application.h"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Core/Settings/GeneralEngineSettings.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Window/IWindow.hpp"

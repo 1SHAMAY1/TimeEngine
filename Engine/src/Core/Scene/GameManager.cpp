@@ -1,5 +1,5 @@
-#include "Core/Scene/GameManager.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scene/GameManager.hpp"
 #include "Core/Scene/2DPlayerController.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/PlayerMovementComponent2D.hpp"

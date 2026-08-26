@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Layers/ProjectHubLayer.hpp"
 #include "Core/Application.h"
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SceneSerializer.hpp"

@@ -1,5 +1,5 @@
-#include "Editor/ViewportOverlayRegistry.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/ViewportOverlayRegistry.hpp"
 #include <algorithm>
 
 static TEMap<TEString, ViewportOverlayItem> &GetItemsMap()

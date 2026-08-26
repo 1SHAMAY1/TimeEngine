@@ -1,7 +1,7 @@
+﻿#include "Core/PreRequisites.h"
 #include "GameFrameWork/StringTableFunctionLibrary.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 
 TEString StringTableFunctionLibrary::GetLocalizedString(AssetHandle tableHandle, const TEString &ns,
                                                         const TEString &key, const TEString &culture)

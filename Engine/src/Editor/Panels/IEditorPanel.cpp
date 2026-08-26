@@ -1,5 +1,5 @@
-#include "Editor/Panels/IEditorPanel.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/Panels/IEditorPanel.hpp"
 
 static TEArray<TERef<IEditorPanel>> &GetPanelsList()
 {

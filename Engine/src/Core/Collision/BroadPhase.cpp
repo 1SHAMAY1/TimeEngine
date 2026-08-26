@@ -1,5 +1,5 @@
-#include "Core/Collision/BroadPhase.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Collision/BroadPhase.hpp"
 
 TEArray<CollisionPair> BroadPhase::BruteForce(TESpan<CollisionComponent *> colliders)
 {

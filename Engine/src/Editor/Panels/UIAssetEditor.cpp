@@ -1,5 +1,5 @@
-#include "Editor/Panels/UIAssetEditor.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/Panels/UIAssetEditor.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"

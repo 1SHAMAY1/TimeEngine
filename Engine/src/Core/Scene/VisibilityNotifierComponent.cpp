@@ -1,5 +1,5 @@
-#include "Core/Scene/VisibilityNotifierComponent.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scene/VisibilityNotifierComponent.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/PlayerCameraComponent.hpp"
 #include "Core/Scene/Scene.hpp"

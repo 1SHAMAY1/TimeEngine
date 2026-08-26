@@ -1,5 +1,5 @@
-#include "Core/Scene/AnimatedSpriteComponent.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scene/AnimatedSpriteComponent.hpp"
 
 AnimatedSpriteComponent::AnimatedSpriteComponent()
 {

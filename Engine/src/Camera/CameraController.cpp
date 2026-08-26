@@ -1,5 +1,5 @@
-#include "Camera/CameraController.hpp"
 #include "Core/PreRequisites.h"
+#include "Camera/CameraController.hpp"
 
 CameraController::CameraController() : m_FOV(45.0f), m_Position(0.0f, 0.0f, 5.0f), m_Rotation(0.0f, 0.0f, 0.0f) {}
 

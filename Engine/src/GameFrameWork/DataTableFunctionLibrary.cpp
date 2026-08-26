@@ -1,7 +1,7 @@
+﻿#include "Core/PreRequisites.h"
 #include "GameFrameWork/DataTableFunctionLibrary.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 
 TERef<DataAsset> DataTableFunctionLibrary::GetDataTableRow(AssetHandle tableHandle, const TEString &rowName)
 {

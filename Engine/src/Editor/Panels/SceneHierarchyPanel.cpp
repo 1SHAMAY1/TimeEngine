@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Editor/Panels/SceneHierarchyPanel.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "Core/Scene/EntityManager.hpp"
 #include "Core/Scene/Scene.hpp"

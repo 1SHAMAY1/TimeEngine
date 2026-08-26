@@ -1,5 +1,5 @@
+﻿#include "Core/PreRequisites.h"
 #include "Input/InputSystem.hpp"
-#include "Core/PreRequisites.h"
 #include "Input/Input.hpp"
 #include <algorithm>
 

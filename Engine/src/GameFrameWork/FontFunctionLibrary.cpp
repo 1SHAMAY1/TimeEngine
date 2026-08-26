@@ -1,7 +1,7 @@
+﻿#include "Core/PreRequisites.h"
 #include "GameFrameWork/FontFunctionLibrary.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 
 TERef<FontAsset> FontFunctionLibrary::GetFont(AssetHandle fontHandle)
 {

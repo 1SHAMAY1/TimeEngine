@@ -1,5 +1,5 @@
-#include "Editor/Settings/ProjectGeneralSettings.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/Settings/ProjectGeneralSettings.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Project/ProjectSerializer.hpp"
 #include "Layers/EditorLayer.hpp"

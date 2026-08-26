@@ -1,5 +1,5 @@
-#include "Camera/OrthographicCamera.hpp"
 #include "Core/PreRequisites.h"
+#include "Camera/OrthographicCamera.hpp"
 
 OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
 {

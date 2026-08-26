@@ -1,5 +1,5 @@
-#include "Core/AI/StateTreeGraph.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/AI/StateTreeGraph.hpp"
 
 // StateNode
 StateNode::StateNode()

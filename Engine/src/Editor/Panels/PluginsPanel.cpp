@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Editor/Panels/PluginsPanel.hpp"
 #include "Core/Plugin/PluginManager.hpp"
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Editor/Panels/IEditorPanel.hpp"
 #include "Layers/EditorLayer.hpp"

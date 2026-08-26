@@ -1,5 +1,5 @@
-#include "Renderer/OpenGL/TEOpenGLColor.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/OpenGL/TEOpenGLColor.hpp"
 
 #include "Utils/MathUtils.hpp"
 

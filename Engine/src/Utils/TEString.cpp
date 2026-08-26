@@ -1,5 +1,5 @@
-#include "Utils/TEString.hpp"
 #include "Core/PreRequisites.h"
+#include "Utils/TEString.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Utils/MathUtils.hpp"
 #include <cctype>
@@ -832,7 +832,7 @@ TEString &TEString::operator+=(char rhs)
     return *this;
 }
 
-// ── Path Operations Implementation ──────────────────────────────────────
+// -- Path Operations Implementation --------------------------------------
 TEString TEString::operator/(const TEString &rhs) const
 {
     if (IsEmpty())
