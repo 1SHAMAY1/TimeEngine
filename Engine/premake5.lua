@@ -54,6 +54,8 @@ project "Engine"
 
     filter "files:**.c"
         flags { "NoPCH" }
+    filter "files:**.mm"
+        flags { "NoPCH" }
     filter "files:**/Vendor/**"
         flags { "NoPCH" }
     filter "files:%{wks.location}/Vendor/**"
