@@ -37,7 +37,7 @@ void EditorUtils::DrawSectionHeader(const TEString &label)
 {
     TimeGUI::PushStyleColor(TimeGUICol_Text, TEVector4(0.85f, 0.85f, 0.85f, 1.0f));
     TimeGUI::Separator();
-    TimeGUI::Text("%s", label);
+    TimeGUI::Text(label);
     TimeGUI::Separator();
     TimeGUI::PopStyleColor();
 }

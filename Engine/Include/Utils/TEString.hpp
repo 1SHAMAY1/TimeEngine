@@ -226,14 +226,28 @@ public:
     // ── Formatting (Printf & Token Format) ───────────────────────────────
     static TEString Printf(const char *fmt, ...);
 
+    template <typename T>
+    static auto FormatArg(T &&arg) -> decltype(auto)
+    {
+        using Decayed = std::decay_t<T>;
+        if constexpr (std::is_same_v<Decayed, TEString>)
+            return arg.c_str();
+        else if constexpr (std::is_same_v<Decayed, std::string>)
+            return arg.c_str();
+        else if constexpr (std::is_same_v<Decayed, std::string_view>)
+            return arg.data();
+        else
+            return std::forward<T>(arg);
+    }
+
     template <typename... Args> static TEString Format(const char *fmt, Args &&...args)
     {
-        return Printf(fmt, std::forward<Args>(args)...);
+        return Printf(fmt, FormatArg(std::forward<Args>(args))...);
     }
 
     template <typename... Args> static TEString Format(const TEString &fmt, Args &&...args)
     {
-        return Printf(fmt.c_str(), std::forward<Args>(args)...);
+        return Printf(fmt.c_str(), FormatArg(std::forward<Args>(args))...);
     }
 
     // ── Localization Subsystem (FText-style) ────────────────────────────
