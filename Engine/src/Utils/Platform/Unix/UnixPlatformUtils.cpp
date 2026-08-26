@@ -2,7 +2,12 @@
 #ifndef TE_PLATFORM_WINDOWS
 
 #include "Utils/PlatformUtils.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/TEFileSystem.hpp"
+#include <cctype>
 #include <limits.h>
+#include <signal.h>
+#include <sys/types.h>
 #include <unistd.h>
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -25,11 +30,7 @@ TEString PlatformUtils::OpenFolder(const char *initialPath)
         pclose(pipe);
     }
 
-    // Strip trailing newline
-    if (!result.empty() && result.back() == '\n')
-    {
-        result.pop_back();
-    }
+    result.TrimEndInline();
     return result;
 #else
     return "";
@@ -53,12 +54,12 @@ TEString PlatformUtils::OpenFile(const char *filter)
         {
             pos++; // Move past the '.'
             TEString ext = "";
-            while (pos < filterStr.size() && std::isalnum(filterStr[pos]))
+            while (pos < filterStr.Length() && std::isalnum((unsigned char)filterStr[pos]))
             {
                 ext += filterStr[pos];
                 pos++;
             }
-            if (!ext.empty())
+            if (!ext.IsEmpty())
             {
                 extensions.Add(ext);
             }
@@ -92,10 +93,7 @@ TEString PlatformUtils::OpenFile(const char *filter)
         pclose(pipe);
     }
 
-    if (!result.empty() && result.back() == '\n')
-    {
-        result.pop_back();
-    }
+    result.TrimEndInline();
     return result;
 #else
     return "";
@@ -120,10 +118,7 @@ TEString PlatformUtils::SaveFile(const char *filter)
         pclose(pipe);
     }
 
-    if (!result.empty() && result.back() == '\n')
-    {
-        result.pop_back();
-    }
+    result.TrimEndInline();
     return result;
 #else
     return "";
@@ -134,8 +129,9 @@ bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TES
                                             const TEString &description)
 {
 #ifdef __APPLE__
-    size_t lastSlash = appPath.find_last_of("/\\");
-    TEString appDir = (lastSlash != TEString::npos) ? appPath.substr(0, lastSlash) : ".";
+    TEString appDir = TEFileSystem::GetParentPath(appPath);
+    if (appDir.IsEmpty())
+        appDir = ".";
     TEString bundlePath = appDir + "/TimeEditor.app";
 
     TEString command = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/"
@@ -151,8 +147,9 @@ bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TES
 bool PlatformUtils::IsFileAssociationRegistered(const TEString &extension, const TEString &appPath)
 {
 #ifdef __APPLE__
-    size_t lastSlash = appPath.find_last_of("/\\");
-    TEString appDir = (lastSlash != TEString::npos) ? appPath.substr(0, lastSlash) : ".";
+    TEString appDir = TEFileSystem::GetParentPath(appPath);
+    if (appDir.IsEmpty())
+        appDir = ".";
     TEString bundlePath = appDir + "/TimeEditor.app";
     return (access(bundlePath.c_str(), F_OK) == 0);
 #else
@@ -175,26 +172,22 @@ TEString PlatformUtils::GetExecutablePath()
         TEString execPath(path.c_str());
         TEString cwd;
         cwd.Reserve(1024);
-        if (getcwd(cwd.Data(), 1024) != nullptr && (TEString(cwd.c_str()) == "/" || TEString(cwd.c_str()).empty()))
+        if (getcwd(cwd.Data(), 1024) != nullptr && (TEString(cwd.c_str()) == "/" || TEString(cwd.c_str()).IsEmpty()))
         {
-            size_t lastSlash = execPath.find_last_of("/\\");
-            if (lastSlash != TEString::npos)
+            TEString exeDir = TEFileSystem::GetParentPath(execPath);
+            int bundlePos = exeDir.Find(".app/Contents/MacOS");
+            if (bundlePos != -1)
             {
-                TEString exeDir = execPath.substr(0, lastSlash);
-                size_t bundlePos = exeDir.find(".app/Contents/MacOS");
-                if (bundlePos != TEString::npos)
+                TEString appDir = exeDir.Substr(0, bundlePos);
+                TEString appParent = TEFileSystem::GetParentPath(appDir);
+                if (!appParent.IsEmpty())
                 {
-                    TEString appDir = exeDir.substr(0, bundlePos);
-                    size_t appParentPos = appDir.find_last_of("/\\");
-                    if (appParentPos != TEString::npos)
-                    {
-                        chdir(appDir.substr(0, appParentPos).c_str());
-                    }
+                    chdir(appParent.c_str());
                 }
-                else
-                {
-                    chdir(exeDir.c_str());
-                }
+            }
+            else
+            {
+                chdir(exeDir.c_str());
             }
         }
         return execPath;

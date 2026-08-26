@@ -47,6 +47,7 @@ TERef<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
     case GraphicsAPI::Metal:
         return CreateRef<MetalVertexBuffer>(vertices, size);
 #endif
+    default:
+        return nullptr;
     }
-    return nullptr;
 }

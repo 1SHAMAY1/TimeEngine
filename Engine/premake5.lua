@@ -10,8 +10,15 @@ project "Engine"
     targetdir ("%{wks.location}/Bin/" .. outputdir .. "/%{prj.name}")
     objdir ("%{wks.location}/Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
 
-    pchheader "Core/PreRequisites.h"
-    pchsource "src/Core/PreRequisites.cpp"
+    filter "action:vs*"
+        pchheader "Core/PreRequisites.h"
+        pchsource "src/Core/PreRequisites.cpp"
+    filter "action:xcode*"
+        pchheader "src/Core/PreRequisites.h"
+    filter "action:gmake*"
+        pchheader "src/Core/PreRequisites.h"
+        pchsource "src/Core/PreRequisites.cpp"
+    filter {}
 
     filter "system:macosx"
         xcodebuildsettings {
