@@ -1227,7 +1227,7 @@ TEVector4 SpriteScriptRuntime::ValueToColorVec4(const TScriptValue &val)
             unsigned int hexVal = 0;
             if (s.length() == 7) // #RRGGBB
             {
-                sscanf_s(s.c_str() + 1, "%06x", &hexVal);
+                sscanf(s.c_str() + 1, "%06x", &hexVal);
                 float r = ((hexVal >> 16) & 0xFF) / 255.0f;
                 float g = ((hexVal >> 8) & 0xFF) / 255.0f;
                 float b = (hexVal & 0xFF) / 255.0f;
@@ -1235,7 +1235,7 @@ TEVector4 SpriteScriptRuntime::ValueToColorVec4(const TScriptValue &val)
             }
             else if (s.length() == 9) // #RRGGBBAA
             {
-                sscanf_s(s.c_str() + 1, "%08x", &hexVal);
+                sscanf(s.c_str() + 1, "%08x", &hexVal);
                 float r = ((hexVal >> 24) & 0xFF) / 255.0f;
                 float g = ((hexVal >> 16) & 0xFF) / 255.0f;
                 float b = ((hexVal >> 8) & 0xFF) / 255.0f;

@@ -272,6 +272,7 @@ template <size_t Size> inline int strncpy_s(char (&dest)[Size], const char *src,
 #endif
 
 #ifndef TE_PLATFORM_WINDOWS
+#include <cstdlib>
 #include <dlfcn.h>
 using HMODULE = void *;
 #define GetProcAddress dlsym
@@ -281,8 +282,10 @@ inline HMODULE LoadLibraryW(const wchar_t *wpath)
 {
     if (!wpath)
         return nullptr;
-    TEString path(wpath);
-    return dlopen(path.c_str(), RTLD_NOW);
+    char path[1024];
+    wcstombs(path, wpath, sizeof(path));
+    path[sizeof(path) - 1] = '\0';
+    return dlopen(path, RTLD_NOW);
 }
 #endif
 
