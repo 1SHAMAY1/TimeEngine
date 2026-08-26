@@ -39,7 +39,12 @@ filter { "system:windows", "action:vs*" }
     if #vcVer > 0 then
         local major, minor = vcVer:match("^(%d+)%.(%d+)")
         if major and minor then
-            toolset("v" .. major .. minor:sub(1, 1))
+            local minorNum = tonumber(minor) or 0
+            if major == "14" and minorNum >= 30 then
+                toolset "v143"
+            else
+                toolset("v" .. major .. minor:sub(1, 1))
+            end
         end
     end
 filter {}
