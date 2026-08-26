@@ -8,9 +8,18 @@ filter { "system:windows", "action:vs*" }
     if #vcVer == 0 then
         local vsInstallDir = os.getenv("VSINSTALLDIR")
         if vsInstallDir and #vsInstallDir > 0 then
-            local msvcDirs = os.matchdirs(vsInstallDir:gsub("\\", "/") .. "/VC/Tools/MSVC/*")
-            if #msvcDirs > 0 then
-                vcVer = path.getname(msvcDirs[#msvcDirs])
+            local defFile = vsInstallDir:gsub("\\", "/") .. "/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"
+            local f = io.open(defFile, "r")
+            if f then
+                vcVer = f:read("*l") or ""
+                f:close()
+                vcVer = vcVer:match("^%s*(.-)%s*$") or ""
+            end
+            if #vcVer == 0 then
+                local msvcDirs = os.matchdirs(vsInstallDir:gsub("\\", "/") .. "/VC/Tools/MSVC/*")
+                if #msvcDirs > 0 then
+                    vcVer = path.getname(msvcDirs[#msvcDirs])
+                end
             end
         end
     end
@@ -20,18 +29,51 @@ filter { "system:windows", "action:vs*" }
         local vsDir = pipe and pipe:read("*l") or nil
         if pipe then pipe:close() end
 
-        if (not vsDir or #vsDir == 0) and os.getenv("ProgramFiles(x86)") then
-            local vswherePath = os.getenv("ProgramFiles(x86)") .. "\\Microsoft Visual Studio\\Installer\\vswhere.exe"
-            pipe = io.popen('"' .. vswherePath .. '" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath 2>nul')
-            vsDir = pipe and pipe:read("*l") or nil
-            if pipe then pipe:close() end
+        if not vsDir or #vsDir == 0 then
+            local possibleInstallerPaths = {}
+            if os.getenv("ProgramFiles(x86)") then
+                table.insert(possibleInstallerPaths, os.getenv("ProgramFiles(x86)") .. "/Microsoft Visual Studio/Installer/vswhere.exe")
+            end
+            if os.getenv("ProgramFiles") then
+                table.insert(possibleInstallerPaths, os.getenv("ProgramFiles") .. "/Microsoft Visual Studio/Installer/vswhere.exe")
+            end
+            -- Dynamically enumerate all available system drives (zero hardcoded drive letters)
+            local drivesPipe = io.popen("fsutil fsinfo drives 2>nul")
+            if drivesPipe then
+                local drivesOutput = drivesPipe:read("*a") or ""
+                drivesPipe:close()
+                for drive in drivesOutput:gmatch("(%a):\\") do
+                    table.insert(possibleInstallerPaths, drive .. ":/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
+                    table.insert(possibleInstallerPaths, drive .. ":/Program Files/Microsoft Visual Studio/Installer/vswhere.exe")
+                    table.insert(possibleInstallerPaths, drive .. ":/VisualStudio/Installer/vswhere.exe")
+                    table.insert(possibleInstallerPaths, drive .. ":/Microsoft Visual Studio/Installer/vswhere.exe")
+                end
+            end
+
+            for _, vswherePath in ipairs(possibleInstallerPaths) do
+                if os.isfile(vswherePath) then
+                    pipe = io.popen('"' .. vswherePath:gsub("/", "\\") .. '" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath 2>nul')
+                    vsDir = pipe and pipe:read("*l") or nil
+                    if pipe then pipe:close() end
+                    if vsDir and #vsDir > 0 then break end
+                end
+            end
         end
 
         if vsDir and #vsDir > 0 then
             vsDir = vsDir:gsub("\\", "/")
-            local msvcDirs = os.matchdirs(vsDir .. "/VC/Tools/MSVC/*")
-            if #msvcDirs > 0 then
-                vcVer = path.getname(msvcDirs[#msvcDirs])
+            local defFile = vsDir .. "/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"
+            local f = io.open(defFile, "r")
+            if f then
+                vcVer = f:read("*l") or ""
+                f:close()
+                vcVer = vcVer:match("^%s*(.-)%s*$") or ""
+            end
+            if #vcVer == 0 then
+                local msvcDirs = os.matchdirs(vsDir .. "/VC/Tools/MSVC/*")
+                if #msvcDirs > 0 then
+                    vcVer = path.getname(msvcDirs[#msvcDirs])
+                end
             end
         end
     end
@@ -39,12 +81,7 @@ filter { "system:windows", "action:vs*" }
     if #vcVer > 0 then
         local major, minor = vcVer:match("^(%d+)%.(%d+)")
         if major and minor then
-            local minorNum = tonumber(minor) or 0
-            if major == "14" and minorNum >= 30 then
-                toolset "v143"
-            else
-                toolset("v" .. major .. minor:sub(1, 1))
-            end
+            toolset("v" .. major .. minor:sub(1, 1))
         end
     end
 filter {}

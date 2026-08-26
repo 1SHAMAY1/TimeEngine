@@ -81,7 +81,10 @@ for _, pluginPath in ipairs(allPlugins) do
                 "TE_PLATFORM_WINDOWS"
             }
             links {
-                "ws2_32"
+                "ws2_32",
+                "ole32",
+                "oleaut32",
+                "uuid"
             }
 
         -- Force-run rule checker before any compilation begins

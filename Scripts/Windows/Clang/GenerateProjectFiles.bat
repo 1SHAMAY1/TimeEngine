@@ -41,20 +41,74 @@ rd /s /q "%ROOT_DIR%\.vs" >nul 2>&1
 
 echo [SUCCESS] Cleanup complete.
 
+:: ========== Locate vswhere dynamically via environment, registry & mounted drives ==========
+set "VSWHERE="
+if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if "%VSWHERE%"=="" if exist "%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe"
+if "%VSWHERE%"=="" (
+    for /f "tokens=*" %%i in ('where vswhere 2^>nul') do set "VSWHERE=%%i"
+)
+if "%VSWHERE%"=="" (
+    for /f "tokens=2*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vswhere.exe" /ve 2^>nul ^| findstr /i "REG_"') do (
+        if exist "%%b" set "VSWHERE=%%b"
+    )
+)
+if "%VSWHERE%"=="" (
+    for /f "tokens=2*" %%a in ('reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\vswhere.exe" /ve 2^>nul ^| findstr /i "REG_"') do (
+        if exist "%%b" set "VSWHERE=%%b"
+    )
+)
+if "%VSWHERE%"=="" (
+    for /f "tokens=1*" %%a in ('fsutil fsinfo drives 2^>nul') do (
+        for %%d in (%%b) do (
+            if "%VSWHERE%"=="" if exist "%%dProgram Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%%dProgram Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
+            if "%VSWHERE%"=="" if exist "%%dProgram Files\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%%dProgram Files\Microsoft Visual Studio\Installer\vswhere.exe"
+            if "%VSWHERE%"=="" if exist "%%dVisualStudio\Installer\vswhere.exe" set "VSWHERE=%%dVisualStudio\Installer\vswhere.exe"
+            if "%VSWHERE%"=="" if exist "%%dMicrosoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%%dMicrosoft Visual Studio\Installer\vswhere.exe"
+        )
+    )
+)
+
+set "VS_INSTALL_DIR="
+if not "%VSWHERE%"=="" (
+    for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+        if exist "%%i\Common7\Tools\VsDevCmd.bat" set "VS_INSTALL_DIR=%%i"
+    )
+    if "%VS_INSTALL_DIR%"=="" (
+        for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
+            if exist "%%i\Common7\Tools\VsDevCmd.bat" set "VS_INSTALL_DIR=%%i"
+        )
+    )
+)
+
+if not "%VS_INSTALL_DIR%"=="" (
+    if exist "%VS_INSTALL_DIR%\Common7\Tools\VsDevCmd.bat" (
+        if "%VSCMD_VER%"=="" (
+            echo [INFO] Found Visual Studio at "%VS_INSTALL_DIR%"
+            echo [INFO] Initializing MSVC build environment...
+            call "%VS_INSTALL_DIR%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 -no_logo
+        )
+    )
+)
+
 :: ========== Logger ==========
 echo [=== CMake configure/build: Logger ===]
 cd "%ROOT_DIR%\Vendor\Customizable_Logger"
 if not exist build mkdir build
 cd build
 
-cmake .. -G "Visual Studio 17 2022" -T ClangCL -A x64
+if not "%VSCMD_VER%"=="" (
+    cmake .. -G "NMake Makefiles" -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_FLAGS="/Z7" -DCMAKE_CXX_FLAGS="/Z7"
+) else (
+    cmake .. -G "Visual Studio 17 2022" -T ClangCL -A x64
+)
 if %errorlevel% neq 0 (
     echo [ERROR] Logger CMake configuration failed.
     pause
     exit /b 1
 )
 
-cmake --build . --config Debug -- /m:1
+cmake --build . --config Debug
 if %errorlevel% neq 0 (
     echo [ERROR] Logger build failed.
     pause
@@ -68,14 +122,18 @@ cd "%ROOT_DIR%\Vendor\GLFW"
 if not exist build mkdir build
 cd build
 
-cmake ../glfw -G "Visual Studio 17 2022" -T ClangCL -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF
+if not "%VSCMD_VER%"=="" (
+    cmake ../glfw -G "NMake Makefiles" -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="/Z7 /FS" -DCMAKE_CXX_FLAGS="/Z7 /FS"
+) else (
+    cmake ../glfw -G "Visual Studio 17 2022" -T ClangCL -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF
+)
 if %errorlevel% neq 0 (
     echo [ERROR] GLFW CMake configuration failed.
     pause
     exit /b 1
 )
 
-cmake --build . --config Debug -- /m:1
+cmake --build . --config Debug
 if %errorlevel% neq 0 (
     echo [ERROR] GLFW build failed.
     pause

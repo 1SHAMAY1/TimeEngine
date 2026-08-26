@@ -13,12 +13,32 @@ if not exist "TimeEngine.sln" (
     exit /b 1
 )
 
-:: Locate vswhere dynamically via environment & PATH
+:: Locate vswhere dynamically via environment, registry & mounted drives
 set "VSWHERE="
 if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if "%VSWHERE%"=="" if exist "%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles%\Microsoft Visual Studio\Installer\vswhere.exe"
 if "%VSWHERE%"=="" (
     for /f "tokens=*" %%i in ('where vswhere 2^>nul') do set "VSWHERE=%%i"
+)
+if "%VSWHERE%"=="" (
+    for /f "tokens=2*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vswhere.exe" /ve 2^>nul ^| findstr /i "REG_"') do (
+        if exist "%%b" set "VSWHERE=%%b"
+    )
+)
+if "%VSWHERE%"=="" (
+    for /f "tokens=2*" %%a in ('reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\vswhere.exe" /ve 2^>nul ^| findstr /i "REG_"') do (
+        if exist "%%b" set "VSWHERE=%%b"
+    )
+)
+if "%VSWHERE%"=="" (
+    for /f "tokens=1*" %%a in ('fsutil fsinfo drives 2^>nul') do (
+        for %%d in (%%b) do (
+            if "%VSWHERE%"=="" if exist "%%dProgram Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%%dProgram Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
+            if "%VSWHERE%"=="" if exist "%%dProgram Files\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%%dProgram Files\Microsoft Visual Studio\Installer\vswhere.exe"
+            if "%VSWHERE%"=="" if exist "%%dVisualStudio\Installer\vswhere.exe" set "VSWHERE=%%dVisualStudio\Installer\vswhere.exe"
+            if "%VSWHERE%"=="" if exist "%%dMicrosoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%%dMicrosoft Visual Studio\Installer\vswhere.exe"
+        )
+    )
 )
 
 if "%VSWHERE%"=="" (
