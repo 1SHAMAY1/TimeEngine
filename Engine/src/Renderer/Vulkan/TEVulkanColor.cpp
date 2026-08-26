@@ -1,5 +1,5 @@
-﻿#include "Renderer/Vulkan/TEVulkanColor.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/Vulkan/TEVulkanColor.hpp"
 #include "Utils/MathUtils.hpp"
 
 const TEColor TEVulkanColor::Red = {1.0f, 0.0f, 0.0f, 1.0f};

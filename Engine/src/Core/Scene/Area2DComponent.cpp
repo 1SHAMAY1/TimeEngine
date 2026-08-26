@@ -1,5 +1,5 @@
-#include "Core/Scene/Area2DComponent.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scene/Area2DComponent.hpp"
 #include "Core/Scene/TransformComponent.hpp"
 
 Area2DComponent::Area2DComponent()

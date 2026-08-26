@@ -1,5 +1,5 @@
-﻿#include "Utils/TEFileSystem.hpp"
 #include "Core/PreRequisites.h"
+#include "Utils/TEFileSystem.hpp"
 #include <filesystem>
 #include <fstream>
 

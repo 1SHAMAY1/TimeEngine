@@ -1,5 +1,5 @@
-﻿#include "UI/UIWidget.hpp"
 #include "Core/PreRequisites.h"
+#include "UI/UIWidget.hpp"
 
 UIWidget::UIWidget(const TEString &id) : m_ID(id) {}
 

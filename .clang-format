@@ -15,6 +15,7 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All 
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+SortIncludes: Never
 BreakBeforeBraces: Allman
 Standard: Auto
 ...

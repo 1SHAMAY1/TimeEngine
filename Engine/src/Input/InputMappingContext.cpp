@@ -1,5 +1,5 @@
-﻿#include "Input/InputMappingContext.hpp"
 #include "Core/PreRequisites.h"
+#include "Input/InputMappingContext.hpp"
 #include <fstream>
 
 TE_REGISTER_ASSET(InputMappingContext)

@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Core/Plugin/PluginManager.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Threading/Threading.hpp"
 #include "Utils/PlatformUtils.hpp"

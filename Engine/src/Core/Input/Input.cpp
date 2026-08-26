@@ -1,5 +1,5 @@
-#include "Input/Input.hpp"
 #include "Core/PreRequisites.h"
+#include "Input/Input.hpp"
 
 #include "Utils/TimeGUI.hpp"
 #include <GLFW/glfw3.h>

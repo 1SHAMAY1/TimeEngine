@@ -1,5 +1,5 @@
-#include "Core/Scene/TimerComponent.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scene/TimerComponent.hpp"
 
 void TimerComponent::AddTimer(const TEString &name, float interval, bool repeat)
 {

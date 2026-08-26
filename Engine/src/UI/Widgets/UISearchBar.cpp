@@ -1,5 +1,5 @@
-﻿#include "UI/Widgets/UISearchBar.hpp"
 #include "Core/PreRequisites.h"
+#include "UI/Widgets/UISearchBar.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>

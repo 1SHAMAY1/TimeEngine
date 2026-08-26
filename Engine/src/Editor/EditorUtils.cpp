@@ -1,5 +1,5 @@
-#include "Editor/EditorUtils.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/EditorUtils.hpp"
 #include "Core/Project/Project.hpp"
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/AssetEditorRegistry.hpp"

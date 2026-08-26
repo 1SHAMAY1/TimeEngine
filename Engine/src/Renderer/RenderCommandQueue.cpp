@@ -1,5 +1,5 @@
-#include "Renderer/RenderCommandQueue.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/RenderCommandQueue.hpp"
 
 RenderCommandQueue::RenderCommandQueue() { m_Queue.Reserve(1000); }
 

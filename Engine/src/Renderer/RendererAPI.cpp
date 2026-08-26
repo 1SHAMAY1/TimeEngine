@@ -1,5 +1,5 @@
-#include "Renderer/RendererAPI.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/RendererAPI.hpp"
 #include "Renderer/RendererContext.hpp"
 
 #ifdef TE_SUPPORT_OPENGL

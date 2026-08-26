@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Core/Asset/AssetManager.hpp"
-#include "Core/PreRequisites.h"
 #include "Core/Project/Project.hpp"
 #include "Editor/EditorSaveManager.hpp"
 #include "Editor/EditorUtils.hpp"

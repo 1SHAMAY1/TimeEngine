@@ -1,8 +1,8 @@
+#include "Core/PreRequisites.h"
 #include "Core/Asset/FontAsset.hpp"
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Asset/AssetRegistry.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Renderer/Texture.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>

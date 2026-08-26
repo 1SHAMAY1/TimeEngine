@@ -1,7 +1,7 @@
+#include "Core/PreRequisites.h"
 #include "Editor/StateTreeAssetEditor.hpp"
 #include "Core/AI/StateTreeGraph.hpp"
 #include "Core/Asset/StateTreeAsset.hpp"
-#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/TimeGUI.hpp"
 

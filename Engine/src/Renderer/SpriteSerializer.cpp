@@ -1,6 +1,6 @@
-﻿#include "Renderer/SpriteSerializer.hpp"
-#include "Core/Log.h"
 #include "Core/PreRequisites.h"
+#include "Renderer/SpriteSerializer.hpp"
+#include "Core/Log.h"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
 

@@ -1,5 +1,5 @@
-﻿#include "UI/Widgets/UITextBox.hpp"
 #include "Core/PreRequisites.h"
+#include "UI/Widgets/UITextBox.hpp"
 #include "Input/ShortcutManager.hpp"
 #include "Utils/TimeGUI.hpp"
 

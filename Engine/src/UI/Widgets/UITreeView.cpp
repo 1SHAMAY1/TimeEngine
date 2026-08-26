@@ -1,5 +1,5 @@
-﻿#include "UI/Widgets/UITreeView.hpp"
 #include "Core/PreRequisites.h"
+#include "UI/Widgets/UITreeView.hpp"
 
 UITreeView::UITreeView(const TEString &id) : UIWidget(id) {}
 

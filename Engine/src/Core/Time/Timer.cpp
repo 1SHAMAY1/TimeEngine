@@ -1,5 +1,5 @@
-﻿#include "Core/Time/Timer.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Time/Timer.hpp"
 
 Timer::TimerRef Timer::Set(float duration, Callback callback, bool loop)
 {

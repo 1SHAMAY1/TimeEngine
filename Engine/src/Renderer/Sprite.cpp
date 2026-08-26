@@ -1,6 +1,6 @@
-﻿#include "Renderer/Sprite.hpp"
-#include "Core/Log.h"
 #include "Core/PreRequisites.h"
+#include "Renderer/Sprite.hpp"
+#include "Core/Log.h"
 #include "Renderer/SpriteSerializer.hpp"
 #include "Renderer/Texture.hpp"
 #include "Utils/TEFileSystem.hpp"

@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Editor/FontAssetEditor.hpp"
 #include "Core/Asset/FontAsset.hpp"
-#include "Core/PreRequisites.h"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TimeGUI.hpp"

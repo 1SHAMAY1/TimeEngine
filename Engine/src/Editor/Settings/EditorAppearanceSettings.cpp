@@ -1,5 +1,5 @@
-#include "Editor/Settings/EditorAppearanceSettings.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/Settings/EditorAppearanceSettings.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "Utils/TimeGUI.hpp"
 

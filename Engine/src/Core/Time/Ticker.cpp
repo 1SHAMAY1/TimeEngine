@@ -1,5 +1,5 @@
-﻿#include "Core/Time/Ticker.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Time/Ticker.hpp"
 
 Ticker::Ticker(Callback callback, float rate) : m_Callback(callback), m_Rate(rate) {}
 

@@ -1,5 +1,5 @@
-#include "Editor/Graph/NodePalettePopup.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/Graph/NodePalettePopup.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <algorithm>
 #include <cstring>

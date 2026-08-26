@@ -1,7 +1,7 @@
+#include "Core/PreRequisites.h"
 #include "Layers/EngineSettingsLayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Utils/TimeGUI.hpp"
 #include <iomanip>
 #include <sstream>

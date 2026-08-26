@@ -1,5 +1,5 @@
-﻿#include "Input/InputComponent.hpp"
 #include "Core/PreRequisites.h"
+#include "Input/InputComponent.hpp"
 #include "Input/InputSystem.hpp"
 
 InputComponent::InputComponent() {}

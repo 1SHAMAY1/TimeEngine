@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Core/Audio/TEAudioClipAsset.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 
 TEAudioClipAsset::TEAudioClipAsset() { m_Handle = 0; }
 

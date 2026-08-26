@@ -1,5 +1,5 @@
-#include "Renderer/OpenGLES/OpenGLESVertexArray.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/OpenGLES/OpenGLESVertexArray.hpp"
 #include <glad/glad.h>
 
 OpenGLESVertexArray::OpenGLESVertexArray()

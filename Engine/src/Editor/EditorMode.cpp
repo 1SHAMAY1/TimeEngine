@@ -1,5 +1,5 @@
-#include "Editor/EditorMode.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/EditorMode.hpp"
 #include <algorithm>
 
 EditorModeRegistry &EditorModeRegistry::Instance()

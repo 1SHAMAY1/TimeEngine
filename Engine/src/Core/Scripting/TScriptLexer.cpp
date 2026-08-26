@@ -1,5 +1,5 @@
-#include "Core/Scripting/TScriptLexer.hpp"
 #include "Core/PreRequisites.h"
+#include "Core/Scripting/TScriptLexer.hpp"
 #include <cctype>
 
 static const TEMap<TEString, TScriptTokenType> s_Keywords = {

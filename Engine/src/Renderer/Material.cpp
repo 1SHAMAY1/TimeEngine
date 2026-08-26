@@ -1,6 +1,6 @@
+#include "Core/PreRequisites.h"
 #include "Renderer/Material.hpp"
 #include "Core/Log.h"
-#include "Core/PreRequisites.h"
 #include "Renderer/MaterialSerializer.hpp"
 #include "Renderer/ShaderLibrary.hpp"
 #include "Utils/TEFileSystem.hpp"

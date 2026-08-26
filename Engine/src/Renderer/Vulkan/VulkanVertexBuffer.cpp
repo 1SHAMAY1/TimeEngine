@@ -1,5 +1,5 @@
-﻿#include "Renderer/Vulkan/VulkanVertexBuffer.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/Vulkan/VulkanVertexBuffer.hpp"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include <iostream>
 

@@ -1,6 +1,6 @@
-﻿#include "Input/ShortcutManager.hpp"
-#include "Core/Log.h"
 #include "Core/PreRequisites.h"
+#include "Input/ShortcutManager.hpp"
+#include "Core/Log.h"
 #include "Input/Input.hpp"
 #include <algorithm>
 #include <sstream>

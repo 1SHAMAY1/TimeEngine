@@ -1,5 +1,5 @@
-#include "Editor/EditorSettingsRegistry.hpp"
 #include "Core/PreRequisites.h"
+#include "Editor/EditorSettingsRegistry.hpp"
 
 EditorSettingsRegistry &EditorSettingsRegistry::Instance()
 {

@@ -1,5 +1,5 @@
-﻿#include "Renderer/Vulkan/VulkanRendererAPI.hpp"
 #include "Core/PreRequisites.h"
+#include "Renderer/Vulkan/VulkanRendererAPI.hpp"
 #include <iostream>
 #include <volk.h>
 
