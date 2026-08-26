@@ -129,7 +129,7 @@ bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TES
                                             const TEString &description)
 {
 #ifdef __APPLE__
-    TEString appDir = TEFileSystem::GetParentPath(appPath);
+    TEString appDir = appPath.GetParentPath();
     if (appDir.IsEmpty())
         appDir = ".";
     TEString bundlePath = appDir + "/TimeEditor.app";
@@ -147,7 +147,7 @@ bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TES
 bool PlatformUtils::IsFileAssociationRegistered(const TEString &extension, const TEString &appPath)
 {
 #ifdef __APPLE__
-    TEString appDir = TEFileSystem::GetParentPath(appPath);
+    TEString appDir = appPath.GetParentPath();
     if (appDir.IsEmpty())
         appDir = ".";
     TEString bundlePath = appDir + "/TimeEditor.app";
@@ -174,12 +174,12 @@ TEString PlatformUtils::GetExecutablePath()
         cwd.Reserve(1024);
         if (getcwd(cwd.Data(), 1024) != nullptr && (TEString(cwd.c_str()) == "/" || TEString(cwd.c_str()).IsEmpty()))
         {
-            TEString exeDir = TEFileSystem::GetParentPath(execPath);
+            TEString exeDir = execPath.GetParentPath();
             int bundlePos = exeDir.Find(".app/Contents/MacOS");
             if (bundlePos != -1)
             {
                 TEString appDir = exeDir.Substr(0, bundlePos);
-                TEString appParent = TEFileSystem::GetParentPath(appDir);
+                TEString appParent = appDir.GetParentPath();
                 if (!appParent.IsEmpty())
                 {
                     chdir(appParent.c_str());

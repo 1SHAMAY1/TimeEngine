@@ -3,7 +3,7 @@
 #include "Core/Asset/Asset.hpp"
 #include "Core/Scene/ComponentRegistry.hpp"
 #include "GameFrameWork/TComponent.hpp"
-#include "Gameframework/GameplayUtils.hpp"
+#include "GameFrameWork/GameplayUtils.hpp"
 
 enum class MotionMatchingDimensionMode : uint8_t
 {

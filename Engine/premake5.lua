@@ -61,6 +61,8 @@ project "Engine"
 
     filter "files:**.c"
         flags { "NoPCH" }
+    filter { "system:macosx", "action:xcode*", "files:**.c" }
+        buildoptions { "-x c++" }
     filter "files:**.mm"
         flags { "NoPCH" }
     filter "files:**/Vendor/**"
