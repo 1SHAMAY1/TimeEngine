@@ -1,4 +1,3 @@
-#pragma once
 #include "DialogueLiveSimulator.hpp"
 #include "Utils/TimeGUI.hpp"
 #include <sstream>

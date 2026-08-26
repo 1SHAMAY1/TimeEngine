@@ -19,7 +19,7 @@ public:
 
     virtual TERef<Asset> Clone() const override;
     virtual bool LoadFromFile(const TEString &path) override;
-    virtual bool SaveToFile(const TEString &path);
+    virtual bool SaveToFile(const TEString &path) override;
     virtual void OnContentBrowserCreate(const TEString &path) override;
 
     DialogueGraph &GetGraph() { return m_Graph; }
