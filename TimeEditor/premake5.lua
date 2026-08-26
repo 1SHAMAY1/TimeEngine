@@ -140,19 +140,17 @@ project "TimeEditor"
         "%{IncludeDir.volk}"
     }
 
-    filter "action:vs*"
-        externalincludedirs {
-            "%{IncludeDir.ImGui}",
-            "%{IncludeDir.Engine}",
-            "%{IncludeDir.Engine_Include}",
-            "%{IncludeDir.Logger}",
-            "%{IncludeDir.GLM}",
-            "%{IncludeDir.GLFW}",
-            "%{IncludeDir.Velox}",
-            "%{IncludeDir.Vulkan}",
-            "%{IncludeDir.volk}"
-        }
-    filter {}
+    externalincludedirs {
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.Engine}",
+        "%{IncludeDir.Engine_Include}",
+        "%{IncludeDir.Logger}",
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Velox}",
+        "%{IncludeDir.Vulkan}",
+        "%{IncludeDir.volk}"
+    }
 
     filter "action:vs*"
         libdirs {
