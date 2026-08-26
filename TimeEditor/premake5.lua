@@ -163,7 +163,7 @@ project "TimeEditor"
             "%{wks.location}/Bin/" .. outputdir .. "/Engine",
             "%{wks.location}/Bin/" .. outputdir .. "/Velox"
         }
-    filter "action:gmake*"
+    filter "action:gmake* or action:xcode*"
         libdirs {
             "%{wks.location}/Vendor/Customizable_Logger/build/lib",
             "%{wks.location}/Vendor/GLFW/build/src"

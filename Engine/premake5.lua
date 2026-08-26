@@ -155,7 +155,7 @@ project "Engine"
             "%{wks.location}/Vendor/GLFW/build/src",
             "%{wks.location}/Vendor/GLFW/build/src/%{cfg.buildcfg}"
         }
-    filter "action:gmake*"
+    filter "action:gmake* or action:xcode*"
         libdirs {
             "%{wks.location}/Vendor/Customizable_Logger/build/lib",
             "%{wks.location}/Vendor/GLFW/build/src"
