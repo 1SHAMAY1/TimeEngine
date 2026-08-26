@@ -35,11 +35,12 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 🖼️ Editor Showcase
 
 <p align="center">
-  <img width="100%" alt="Time Engine Editor Workspace" src="https://github.com/user-attachments/assets/3726c10f-d31a-4d97-a73b-795d96537a81" />
+  <img width="100%" alt="Time Engine" src="https://github.com/user-attachments/assets/3726c10f-d31a-4d97-a73b-795d96537a81" />
+  <img width="100%" alt="Time Engine Editor Workspace" src="https://github.com/user-attachments/assets/4b1bc364-4672-4a9e-9f8f-5c657f8c2806" />
 </p>
 <p align="center">
-  <img width="49%" alt="Editor Viewport & UI" src="https://github.com/user-attachments/assets/a56848f0-e934-466c-be6c-afd66fa84e6c" />
-  <img width="49%" alt="Performance Profiler Dashboard" src="https://github.com/user-attachments/assets/e794acb5-7ada-4c5e-a673-c88d68d6be7c" />
+  <img width="49%" alt="Editor Viewport & UI" src="https://github.com/user-attachments/assets/83025fbb-cf6e-426f-9283-a2ef6a475574" />
+  <img width="49%" alt="Performance Profiler Dashboard" src="https://github.com/user-attachments/assets/27e7108a-7ee5-4650-9cb2-da97b523afef" />
 </p>
 
 ---
