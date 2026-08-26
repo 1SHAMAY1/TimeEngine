@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Architecture-IGDE-purple.svg" alt="Integrated Game Development Environment">
   <img src="https://img.shields.io/badge/Language-C%2B%2B20-blue.svg" alt="C++20">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Windows | Linux | macOS">
-  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
+  <img src="https://img.shields.io/badge/Graphics-OpenGL%20%7C%20Vulkan%20%7C%20Metal%20%7C%20DirectX%2011%20%7C%20OpenGL%20ES-orange.svg" alt="Graphics">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License MIT">
 </p>
 
