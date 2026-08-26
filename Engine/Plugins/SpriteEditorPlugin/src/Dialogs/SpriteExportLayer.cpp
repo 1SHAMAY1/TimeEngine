@@ -919,10 +919,9 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
             {
                 if (m_SpriteMode->m_ScriptRuntime && m_SpriteMode->m_ScriptRuntime->IsValid())
                 {
-                    m_SpriteMode->m_ScriptRuntime->Execute(dl, TEVector2(cellOriginX, cellOriginY),
-                                                           TEVector2(cellW * finalScale, cellH * finalScale),
-                                                           (float)f / Max(1, m_AnimFPS), 0.0f, f, frameCount, gridW,
-                                                           gridH);
+                    m_SpriteMode->m_ScriptRuntime->Execute(
+                        dl, TEVector2(cellOriginX, cellOriginY), TEVector2(cellW * finalScale, cellH * finalScale),
+                        (float)f / Max(1, m_AnimFPS), 0.0f, f, frameCount, gridW, gridH);
                 }
             }
             else if (f < (int)m_SpriteMode->m_PixelFrames.size())
@@ -941,9 +940,10 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                             if (col.w > 0.001f)
                             {
                                 col.w *= layer.Opacity;
-                                TEVector2 p1 = TEVector2(cellOriginX + x * cellPixelDim, cellOriginY + y * cellPixelDim);
-                                TEVector2 p2 =
-                                    TEVector2(cellOriginX + (x + 1) * cellPixelDim, cellOriginY + (y + 1) * cellPixelDim);
+                                TEVector2 p1 =
+                                    TEVector2(cellOriginX + x * cellPixelDim, cellOriginY + y * cellPixelDim);
+                                TEVector2 p2 = TEVector2(cellOriginX + (x + 1) * cellPixelDim,
+                                                         cellOriginY + (y + 1) * cellPixelDim);
                                 dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(col));
                             }
                         }
@@ -1023,9 +1023,8 @@ void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int heig
         {
             int totalFrames = Max(1, m_SpriteMode->m_ProcTotalFrames);
             m_SpriteMode->m_ScriptRuntime->Execute(TimeGUI::TimeGUIDrawList(nullptr), TEVector2(0, 0),
-                                                   TEVector2((float)width, (float)height),
-                                                   (float)frameIndex / 12.0f, 0.0f, frameIndex, totalFrames,
-                                                   width, height);
+                                                   TEVector2((float)width, (float)height), (float)frameIndex / 12.0f,
+                                                   0.0f, frameIndex, totalFrames, width, height);
 
             const auto &pixelBuf = m_SpriteMode->m_ScriptRuntime->GetPixelBuffer();
             if (pixelBuf.size() >= (size_t)(width * height))
