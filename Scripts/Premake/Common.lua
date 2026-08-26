@@ -33,8 +33,10 @@ filter { "action:gmake*" }
 filter {}
 
 filter { "system:macosx", "action:xcode*" }
+    cppdialect "C++20"
     xcodebuildsettings {
-        ["ONLY_ACTIVE_ARCH"] = "YES"
+        ["ONLY_ACTIVE_ARCH"] = "YES",
+        ["CLANG_CXX_LANGUAGE_STANDARD"] = "c++20"
     }
 filter {}
 
