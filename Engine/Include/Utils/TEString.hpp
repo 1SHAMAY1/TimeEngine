@@ -192,6 +192,18 @@ public:
     void TrimEndInline();
     void TrimInline();
 
+    TEString PadLeft(size_t totalLength, const TEString &padding) const;
+    TEString PadLeft(size_t totalLength, char paddingChar = ' ') const;
+    void PadLeftInline(size_t totalLength, const TEString &padding);
+    void PadLeftInline(size_t totalLength, char paddingChar = ' ');
+
+    TEString PadRight(size_t totalLength, const TEString &padding) const;
+    TEString PadRight(size_t totalLength, char paddingChar = ' ') const;
+    void PadRightInline(size_t totalLength, const TEString &padding);
+    void PadRightInline(size_t totalLength, char paddingChar = ' ');
+    size_t CountOccurrences(const TEString &sub) const;
+    size_t CountOccurrences(char ch) const;
+
     TEString Replace(const TEString &from, const TEString &to,
                      ESearchCase searchCase = ESearchCase::CaseSensitive) const;
     void ReplaceInline(const TEString &from, const TEString &to, ESearchCase searchCase = ESearchCase::CaseSensitive);
@@ -222,6 +234,9 @@ public:
     static TEString FromVector(const TEVector &v);
     static TEString FromVector2(const TEVector2 &v);
     static TEString FromVector4(const TEVector4 &v);
+
+    static TEString ToHex(uint32_t value, bool uppercase = false, bool prefix = false);
+    static TEString ToHex64(uint64_t value, bool uppercase = false, bool prefix = false);
 
     // ── Formatting (Printf & Token Format) ───────────────────────────────
     static TEString Printf(const char *fmt, ...);
