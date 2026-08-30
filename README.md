@@ -28,7 +28,7 @@ Traditional game development forces creators to constantly context-switch betwee
 **TimeEngine aims to eliminate this multi-app overhead** by building an all-in-one, high-performance in-editor ecosystem where designers and programmers can author code, craft procedural 2D assets, profile memory/frame timings, and execute game logic inside a single native workspace.
 
 > [!NOTE]  
-> **Development Status:** The full IGDE multi-app replacement vision (in-engine vector/raster art creation) and deterministic time manipulation (snapshot rewind & time dilation) are core architectural goals currently under active development. See [ROADMAP.md](ROADMAP.md).
+> **Development Status:** The full IGDE multi-app replacement vision (in-engine vector/raster art creation) and deterministic time manipulation (snapshot rewind & time dilation) are core architectural goals currently under active development. See [ROADMAP.md](Docs/ROADMAP.md).
 
 ---
 
@@ -48,8 +48,13 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 🚀 Getting Started
 
 ### Prerequisites
-* C++20 Compliant Compiler (MSVC, GCC, or Clang)
-* Git
+* **C++20 Compliant Compiler**:
+  * **Windows**: MSVC (Visual Studio 2022 v143+), MinGW-w64 (GCC 13+), or LLVM Clang-cl (17+)
+  * **macOS**: Apple Clang / Xcode 15+ (macOS 13+)
+  * **Linux**: GCC 13+ or Clang 17+
+* **Build Tools**: CMake 3.20+ and Git
+
+---
 
 ### Setup & Building from Source
 
@@ -64,15 +69,67 @@ Traditional game development forces creators to constantly context-switch betwee
    bash Scripts/SetupSubmodules.sh
    ```
 
-3. **Generate Workspace / Project Files**:
-   * **Windows (MSVC)**: `Scripts\Windows\MSVC\GenerateProjectFiles.bat`
-   * **Windows (MinGW)**: `Scripts\Windows\MinGW\GenerateProjectFiles.bat`
-   * **Windows (Clang)**: `Scripts\Windows\Clang\GenerateProjectFiles.bat`
-   * **Linux**: `Scripts/Linux/GenerateProjectFiles.sh`
-   * **macOS**: `Scripts/Mac/GenerateProjectFiles.sh`
+3. **Generate Workspace & Project Files**:
+   * **Windows (Visual Studio / MSVC)**:
+     ```cmd
+     Scripts\Windows\MSVC\GenerateProjectFiles.bat
+     ```
+   * **Windows (MinGW / GCC)**:
+     ```cmd
+     Scripts\Windows\MinGW\GenerateProjectFiles.bat
+     ```
+   * **Windows (LLVM Clang-cl)**:
+     ```cmd
+     Scripts\Windows\Clang\GenerateProjectFiles.bat
+     ```
+   * **macOS (Xcode)**:
+     ```bash
+     bash Scripts/Mac/Xcode/GenerateProjectFiles.sh
+     ```
+   * **macOS (Makefiles / Apple Clang)**:
+     ```bash
+     bash Scripts/Mac/Makefiles/GenerateProjectFiles.sh
+     ```
+   * **Linux (Makefiles / GCC & Clang)**:
+     ```bash
+     bash Scripts/Linux/GenerateProjectFiles.sh
+     ```
 
-4. **Build & Launch**:
-   Open the generated project solution/workspace or run the respective platform build script (e.g., `Scripts/Windows/MSVC/BuildDebug.bat` or `Scripts/Linux/BuildDebug.sh`). Launch `TimeEditor` executable to enter the workspace.
+4. **Build the Engine & Editor**:
+   * **Windows (MSVC)**:
+     * Debug: `Scripts\Windows\MSVC\BuildDebug.bat`
+     * Commercial Release: `Scripts\Windows\MSVC\BuildCommercialRelease.bat`
+   * **Windows (MinGW)**:
+     * Debug: `Scripts\Windows\MinGW\BuildDebug.bat`
+     * Commercial Release: `Scripts\Windows\MinGW\BuildCommercialRelease.bat`
+   * **Windows (Clang)**:
+     * Debug: `Scripts\Windows\Clang\BuildDebug.bat`
+     * Commercial Release: `Scripts\Windows\Clang\BuildCommercialRelease.bat`
+   * **macOS (Xcode)**:
+     * Debug: `bash Scripts/Mac/Xcode/BuildDebug.sh`
+     * Commercial Release: `bash Scripts/Mac/Xcode/BuildCommercialRelease.sh`
+   * **macOS (Makefiles)**:
+     * Debug: `bash Scripts/Mac/Makefiles/BuildDebug.sh`
+     * Commercial Release: `bash Scripts/Mac/Makefiles/BuildCommercialRelease.sh`
+   * **Linux (Makefiles)**:
+     * Debug: `bash Scripts/Linux/BuildDebug.sh`
+     * Commercial Release: `bash Scripts/Linux/BuildCommercialRelease.sh`
+
+5. **Clean & Maintenance Scripts**:
+   * **Windows Clean**: `Scripts\Windows\CleanProjectFiles.bat`
+   * **macOS Clean**: `bash Scripts/Mac/Xcode/CleanProjectFiles.sh` or `bash Scripts/Mac/Makefiles/CleanProjectFiles.sh`
+   * **Linux Clean**: `bash Scripts/Linux/CleanProjectFiles.sh`
+   * **OS File Associations (`.teproj` / `.tescene`)**:
+     * Windows: `Scripts\Windows\RegisterFileExtension.bat`
+     * macOS: `bash Scripts/Mac/Xcode/RegisterFileExtension.sh`
+     * Linux: `bash Scripts/Linux/RegisterFileExtension.sh`
+
+---
+
+## 💬 Community & Discussions
+
+* 💬 **[GitHub Discussions](https://github.com/1SHAMAY1/TimeEngine/discussions)** — Join our community to ask questions, share game showcases, pitch RFCs, and discuss engine architecture.
+* 🤝 **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — Our pledge and standards for a welcoming, inclusive community.
 
 ---
 
