@@ -92,18 +92,3 @@ jobs:
                 console.warn('Could not post PR comment (likely fork PR without write permissions):', err.message);
               }
             }
-
-      - name: Send Direct Email Notification to Causer
-        if: always() && env.MAIL_SERVER != '' && steps.author-info.outputs.email != ''
-        env:
-          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: ${{ secrets.MAIL_PORT || 465 }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "[TimeEngine CI] Commit Guidelines Audit Report - ${{ steps.run-commit-check.outcome == 'success' && 'PASSED' || 'ISSUES DETECTED' }}"
-          to: ${{ steps.author-info.outputs.email }}
-          from: ${{ secrets.MAIL_FROM || 'ci-bot@timeengine.org' }}
-          html_body: file://.github/reports/commit_guidelines_report.html

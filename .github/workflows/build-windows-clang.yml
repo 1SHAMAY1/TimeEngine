@@ -21,22 +21,6 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Resolve Author Email
-        id: author-info
-        shell: pwsh
-        run: |
-          $email = "${{ github.event.pusher.email }}"
-          if (-not $email -or $email -eq "null") {
-            $email = git log -1 --pretty=format:'%ae'
-          }
-          echo "email=$email" >> $env:GITHUB_OUTPUT
-          Write-Host "Resolved author email: $email"
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Build Logger Dependency
         shell: cmd
         run: |
@@ -93,33 +77,3 @@ jobs:
             } catch (err) {
               console.warn('Could not post PR comment (likely fork PR without write permissions):', err.message);
             }
-
-      - name: Generate Professional Email
-        if: failure()
-        shell: pwsh
-        run: |
-          python .github/scripts/send_notification.py `
-            --workflow "Windows Build (Clang)" `
-            --status "FAILED" `
-            --repo "${{ github.repository }}" `
-            --branch "${{ github.ref_name }}" `
-            --commit "${{ github.sha }}" `
-            --author "${{ github.actor }}" `
-            --email "${{ steps.author-info.outputs.email }}" `
-            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" `
-            --output ".github/reports/clang_failure.html"
-
-      - name: Send Direct Email Notification to Causer
-        if: failure() && env.MAIL_SERVER != '' && steps.author-info.outputs.email != ''
-        env:
-          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: ${{ secrets.MAIL_PORT || 465 }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "[TimeEngine CI Failure] Windows Clang Build Failed on ${{ github.ref_name }}"
-          to: ${{ steps.author-info.outputs.email }}
-          from: ${{ secrets.MAIL_FROM || 'ci-bot@timeengine.org' }}
-          html_body: file://.github/reports/clang_failure.html
