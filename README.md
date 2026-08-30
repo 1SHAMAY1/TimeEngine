@@ -129,7 +129,7 @@ Traditional game development forces creators to constantly context-switch betwee
 ## 💬 Community & Discussions
 
 * 💬 **[GitHub Discussions](https://github.com/1SHAMAY1/TimeEngine/discussions)** — Join our community to ask questions, share game showcases, pitch RFCs, and discuss engine architecture.
-* 🤝 **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — Our pledge and standards for a welcoming, inclusive community.
+* 🤝 **[.github/CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)** — Our pledge and standards for a welcoming, inclusive community.
 
 ---
 
