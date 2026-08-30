@@ -104,7 +104,7 @@ general.ApplySettings();
 
 ## Related Architectural Documentation
 
-- [Core Subsystem Architecture](../../src/Core/ARCHITECTURE.md) — Main engine application execution loop.
+- [Core Subsystem Architecture](../../../src/Core/ARCHITECTURE.md) — Main engine application execution loop.
 - [Multi-Threading Subsystem Architecture](../Threading/ARCHITECTURE.md) — Worker thread pools and task queues.
-- [Layers Subsystem Architecture](../../src/Core/Layers/ARCHITECTURE.md) — `EngineSettingsLayer` and overlay UI.
-- [Root Architecture Index](../../../ARCHITECTURE.md) — Master TimeEngine architecture index.
+- [Layers Subsystem Architecture](../../../src/Core/Layers/ARCHITECTURE.md) — `EngineSettingsLayer` and overlay UI.
+- [Root Architecture Index](../../../../Docs/ARCHITECTURE.md) — Master TimeEngine architecture index.

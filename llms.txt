@@ -98,7 +98,7 @@ All third-party libraries have strict wrappers that isolate raw vendor classes, 
 - **Velox (Physics Engine)**:
   - Abstraction: [PhysicsWorld.hpp](file:///E:/TimeEngine/Engine/Include/Core/Physics/PhysicsWorld.hpp) / [PhysicsWorld.cpp](file:///E:/TimeEngine/Engine/src/Core/Physics/PhysicsWorld.cpp)
 - **GLFW (Windowing & OS Input Integration)**:
-  - OS abstraction interface: [IWindow.hpp](file:///E:/TimeEngine/Engine/Include/Core/IWindow.hpp)
+  - OS abstraction interface: [IWindow.hpp](file:///E:/TimeEngine/Engine/Include/Window/IWindow.hpp)
   - Windows-specific implementation: [WindowsWindow.cpp](file:///E:/TimeEngine/Engine/src/Window/WindowsWindow.cpp)
 - **Customizable Logger (Logging Backend)**:
   - System logging interface: [Log.h](file:///E:/TimeEngine/Engine/src/Core/Log.h)

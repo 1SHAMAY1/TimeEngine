@@ -1,6 +1,6 @@
 # 2D Collision Subsystem Architecture
 
-The 2D Collision subsystem in TimeEngine handles broadphase spatial filtering ([`BroadPhase`](../../../../Include/Core/Collision/BroadPhase.hpp)), narrowphase geometric overlap detection using the Separating Axis Theorem (SAT) ([`CollisionSystem`](../../../../Include/Core/Collision/CollisionSystem.hpp)), shape bounds ([`CollisionTypes.hpp`](../../../../Include/Core/Collision/CollisionTypes.hpp)), and collider components (`BoxColliderComponent`, `CircleColliderComponent`, `TriangleColliderComponent`, `PolygonColliderComponent`).
+The 2D Collision subsystem in TimeEngine handles broadphase spatial filtering ([`BroadPhase`](../../../Include/Core/Collision/BroadPhase.hpp)), narrowphase geometric overlap detection using the Separating Axis Theorem (SAT) ([`CollisionSystem`](../../../Include/Core/Collision/CollisionSystem.hpp)), shape bounds ([`CollisionTypes.hpp`](../../../Include/Core/Collision/CollisionTypes.hpp)), and collider components (`BoxColliderComponent`, `CircleColliderComponent`, `TriangleColliderComponent`, `PolygonColliderComponent`).
 
 > [!NOTE]
 > In short, think of the **Collision Subsystem** as the game's touch sensor and boundary detector: `BroadPhase` quickly filters out pairs of objects that are nowhere near each other, while `CollisionSystem` performs precise mathematical checks (AABB vs AABB, Circle vs Circle, SAT Polygon vs Polygon) to detect collisions and fire `onCollision` callbacks.
@@ -28,14 +28,14 @@ flowchart TD
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TE::CollisionShape`](../../../../Include/Core/Collision/CollisionTypes.hpp)**:
+1. **[`TE::CollisionShape`](../../../Include/Core/Collision/CollisionTypes.hpp)**:
    - Unified shape container holding `CollisionType` enum (`AABB`, `Circle`, `Triangle`, `Polygon`).
    - Stores geometric bounds structures (`BoundsAABB`, `BoundsCircle`, `BoundsTriangle`, `BoundsPolygon`).
 
-2. **[`TE::BroadPhase`](../../../../Include/Core/Collision/BroadPhase.hpp)**:
+2. **[`TE::BroadPhase`](../../../Include/Core/Collision/BroadPhase.hpp)**:
    - Performs initial spatial pruning to generate potential colliding entity pairs (`EntityPair`).
 
-3. **[`TE::CollisionSystem`](../../../../Include/Core/Collision/CollisionSystem.hpp)**:
+3. **[`TE::CollisionSystem`](../../../Include/Core/Collision/CollisionSystem.hpp)**:
    - Central collision manager executing narrowphase geometry intersection algorithms.
    - Computes world-space transformations for nested component hierarchies.
    - Triggers `onCollision` std::function callback upon intersection.

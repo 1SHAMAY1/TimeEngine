@@ -1,6 +1,6 @@
 # Core Low-Level Input Subsystem Architecture
 
-The Core Input subsystem in TimeEngine provides low-level hardware device polling ([`Input`](../../../../Include/Input/Input.hpp)), key duration tracking (`InputState`), scroll delta accumulation, and key-code translation (`ToImGuiKey`).
+The Core Input subsystem in TimeEngine provides low-level hardware device polling ([`Input`](../../../Include/Input/Input.hpp)), key duration tracking (`InputState`), scroll delta accumulation, and key-code translation (`ToImGuiKey`).
 
 > [!NOTE]
 > In short, think of the **Core Input Subsystem** as the engine's hardware sensor reader: `Input` queries GLFW directly to see if keys or mouse buttons are physically pressed down, tracks how long keys are held, and converts keycodes for UI system compatibility.

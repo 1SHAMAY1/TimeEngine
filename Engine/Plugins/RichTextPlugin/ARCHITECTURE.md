@@ -3,7 +3,7 @@
 The `RichTextPlugin` module provides a standalone, dynamic rich text system for TimeEngine, featuring BBCode/XML markup parsing, `RichTextTable` style sheets (derived from `TEDataTable`), `stb_truetype` font metric integration, real-time vertex animations, and interactive hyperlink hit testing.
 
 > [!NOTE]
-> Powered by TimeEngine's unified [`TEString`](../../../Include/Utils/TEString.hpp), the plugin supports dynamic culture-aware localization via `TEString::ResolveLocalized()` (`TELocalizationManager` / `TEStringTable`) and dynamic variable substitution via `TEString::FormatText()`.
+> Powered by TimeEngine's unified [`TEString`](../../Include/Utils/TEString.hpp), the plugin supports dynamic culture-aware localization via `TEString::ResolveLocalized()` (`TELocalizationManager` / `TEStringTable`) and dynamic variable substitution via `TEString::FormatText()`.
 
 ---
 

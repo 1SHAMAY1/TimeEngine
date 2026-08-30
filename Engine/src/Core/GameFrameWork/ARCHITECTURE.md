@@ -1,6 +1,6 @@
 # GameFramework Subsystem Architecture
 
-The GameFramework subsystem in TimeEngine provides core object reflections ([`TObject`](../../../../Include/GameFrameWork/TObject.hpp)), component behaviors ([`TComponent`](../../../../Include/GameFrameWork/TComponent.hpp)), helper macro libraries ([`TFunctionLibrary`](../../../../Include/GameFrameWork/TFunctionLibrary.hpp)), and global object lifecycle pooling and spatial scene helpers ([`GameplayUtils`](../../../../Include/GameFrameWork/GameplayUtils.hpp)).
+The GameFramework subsystem in TimeEngine provides core object reflections ([`TObject`](../../../Include/GameFrameWork/TObject.hpp)), component behaviors ([`TComponent`](../../../Include/GameFrameWork/TComponent.hpp)), helper macro libraries ([`TFunctionLibrary`](../../../Include/GameFrameWork/TFunctionLibrary.hpp)), and global object lifecycle pooling and spatial scene helpers ([`GameplayUtils`](../../../Include/GameFrameWork/GameplayUtils.hpp)).
 
 > [!NOTE]
 > In short, think of the **GameFramework Subsystem** as the base foundation for all game objects: `TObject` gives every object a unique ID, owner, and initialization flag; `TComponent` provides spatial 2D transforms, hierarchy parent/child relationships, custom geometry picking, and 2D shadow occlusion features; while `GameplayUtils` provides object pooling, instantiation helpers (`CreateObject`), and spatial picking calculations.
@@ -21,16 +21,16 @@ flowchart TD
 
 ## Core Classes & Subsystem Roles
 
-1. **[`TObject`](../../../../Include/GameFrameWork/TObject.hpp)**:
+1. **[`TObject`](../../../Include/GameFrameWork/TObject.hpp)**:
    - Root object class for all reflected game objects.
    - Assigns thread-safe unique 64-bit IDs via `std::atomic<uint64_t>`.
    - Tracks object names, owner relationships (`SetOwner`), and pending destruction states (`MarkPendingDestroy`).
 
-2. **[`TComponent`](../../../../Include/GameFrameWork/TComponent.hpp)**:
+2. **[`TComponent`](../../../Include/GameFrameWork/TComponent.hpp)**:
    - Abstract base class for all ECS components in TimeEngine (inherits object ownership from `TObject`).
    - Bundles spatial 2D transformation (`TETransform Transform`), component hierarchy (`SetComponentParent`, `Children`), picking (`ContainsPoint`), 2D shadow occlusion (`CastsOcclusionShadow`), and inspector drawing (`OnDrawInspector`).
 
-3. **[`TFunctionLibrary`](../../../../Include/GameFrameWork/TFunctionLibrary.hpp)** & **[`GameplayUtils`](../../../../Include/GameFrameWork/GameplayUtils.hpp)**:
+3. **[`TFunctionLibrary`](../../../Include/GameFrameWork/TFunctionLibrary.hpp)** & **[`GameplayUtils`](../../../Include/GameFrameWork/GameplayUtils.hpp)**:
    - Provides static game utility functions, coordinate conversions, and central `TObject` heap pooling (`GetObjectPool()`).
 
 ---
