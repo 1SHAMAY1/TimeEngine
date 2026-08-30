@@ -85,12 +85,20 @@ jobs:
         with:
           script: |
             const comment = `### ❌ Build Failure Alert: Windows (MinGW/GCC)\n\nHey @${context.actor}, the Windows MinGW build failed on \`${context.ref}\`.\n\n[🔍 View Full CI Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            const fs = require('fs');
+            if (process.env.GITHUB_STEP_SUMMARY) {
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n${comment}\n`);
+            }
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (err) {
+              console.warn('Could not post PR comment (likely fork PR without write permissions):', err.message);
+            }
 
       - name: Generate Professional Email
         if: failure()

@@ -78,12 +78,19 @@ jobs:
             if (fs.existsSync(reportPath)) {
               const body = fs.readFileSync(reportPath, 'utf8');
               const comment = `### ⚠️ Commit Guidelines Audit Notice\n\nHey @${context.actor}, please review the following issues with your commit / PR:\n\n${body}`;
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
+              if (process.env.GITHUB_STEP_SUMMARY) {
+                fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n${comment}\n`);
+              }
+              try {
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              } catch (err) {
+                console.warn('Could not post PR comment (likely fork PR without write permissions):', err.message);
+              }
             }
 
       - name: Send Direct Email Notification to Causer

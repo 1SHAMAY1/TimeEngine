@@ -2,20 +2,11 @@ name: Sync Roadmap Milestones
 
 on:
   push:
+    branches: [ main ]
     paths:
       - 'Docs/ROADMAP.md'
       - 'ROADMAP.md'
       - '.github/workflows/sync-roadmap.yml'
-  pull_request:
-    paths:
-      - 'Docs/ROADMAP.md'
-      - 'ROADMAP.md'
-      - '.github/workflows/sync-roadmap.yml'
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
   workflow_dispatch:
 
 permissions:

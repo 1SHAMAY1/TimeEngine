@@ -64,11 +64,23 @@ jobs:
             }
           }
 
-      - name: Commit changes
-        if: steps.changed-files.outputs.any_changed == 'true'
+      - name: Commit changes (Same repository branches)
+        if: steps.changed-files.outputs.any_changed == 'true' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Build: Format code with clang-format"
+
+      - name: Verify Formatting (Fork Pull Requests)
+        if: steps.changed-files.outputs.any_changed == 'true' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        shell: pwsh
+        run: |
+          $diff = git status --porcelain
+          if ($diff) {
+            Write-Host "Formatting violations found on fork PR."
+            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### ❌ Code Formatting Violations (Clang-Format)`n`nFormatting differences were detected in your PR. Because this PR is from a fork, GitHub Actions cannot auto-commit directly to your branch.`n`nPlease run `clang-format -i <file>` locally on all changed files, commit, and push."
+            git diff
+            exit 1
+          }
 
       - name: Notify on Pull Request Failure
         if: failure() && github.event_name == 'pull_request'
@@ -76,12 +88,20 @@ jobs:
         with:
           script: |
             const comment = `### ❌ Formatting Check Failed (Clang-Format)\n\nHey @${context.actor}, code formatting violations were detected on \`${context.ref}\`.\n\nPlease run \`clang-format -i <files>\` locally and push to resolve.\n\n[🔍 View Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            const fs = require('fs');
+            if (process.env.GITHUB_STEP_SUMMARY) {
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n${comment}\n`);
+            }
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (err) {
+              console.warn('Could not post PR comment (likely fork PR without write permissions):', err.message);
+            }
 
       - name: Generate Professional Email
         if: failure()
