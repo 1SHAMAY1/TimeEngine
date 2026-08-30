@@ -2,49 +2,88 @@
 
 First off, thank you for considering contributing to TimeEngine! It's people like you who make it a great tool for everyone.
 
-## Code of Conduct
+---
 
-By participating in this project, you agree to abide by our Code of Conduct (standard Contributor Covenant).
+## 📜 Code of Conduct
 
-## How Can I Contribute?
+By participating in this project, you agree to abide by our **[Code of Conduct](CODE_OF_CONDUCT.md)** (standard Contributor Covenant v2.1). Please report unacceptable behavior to **shankharajdatta2004@gmail.com** or repository maintainers.
 
-### Reporting Bugs
-- Use the **GitHub Issue Tracker**.
-- Check if the issue has already been reported.
-- Include steps to reproduce, expected behavior, and actual behavior.
+---
 
-### Suggesting Enhancements
-- Open a **Feature Request** issue.
-- Describe the use case and why this feature would be beneficial.
+## 💬 Community & Discussions
 
-### Pull Requests
-1. Fork the repo and create your branch from `main`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code follows the existing style (`.clang-format`).
+Join our community on **[GitHub Discussions](https://github.com/1SHAMAY1/TimeEngine/discussions)** to:
+- Ask questions and get development help
+- Propose architecture RFCs and engine enhancements
+- Share game showcases and tools built with TimeEngine
 
-## Development Setup
+---
 
-1. **Clone the repository**:
-   ```bash
-   git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
-   ```
-2. **Generate Project Files**:
-   Run the workspace generation script for your platform:
-   - **Windows**: `Scripts/Windows/GenerateProjectFiles.bat`
-   - **Linux**: `Scripts/Linux/GenerateProjectFiles.sh`
-   - **macOS**: `Scripts/Mac/GenerateProjectFiles.sh`
-3. **Build**:
-   Open the generated IDE workspace/solution or build using the native platform tools (e.g. MSBuild on Windows, `make` on Linux, `xcodebuild` on macOS).
+## 🛠️ Development Setup
 
-## Code Style & Engine Conventions
+### 1. Clone & Initialize Submodules
+```bash
+git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
+cd TimeEngine
+bash Scripts/SetupSubmodules.sh
+```
 
-We use `.clang-format` to maintain consistent code style. Please run clang-format on your changes before submitting a PR.
+### 2. Generate Workspace & Project Files
+Run the generator script for your specific platform and toolchain:
+- **Windows (Visual Studio / MSVC)**: `Scripts\Windows\MSVC\GenerateProjectFiles.bat`
+- **Windows (MinGW / GCC)**: `Scripts\Windows\MinGW\GenerateProjectFiles.bat`
+- **Windows (LLVM Clang-cl)**: `Scripts\Windows\Clang\GenerateProjectFiles.bat`
+- **macOS (Xcode)**: `bash Scripts/Mac/Xcode/GenerateProjectFiles.sh`
+- **macOS (Makefiles / Apple Clang)**: `bash Scripts/Mac/Makefiles/GenerateProjectFiles.sh`
+- **Linux (Makefiles / GCC & Clang)**: `bash Scripts/Linux/GenerateProjectFiles.sh`
+
+### 3. Build the Engine & Editor
+- **Windows (MSVC)**: `Scripts\Windows\MSVC\BuildDebug.bat`
+- **Windows (MinGW)**: `Scripts\Windows\MinGW\BuildDebug.bat`
+- **Windows (Clang)**: `Scripts\Windows\Clang\BuildDebug.bat`
+- **macOS (Xcode)**: `bash Scripts/Mac/Xcode/BuildDebug.sh`
+- **macOS (Makefiles)**: `bash Scripts/Mac/Makefiles/BuildDebug.sh`
+- **Linux (Makefiles)**: `bash Scripts/Linux/BuildDebug.sh`
+
+---
+
+## 📝 Commit & Pull Request Guidelines
+
+To maintain high commit history quality, TimeEngine runs an automated **Commit Guidelines Validator** in CI. All commits and PRs must comply with the following standards:
+
+### 1. Commit Header Format
+Every commit header must follow the format:
+```text
+<Tag>: <Brief Description>
+```
+- **Length**: Strictly **less than 50 characters** (maximum 49 characters).
+- **Style**: Use imperative mood (e.g., `Editor: Fix texture inspector crash` rather than `fixed crash`).
+- **No Lazy Messages**: Generic messages like `fix`, `update`, `test`, `wip`, or `changes` will fail CI validation.
+
+### 2. Approved Canonical Tags
+Your `<Tag>` must be one of the following official module tags:
+> `Core`, `Renderer`, `Platform`, `Window`, `Utils`, `ECS`, `GameFrameWork`, `Input`, `Threading`, `Time`, `Asset`, `Collision`, `Events`, `Physics`, `Plugin`, `Project`, `Scene`, `Editor`, `Docs`, `CI/CD`, `Vendor`, `AI Agents`, `Automation`, `MAC`, `Linux`, `Windows`, `Release`, `Build`
+
+### 3. Pull Request Template & Description
+When submitting a Pull Request, please fill out all sections of [`.github/PULL_REQUEST_TEMPLATE.md`](PULL_REQUEST_TEMPLATE.md):
+- **Description**: Detailed explanation of motivation and changes.
+- **Type of Change**: Bug fix, new feature, documentation, etc.
+- **Testing**: Steps taken to verify changes locally.
+- **Checklist**: Confirmation of style guidelines, tests, and determinism.
+
+---
+
+## 🎨 Code Style & Engine Conventions
+
+We use `.clang-format` to maintain consistent C++ code style.
+
+> [!IMPORTANT]
+> **Fork Contributors**: If submitting a PR from a fork, please run `clang-format -i <modified_files>` locally on all changed files before committing and pushing, as GitHub Actions cannot auto-commit directly back to third-party forks.
 
 - **Naming**: PascalCase for Classes, camelCase for variables (`m_` prefix for private member variables), SCREAMING_SNAKE_CASE for macros.
 - **Headers**: Use `#pragma once` in all headers.
 - **Indentation**: 4 spaces.
+- **Local Rule Check**: You can run `premake5 check-rules` locally to verify architecture and coding safety rules.
 
 ### Memory Management & Smart Pointers
 - **No Raw Owning Pointers**: Never use `new` / `delete` or unmanaged raw pointers for memory ownership.
@@ -74,7 +113,9 @@ When adding new components to the ECS (under `Engine/Include/Core/Scene/`), make
 
 This allows the Editor's **Properties** panel to draw the controls automatically without writing manual ImGui code.
 
-## Core Focus: 2D Excellence & Time Manipulation
+---
 
-Contributions that advance the **Inbuilt 2D Sprite Editor** or the **Time Manipulation** system (deterministic simulation, state snapshots, time-reversal) are highly prioritized. We aim to be the premier C++ solution for deterministic 2D development. See [ROADMAP.md](../Docs/ROADMAP.md) for details.
+## 🎯 Core Focus: 2D Excellence & Time Manipulation
+
+Contributions that advance the **Inbuilt 2D Sprite Editor** or the **Time Manipulation** system (deterministic simulation, state snapshots, time-reversal) are highly prioritized. We aim to be the premier C++ solution for deterministic 2D development. See [Docs/ROADMAP.md](../Docs/ROADMAP.md) for details.
 
