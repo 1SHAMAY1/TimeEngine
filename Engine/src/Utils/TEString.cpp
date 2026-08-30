@@ -469,6 +469,108 @@ void TEString::TrimEndInline() { *this = TrimEnd(); }
 
 void TEString::TrimInline() { *this = Trim(); }
 
+TEString TEString::PadLeft(size_t totalLength, const TEString &padding) const
+{
+    if (totalLength <= m_Data.length() || padding.IsEmpty())
+        return *this;
+
+    size_t padLen = totalLength - m_Data.length();
+    size_t patLen = padding.m_Data.length();
+    size_t repeats = padLen / patLen;
+    size_t remainder = padLen % patLen;
+
+    std::string result;
+    result.reserve(totalLength);
+    for (size_t i = 0; i < repeats; ++i)
+    {
+        result.append(padding.m_Data);
+    }
+    if (remainder > 0)
+    {
+        result.append(padding.m_Data, 0, remainder);
+    }
+    result.append(m_Data);
+    return TEString(std::move(result));
+}
+
+TEString TEString::PadLeft(size_t totalLength, char paddingChar) const
+{
+    if (totalLength <= m_Data.length())
+        return *this;
+
+    size_t padLen = totalLength - m_Data.length();
+    std::string result;
+    result.reserve(totalLength);
+    result.append(padLen, paddingChar);
+    result.append(m_Data);
+    return TEString(std::move(result));
+}
+
+void TEString::PadLeftInline(size_t totalLength, const TEString &padding) { *this = PadLeft(totalLength, padding); }
+
+void TEString::PadLeftInline(size_t totalLength, char paddingChar) { *this = PadLeft(totalLength, paddingChar); }
+
+TEString TEString::PadRight(size_t totalLength, const TEString &padding) const
+{
+    if (totalLength <= m_Data.length() || padding.IsEmpty())
+        return *this;
+
+    size_t padLen = totalLength - m_Data.length();
+    size_t patLen = padding.m_Data.length();
+    size_t repeats = padLen / patLen;
+    size_t remainder = padLen % patLen;
+
+    std::string result;
+    result.reserve(totalLength);
+    result.append(m_Data);
+    for (size_t i = 0; i < repeats; ++i)
+    {
+        result.append(padding.m_Data);
+    }
+    if (remainder > 0)
+    {
+        result.append(padding.m_Data, 0, remainder);
+    }
+    return TEString(std::move(result));
+}
+
+TEString TEString::PadRight(size_t totalLength, char paddingChar) const
+{
+    if (totalLength <= m_Data.length())
+        return *this;
+
+    size_t padLen = totalLength - m_Data.length();
+    std::string result;
+    result.reserve(totalLength);
+    result.append(m_Data);
+    result.append(padLen, paddingChar);
+    return TEString(std::move(result));
+}
+
+void TEString::PadRightInline(size_t totalLength, const TEString &padding) { *this = PadRight(totalLength, padding); }
+
+void TEString::PadRightInline(size_t totalLength, char paddingChar) { *this = PadRight(totalLength, paddingChar); }
+
+size_t TEString::CountOccurrences(const TEString &sub) const
+{
+    if (sub.IsEmpty() || m_Data.empty())
+        return 0;
+
+    size_t count = 0;
+    size_t pos = 0;
+    while ((pos = m_Data.find(sub.m_Data, pos)) != std::string::npos)
+    {
+        ++count;
+        pos += sub.m_Data.length();
+    }
+    return count;
+}
+
+size_t TEString::CountOccurrences(char ch) const
+{
+    return static_cast<size_t>(std::count(m_Data.begin(), m_Data.end(), ch));
+}
+
 TEString TEString::Replace(const TEString &from, const TEString &to, ESearchCase searchCase) const
 {
     if (from.IsEmpty())
@@ -666,6 +768,22 @@ TEString TEString::FromVector2(const TEVector2 &v) { return TEString::Printf("X=
 TEString TEString::FromVector4(const TEVector4 &v)
 {
     return TEString::Printf("X=%.3f Y=%.3f Z=%.3f W=%.3f", v.x, v.y, v.z, v.w);
+}
+
+TEString TEString::ToHex(uint32_t value, bool uppercase, bool prefix)
+{
+    char buf[32];
+    const char *fmt = prefix ? (uppercase ? "0x%X" : "0x%x") : (uppercase ? "%X" : "%x");
+    std::snprintf(buf, sizeof(buf), fmt, value);
+    return TEString(buf);
+}
+
+TEString TEString::ToHex64(uint64_t value, bool uppercase, bool prefix)
+{
+    char buf[48];
+    const char *fmt = prefix ? (uppercase ? "0x%llX" : "0x%llx") : (uppercase ? "%llX" : "%llx");
+    std::snprintf(buf, sizeof(buf), fmt, static_cast<unsigned long long>(value));
+    return TEString(buf);
 }
 
 // Printf
