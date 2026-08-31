@@ -71,6 +71,20 @@ When submitting a Pull Request, please fill out all sections of [`.github/PULL_R
 - **Testing**: Steps taken to verify changes locally.
 - **Checklist**: Confirmation of style guidelines, tests, and determinism.
 
+### 4. Pull Request Limits & Contributor Policy
+To ensure meaningful reviews, prevent review fatigue, and eliminate automated PR spam across forks:
+- **1 Active PR & 24-Hour Cooldown Limit**: Contributors and fork accounts are strictly limited to **1 active Pull Request at a time**. Furthermore, a mandatory **24-hour cooldown period applies after your PR is merged or closed** before you may open a new Pull Request. This ensures careful review cycles, prevents rapid-fire submissions, and maintains sustainable maintainer bandwidth.
+- **First-Time Contributors & Good First Issues**: First-time contributors can claim and submit **only one `good first issue`** to get familiar with our workflow. Once merged, future contributions should focus on standard issues, plugin features, or roadmap milestones.
+- **Atomic & Focused Scope**: Each PR must address a single focused task or bug fix. Avoid scattershot PRs that modify dozens of unrelated files or perform bulk automated changes without context.
+- **Draft PRs for WIP**: If your PR is in progress or not yet verified locally, keep it marked as a **Draft** until ready for maintainer review.
+
+### 5. AI-Assisted Development & Quality Standards
+TimeEngine embraces modern productivity tools, including AI code assistants, under our MIT license. However, automated velocity must never compromise code health or architectural integrity:
+- **Full Contributor Ownership**: You are 100% accountable for every line of code you submit. Never submit AI-generated code you have not personally inspected, understood, and verified.
+- **Zero Hallucinated APIs**: Submissions using invented functions, non-existent engine types, raw owning pointers (`new`/`delete`), or raw STL types where engine abstractions exist (`TEString`, `TEArray`, `TE::Ref`) will be rejected.
+- **Mandatory Local Build & Run Validation**: Code must compile cleanly and pass local build validation via platform project scripts (e.g. `Scripts\Windows\MSVC\BuildDebug.bat`) before submitting a PR.
+- **No Rapid Mass-Submissions**: Rapid, unverified submissions from automated generation loops will be closed immediately and marked as spam.
+
 ---
 
 ## 🎨 Code Style & Engine Conventions
