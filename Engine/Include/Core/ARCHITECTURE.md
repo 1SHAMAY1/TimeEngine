@@ -7,7 +7,7 @@ This directory contains the public header interfaces, memory models, thread pool
 ## 🏛️ Subsystem Architecture Guides & Direct Links
 
 * 🧵 **[Multi-Threading & Task System Architecture](Threading/ARCHITECTURE.md)** (`Engine/Include/Core/Threading/`) — Dedicated worker thread pools (`ThreadPool`, `TaskSystem`), 6 task queues (Main, Render, Gameplay, AI, Calc, Widget), and async job submission macros (`SUBMIT_CALC`, `SUBMIT_AI`).
-* ⚙️ **[Engine Settings Architecture](EngineSettings_ARCHITECTURE.md)** (`Engine/Include/Core/EngineSettings_ARCHITECTURE.md`) — Singleton engine configuration (`EngineSettings`), target framerates, VSync, logging filters, performance caps, and `EngineSettingsLayer`.
+* ⚙️ **[Engine Settings Architecture](Settings/ARCHITECTURE.md)** (`Engine/Include/Core/Settings/`) — Singleton engine configuration (`EngineSettings`), target framerates, VSync, logging filters, performance caps, and `EngineSettingsLayer`.
 
 ---
 

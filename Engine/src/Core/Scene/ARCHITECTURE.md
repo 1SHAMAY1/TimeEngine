@@ -1,6 +1,6 @@
 # Scene Subsystem Architecture
 
-The Scene subsystem in TimeEngine provides the Entity-Component-System (ECS) architecture, entity lifespan management ([`EntityManager`](../../../../Include/Core/Scene/EntityManager.hpp)), scene graph lifecycle ([`Scene`](../../../../Include/Core/Scene/Scene.hpp)), component reflection ([`ComponentRegistry`](../../../../Include/Core/Scene/ComponentRegistry.hpp)), and JSON scene serialization.
+The Scene subsystem in TimeEngine provides the Entity-Component-System (ECS) architecture, entity lifespan management ([`EntityManager`](../../../Include/Core/Scene/EntityManager.hpp)), scene graph lifecycle ([`Scene`](../../../Include/Core/Scene/Scene.hpp)), component reflection ([`ComponentRegistry`](../../../Include/Core/Scene/ComponentRegistry.hpp)), and JSON scene serialization.
 
 > [!NOTE]
 > In short, think of the **Scene Subsystem** as the movie stage: `Scene` represents the stage holding all active props and actors; `Entity` represents an individual actor ID on stage; and `TComponent` (like `SpriteComponent`, `TransformComponent`, `PlayerMovementComponent2D`) are the costumes, scripts, and abilities attached to each actor.

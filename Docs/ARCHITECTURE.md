@@ -11,7 +11,7 @@ This document provides a concise high-level architecture index and build configu
 
 * ⚙️ **[Engine Subsystem Architecture](Engine/ARCHITECTURE.md)** — Core engine loop, ECS, 2D physics, 2D collisions, asset manager, and multi-backend renderers (OpenGL 4.5, DirectX 11, Vulkan, OpenGLES).
   * 📁 **[Project Subsystem Architecture](Engine/src/Core/Project/ARCHITECTURE.md)** — Active workspace config (`ProjectConfig`), root directory resolution, and `.teproj` serialization.
-  * ⚙️ **[Engine Settings Architecture](Engine/Include/Core/EngineSettings_ARCHITECTURE.md)** — Singleton engine settings (`EngineSettings`), target framerates, VSync, logging filters, and UI layer.
+  * ⚙️ **[Engine Settings Architecture](Engine/Include/Core/Settings/ARCHITECTURE.md)** — Singleton engine settings (`EngineSettings`), target framerates, VSync, logging filters, and UI layer.
   * ⚡ **[Events Subsystem Architecture](Engine/src/Core/Events/ARCHITECTURE.md)** — Blocking event classes (`ApplicationEvent`, `KeyEvent`, `MouseEvent`) and type-safe `EventDispatcher`.
   * 🧵 **[Multi-Threading & Task System Architecture](Engine/Include/Core/Threading/ARCHITECTURE.md)** — Dedicated thread pools (`ThreadPool`, `TaskSystem`), 6 worker pools (Main, Render, Gameplay, AI, Calc, Widget), and async job macros (`SUBMIT_CALC`, `SUBMIT_AI`).
   * 🥞 **[Layers Subsystem Architecture](Engine/src/Core/Layers/ARCHITECTURE.md)** — Modular execution stack (`LayerStack`), regular game layers vs top-priority GUI overlays.
@@ -27,13 +27,13 @@ This document provides a concise high-level architecture index and build configu
 
 TimeEngine uses **Premake5** ([`Premake5.lua`](Premake5.lua)) to generate native Visual Studio solution files (`.sln`), Makefiles, or Ninja projects across Windows, Linux, and macOS.
 
-### Building on Windows (MSVC / MSBuild)
-```bash
-# Generate Visual Studio 2022 project files
-Vendor/Premake/premake5.exe vs2022
+### Building on Windows (MSVC)
+```bat
+:: Generate Visual Studio 2022 project files
+Scripts\Windows\GenerateProjectFiles.bat
 
-# Compile x64 Debug build via MSBuild
-MSBuild.exe Engine/Engine.vcxproj /p:Configuration=Debug /p:Platform=x64
+:: Compile x64 Debug build via project script
+Scripts\Windows\MSVC\BuildDebug.bat
 ```
 
 ### Building on Linux / Unix (GNU Make)

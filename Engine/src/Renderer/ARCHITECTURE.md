@@ -1,6 +1,6 @@
 # Renderer Subsystem Architecture
 
-The Renderer subsystem in TimeEngine provides multi-API graphics abstractions (OpenGL, DirectX 11, OpenGLES, Vulkan), high-performance batch rendering ([`Renderer2D`](Renderer2D.cpp) & [`RenderBatcher`](../../Include/Renderer/RenderBatcher.hpp)), 2D lighting & shadow casting, materials ([`Material`](../../Include/Renderer/Material/Material.hpp)), shaders ([`ShaderLibrary`](../../Include/Renderer/ShaderLibrary.hpp)), textures ([`Texture`](../../Include/Renderer/Texture.hpp)), and framebuffers ([`Framebuffer`](../../Include/Renderer/Framebuffer.hpp)).
+The Renderer subsystem in TimeEngine provides multi-API graphics abstractions (OpenGL, DirectX 11, OpenGLES, Vulkan), high-performance batch rendering ([`Renderer2D`](Renderer2D.cpp) & [`RenderBatcher`](../../Include/Renderer/RenderBatcher.hpp)), 2D lighting & shadow casting, materials ([`Material`](../../Plugins/MaterialSystemPlugin/ARCHITECTURE.md)), shaders ([`ShaderLibrary`](../../Include/Renderer/ShaderLibrary.hpp)), textures ([`Texture`](../../Include/Renderer/Texture.hpp)), and framebuffers ([`Framebuffer`](../../Include/Renderer/Framebuffer.hpp)).
 
 > [!NOTE]
 > In short, think of the **Renderer Subsystem** as the engine's master artist and GPU driver: `Renderer2D` batches thousands of 2D quads, triangles, circles, ambient lighting passes, and 2D shadow volume projections into single draw calls via `RenderBatcher`, while low-level classes (`VertexArray`, `VertexBuffer`, `IndexBuffer`, `RenderCommand`) abstract away raw backend OpenGL / DirectX calls.
@@ -28,7 +28,7 @@ flowchart TD
 
 1. **[`TE::Renderer2D`](Renderer2D.cpp)**: High-level 2D rendering pipeline handling quads, circles, debug outlines, 2D lights, ambient sky/ground gradients, and 2D shadow volume projections.
 2. **[`TE::RenderBatcher`](../../Include/Renderer/RenderBatcher.hpp)**: Optimization engine sorting draw calls by material and texture handles to minimize GPU state changes.
-3. **[`TE::Material`](../../Include/Renderer/Material/Material.hpp)**: Shader uniform wrapper binding textures, colors, and material properties.
+3. **[`TE::Material`](../../Plugins/MaterialSystemPlugin/ARCHITECTURE.md)**: Node-based material pass stack and shader uniform wrapper binding textures, colors, and properties.
 4. **[`TE::ShaderLibrary`](../../Include/Renderer/ShaderLibrary.hpp)**: Factory for built-in engine shaders (`ColorShader`, `TextureShader`, `Light2DShader`, `AmbientGradientShader`).
 5. **[`TE::Framebuffer`](../../Include/Renderer/Framebuffer.hpp)**: Off-screen render target for editor viewports, post-processing, and screenshot captures.
 

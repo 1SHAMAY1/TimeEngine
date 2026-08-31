@@ -1,6 +1,6 @@
 # Project Subsystem Architecture
 
-The Project subsystem in TimeEngine manages active project configuration (`ProjectConfig`), root/asset directory resolution, project creation/loading ([`Project`](../../../../Include/Core/Project/Project.hpp)), and `.teproj` text file serialization ([`ProjectSerializer`](../../../../Include/Core/Project/ProjectSerializer.hpp)).
+The Project subsystem in TimeEngine manages active project configuration (`ProjectConfig`), root/asset directory resolution, project creation/loading ([`Project`](../../../Include/Core/Project/Project.hpp)), and `.teproj` text file serialization ([`ProjectSerializer`](../../../Include/Core/Project/ProjectSerializer.hpp)).
 
 > [!NOTE]
 > In short, think of the **Project Subsystem** as the project manager's file cabinet: `Project` holds the active workspace settings (like project name, root directory, and default start scene), while `ProjectSerializer` saves and reads `.teproj` configuration files on disk.
@@ -36,7 +36,7 @@ newProj->GetConfig().Name = "MyGame";
 - **What it does**: Reads `.teproj` via `ProjectSerializer::Deserialize()`, sets `s_ActiveProject`, and computes absolute asset directory paths.
 
 ```cpp
-std::shared_ptr<TE::Project> project = TE::Project::Load("C:/MyGames/SpaceShooter/SpaceShooter.teproj");
+TE::Ref<TE::Project> project = TE::Project::Load("C:/MyGames/SpaceShooter/SpaceShooter.teproj");
 if (project) {
     TE_CORE_INFO("Loaded project: {0}", project->GetConfig().Name);
 }

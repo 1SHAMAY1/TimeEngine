@@ -52,7 +52,7 @@ Each link below opens a detailed, dedicated architectural reference document:
   * 🔷 **[DirectX 11 Backend Architecture](src/Renderer/DirectX11/ARCHITECTURE.md)** — Direct3D 11 hardware backend implementation (`DX11Context`, D3DCompile HLSL shaders).
   * 📱 **[OpenGL ES Backend Architecture](src/Renderer/OpenGLES/ARCHITECTURE.md)** — Embedded & mobile OpenGL ES 3.0 hardware backend implementation.
   * 🌋 **[Vulkan Backend Architecture](src/Renderer/Vulkan/ARCHITECTURE.md)** — Explicit Vulkan 1.3 low-overhead hardware backend implementation (`volk`, SPIR-V).
-  * 🎨 **[Material System Architecture](src/Renderer/Material/ARCHITECTURE.md)** — Node-based material pass stack (`MaterialPassNode`), uniform caching, and `.tematerial` serialization.
+  * 🎨 **[Material System Architecture](Plugins/MaterialSystemPlugin/ARCHITECTURE.md)** — Node-based material pass stack (`MaterialPassNode`), uniform caching, and `.tematerial` serialization.
 
 ### 3. Engine Tools, Viewport & Windowing
 * 🛠️ **[Editor Subsystem Architecture](src/Editor/ARCHITECTURE.md)** — Visual editor workspace modes (`EditorModeRegistry`), specialized asset inspectors (`AssetEditorRegistry`), and toolbars.

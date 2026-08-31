@@ -1,6 +1,6 @@
 # Multi-Threading & Task System Architecture
 
-The Multi-Threading subsystem in TimeEngine provides dedicated thread pools ([`ThreadPool`](ThreadPool.hpp)), task-type queue scheduling ([`TaskSystem`](TaskSystem.hpp)), and submission macros ([`ThreadingMacros.hpp`](ThreadingMacros.hpp)).
+The Multi-Threading subsystem in TimeEngine provides dedicated thread pools ([`ThreadPool`](ThreadPool.hpp)), task-type queue scheduling ([`TaskSystem`](TaskSystem.hpp)), and submission macros and concurrency primitives ([`Threading.hpp`](Threading.hpp)).
 
 > [!NOTE]
 > In short, think of the **Multi-Threading Subsystem** as the engine's multi-core task dispatcher: instead of running heavy computations on the main thread, `TaskSystem` maintains 6 specialized thread pools (Main, Render, Gameplay, AI, Calculation, Widget) and provides macro helpers (`SUBMIT_CALC`, `SUBMIT_AI`, `SUBMIT_RENDER`) to execute asynchronous jobs safely across CPU cores.
@@ -38,8 +38,8 @@ flowchart TD
    - Worker thread container spawning `std::thread::hardware_concurrency()` threads.
    - Uses `std::mutex`, `std::condition_variable`, and `std::queue<std::function<void()>>` for thread-safe work-stealing job queues.
 
-3. **[`ThreadingMacros.hpp`](ThreadingMacros.hpp)**:
-   - Ergonomic macro suite for initializing pools and submitting asynchronous jobs.
+3. **[`Threading.hpp`](Threading.hpp)**:
+   - Ergonomic macro suite (`INIT_MAIN_THREAD`, `SUBMIT_CALC`, `SUBMIT_AI`, etc.) and fear-free concurrency wrappers (`TEMutex`, `TERwLock`, `TEChannel`).
 
 ---
 
@@ -139,5 +139,5 @@ if (auto cmd = audioQueue.Receive()) {
 
 - [Core Subsystem Architecture](../../../src/Core/ARCHITECTURE.md) — Main engine application loop.
 - [2D Physics Architecture](../../../src/Core/Physics/ARCHITECTURE.md) — Asynchronous physics integration.
-- [Root Architecture Index](../../../../ARCHITECTURE.md) — Master TimeEngine architecture hub.
+- [Root Architecture Index](../../../../Docs/ARCHITECTURE.md) — Master TimeEngine architecture hub.
 
