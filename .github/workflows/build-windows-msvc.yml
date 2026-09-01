@@ -1,4 +1,4 @@
-﻿name: Windows Build (MSVC)
+name: Windows Build (MSVC)
 
 on:
   push:
@@ -24,18 +24,6 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-
-      - name: Check for C/C++ Code Changes
-        id: filter
-        uses: tj-actions/changed-files@v44
-        with:
-          files: |
-            Engine/**
-            TimeEditor/**
-            Vendor/**
-            Scripts/**
-            Premake5.lua
-            .github/workflows/build-windows-msvc.yml
 
       - name: Check for C/C++ Code Changes
         id: filter
