@@ -1,4 +1,4 @@
-name: Linux Build (GCC)
+﻿name: Linux Build (GCC)
 
 on:
   push:
@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ '**' ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-linux-gcc:
@@ -21,12 +25,26 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Check for C/C++ Code Changes
+        id: filter
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            Engine/**
+            TimeEditor/**
+            Vendor/**
+            Scripts/**
+            Premake5.lua
+            .github/workflows/build-linux-gcc.yml
+
       - name: Install System Dependencies
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev xorg-dev
 
       - name: Install Premake5
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           mkdir -p Vendor/Premake/Linux
           wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-linux.tar.gz
@@ -35,6 +53,7 @@ jobs:
           sudo ln -sf "$(pwd)/Vendor/Premake/Linux/premake5" /usr/local/bin/premake5
 
       - name: Build Logger Dependency (GCC)
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           mkdir -p Vendor/Customizable_Logger/build
           cd Vendor/Customizable_Logger/build
@@ -42,6 +61,7 @@ jobs:
           cmake --build . --config Debug
 
       - name: Build GLFW Dependency (GCC)
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           mkdir -p Vendor/GLFW/build
           cd Vendor/GLFW/build
@@ -49,9 +69,11 @@ jobs:
           cmake --build . --config Debug
 
       - name: Generate Makefiles with Premake
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: premake5 gmake2 --file=Premake5.lua
 
       - name: Build Solution (GCC)
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: make config=debug -j$(nproc) CC=gcc CXX=g++
 
       - name: Notify on Pull Request Failure
@@ -59,7 +81,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = `### ❌ Build Failure Alert: Linux (GCC)\n\nHey @${context.actor}, the Linux GCC build failed on \`${context.ref}\`.\n\n[🔍 View Full CI Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+            const comment = `### âŒ Build Failure Alert: Linux (GCC)\n\nHey @${context.actor}, the Linux GCC build failed on \`${context.ref}\`.\n\n[ðŸ” View Full CI Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
             const fs = require('fs');
             if (process.env.GITHUB_STEP_SUMMARY) {
               fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n${comment}\n`);

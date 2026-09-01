@@ -1,4 +1,4 @@
-name: Windows Build (MinGW/GCC)
+﻿name: Windows Build (MinGW/GCC)
 
 on:
   push:
@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ '**' ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-windows-mingw:
@@ -21,7 +25,20 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Check for C/C++ Code Changes
+        id: filter
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            Engine/**
+            TimeEditor/**
+            Vendor/**
+            Scripts/**
+            Premake5.lua
+            .github/workflows/build-windows-mingw.yml
+
       - name: Setup MSYS2
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -32,6 +49,7 @@ jobs:
             mingw-w64-x86_64-make
 
       - name: Build Logger Dependency
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         shell: msys2 {0}
         run: |
           cd Vendor/Customizable_Logger
@@ -41,6 +59,7 @@ jobs:
           mingw32-make SHELL=cmd.exe
 
       - name: Build GLFW Dependency
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         shell: msys2 {0}
         run: |
           cd Vendor/GLFW
@@ -50,16 +69,19 @@ jobs:
           mingw32-make SHELL=cmd.exe
 
       - name: Install Premake5
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-windows.zip" -OutFile "premake5.zip"
           Expand-Archive -Path "premake5.zip" -DestinationPath "Vendor\Premake\Windows" -Force
 
       - name: Generate Makefiles with Premake
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         shell: msys2 {0}
         run: ./Vendor/Premake/Windows/premake5.exe gmake2 --file=Premake5.lua
 
       - name: Build Solution (MinGW GCC)
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         shell: msys2 {0}
         run: mingw32-make SHELL=cmd.exe config=debug -j$(nproc)
 
@@ -68,7 +90,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = `### ❌ Build Failure Alert: Windows (MinGW/GCC)\n\nHey @${context.actor}, the Windows MinGW build failed on \`${context.ref}\`.\n\n[🔍 View Full CI Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+            const comment = `### âŒ Build Failure Alert: Windows (MinGW/GCC)\n\nHey @${context.actor}, the Windows MinGW build failed on \`${context.ref}\`.\n\n[ðŸ” View Full CI Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
             const fs = require('fs');
             if (process.env.GITHUB_STEP_SUMMARY) {
               fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n${comment}\n`);

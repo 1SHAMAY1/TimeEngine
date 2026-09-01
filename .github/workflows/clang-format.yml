@@ -3,8 +3,27 @@ name: Clang-Format Check
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**.h'
+      - '**.hpp'
+      - '**.c'
+      - '**.cpp'
+      - '.clang-format'
+      - '.github/workflows/clang-format.yml'
   pull_request:
     branches: [ '**' ]
+    paths:
+      - '**.h'
+      - '**.hpp'
+      - '**.c'
+      - '**.cpp'
+      - '.clang-format'
+      - '.github/workflows/clang-format.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   clang-format:
