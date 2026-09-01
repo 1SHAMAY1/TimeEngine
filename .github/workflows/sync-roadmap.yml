@@ -309,11 +309,24 @@ jobs:
 
                 if (matches.length > 0) {
                   currentGitHubIssue = matches[0];
-                  // Delete duplicate matches if any
+                  // Unlink and delete duplicate matches if any
                   for (let d = 1; d < matches.length; d++) {
-                    console.log(`Deleting duplicate issue: #${matches[d].number} ("${matches[d].title}")`);
-                    await deleteIssueGraphQL(matches[d].node_id);
-                    await sleep(500);
+                    const dup = matches[d];
+                    console.log(`Unlinking & closing duplicate issue before deletion: #${dup.number} ("${dup.title}")`);
+                    try {
+                      await github.rest.issues.update({
+                        owner,
+                        repo,
+                        issue_number: dup.number,
+                        milestone: null,
+                        state: 'closed'
+                      });
+                      await sleep(600);
+                    } catch (err) {
+                      console.error(`Failed to unlink duplicate issue #${dup.number}: ${err.message}`);
+                    }
+                    await deleteIssueGraphQL(dup.node_id);
+                    await sleep(1000);
                   }
                 }
                 try {
