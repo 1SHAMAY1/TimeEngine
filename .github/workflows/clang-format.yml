@@ -3,22 +3,8 @@ name: Clang-Format Check
 on:
   push:
     branches: [ main ]
-    paths:
-      - '**.h'
-      - '**.hpp'
-      - '**.c'
-      - '**.cpp'
-      - '.clang-format'
-      - '.github/workflows/clang-format.yml'
   pull_request:
     branches: [ '**' ]
-    paths:
-      - '**.h'
-      - '**.hpp'
-      - '**.c'
-      - '**.cpp'
-      - '.clang-format'
-      - '.github/workflows/clang-format.yml'
   workflow_dispatch:
 
 concurrency:
@@ -49,6 +35,7 @@ jobs:
             !Bin-Intermediate/**
 
       - name: Install clang-format
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           choco install llvm -y
 
