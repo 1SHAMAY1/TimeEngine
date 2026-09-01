@@ -75,6 +75,9 @@ When submitting a Pull Request, please fill out all sections of [`.github/PULL_R
 To ensure meaningful reviews, prevent review fatigue, and eliminate automated PR spam across forks:
 - **1 Active PR & 24-Hour Cooldown Limit**: Contributors and fork accounts are strictly limited to **1 active Pull Request at a time**. Furthermore, a mandatory **24-hour cooldown period applies after your PR is merged or closed** before you may open a new Pull Request. This ensures careful review cycles, prevents rapid-fire submissions, and maintains sustainable maintainer bandwidth.
 - **First-Time Contributors & Good First Issues**: First-time contributors can claim and submit **only one `good first issue`** to get familiar with our workflow. Once merged, future contributions should focus on standard issues, plugin features, or roadmap milestones.
+- **Claiming Issues Before Starting Work**: Before writing code or submitting a PR for an existing issue, **please leave a comment on the issue first** to request assignment. This avoids duplicate efforts and confirms the intended approach with maintainers.
+- **New Features & Architectural Changes**: For new features, major enhancements, or architectural proposals not covered by an open issue, **please start a thread in [GitHub Discussions](https://github.com/1SHAMAY1/TimeEngine/discussions) first** to align on design before writing code.
+- **Unsolicited / Random PRs Policy**: Maintainers reserve the right to close unsolicited or uncoordinated Pull Requests without prior discussion or issue assignment.
 - **Atomic & Focused Scope**: Each PR must address a single focused task or bug fix. Avoid scattershot PRs that modify dozens of unrelated files or perform bulk automated changes without context.
 - **Draft PRs for WIP**: If your PR is in progress or not yet verified locally, keep it marked as a **Draft** until ready for maintainer review.
 
