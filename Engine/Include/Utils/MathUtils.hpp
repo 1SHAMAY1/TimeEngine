@@ -19,6 +19,7 @@ struct TE_API TEVector2
     TEVector2(const struct TEVector4 &v);
 
     static float Length(const TEVector2 &v) { return v.Length(); }
+    static TEVector2 Perpendicular(const TEVector2 &v) { return v.Perpendicular(); }
 
     float Length() const { return std::sqrt(x * x + y * y); }
     float LengthSquared() const { return x * x + y * y; }
@@ -28,6 +29,8 @@ struct TE_API TEVector2
         float len = Length();
         return (len > 0.0f) ? TEVector2(x / len, y / len) : TEVector2();
     }
+
+    TEVector2 Perpendicular() const { return {-y, x}; }
 
     ImVec2 ToImVec2() const;
     operator ImVec2() const;
@@ -363,6 +366,8 @@ template <typename T> inline T Clamp(T value, T min, T max)
     return value;
 }
 
+template <typename T> inline T Clamp01(T value) { return Clamp(value, T(0), T(1)); }
+
 inline TEVector2 Normalize(const TEVector2 &v) { return v.Normalized(); }
 
 inline TEVector Normalize(const TEVector &v) { return v.Normalized(); }
@@ -378,6 +383,25 @@ template <typename T> inline T Min(T a, T b) { return (a < b) ? a : b; }
 template <typename T> inline T Max(T a, T b) { return (a > b) ? a : b; }
 
 template <typename T> inline T Abs(T val) { return (val < 0) ? -val : val; }
+
+template <typename T> inline int Sign(T val)
+{
+    if (val > T(0))
+        return 1;
+    if (val < T(0))
+        return -1;
+    return 0;
+}
+
+template <typename T> inline T Step(T edge, T x) { return (x < edge) ? T(0) : T(1); }
+
+template <typename T> inline T SmoothStep(T edge0, T edge1, T x)
+{
+    if (Abs(edge1 - edge0) <= static_cast<T>(1e-6))
+        return (x >= edge1) ? T(1) : T(0);
+    T t = Clamp01((x - edge0) / (edge1 - edge0));
+    return t * t * (T(3) - T(2) * t);
+}
 
 inline float Sqrt(float val) { return std::sqrt(val); }
 inline double Sqrt(double val) { return std::sqrt(val); }
@@ -420,3 +444,19 @@ inline TEVector Lerp(const TEVector &a, const TEVector &b, float t) { return a +
 
 inline TEVector2 Mod(const TEVector2 &x, const TEVector2 &y) { return {Mod(x.x, y.x), Mod(x.y, y.y)}; }
 inline TEVector Mod(const TEVector &x, const TEVector &y) { return {Mod(x.x, y.x), Mod(x.y, y.y), Mod(x.z, y.z)}; }
+
+inline TEVector2 Perpendicular(const TEVector2 &v) { return v.Perpendicular(); }
+
+template <typename T> inline float Angle(const T &a, const T &b)
+{
+    float lenProduct = a.Length() * b.Length();
+    if (lenProduct <= 0.0f)
+        return 0.0f;
+    float cosAngle = Clamp(Dot(a, b) / lenProduct, -1.0f, 1.0f);
+    return std::acos(cosAngle);
+}
+
+template <typename T> inline T Reflect(const T &inDirection, const T &inNormal)
+{
+    return inDirection - 2.0f * Dot(inDirection, inNormal) * inNormal;
+}
