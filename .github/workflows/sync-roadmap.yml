@@ -2,12 +2,16 @@ name: Sync Roadmap Milestones
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, WINDOWS ]
     paths:
       - 'Docs/ROADMAP.md'
       - 'ROADMAP.md'
       - '.github/workflows/sync-roadmap.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   issues: write
@@ -31,7 +35,7 @@ jobs:
       - name: Run sync script
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.ADMIN_PAT }}
+          github-token: ${{ secrets.ADMIN_PAT || secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
@@ -70,39 +74,94 @@ jobs:
             const content = fs.readFileSync(roadmapPath, 'utf8');
             const lines = content.split('\n');
 
-            let categories = [];
-            let currentCategory = null;
-            let currentSection = "";
+            const milestones = [];
+            let currentSection = "General";
+            let currentMilestone = null;
+            let currentIssue = null;
 
-            for (let line of lines) {
-              const sectionMatch = line.match(/^##\s+.*?(Completed|Short-Term|Long-Term).*$/i);
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i].trim();
+
+              // Section Header: ## 🟢 Completed, ## 🟡 Short-Term, ## 🔴 Long-Term
+              const sectionMatch = line.match(/^##\s+.*?([🟢🟡🔴]?\s*(?:Completed|Short-Term|Long-Term)[^(\n]*).*$/i);
               if (sectionMatch) {
-                currentSection = sectionMatch[1].trim();
+                currentSection = sectionMatch[1].replace(/[🟢🟡🔴]/g, '').trim();
                 continue;
               }
 
-              const categoryMatch = line.match(/^###\s+(.*)$/);
-              if (categoryMatch) {
-                currentCategory = {
-                  originalSection: currentSection,
-                  rawTitle: categoryMatch[1].trim(),
-                  items: []
+              // Milestone Header: ### [Milestone: "Title" | Section: Short-Term] or fallback ### 1. Title
+              const milestoneMatch = line.match(/^###\s+\[Milestone:\s*"([^"]+)"(?:\s*\|\s*Section:\s*([^\]]+))?\]/i) ||
+                                     line.match(/^###\s+(.*)$/);
+              if (milestoneMatch) {
+                const title = milestoneMatch[1].replace(/^\[Milestone:\s*"([^"]+)".*$/i, '$1').trim();
+                const section = (milestoneMatch[2] || currentSection).trim();
+                currentMilestone = {
+                  rawTitle: title,
+                  section: section,
+                  description: "",
+                  issues: []
                 };
-                categories.push(currentCategory);
+                milestones.push(currentMilestone);
+                currentIssue = null;
                 continue;
               }
 
-              if (currentCategory) {
-                const itemMatch = line.match(/^(\s*)-\s+\[([ xX\/])\]\s+(.*)$/);
-                if (itemMatch) {
-                  const indent = itemMatch[1].length;
-                  const state = itemMatch[2].toLowerCase();
-                  const description = itemMatch[3].trim();
-                  currentCategory.items.push({
-                    indent,
-                    state,
-                    description
+              // Milestone Description: > **Description**: ...
+              if (currentMilestone && !currentIssue) {
+                const descMatch = line.match(/^>\s*(?:\*\*Description\*\*:)?\s*(.*)$/i);
+                if (descMatch && descMatch[1].trim()) {
+                  currentMilestone.description = descMatch[1].trim();
+                  continue;
+                }
+              }
+
+              // Issue Header: #### [Issue: "Title" | Tags: Renderer, 2D | Status: completed] or fallback - [ ] **Title**
+              const issueMatch = line.match(/^####\s+\[Issue:\s*"([^"]+)"(?:\s*\|\s*Tags:\s*([^|\]]+))?(?:\s*\|\s*Status:\s*([^\]]+))?\]/i);
+              if (issueMatch && currentMilestone) {
+                const rawTags = issueMatch[2] ? issueMatch[2].split(',').map(t => t.trim()) : [];
+                const status = issueMatch[3] ? issueMatch[3].trim().toLowerCase() : 'todo';
+                currentIssue = {
+                  title: issueMatch[1].trim(),
+                  tags: rawTags,
+                  status: status,
+                  description: "",
+                  subtasks: []
+                };
+                currentMilestone.issues.push(currentIssue);
+                continue;
+              }
+
+              // Legacy / Fallback bullet items: - [ ] ...
+              const legacyItemMatch = line.match(/^-\s+\[([ xX\/])\]\s+(.*)$/);
+              if (legacyItemMatch && currentMilestone && !currentIssue) {
+                const state = legacyItemMatch[1].toLowerCase();
+                const desc = legacyItemMatch[2].trim();
+                currentMilestone.issues.push({
+                  title: desc,
+                  tags: ['roadmap-task'],
+                  status: state === 'x' ? 'completed' : (state === '/' ? 'in-progress' : 'todo'),
+                  description: desc,
+                  subtasks: []
+                });
+                continue;
+              }
+
+              // Issue Description & Subtasks
+              if (currentIssue) {
+                const issueDescMatch = line.match(/^-\s+\*\*Description\*\*:\s*(.*)$/i);
+                if (issueDescMatch) {
+                  currentIssue.description = issueDescMatch[1].trim();
+                  continue;
+                }
+
+                // Sub-tasks list: - [x] Subissue: ... or - [ ] Subissue: ...
+                const subtaskMatch = line.match(/^-\s+\[([ xX\/])\]\s+(?:Subissue:\s*)?(.*)$/i);
+                if (subtaskMatch) {
+                  currentIssue.subtasks.push({
+                    state: subtaskMatch[1].toLowerCase(),
+                    description: subtaskMatch[2].trim()
                   });
+                  continue;
                 }
               }
             }
@@ -127,21 +186,21 @@ jobs:
             });
             console.log(`Total issues fetched: ${existingIssues.length}`);
 
-            // Pre-process categories to calculate milestone titles based on completion
-            for (const category of categories) {
-              const totalItems = category.items.length;
-              const completedItems = category.items.filter(i => i.state === 'x').length;
-              const isCompleted = totalItems > 0 && completedItems === totalItems;
+            // Pre-process milestones for naming and completion status
+            for (const milestone of milestones) {
+              const totalIssues = milestone.issues.length;
+              const completedIssues = milestone.issues.filter(i => i.status === 'completed' || i.status === 'closed').length;
+              const isCompleted = totalIssues > 0 && completedIssues === totalIssues;
 
-              const sectionPrefix = isCompleted ? "Completed" : category.originalSection;
-              category.name = `[${sectionPrefix}] ${category.rawTitle}`;
-              category.isCompleted = isCompleted;
+              const sectionPrefix = isCompleted ? "Completed" : milestone.section;
+              milestone.name = `[${sectionPrefix}] ${milestone.rawTitle}`;
+              milestone.isCompleted = isCompleted;
             }
 
-            // Cleanup step: Delete legacy/renamed milestones, and resolve duplicates
+            // Cleanup step: Delete legacy/renamed milestones
             const seenMilestones = new Set();
             for (const m of existingMilestones) {
-              const isCurrentMilestoneName = categories.some(cat => cat.name === m.title);
+              const isCurrentMilestoneName = milestones.some(mil => mil.name === m.title);
 
               if (!isCurrentMilestoneName || seenMilestones.has(m.title)) {
                 console.log(`Deleting legacy/duplicate milestone: "${m.title}" (ID: ${m.number})`);
@@ -168,115 +227,200 @@ jobs:
               per_page: 100
             });
 
-            // Delete legacy overview tracking issues (e.g. "Tracking: ...") from milestones
-            for (const issue of existingIssues) {
-              if (issue.title.startsWith("Tracking:")) {
-                console.log(`Deleting legacy overview tracking issue permanently: "${issue.title}" (ID: #${issue.number})`);
-                await deleteIssueGraphQL(issue.node_id);
-                await sleep(500);
-              }
-            }
+            // Process each Milestone and its Issues
+            for (const milestoneData of milestones) {
+              const milestoneTitle = milestoneData.name;
+              const totalIssues = milestoneData.issues.length;
+              const completedIssues = milestoneData.issues.filter(i => i.status === 'completed' || i.status === 'closed').length;
+              const targetMilestoneState = milestoneData.isCompleted ? 'closed' : 'open';
 
-            for (const category of categories) {
-              const milestoneTitle = category.name;
-              const totalItems = category.items.length;
-              const completedItems = category.items.filter(i => i.state === 'x').length;
-              const targetMilestoneState = category.isCompleted ? 'closed' : 'open';
+              let milestoneDesc = milestoneData.description 
+                ? `${milestoneData.description}\n\nStatus: ${completedIssues}/${totalIssues} completed.`
+                : `Tracked from ROADMAP.md. Status: ${completedIssues}/${totalIssues} completed.`;
 
-              console.log(`Processing Milestone: "${milestoneTitle}" (${completedItems}/${totalItems} completed, state: ${targetMilestoneState})`);
+              console.log(`Processing Milestone: "${milestoneTitle}" (${completedIssues}/${totalIssues} completed, state: ${targetMilestoneState})`);
 
               let milestone = activeMilestones.find(m => m.title === milestoneTitle);
 
-              if (milestone) {
-                if (milestone.state !== targetMilestoneState) {
-                  console.log(`Updating Milestone "${milestoneTitle}" status to ${targetMilestoneState}`);
-                  const res = await github.rest.issues.updateMilestone({
-                    owner,
-                    repo,
-                    milestone_number: milestone.number,
-                    state: targetMilestoneState
-                  });
-                  milestone = res.data;
-                  await sleep(500);
-                }
-              } else {
+              if (!milestone) {
                 console.log(`Creating Milestone "${milestoneTitle}"`);
                 const res = await github.rest.issues.createMilestone({
                   owner,
                   repo,
                   title: milestoneTitle,
-                  state: targetMilestoneState,
-                  description: `Tracked from ROADMAP.md. Status: ${completedItems}/${totalItems} completed.`
+                  state: 'open',
+                  description: milestoneDesc
                 });
                 milestone = res.data;
                 await sleep(500);
               }
 
-              // Create/Sync sub-issues inside milestone
-              const activeSubTaskTitles = category.items.map(item => `${item.description}`);
+              // Active issue titles in this milestone
+              const activeIssueTitles = milestoneData.issues.map(i => i.title);
 
-              // Dissociate and delete any issues currently assigned to this milestone that are NOT active subtasks in the roadmap
+              // Remove or dissociate unmapped issues in this milestone
               const issuesInMilestone = existingIssues.filter(i => i.milestone?.number === milestone.number);
               for (const issue of issuesInMilestone) {
-                if (!activeSubTaskTitles.includes(issue.title)) {
-                  console.log(`Permanently deleting unmapped/duplicate issue #${issue.number} ("${issue.title}") from Milestone #${milestone.number}`);
+                if (!activeIssueTitles.includes(issue.title)) {
+                  console.log(`Unlinking/closing unmapped issue #${issue.number} ("${issue.title}") from Milestone #${milestone.number}`);
+                  try {
+                    await github.rest.issues.update({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      milestone: null,
+                      state: 'closed'
+                    });
+                    await sleep(300);
+                  } catch (err) {
+                    console.error(`Failed to unlink issue #${issue.number}: ${err.message}`);
+                  }
                   await deleteIssueGraphQL(issue.node_id);
-                  await sleep(500);
+                  await sleep(300);
                 }
               }
 
-              // Create/Sync active sub-issues inside milestone
-              for (const item of category.items) {
-                const subIssueTitle = `${item.description}`;
-                const subTargetState = item.state === 'x' ? 'closed' : 'open';
+              // Create or Sync each Issue
+              for (const iss of milestoneData.issues) {
+                const issueTitle = iss.title;
+                const isIssueCompleted = iss.status === 'completed' || iss.status === 'closed';
+                const targetIssueState = isIssueCompleted ? 'closed' : 'open';
 
-                // Find matching issues in the repo
-                const matches = existingIssues.filter(i => i.title === subIssueTitle);
-                
-                let subIssue = null;
-                if (matches.length > 0) {
-                  // Use the first match to link to the milestone
-                  subIssue = matches[0];
-                  
-                  // Delete duplicate issues permanently
-                  for (let i = 1; i < matches.length; i++) {
-                    const duplicate = matches[i];
-                    console.log(`Permanently deleting duplicate issue: "${duplicate.title}" (ID: #${duplicate.number})`);
-                    await deleteIssueGraphQL(duplicate.node_id);
-                    await sleep(500);
+                // Build rich issue body
+                let issueBody = `### 📋 Overview\n${iss.description || 'Tracked from TimeEngine Roadmap.'}\n\n`;
+                issueBody += `**Milestone**: [${milestoneTitle}](https://github.com/${owner}/${repo}/milestone/${milestone.number})\n`;
+                if (iss.tags && iss.tags.length > 0) {
+                  issueBody += `**Subsystem Tags**: \`${iss.tags.join('`, `')}\`\n\n`;
+                }
+
+                if (iss.subtasks && iss.subtasks.length > 0) {
+                  issueBody += `### 🧩 Sub-Tasks & Deliverables\n`;
+                  for (const st of iss.subtasks) {
+                    const check = st.state === 'x' ? '[x]' : '[ ]';
+                    issueBody += `- ${check} ${st.description}\n`;
                   }
                 }
 
-                try {
-                  if (subIssue) {
-                    const needsMilestoneUpdate = !subIssue.milestone || subIssue.milestone.number !== milestone.number;
-                    const needsStateUpdate = subIssue.state !== subTargetState;
+                // Resolve labels
+                const issueLabels = ['roadmap', ...iss.tags];
 
-                    if (needsMilestoneUpdate || needsStateUpdate) {
-                      console.log(`Updating sub-issue: "${subIssueTitle}" -> State: ${subTargetState}, Milestone: #${milestone.number}`);
+                const matches = existingIssues.filter(i => i.title === issueTitle);
+                let currentGitHubIssue = null;
+
+                if (matches.length > 0) {
+                  currentGitHubIssue = matches[0];
+                  // Delete duplicate matches if any
+                  for (let d = 1; d < matches.length; d++) {
+                    console.log(`Deleting duplicate issue: #${matches[d].number} ("${matches[d].title}")`);
+                    await deleteIssueGraphQL(matches[d].node_id);
+                    await sleep(500);
+                  }
+                }
+                try {
+                  if (currentGitHubIssue) {
+                    const needsMilestone = !currentGitHubIssue.milestone || currentGitHubIssue.milestone.number !== milestone.number;
+                    const needsState = currentGitHubIssue.state !== targetIssueState;
+                    // Normalize line endings before comparing to avoid \r\n vs \n false-positives
+                    const normalizedExisting = (currentGitHubIssue.body || '').replace(/\r\n/g, '\n').trim();
+                    const normalizedNew = issueBody.replace(/\r\n/g, '\n').trim();
+                    const needsBody = normalizedExisting !== normalizedNew;
+
+                    // Always force-close completed issues separately first —
+                    // prevents milestone state being stuck at "0% complete" even if body is identical
+                    if (needsState && targetIssueState === 'closed') {
+                      console.log(`Force-closing completed issue #${currentGitHubIssue.number} ("${issueTitle}")`);
                       await github.rest.issues.update({
                         owner,
                         repo,
-                        issue_number: subIssue.number,
-                        state: subTargetState,
-                        milestone: milestone.number
+                        issue_number: currentGitHubIssue.number,
+                        state: 'closed'
+                      });
+                      await sleep(500);
+                    }
+
+                    if (needsMilestone || needsBody) {
+                      console.log(`Updating body/milestone for Issue: "${issueTitle}"`);
+                      await github.rest.issues.update({
+                        owner,
+                        repo,
+                        issue_number: currentGitHubIssue.number,
+                        state: targetIssueState,
+                        milestone: milestone.number,
+                        body: issueBody,
+                        labels: issueLabels
                       });
                       await sleep(500);
                     }
                   } else {
-                    console.log(`Creating new sub-issue: "${subIssueTitle}" in Milestone #${milestone.number}`);
-                    await github.rest.issues.create({
+                    console.log(`Creating new Issue: "${issueTitle}" in Milestone #${milestone.number}`);
+                    const newIssueRes = await github.rest.issues.create({
                       owner,
                       repo,
-                      title: subIssueTitle,
+                      title: issueTitle,
                       milestone: milestone.number,
-                      body: `Part of milestone **${milestoneTitle}**.\nTracks: ${subIssueTitle}`,
-                      labels: ['roadmap-subtask']
+                      body: issueBody,
+                      labels: issueLabels
                     });
                     await sleep(500);
+
+                    // GitHub issues.create always opens issues as 'open'; if target state is 'closed', close it immediately
+                    if (targetIssueState === 'closed') {
+                      console.log(`Closing completed issue #${newIssueRes.data.number} ("${issueTitle}")`);
+                      await github.rest.issues.update({
+                        owner,
+                        repo,
+                        issue_number: newIssueRes.data.number,
+                        state: 'closed'
+                      });
+                      await sleep(500);
+                    }
                   }
                 } catch (err) {
-                  console.error(`Error processing issue "${subIssueTitle}": ${err.message}`);
+                  console.error(`Error processing issue "${issueTitle}": ${err.message}`);
                 }
               }
+
+              // Update milestone state and description now that all issues are in their target state
+              console.log(`Finalizing Milestone "${milestoneTitle}" -> State: ${targetMilestoneState}`);
+              await github.rest.issues.updateMilestone({
+                owner,
+                repo,
+                milestone_number: milestone.number,
+                state: targetMilestoneState,
+                description: milestoneDesc
+              });
+              await sleep(500);
             }
+
+            // ─── Final Safety Sweep ─────────────────────────────────────────────
+            // After all milestones are processed, find every closed milestone that
+            // still has open issues (orphaned from old roadmap runs) and close them.
+            console.log("Running final safety sweep for closed milestones with open issues...");
+            const { data: finalMilestones } = await github.rest.issues.listMilestones({
+              owner,
+              repo,
+              state: 'closed',
+              per_page: 100
+            });
+            for (const fm of finalMilestones) {
+              if (fm.open_issues === 0) continue;
+              console.log(`Closed milestone "${fm.title}" still has ${fm.open_issues} open issue(s). Closing them...`);
+              const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+                owner,
+                repo,
+                milestone: fm.number,
+                state: 'open',
+                per_page: 100
+              });
+              for (const oi of openIssues) {
+                console.log(`  Force-closing orphaned open issue #${oi.number} ("${oi.title}")`);
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: oi.number,
+                  state: 'closed'
+                });
+                await sleep(300);
+              }
+            }
+            console.log("Sync complete.");
