@@ -51,9 +51,9 @@ void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 lightFb->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
         }
 
-        uint32_t textureID = fb->GetColorAttachmentRendererID();
-        TimeGUI::Image((TimeGUI::TimeGUITextureID)(uintptr_t)textureID,
-                       TEVector2(viewportPanelSize.x, viewportPanelSize.y), TEVector2(0, 1), TEVector2(1, 0));
+        uintptr_t textureID = fb->GetColorAttachmentRendererID();
+        TimeGUI::Image((TimeGUI::TimeGUITextureID)textureID, TEVector2(viewportPanelSize.x, viewportPanelSize.y),
+                       TEVector2(0, 1), TEVector2(1, 0));
     }
 
     // Viewport Screen Bounds & Infinite 2D Grid
