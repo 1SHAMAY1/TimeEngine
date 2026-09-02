@@ -6,11 +6,17 @@
 #include "Renderer/RendererContext.hpp"
 #include "Renderer/TextureSerializer.hpp"
 #include "Utils/TEFileSystem.hpp"
+#ifdef TE_SUPPORT_OPENGL
 #include <glad/glad.h>
+#endif
 
 #ifdef TE_SUPPORT_DIRECTX11
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #include <d3d11.h>
+#endif
+
+#ifdef TE_SUPPORT_METAL
+#include "Renderer/Metal/MetalTexture.hpp"
 #endif
 
 TE_REGISTER_ASSET(Texture)
@@ -40,7 +46,8 @@ bool Texture::LoadFromFile(const TEString &path)
     return false;
 }
 
-Texture::Texture(const TEString &path) : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr)
+Texture::Texture(const TEString &path)
+    : m_FilePath(path), m_RendererID(0), m_DX11SRV(nullptr), m_DX11Texture(nullptr), m_MetalTexture(nullptr)
 {
     m_Handle = AssetRegistry::RegisterPath(path);
     m_Name = path.GetStem();
@@ -60,11 +67,20 @@ bool Texture::LoadImageSource(const TEString &path)
     if (path.empty())
         return false;
 
+#ifdef TE_SUPPORT_OPENGL
     if (m_RendererID != 0)
     {
         glDeleteTextures(1, &m_RendererID);
         m_RendererID = 0;
     }
+#endif
+#ifdef TE_SUPPORT_METAL
+    if (m_MetalTexture)
+    {
+        MetalDestroyTexture(m_MetalTexture);
+        m_MetalTexture = nullptr;
+    }
+#endif
 
     m_FilePath = path;
 
@@ -117,6 +133,14 @@ bool Texture::LoadImageSource(const TEString &path)
         }
         else
 #endif
+#ifdef TE_SUPPORT_METAL
+            if (RendererContext::GetAPI() == GraphicsAPI::Metal)
+        {
+            m_MetalTexture = MetalCreateTexture2D(img.Width, img.Height, img.Channels, img.Data(), m_GenerateMipmaps);
+        }
+        else
+#endif
+#ifdef TE_SUPPORT_OPENGL
         {
             GLenum internalFormat = 0, dataFormat = 0;
             if (img.Channels == 4)
@@ -142,10 +166,13 @@ bool Texture::LoadImageSource(const TEString &path)
 
             glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
             glTextureStorage2D(m_RendererID, 1, internalFormat, img.Width, img.Height);
-
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glTextureSubImage2D(m_RendererID, 0, 0, 0, img.Width, img.Height, dataFormat, GL_UNSIGNED_BYTE, img.Data());
         }
+#else
+        {
+        }
+#endif
 
         UpdateGPUParameters();
         return true;
@@ -188,6 +215,7 @@ void Texture::UpdateGPUParameters()
     }
 #endif
 
+#ifdef TE_SUPPORT_OPENGL
     GLenum minFilter = GL_LINEAR;
     GLenum magFilter = GL_LINEAR;
 
@@ -218,14 +246,17 @@ void Texture::UpdateGPUParameters()
     {
         glGenerateTextureMipmap(m_RendererID);
     }
+#endif
 }
 
 Texture::~Texture()
 {
+#ifdef TE_SUPPORT_OPENGL
     if (m_RendererID)
     {
         glDeleteTextures(1, &m_RendererID);
     }
+#endif
 #ifdef TE_SUPPORT_DIRECTX11
     if (m_DX11SRV)
     {
@@ -234,6 +265,13 @@ Texture::~Texture()
     if (m_DX11Texture)
     {
         ((ID3D11Texture2D *)m_DX11Texture)->Release();
+    }
+#endif
+#ifdef TE_SUPPORT_METAL
+    if (m_MetalTexture)
+    {
+        MetalDestroyTexture(m_MetalTexture);
+        m_MetalTexture = nullptr;
     }
 #endif
 }
@@ -251,9 +289,14 @@ void Texture::Bind(uint32_t slot) const
     }
     else
 #endif
+#ifdef TE_SUPPORT_OPENGL
     {
         glBindTextureUnit(slot, m_RendererID);
     }
+#else
+    {
+    }
+#endif
 }
 
 void Texture::Unbind() const
@@ -270,9 +313,14 @@ void Texture::Unbind() const
     }
     else
 #endif
+#ifdef TE_SUPPORT_OPENGL
     {
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTextureUnit(0, 0);
     }
+#else
+    {
+    }
+#endif
 }
 
 void Texture::OnContentBrowserCreate(const TEString &path)

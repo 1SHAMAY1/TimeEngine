@@ -124,8 +124,24 @@ project "TimeEditor"
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h"
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
     }
+
+    filter { "system:not macosx" }
+        removefiles {
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        }
+    filter {}
+
+    filter { "system:macosx" }
+        removefiles {
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.*",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.*"
+        }
+    filter {}
 
     filter { "system:windows", "action:vs*" }
         files { "src/**.rc" }
@@ -184,7 +200,6 @@ project "TimeEditor"
             "Engine",
             "Customizable_Logger",
             "Velox",
-            "glfw3",
             "Cocoa.framework",
             "IOKit.framework",
             "CoreFoundation.framework",

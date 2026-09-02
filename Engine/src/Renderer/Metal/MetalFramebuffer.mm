@@ -32,6 +32,19 @@ MetalFramebuffer::~MetalFramebuffer()
 void MetalFramebuffer::Invalidate()
 {
 #ifdef TE_SUPPORT_METAL
+    if (m_ColorTexture)
+    {
+        id<MTLTexture> tex = (__bridge_transfer id<MTLTexture>)m_ColorTexture;
+        tex = nil;
+        m_ColorTexture = nullptr;
+    }
+    if (m_DepthTexture)
+    {
+        id<MTLTexture> tex = (__bridge_transfer id<MTLTexture>)m_DepthTexture;
+        tex = nil;
+        m_DepthTexture = nullptr;
+    }
+
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
     if (!device || m_Specification.Width == 0 || m_Specification.Height == 0)
         return;

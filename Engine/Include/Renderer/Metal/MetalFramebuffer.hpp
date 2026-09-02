@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Renderer/Framebuffer.hpp"
 
@@ -14,7 +14,7 @@ public:
     virtual void Unbind() override;
     virtual void Resize(uint32_t width, uint32_t height) override;
 
-    virtual uint32_t GetColorAttachmentRendererID() const override { return 0; }
+    virtual uintptr_t GetColorAttachmentRendererID() const override { return (uintptr_t)m_ColorTexture; }
     virtual const FramebufferSpecification &GetSpecification() const override { return m_Specification; }
 
     void *GetColorTexture() const { return m_ColorTexture; }

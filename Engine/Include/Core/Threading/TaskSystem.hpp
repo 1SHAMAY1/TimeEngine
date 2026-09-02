@@ -70,7 +70,7 @@ private:
         if (m_NativeWindow)
         {
             IWindow::MakeContextCurrent(m_NativeWindow);
-#ifdef TE_EDITOR
+#if defined(TE_EDITOR) && defined(TE_SUPPORT_OPENGL)
             TimeGUI::InitOpenGLBackend();
 #endif
         }
@@ -107,7 +107,7 @@ private:
             m_DoneCV.notify_one();
         }
 
-#ifdef TE_EDITOR
+#if defined(TE_EDITOR) && defined(TE_SUPPORT_OPENGL)
         TimeGUI::ShutdownOpenGLBackend();
 #endif
         IWindow::MakeContextCurrent(nullptr);
