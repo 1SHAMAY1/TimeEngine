@@ -3,7 +3,12 @@
 #include "Core/Log.h"
 #include "Window/IWindow.hpp"
 #include "backends/imgui_impl_glfw.h"
+#ifdef TE_SUPPORT_OPENGL
 #include "backends/imgui_impl_opengl3.h"
+#endif
+#ifdef TE_SUPPORT_METAL
+#include "Utils/TimeGUIMetal.hpp"
+#endif
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <GLFW/glfw3.h>
@@ -720,25 +725,42 @@ bool Init(void *nativeWindow)
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#ifndef __APPLE__
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.ConfigInputTextCursorBlink = true;
 
     ImGui::StyleColorsDark();
     ImGuiStyle &style = ImGui::GetStyle();
     // Default to crisp, clean white text insertion caret (|)
     style.Colors[ImGuiCol_InputTextCursor] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+#ifndef __APPLE__
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
+#endif
 
     GLFWwindow *window = static_cast<GLFWwindow *>(nativeWindow);
     if (!window)
         return false;
 
+#ifdef TE_SUPPORT_OPENGL
     if (!ImGui_ImplGlfw_InitForOpenGL(window, true))
         return false;
+#elif defined(TE_SUPPORT_METAL)
+    if (!ImGui_ImplGlfw_InitForOther(window, true))
+        return false;
+    if (!TimeGUI_InitMetalBackend(window))
+        return false;
+#else
+    if (!ImGui_ImplGlfw_InitForOther(window, true))
+        return false;
+#endif
+
+    // Ensure font atlas is built
+    io.Fonts->Build();
 
     return true;
 }
@@ -747,21 +769,27 @@ static bool s_OpenGLBackendInitialized = false;
 
 bool InitOpenGLBackend()
 {
+#ifdef TE_SUPPORT_OPENGL
     if (s_OpenGLBackendInitialized)
         return true;
     if (!ImGui_ImplOpenGL3_Init(nullptr))
         return false;
     s_OpenGLBackendInitialized = ImGui_ImplOpenGL3_CreateDeviceObjects();
     return s_OpenGLBackendInitialized;
+#else
+    return false;
+#endif
 }
 
 void ShutdownOpenGLBackend()
 {
+#ifdef TE_SUPPORT_OPENGL
     if (s_OpenGLBackendInitialized)
     {
         ImGui_ImplOpenGL3_Shutdown();
         s_OpenGLBackendInitialized = false;
     }
+#endif
 }
 
 void BindWidgetThreadContext()
@@ -773,6 +801,9 @@ void BindWidgetThreadContext()
 void Shutdown()
 {
     ShutdownOpenGLBackend();
+#ifdef TE_SUPPORT_METAL
+    TimeGUI_ShutdownMetalBackend();
+#endif
     ImGui_ImplGlfw_Shutdown();
     if (s_ImGuiContext)
     {
@@ -781,17 +812,22 @@ void Shutdown()
     }
 }
 
-void PrepareGLFWFrame() { ImGui_ImplGlfw_NewFrame(); }
+void PrepareGLFWFrame()
+{
+    ImGui_ImplGlfw_NewFrame();
+#ifdef TE_SUPPORT_METAL
+    TimeGUI_PrepareMetalFrame();
+#endif
+}
 
 void BeginFrame(uint32_t width, uint32_t height)
 {
     BindWidgetThreadContext();
 
     ImGuiIO &io = ImGui::GetIO();
-    if (width > 0 && height > 0)
+    if ((io.DisplaySize.x <= 0.0f || io.DisplaySize.y <= 0.0f) && width > 0 && height > 0)
     {
         io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
-        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     }
 
     ImGui::NewFrame();
@@ -800,10 +836,9 @@ void BeginFrame(uint32_t width, uint32_t height)
 void *EndFrame(uint32_t width, uint32_t height)
 {
     ImGuiIO &io = ImGui::GetIO();
-    if (width > 0 && height > 0)
+    if ((io.DisplaySize.x <= 0.0f || io.DisplaySize.y <= 0.0f) && width > 0 && height > 0)
     {
         io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
-        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     }
 
     ImGui::Render();
@@ -828,8 +863,14 @@ void RenderDrawData(void *drawData)
         s_LoggedFirstDraw = true;
     }
 
+#ifdef TE_SUPPORT_OPENGL
     ImGui_ImplOpenGL3_RenderDrawData(data);
+#endif
+#ifdef TE_SUPPORT_METAL
+    TimeGUI_RenderMetalDrawData(data);
+#endif
 
+#ifndef __APPLE__
     ImGuiIO &io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
@@ -838,6 +879,7 @@ void RenderDrawData(void *drawData)
         ImGui::RenderPlatformWindowsDefault();
         IWindow::MakeContextCurrent(backup_current_context);
     }
+#endif
 }
 
 TimeGUIIO &GetIO()
@@ -1819,6 +1861,7 @@ void DestroyDrawList(TimeGUIDrawList &dl)
 
 void RenderDrawList(const TimeGUIDrawList &dl, const TEVector2 &displaySize)
 {
+#ifdef TE_SUPPORT_OPENGL
     ImDrawData drawData;
     drawData.Valid = true;
     drawData.Textures = nullptr;
@@ -1828,6 +1871,18 @@ void RenderDrawList(const TimeGUIDrawList &dl, const TEVector2 &displaySize)
     drawData.FramebufferScale = ImVec2(1.0f, 1.0f);
 
     ImGui_ImplOpenGL3_RenderDrawData(&drawData);
+#endif
+#ifdef TE_SUPPORT_METAL
+    ImDrawData drawData;
+    drawData.Valid = true;
+    drawData.Textures = nullptr;
+    drawData.AddDrawList((ImDrawList *)dl.nativeDrawList);
+    drawData.DisplayPos = ImVec2(0.0f, 0.0f);
+    drawData.DisplaySize = ImVec2(displaySize.x, displaySize.y);
+    drawData.FramebufferScale = ImVec2(1.0f, 1.0f);
+
+    TimeGUI_RenderMetalDrawData(&drawData);
+#endif
 }
 
 void ColorConvertHSVtoRGB(float h, float s, float v, float &out_r, float &out_g, float &out_b)
