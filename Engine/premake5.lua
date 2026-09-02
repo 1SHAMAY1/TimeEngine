@@ -54,6 +54,8 @@ project "Engine"
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
 
         -- volk
         "%{wks.location}/Vendor/volk/volk.c"
@@ -85,17 +87,23 @@ project "Engine"
         removefiles {
             "src/Renderer/Metal/**",
             "Include/Renderer/Metal/**",
-            "src/**.mm"
+            "src/**.mm",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
         }
     filter {}
     
-    -- Exclude non-Metal renderers on macOS
+    -- Exclude non-Metal renderers and OpenGL on macOS
     filter "system:macosx"
         removefiles {
+            "src/Renderer/OpenGL/**",
+            "Include/Renderer/OpenGL/**",
             "src/Renderer/OpenGLES/**",
             "Include/Renderer/OpenGLES/**",
             "src/Renderer/Vulkan/**",
             "Include/Renderer/Vulkan/**",
+            "%{wks.location}/Vendor/GLAD/**",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.*",
             "%{wks.location}/Vendor/volk/**"
         }
     filter {}
