@@ -25,7 +25,20 @@ public:
     void Bind(uint32_t slot = 0) const;
     void Unbind() const;
 
-    uint32_t GetRendererID() const { return m_RendererID; }
+    uintptr_t GetRendererID() const
+    {
+        if (m_MetalTexture)
+            return (uintptr_t)m_MetalTexture;
+        return (uintptr_t)m_RendererID;
+    }
+    void *GetNativeTexture() const
+    {
+        if (m_MetalTexture)
+            return m_MetalTexture;
+        if (m_DX11SRV)
+            return m_DX11SRV;
+        return (void *)(uintptr_t)m_RendererID;
+    }
 
     uint32_t GetWidth() const { return m_Width; }
     uint32_t GetHeight() const { return m_Height; }
@@ -83,6 +96,7 @@ private:
     AssetHandle m_Handle;
     void *m_DX11SRV = nullptr;
     void *m_DX11Texture = nullptr;
+    void *m_MetalTexture = nullptr;
 };
 
 using Texture2D = Texture;

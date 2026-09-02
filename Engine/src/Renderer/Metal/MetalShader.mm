@@ -11,10 +11,59 @@ MetalShader::MetalShader(const TEString &vertexSrc, const TEString &fragmentSrc)
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
     if (device)
     {
-        TEString combined = vertexSrc + "\n" + fragmentSrc;
-        NSString *src = [NSString stringWithUTF8String:combined.c_str()];
         NSError *error = nil;
-        id<MTLLibrary> lib = [device newLibraryWithSource:src options:nil error:&error];
+        id<MTLLibrary> lib = nil;
+
+        // If source does not contain GLSL preprocessor directive #version, attempt to compile as MSL
+        if (vertexSrc.Find("#version") == TEString::npos && fragmentSrc.Find("#version") == TEString::npos)
+        {
+            TEString combined = vertexSrc + "\n" + fragmentSrc;
+            NSString *src = [NSString stringWithUTF8String:combined.c_str()];
+            lib = [device newLibraryWithSource:src options:nil error:&error];
+        }
+
+        // Standard 2D MSL shader fallback
+        if (!lib)
+        {
+            NSString *mslSrc = @R"(
+#include <metal_stdlib>
+using namespace metal;
+
+struct VertexIn {
+    float3 position [[attribute(0)]];
+    float4 color [[attribute(1)]];
+    float2 texCoord [[attribute(2)]];
+    float texIndex [[attribute(3)]];
+};
+
+struct VertexOut {
+    float4 position [[position]];
+    float4 color;
+    float2 texCoord;
+    float texIndex;
+};
+
+struct Uniforms {
+    float4x4 u_ViewProjection;
+};
+
+vertex VertexOut vertexMain(VertexIn in [[stage_in]], constant Uniforms& uniforms [[buffer(1)]]) {
+    VertexOut out;
+    out.position = uniforms.u_ViewProjection * float4(in.position, 1.0);
+    out.color = in.color;
+    out.texCoord = in.texCoord;
+    out.texIndex = in.texIndex;
+    return out;
+}
+
+fragment float4 fragmentMain(VertexOut in [[stage_in]], texture2d<float> u_Texture [[texture(0)]], sampler u_Sampler [[sampler(0)]]) {
+    return in.color * u_Texture.sample(u_Sampler, in.texCoord);
+}
+)";
+            error = nil;
+            lib = [device newLibraryWithSource:mslSrc options:nil error:&error];
+        }
+
         if (lib)
         {
             m_Library = (__bridge_retained void *)lib;

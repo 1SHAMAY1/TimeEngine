@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Renderer/Framebuffer.hpp"
 #include <volk.h>
 
@@ -14,7 +14,7 @@ public:
     virtual void Unbind() override;
     virtual void Resize(uint32_t width, uint32_t height) override;
 
-    virtual uint32_t GetColorAttachmentRendererID() const override { return 0; } // Vulkan image handles are distinct
+    virtual uintptr_t GetColorAttachmentRendererID() const override { return 0; } // Vulkan image handles are distinct
     virtual const FramebufferSpecification &GetSpecification() const override { return m_Specification; }
 
     VkFramebuffer GetVkFramebuffer() const { return m_Framebuffer; }

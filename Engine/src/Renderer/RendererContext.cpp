@@ -11,7 +11,11 @@ extern "C"
 }
 #endif
 
+#if defined(__APPLE__)
+GraphicsAPI RendererContext::s_API = GraphicsAPI::Metal;
+#else
 GraphicsAPI RendererContext::s_API = GraphicsAPI::OpenGL;
+#endif
 
 void RendererContext::SetAPI(GraphicsAPI api) { s_API = api; }
 
