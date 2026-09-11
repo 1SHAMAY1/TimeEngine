@@ -1,89 +1,75 @@
-# Window Implementation Architecture
+﻿# Window Subsystem Architecture
 
-The Window subsystem in TimeEngine provides platform-agnostic OS window creation, event dispatching, graphics context binding, and input subsystem integration.
+The **Window Subsystem** in TimeEngine provides modular, platform-agnostic OS window creation, event dispatching, graphics context binding, and input subsystem integration.
 
 > [!NOTE]
-> In short, think of the **Window Subsystem** as the physical glass frame for your game. When TimeEngine starts, it asks the Operating System (Windows/Mac/Linux) to open up a window box. It also acts as the engine's ears — whenever a player presses a key on their keyboard or moves their mouse, the Window system catches those physical gestures, wraps them into neat event envelopes, and passes them to the engine so the game can react instantly.
-
+> In short, think of the **Window Subsystem** as the physical glass frame for your game. When TimeEngine starts, it asks the Operating System (Windows, macOS, or Linux) to open up a window box. It also acts as the engine's ears — whenever a player presses a key on their keyboard or moves their mouse, the Window system catches those physical gestures, wraps them into neat event envelopes, and passes them to the engine so the game can react instantly.
 
 ---
 
-## Component Overview
+## 🏛️ Architecture & Platform Implementations
 
-- **Interface**: `IWindow` (`Engine/Include/Window/IWindow.hpp`) — Pure virtual abstract base class defining window operations.
-- **Platform Implementation**: `WindowsWindow` (`Engine/Include/Window/WindowsWindow.hpp`) (`WindowsWindow.cpp`) — GLFW-backed desktop window implementation for Windows platforms.
-- **Properties Struct**: `WindowProps` — Holds initial title, width, and height configuration.
+`mermaid
+graph TD
+    A[Application::Application()] -->|Calls IWindow::Create(props)| B[IWindow (Abstract Interface)]
+    B -->|#ifdef TE_PLATFORM_WINDOWS| C[WindowsWindow (Win32 / GLFW)]
+    B -->|#elif defined(TE_PLATFORM_LINUX)| D[LinuxWindow (X11 / Wayland / GLFW)]
+    B -->|#elif defined(TE_PLATFORM_MACOS)| E[MacWindow (Cocoa / GLFW)]
+    C --> F[Event Callbacks / Graphics API / Input System]
+    D --> F
+    E --> F
+`
 
+---
 
-## Architecture & Responsibilities
+## 🔑 Core Components
 
-```
-                      [ Application ]
-                             │
-                             ▼ (IWindow::Create)
-                    ┌─────────────────┐
-                    │     IWindow     │ (Interface)
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  WindowsWindow  │ (GLFW Implementation)
-                    └────────┬────────┘
-                             │
-       ┌─────────────────────┼─────────────────────┐
-       ▼                     ▼                     ▼
-[ Event Callbacks ]   [ Graphics API ]      [ Input System ]
-(Window, Key, Mouse)  (OpenGL / DX11 /      (TE::Input::Init)
-                      Vulkan context)
-```
+### 1. IWindow Interface
+Defined in [Engine/Include/Window/IWindow.hpp](file:///e:/TimeEngine/Engine/Include/Window/IWindow.hpp):
+- Pure virtual abstract interface defining the contract for OS windows.
+- Declares GetWidth(), GetHeight(), SetVSync(), IsVSync(), OnUpdate(), GetNativeWindow(), GetGLLoaderFunction().
+- Static factory: static TEScope<IWindow> Create(const WindowProps &props) defined in [IWindow.cpp](file:///e:/TimeEngine/Engine/src/Window/IWindow.cpp).
 
-## Core Window Functions & Code Snippets
+### 2. Concrete Platform Window Classes
+- **WindowsWindow** ([Include/Window/WindowsWindow.hpp](file:///e:/TimeEngine/Engine/Include/Window/WindowsWindow.hpp) / [src/Window/WindowsWindow.cpp](file:///e:/TimeEngine/Engine/src/Window/WindowsWindow.cpp)):
+  - Dedicated Microsoft Windows implementation.
+  - Handles Win32 native icons (LoadImageW, WM_SETICON), DirectX11RendererAPI::InitWithWindow interop via glfwGetWin32Window, and OpenGL context management.
+- **LinuxWindow** ([Include/Window/LinuxWindow.hpp](file:///e:/TimeEngine/Engine/Include/Window/LinuxWindow.hpp) / [src/Window/LinuxWindow.cpp](file:///e:/TimeEngine/Engine/src/Window/LinuxWindow.cpp)):
+  - Dedicated Linux implementation (X11/Wayland).
+  - Handles OpenGL and Vulkan window initialization and Linux event dispatching.
+- **MacWindow** ([Include/Window/MacWindow.hpp](file:///e:/TimeEngine/Engine/Include/Window/MacWindow.hpp) / [src/Window/MacWindow.cpp](file:///e:/TimeEngine/Engine/src/Window/MacWindow.cpp)):
+  - Dedicated Apple macOS implementation (Cocoa).
+  - Configures macOS-specific OpenGL Core Profile hints (GLFW_CONTEXT_VERSION_MAJOR 4, 1, GLFW_OPENGL_FORWARD_COMPAT) and Vulkan/Metal presentation.
 
-- **`IWindow::Create(props)`**: Factory function to instantiate the active platform window (`WindowsWindow`).
-```cpp
-IWindow* IWindow::Create(const WindowProps& props) {
-    return new WindowsWindow(props);
+---
+
+## ⚡ Factory Creation Pattern
+
+In [Engine/src/Window/IWindow.cpp](file:///e:/TimeEngine/Engine/src/Window/IWindow.cpp):
+`cpp
+TEScope<IWindow> IWindow::Create(const WindowProps &props)
+{
+#ifdef TE_PLATFORM_WINDOWS
+    return CreateScope<WindowsWindow>(props);
+#elif defined(TE_PLATFORM_LINUX)
+    return CreateScope<LinuxWindow>(props);
+#elif defined(TE_PLATFORM_MACOS)
+    return CreateScope<MacWindow>(props);
+#else
+    TE_CORE_ASSERT(false, Unknown platform for IWindow::Create!);
+    return nullptr;
+#endif
 }
-```
-- **`WindowsWindow::Init(props)`**: Initializes GLFW, configures graphic API hints (e.g. `GLFW_NO_API` for DX11/Vulkan), creates native GLFW window handle, and hooks event callbacks.
-```cpp
-void WindowsWindow::Init(const WindowProps &props) {
-    glfwInit();
-    m_Window = glfwCreateWindow(props.Width, props.Height, props.Title.c_str(), nullptr, nullptr);
-    glfwSetWindowUserPointer(m_Window, &m_Data);
-    TE::Input::Init(m_Window);
-}
-```
-- **`WindowsWindow::OnUpdate()`**: Polls OS input/window events and presents/swaps render buffers (`glfwSwapBuffers` or DirectX 11 `SwapChain->Present`).
-```cpp
-void WindowsWindow::OnUpdate() {
-    glfwPollEvents();
-    if (TE::RendererContext::GetAPI() == TE::GraphicsAPI::DirectX11) {
-        ctx.SwapChain->Present(m_Data.VSync ? 1 : 0, 0);
-    } else {
-        glfwSwapBuffers(m_Window);
-    }
-}
-```
-- **`WindowsWindow::SetVSync(enabled)`**: Controls vertical sync synchronization via `glfwSwapInterval(enabled ? 1 : 0)`.
-- **GLFW Event Callbacks (`glfwSetKeyCallback`, `glfwSetCursorPosCallback`, etc.)**: Map native OS events to TimeEngine event objects and invoke `m_Data.EventCallback(event)`:
-```cpp
-## Window Subsystem Functions & Usage Rules
+`
 
-### 1. `IWindow::Create(props)`
-- **When Used**: Called exactly once during application startup by `Application::Application()` to create the primary window.
-- **When NOT to use**: Do NOT call `Create()` multiple times per application instance.
+---
 
-### 2. `WindowsWindow::Init(props)`
-- **When Used**: Invoked internally by `WindowsWindow` constructor to setup GLFW hints, native window handle, and event callbacks.
+## 🛠️ Usage Rules & Lifecycle
 
-### 3. `WindowsWindow::OnUpdate()`
-- **When Used**: Called every single frame inside `Application::Run()` main loop.
-- **What it does**: Processes pending OS window events (`glfwPollEvents`) and presents rendered frames to screen (`SwapChain->Present` or `glfwSwapBuffers`).
-
-### 4. `WindowsWindow::SetVSync(enabled)`
-- **When Used**: Preferred when toggling framerate synchronization in Engine Settings / Graphics settings UI.
-- **Effect**: Locks render updates to display refresh rate (`1`), preventing screen tearing.
-
-
-
+1. **IWindow::Create(props)**:
+   - Called once during engine startup in Application::Application().
+   - Returns a TEScope<IWindow> holding the active platform window.
+2. **OnUpdate()**:
+   - Called once per frame inside Application::Run() to poll OS events via glfwPollEvents().
+3. **SetVSync(enabled)**:
+   - Controls vertical sync refresh throttling via glfwSwapInterval(enabled ? 1 : 0).

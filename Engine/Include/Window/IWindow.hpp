@@ -33,6 +33,9 @@ public:
 
     virtual void *GetNativeWindow() const = 0;
 
+    virtual void ShowWindow() = 0;
+    virtual bool IsVisible() const = 0;
+
     virtual void *GetGLLoaderFunction() const = 0;
 
     static void Terminate();
