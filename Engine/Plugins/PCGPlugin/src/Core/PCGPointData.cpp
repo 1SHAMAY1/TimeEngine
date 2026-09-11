@@ -1,4 +1,5 @@
 #include "Core/PCGPointData.hpp"
+#include "Utils/MathUtils.hpp"
 #include <algorithm>
 
 void PCGPointData::FilterByDensity(float minDensity, float maxDensity)
@@ -14,13 +15,17 @@ void PCGPointData::FilterByDensity(float minDensity, float maxDensity)
     m_Points = filtered;
 }
 
-void PCGPointData::TransformPoints(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale)
+void PCGPointData::TransformPoints(const TEVector &translation, const TEQuat &rotation, const TEVector &scale)
 {
     for (size_t i = 0; i < m_Points.Size(); ++i)
     {
-        m_Points[i].Position = translation + (rotation * (m_Points[i].Position * scale));
-        m_Points[i].Rotation = rotation * m_Points[i].Rotation;
-        m_Points[i].Scale *= scale;
+        TEVector scaledPos(m_Points[i].Position.x * scale.x, m_Points[i].Position.y * scale.y,
+                           m_Points[i].Position.z * scale.z);
+        m_Points[i].Position = translation + (rotation * scaledPos);
+        m_Points[i].Rotation = rotation;
+        m_Points[i].Scale.x *= scale.x;
+        m_Points[i].Scale.y *= scale.y;
+        m_Points[i].Scale.z *= scale.z;
     }
 }
 
@@ -44,8 +49,8 @@ void PCGPointData::IntersectWith(const PCGPointData &other, float matchRadius)
         bool foundMatch = false;
         for (size_t j = 0; j < otherPoints.Size(); ++j)
         {
-            glm::vec3 diff = m_Points[i].Position - otherPoints[j].Position;
-            if (glm::dot(diff, diff) <= rSq)
+            TEVector diff = m_Points[i].Position - otherPoints[j].Position;
+            if ((diff.x * diff.x + diff.y * diff.y + diff.z * diff.z) <= rSq)
             {
                 foundMatch = true;
                 break;
@@ -70,8 +75,8 @@ void PCGPointData::DifferenceWith(const PCGPointData &other, float matchRadius)
         bool foundMatch = false;
         for (size_t j = 0; j < otherPoints.Size(); ++j)
         {
-            glm::vec3 diff = m_Points[i].Position - otherPoints[j].Position;
-            if (glm::dot(diff, diff) <= rSq)
+            TEVector diff = m_Points[i].Position - otherPoints[j].Position;
+            if ((diff.x * diff.x + diff.y * diff.y + diff.z * diff.z) <= rSq)
             {
                 foundMatch = true;
                 break;
@@ -85,12 +90,12 @@ void PCGPointData::DifferenceWith(const PCGPointData &other, float matchRadius)
     m_Points = result;
 }
 
-void PCGPointData::GetBounds(glm::vec3 &outMin, glm::vec3 &outMax) const
+void PCGPointData::GetBounds(TEVector &outMin, TEVector &outMax) const
 {
     if (m_Points.IsEmpty())
     {
-        outMin = glm::vec3(0.0f);
-        outMax = glm::vec3(0.0f);
+        outMin = TEVector(0.0f, 0.0f, 0.0f);
+        outMax = TEVector(0.0f, 0.0f, 0.0f);
         return;
     }
 
@@ -99,7 +104,12 @@ void PCGPointData::GetBounds(glm::vec3 &outMin, glm::vec3 &outMax) const
 
     for (size_t i = 1; i < m_Points.Size(); ++i)
     {
-        outMin = glm::min(outMin, m_Points[i].Position);
-        outMax = glm::max(outMax, m_Points[i].Position);
+        outMin.x = std::min(outMin.x, m_Points[i].Position.x);
+        outMin.y = std::min(outMin.y, m_Points[i].Position.y);
+        outMin.z = std::min(outMin.z, m_Points[i].Position.z);
+
+        outMax.x = std::max(outMax.x, m_Points[i].Position.x);
+        outMax.y = std::max(outMax.y, m_Points[i].Position.y);
+        outMax.z = std::max(outMax.z, m_Points[i].Position.z);
     }
 }

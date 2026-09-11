@@ -1192,16 +1192,17 @@ TEString MCPPlugin::ReadHttpRequest(uintptr_t socket)
     size_t headerEnd = result.Find("\r\n\r\n") + 4;
     int bodyReceived = (int)(result.Len() - headerEnd);
 
-    TEArray<char> buffer;
-    buffer.Resize(1024, '\0');
+    TEString bodyChunk;
+    bodyChunk.Reserve(1024);
 
     while (bodyReceived < contentLength)
     {
-        bytes = recv((SOCKET)socket, buffer.GetData(), (int)buffer.Num() - 1, 0);
+        bytes = recv((SOCKET)socket, bodyChunk.Data(), 1023, 0);
         if (bytes <= 0)
             break;
-        buffer[bytes] = '\0';
-        result += buffer.GetData();
+        bodyChunk.Data()[bytes] = '\0';
+        bodyChunk.SyncFromBuffer();
+        result += bodyChunk;
         bodyReceived += bytes;
     }
 #endif

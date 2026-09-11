@@ -3,10 +3,8 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
+#include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
-#include <glm/glm.hpp>
-#include <unordered_map>
-#include <vector>
 
 namespace Skeletal2D
 {
@@ -50,12 +48,12 @@ struct BoneTimeline
     int BoneIndex = -1;
     TEString BoneName;
 
-    TEArray<Keyframe<glm::vec2>> TranslationKeys;
+    TEArray<Keyframe<TEVector2>> TranslationKeys;
     TEArray<Keyframe<float>> RotationKeys; // Radians
-    TEArray<Keyframe<glm::vec2>> ScaleKeys;
+    TEArray<Keyframe<TEVector2>> ScaleKeys;
 
-    void Evaluate(float time, glm::vec2 &outPos, float &outRot, glm::vec2 &outScale, const glm::vec2 &defaultPos,
-                  float defaultRot, const glm::vec2 &defaultScale) const
+    void Evaluate(float time, TEVector2 &outPos, float &outRot, TEVector2 &outScale, const TEVector2 &defaultPos,
+                  float defaultRot, const TEVector2 &defaultScale) const
     {
         outPos = EvaluateVector2(TranslationKeys, time, defaultPos);
         outRot = EvaluateFloat(RotationKeys, time, defaultRot);
@@ -79,13 +77,13 @@ private:
                 float span = keys[i + 1].Time - keys[i].Time;
                 float t = (span > 0.0001f) ? (time - keys[i].Time) / span : 0.0f;
                 float curvedT = EvaluateCurve(t, keys[i].Curve);
-                return glm::mix(keys[i].Value, keys[i + 1].Value, curvedT);
+                return keys[i].Value + (keys[i + 1].Value - keys[i].Value) * curvedT;
             }
         }
         return defaultVal;
     }
 
-    static glm::vec2 EvaluateVector2(const TEArray<Keyframe<glm::vec2>> &keys, float time, const glm::vec2 &defaultVal)
+    static TEVector2 EvaluateVector2(const TEArray<Keyframe<TEVector2>> &keys, float time, const TEVector2 &defaultVal)
     {
         if (keys.empty())
             return defaultVal;
@@ -101,7 +99,7 @@ private:
                 float span = keys[i + 1].Time - keys[i].Time;
                 float t = (span > 0.0001f) ? (time - keys[i].Time) / span : 0.0f;
                 float curvedT = EvaluateCurve(t, keys[i].Curve);
-                return glm::mix(keys[i].Value, keys[i + 1].Value, curvedT);
+                return keys[i].Value + (keys[i + 1].Value - keys[i].Value) * curvedT;
             }
         }
         return defaultVal;

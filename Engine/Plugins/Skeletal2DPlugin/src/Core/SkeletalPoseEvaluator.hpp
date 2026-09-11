@@ -36,11 +36,11 @@ public:
     float GetTimeScale() const { return m_GlobalTimeScale; }
 
     // Update and Evaluation
-    void Update(float dt, const glm::mat4 &rootTransform);
+    void Update(float dt, const TEMatrix4 &rootTransform);
 
     // Bone Transform Queries
-    bool GetBoneWorldTransform(const TEString &boneName, glm::mat4 &outMatrix) const;
-    bool GetBoneWorldPosition(const TEString &boneName, glm::vec2 &outPosition) const;
+    bool GetBoneWorldTransform(const TEString &boneName, TEMatrix4 &outMatrix) const;
+    bool GetBoneWorldPosition(const TEString &boneName, TEVector2 &outPosition) const;
 
     // Skinning / Mesh Deform
     void EvaluateDeformedMeshes();

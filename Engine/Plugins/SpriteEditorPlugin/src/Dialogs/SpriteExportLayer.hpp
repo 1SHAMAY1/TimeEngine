@@ -12,13 +12,6 @@ enum class SpriteExportTab
     Spritesheet = 1
 };
 
-enum class SpriteMetadataFormat
-{
-    JSON = 0,
-    TESheet = 1,
-    Both = 2
-};
-
 class SpriteExportLayer : public Layer
 {
 public:
@@ -44,15 +37,16 @@ private:
 
     // Compositing & Exporting
     void CompositeFramePixels(int frameIndex, int width, int height, TEArray<unsigned char> &outPixels) const;
+    void GenerateNormalMap(const TEArray<unsigned char> &srcPixels, int width, int height,
+                           TEArray<unsigned char> &outNormals);
     void ExecuteSingleFrameExport();
     void ExecuteSpritesheetExport();
 
-    void ExportMetadataJson(const TEString &jsonPath, int sheetW, int sheetH, int cellW, int cellH, int cols, int rows,
-                            int frameCount);
     void ExportMetadataTESheet(const TEString &tesheetPath, const TEString &texturePath, int sheetW, int sheetH,
                                int cellW, int cellH, int cols, int rows, int frameCount);
 
     void ResetCropToFull();
+    void GetEffectiveGridDimensions(int &outW, int &outH) const;
 
 private:
     SpriteMode *m_SpriteMode = nullptr;
@@ -62,6 +56,7 @@ private:
     // Destination Path & Common Settings
     TEString m_ExportPath = "Resources/SavedSprites/Sprite.png";
     bool m_ExportTransparent = true;
+    bool m_GenerateNormalMap = false;
     TEVector4 m_BackgroundColor = TEVector4(0.0f, 0.0f, 0.0f, 1.0f);
     int m_ScaleMultiplier = 1;
 
@@ -87,7 +82,6 @@ private:
     int m_SheetPadding = 0;
     int m_SheetSpacing = 0;
     bool m_ExportMetadata = false;
-    SpriteMetadataFormat m_MetadataFormat = SpriteMetadataFormat::Both;
 
     // Spritesheet Live Playback & Preview State
     bool m_AnimPlaying = true;

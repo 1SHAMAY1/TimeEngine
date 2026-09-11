@@ -69,7 +69,7 @@ TrackEntry *SkeletalPoseEvaluator::GetTrack(int trackIndex)
     return nullptr;
 }
 
-void SkeletalPoseEvaluator::Update(float dt, const glm::mat4 &rootTransform)
+void SkeletalPoseEvaluator::Update(float dt, const TEMatrix4 &rootTransform)
 {
     float scaledDt = dt * m_GlobalTimeScale;
     UpdateTracks(scaledDt);
@@ -153,7 +153,7 @@ void SkeletalPoseEvaluator::EvaluateBonePoses()
             if (!bone)
                 continue;
 
-            glm::vec2 currPos, currScale;
+            TEVector2 currPos, currScale;
             float currRot;
             timeline.Evaluate(entry.TrackTime, currPos, currRot, currScale, bone->RestPose.Position,
                               bone->RestPose.Rotation, bone->RestPose.Scale);
@@ -165,14 +165,14 @@ void SkeletalPoseEvaluator::EvaluateBonePoses()
                 {
                     if (prevTimeline.BoneName == timeline.BoneName)
                     {
-                        glm::vec2 prevPos, prevScale;
+                        TEVector2 prevPos, prevScale;
                         float prevRot;
                         prevTimeline.Evaluate(entry.TrackTime, prevPos, prevRot, prevScale, bone->RestPose.Position,
                                               bone->RestPose.Rotation, bone->RestPose.Scale);
 
-                        currPos = glm::mix(prevPos, currPos, mixAlpha);
-                        currRot = glm::mix(prevRot, currRot, mixAlpha);
-                        currScale = glm::mix(prevScale, currScale, mixAlpha);
+                        currPos = prevPos + (currPos - prevPos) * mixAlpha;
+                        currRot = prevRot + (currRot - prevRot) * mixAlpha;
+                        currScale = prevScale + (currScale - prevScale) * mixAlpha;
                         break;
                     }
                 }
@@ -185,7 +185,7 @@ void SkeletalPoseEvaluator::EvaluateBonePoses()
     }
 }
 
-bool SkeletalPoseEvaluator::GetBoneWorldTransform(const TEString &boneName, glm::mat4 &outMatrix) const
+bool SkeletalPoseEvaluator::GetBoneWorldTransform(const TEString &boneName, TEMatrix4 &outMatrix) const
 {
     int index = m_Hierarchy.FindBoneIndex(boneName);
     if (index >= 0)
@@ -200,12 +200,12 @@ bool SkeletalPoseEvaluator::GetBoneWorldTransform(const TEString &boneName, glm:
     return false;
 }
 
-bool SkeletalPoseEvaluator::GetBoneWorldPosition(const TEString &boneName, glm::vec2 &outPosition) const
+bool SkeletalPoseEvaluator::GetBoneWorldPosition(const TEString &boneName, TEVector2 &outPosition) const
 {
-    glm::mat4 mat;
+    TEMatrix4 mat;
     if (GetBoneWorldTransform(boneName, mat))
     {
-        outPosition = glm::vec2(mat[3].x, mat[3].y);
+        outPosition = TEVector2(mat.m[3][0], mat.m[3][1]);
         return true;
     }
     return false;
@@ -219,7 +219,7 @@ void SkeletalPoseEvaluator::EvaluateDeformedMeshes()
         if (slot.ActiveAttachmentName.IsEmpty())
             continue;
 
-        auto attachIt = slot.Attachments.find(slot.ActiveAttachmentName.c_str());
+        auto attachIt = slot.Attachments.find(slot.ActiveAttachmentName);
         if (attachIt == slot.Attachments.end())
             continue;
 
@@ -229,7 +229,7 @@ void SkeletalPoseEvaluator::EvaluateDeformedMeshes()
 
         for (auto &vertex : attachment.Vertices)
         {
-            glm::vec2 deformed = {0.0f, 0.0f};
+            TEVector2 deformed = {0.0f, 0.0f};
 
             if (vertex.Weights.empty())
             {
@@ -237,9 +237,9 @@ void SkeletalPoseEvaluator::EvaluateDeformedMeshes()
                 const auto *bone = m_Hierarchy.GetBone(slot.BoneIndex);
                 if (bone)
                 {
-                    glm::vec4 worldPos =
-                        bone->WorldMatrix * glm::vec4(vertex.RestPosition.x, vertex.RestPosition.y, 0.0f, 1.0f);
-                    deformed = glm::vec2(worldPos.x, worldPos.y);
+                    TEVector4 worldPos =
+                        bone->WorldMatrix * TEVector4(vertex.RestPosition.x, vertex.RestPosition.y, 0.0f, 1.0f);
+                    deformed = TEVector2(worldPos.x, worldPos.y);
                 }
                 else
                 {
@@ -253,9 +253,9 @@ void SkeletalPoseEvaluator::EvaluateDeformedMeshes()
                     const auto *bone = m_Hierarchy.GetBone(weight.BoneIndex);
                     if (bone)
                     {
-                        glm::vec4 worldPos =
-                            bone->WorldMatrix * glm::vec4(weight.Offset.x, weight.Offset.y, 0.0f, 1.0f);
-                        deformed += glm::vec2(worldPos.x, worldPos.y) * weight.Weight;
+                        TEVector4 worldPos =
+                            bone->WorldMatrix * TEVector4(weight.Offset.x, weight.Offset.y, 0.0f, 1.0f);
+                        deformed += TEVector2(worldPos.x, worldPos.y) * weight.Weight;
                     }
                 }
             }

@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Utils/Math/MathEngine.hpp"
+#include "Utils/MathUtils.hpp"
 #include <algorithm>
 #include <cmath>
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
 
 namespace IK
 {
@@ -11,25 +11,37 @@ namespace IK
 class AimConstraint3D
 {
 public:
-    static glm::quat Solve(const glm::vec3 &boneWorldPos, const glm::vec3 &targetWorldPos,
-                           const glm::vec3 &aimAxis = glm::vec3(0.0f, 0.0f, 1.0f),
-                           const glm::vec3 &upVector = glm::vec3(0.0f, 1.0f, 0.0f))
+    static TEQuat Solve(const TEVector &boneWorldPos, const TEVector &targetWorldPos,
+                        const TEVector &aimAxis = TEVector(0.0f, 0.0f, 1.0f),
+                        const TEVector &upVector = TEVector(0.0f, 1.0f, 0.0f))
     {
-        glm::vec3 toTarget = targetWorldPos - boneWorldPos;
-        if (glm::length(toTarget) < 0.0001f)
-            return glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        TEVector toTarget = targetWorldPos - boneWorldPos;
+        if (toTarget.Length() < 0.0001f)
+            return TEQuat(1.0f, 0.0f, 0.0f, 0.0f);
 
-        glm::vec3 forward = glm::normalize(toTarget);
-        glm::vec3 right = glm::cross(upVector, forward);
-        if (glm::length(right) < 0.0001f)
+        TEVector forward = toTarget.Normalized();
+        TEVector right = upVector.Cross(forward);
+        if (right.Length() < 0.0001f)
         {
-            right = glm::cross(glm::vec3(1.0f, 0.0f, 0.0f), forward);
+            right = TEVector(1.0f, 0.0f, 0.0f).Cross(forward);
         }
-        right = glm::normalize(right);
-        glm::vec3 up = glm::normalize(glm::cross(forward, right));
+        right = right.Normalized();
+        TEVector up = forward.Cross(right).Normalized();
 
-        glm::mat3 rotMat(right, up, forward);
-        return glm::quat_cast(rotMat);
+        TEMatrix4 rotMat(1.0f);
+        rotMat.m[0][0] = right.x;
+        rotMat.m[0][1] = right.y;
+        rotMat.m[0][2] = right.z;
+
+        rotMat.m[1][0] = up.x;
+        rotMat.m[1][1] = up.y;
+        rotMat.m[1][2] = up.z;
+
+        rotMat.m[2][0] = forward.x;
+        rotMat.m[2][1] = forward.y;
+        rotMat.m[2][2] = forward.z;
+
+        return TEQuat::FromMatrix(rotMat);
     }
 };
 

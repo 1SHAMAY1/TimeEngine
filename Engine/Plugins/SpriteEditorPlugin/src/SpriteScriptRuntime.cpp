@@ -71,8 +71,7 @@ void SpriteScriptRuntime::Execute(TimeGUI::TimeGUIDrawList dl, const TEVector2 &
     m_Context.DeltaTime = dt;
     m_Context.FrameIndex = frameIndex;
     m_Context.TotalFrames = std::max(1, totalFrames);
-    m_Context.FrameProgress =
-        (m_Context.TotalFrames > 1) ? (float)frameIndex / (float)(m_Context.TotalFrames - 1) : 0.0f;
+    m_Context.FrameProgress = (m_Context.TotalFrames > 0) ? (float)frameIndex / (float)m_Context.TotalFrames : 0.0f;
     m_Context.PixelWidth = std::max(1, pixelWidth);
     m_Context.PixelHeight = std::max(1, pixelHeight);
 
@@ -81,6 +80,7 @@ void SpriteScriptRuntime::Execute(TimeGUI::TimeGUIDrawList dl, const TEVector2 &
     {
         m_Context.PixelBuffer.Resize(requiredPixels, TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
     }
+    std::fill(m_Context.PixelBuffer.begin(), m_Context.PixelBuffer.end(), TEVector4(0.0f, 0.0f, 0.0f, 0.0f));
 
     ResetGlobals();
 
@@ -258,14 +258,81 @@ void SpriteScriptRuntime::RegisterBuiltins()
                          if (a.empty())
                              return TScriptValue::Number(0.0);
                          float x = (float)a[0].AsNumber();
-                         auto hash = [](int n)
+                         float y = (a.size() > 1) ? (float)a[1].AsNumber() : 0.0f;
+                         float z = (a.size() > 2) ? (float)a[2].AsNumber() : 0.0f;
+                         auto hash2 = [](int n) -> float
                          {
                              n = (n << 13) ^ n;
                              return (1.0f - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0f);
                          };
-                         int i = (int)std::floor(x);
-                         float f = x - (float)i;
-                         return TScriptValue::Number(hash(i) * (1.0f - f) + hash(i + 1) * f);
+                         int xi = (int)std::floor(x);
+                         int yi = (int)std::floor(y);
+                         int zi = (int)std::floor(z);
+                         float xf = x - (float)xi;
+                         float yf = y - (float)yi;
+                         float zf = z - (float)zi;
+                         // Cubic hermite interpolation
+                         float u = xf * xf * (3.0f - 2.0f * xf);
+                         float v = yf * yf * (3.0f - 2.0f * yf);
+                         float w = zf * zf * (3.0f - 2.0f * zf);
+                         int n0 = xi + yi * 57 + zi * 321;
+                         float n00 = hash2(n0) * (1.0f - u) + hash2(n0 + 1) * u;
+                         float n01 = hash2(n0 + 57) * (1.0f - u) + hash2(n0 + 58) * u;
+                         float n10 = hash2(n0 + 321) * (1.0f - u) + hash2(n0 + 322) * u;
+                         float n11 = hash2(n0 + 378) * (1.0f - u) + hash2(n0 + 379) * u;
+                         float nx0 = n00 * (1.0f - v) + n01 * v;
+                         float nx1 = n10 * (1.0f - v) + n11 * v;
+                         return TScriptValue::Number(nx0 * (1.0f - w) + nx1 * w);
+                     });
+
+    RegisterFunction("smoothstep",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.size() < 3)
+                             return TScriptValue::Number(0.0);
+                         float edge0 = (float)a[0].AsNumber();
+                         float edge1 = (float)a[1].AsNumber();
+                         float x = (float)a[2].AsNumber();
+                         float t = std::clamp((x - edge0) / std::max(0.00001f, edge1 - edge0), 0.0f, 1.0f);
+                         return TScriptValue::Number(t * t * (3.0f - 2.0f * t));
+                     });
+
+    RegisterFunction("ease_in_out",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.empty())
+                             return TScriptValue::Number(0.0);
+                         float t = std::clamp((float)a[0].AsNumber(), 0.0f, 1.0f);
+                         return TScriptValue::Number(t * t * (3.0f - 2.0f * t));
+                     });
+
+    RegisterFunction("ease_bounce",
+                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (a.empty())
+                             return TScriptValue::Number(0.0);
+                         float t = std::clamp((float)a[0].AsNumber(), 0.0f, 1.0f);
+                         const float n1 = 7.5625f;
+                         const float d1 = 2.75f;
+                         float res = 0.0f;
+                         if (t < 1.0f / d1)
+                             res = n1 * t * t;
+                         else if (t < 2.0f / d1)
+                         {
+                             t -= 1.5f / d1;
+                             res = n1 * t * t + 0.75f;
+                         }
+                         else if (t < 2.5f / d1)
+                         {
+                             t -= 2.25f / d1;
+                             res = n1 * t * t + 0.9375f;
+                         }
+                         else
+                         {
+                             t -= 2.625f / d1;
+                             res = n1 * t * t + 0.984375f;
+                         }
+                         return TScriptValue::Number(res);
                      });
 
     // ==========================================
@@ -315,15 +382,64 @@ void SpriteScriptRuntime::RegisterBuiltins()
                          return TScriptValue::Number(std::fmod(m_Context.Time * speed, 6.283185307179586));
                      });
 
-    RegisterFunction("animate_lerp",
-                     [](const TEArray<TScriptValue> &a) -> TScriptValue
+    RegisterFunction("set_loop_frames",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
                      {
-                         if (a.size() < 3)
-                             return TScriptValue::Number(0.0);
-                         double start = a[0].AsNumber();
-                         double end = a[1].AsNumber();
-                         double t = std::clamp(a[2].AsNumber(), 0.0, 1.0);
-                         return TScriptValue::Number(start + (end - start) * t);
+                         if (!a.empty())
+                         {
+                             int frames = (int)a[0].AsNumber();
+                             if (frames >= 1)
+                                 m_RequestedTotalFrames = frames;
+                         }
+                         return TScriptValue::Nil();
+                     });
+
+    RegisterFunction("set_total_frames",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         if (!a.empty())
+                         {
+                             int frames = (int)a[0].AsNumber();
+                             if (frames >= 1)
+                                 m_RequestedTotalFrames = frames;
+                         }
+                         return TScriptValue::Nil();
+                     });
+
+    RegisterFunction("cycle",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         // Returns normalized seamless loop progress [0.0, 1.0)
+                         return TScriptValue::Number(m_Context.FrameProgress);
+                     });
+
+    RegisterFunction("cycle_angle",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         // Returns seamless 0 -> 2*PI radians for full rotation loops
+                         return TScriptValue::Number(m_Context.FrameProgress * 6.283185307179586);
+                     });
+
+    RegisterFunction("cycle_degrees",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         // Returns seamless 0 -> 360 degrees for full rotation loops
+                         return TScriptValue::Number(m_Context.FrameProgress * 360.0);
+                     });
+
+    RegisterFunction("get_angle_step",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         // Returns 360.0 / total_frames (the exact degree increment per frame)
+                         int total = std::max(1, m_Context.TotalFrames);
+                         return TScriptValue::Number(360.0 / (double)total);
+                     });
+
+    RegisterFunction("get_rotation_angle",
+                     [this](const TEArray<TScriptValue> &a) -> TScriptValue
+                     {
+                         // Returns frame * (360.0 / total_frames) in radians
+                         return TScriptValue::Number(m_Context.FrameProgress * 6.283185307179586);
                      });
 
     // ==========================================
@@ -733,10 +849,19 @@ void SpriteScriptRuntime::RegisterBuiltins()
                          }
 
                          if (thickness <= 0.0f)
-                             m_Context.DrawList.AddConvexPolyFilled(pts.data(), totalPts, col);
+                         {
+                             for (int i = 0; i < (int)pts.Size(); i++)
+                             {
+                                 TEVector2 p1 = pts[i];
+                                 TEVector2 p2 = pts[(i + 1) % (int)pts.Size()];
+                                 m_Context.DrawList.AddTriangleFilled(center, p1, p2, col);
+                             }
+                         }
                          else
-                             m_Context.DrawList.AddPolyline(pts.data(), totalPts, col, TimeGUIDrawFlags_Closed,
+                         {
+                             m_Context.DrawList.AddPolyline(pts.Data(), (int)pts.Size(), col, TimeGUIDrawFlags_Closed,
                                                             thickness);
+                         }
                          return TScriptValue::Nil();
                      });
 
@@ -1227,7 +1352,7 @@ TEVector4 SpriteScriptRuntime::ValueToColorVec4(const TScriptValue &val)
             unsigned int hexVal = 0;
             if (s.length() == 7) // #RRGGBB
             {
-                sscanf(s.c_str() + 1, "%06x", &hexVal);
+                unsigned long hexVal = std::strtoul(s.c_str() + 1, nullptr, 16);
                 float r = ((hexVal >> 16) & 0xFF) / 255.0f;
                 float g = ((hexVal >> 8) & 0xFF) / 255.0f;
                 float b = (hexVal & 0xFF) / 255.0f;
@@ -1235,7 +1360,7 @@ TEVector4 SpriteScriptRuntime::ValueToColorVec4(const TScriptValue &val)
             }
             else if (s.length() == 9) // #RRGGBBAA
             {
-                sscanf(s.c_str() + 1, "%08x", &hexVal);
+                unsigned long hexVal = std::strtoul(s.c_str() + 1, nullptr, 16);
                 float r = ((hexVal >> 24) & 0xFF) / 255.0f;
                 float g = ((hexVal >> 16) & 0xFF) / 255.0f;
                 float b = ((hexVal >> 8) & 0xFF) / 255.0f;

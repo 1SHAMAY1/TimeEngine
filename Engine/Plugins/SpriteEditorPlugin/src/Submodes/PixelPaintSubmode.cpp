@@ -101,10 +101,10 @@ void PixelPaintSubmode::OnTimeGUIRender(SpriteEditorLayer *layer, SpriteMode *mo
 
     if (TimeGUI::BeginTable("##PiskelStudioLayout", 4, TimeGUITableFlags_Resizable | TimeGUITableFlags_BordersInnerV))
     {
-        TimeGUI::TableSetupColumn("Tools", TimeGUITableColumnFlags_WidthFixed, 140.0f);
+        TimeGUI::TableSetupColumn("Tools", TimeGUITableColumnFlags_WidthFixed, 175.0f);
         TimeGUI::TableSetupColumn("Frames", TimeGUITableColumnFlags_WidthFixed, 130.0f);
         TimeGUI::TableSetupColumn("Canvas", TimeGUITableColumnFlags_WidthStretch, 0.6f);
-        TimeGUI::TableSetupColumn("Preview & Layers", TimeGUITableColumnFlags_WidthFixed, 220.0f);
+        TimeGUI::TableSetupColumn("Preview & Layers", TimeGUITableColumnFlags_WidthFixed, 230.0f);
 
         // 1. Tool Strip (Left)
         TimeGUI::TableNextColumn();
@@ -144,13 +144,16 @@ void PixelPaintSubmode::DrawToolPalette(SpriteMode *mode)
     TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "TOOLS");
     TimeGUI::Separator();
 
+    float availW = TimeGUI::GetContentRegionAvail().x;
+    float btnW = std::max(56.0f, (availW - 8.0f) * 0.5f);
+
     auto ToolBtn = [&](const TEString &label, PixelToolType type, const char *tooltip)
     {
         bool active = (m_ActiveTool == type);
         if (active)
             TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.20f, 0.45f, 0.85f, 1.0f));
 
-        if (TimeGUI::Button(label, TEVector2(48, 36)))
+        if (TimeGUI::Button(label, TEVector2(btnW, 34)))
         {
             m_ActiveTool = type;
         }
@@ -192,7 +195,7 @@ void PixelPaintSubmode::DrawToolPalette(SpriteMode *mode)
         if (active)
             TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.3f, 0.7f, 0.4f, 1.0f));
 
-        if (TimeGUI::Button(label.c_str(), TEVector2(48, 26)))
+        if (TimeGUI::Button(label.c_str(), TEVector2(btnW, 26)))
         {
             m_BrushSize = size;
         }
@@ -223,8 +226,81 @@ void PixelPaintSubmode::DrawToolPalette(SpriteMode *mode)
     TimeGUI::Spacing();
     TimeGUI::Separator();
     TimeGUI::Checkbox("Grid", &m_ShowGrid);
-    TimeGUI::Checkbox("Onion Skin", &m_EnableOnionSkin);
+    TimeGUI::SameLine();
+    TimeGUI::Checkbox("Tile Wrap 3x3", &m_SeamlessTileWrap);
 
+    // Advanced Onion Skinning Controls
+    TimeGUI::Checkbox("Onion Skin", &m_EnableOnionSkin);
+    if (m_EnableOnionSkin)
+    {
+        TimeGUI::Indent(10.0f);
+        const char *onionModes[] = {"Past & Future", "Specific Keyframe"};
+        TimeGUI::Combo("##OnionMode", &m_OnionMode, onionModes, 2);
+
+        if (m_OnionMode == 0)
+        {
+            TimeGUI::SliderInt("Past", &m_OnionPastFrames, 0, 5);
+            TimeGUI::SliderInt("Future", &m_OnionFutureFrames, 0, 5);
+        }
+        else
+        {
+            int maxFrame = Max(0, (int)mode->m_PixelFrames.size() - 1);
+            TimeGUI::SliderInt("Keyframe", &m_OnionKeyframeIndex, 0, maxFrame);
+        }
+        TimeGUI::SliderFloat("Ghost Alpha", &m_OnionOpacity, 0.05f, 0.80f, "%.2f");
+        TimeGUI::Checkbox("Tint (Red/Blue)", &m_OnionColorTint);
+        TimeGUI::Unindent(10.0f);
+    }
+
+    TimeGUI::Spacing();
+    TimeGUI::Separator();
+    TimeGUI::Text("Palette Presets");
+    if (TimeGUI::Button("PICO-8", TEVector2(55, 22)))
+    {
+        mode->m_ColorHistory.Clear();
+        const unsigned int pico8[] = {0xFF000000, 0xFF1D2B53, 0xFF7E2553, 0xFF008751, 0xFFAB5236, 0xFF5F574F,
+                                      0xFFC2C3C7, 0xFFFFF1E8, 0xFFFF004D, 0xFFFFA300, 0xFFFFEC27, 0xFF00E436,
+                                      0xFF29ADFF, 0xFF83769C, 0xFFFF77A8, 0xFFFFCCAA};
+        for (int i = 0; i < 16; ++i)
+        {
+            unsigned int c = pico8[i];
+            float a = ((c >> 24) & 0xFF) / 255.0f;
+            float b = ((c >> 16) & 0xFF) / 255.0f;
+            float g = ((c >> 8) & 0xFF) / 255.0f;
+            float r = (c & 0xFF) / 255.0f;
+            mode->m_ColorHistory.Add(TEVector4(r, g, b, a));
+        }
+    }
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("GameBoy", TEVector2(65, 22)))
+    {
+        mode->m_ColorHistory.Clear();
+        mode->m_ColorHistory.Add(TEVector4(0.06f, 0.22f, 0.06f, 1.0f));
+        mode->m_ColorHistory.Add(TEVector4(0.19f, 0.38f, 0.19f, 1.0f));
+        mode->m_ColorHistory.Add(TEVector4(0.55f, 0.67f, 0.06f, 1.0f));
+        mode->m_ColorHistory.Add(TEVector4(0.61f, 0.73f, 0.06f, 1.0f));
+    }
+    TimeGUI::SameLine();
+    if (TimeGUI::Button("DB32", TEVector2(50, 22)))
+    {
+        mode->m_ColorHistory.Clear();
+        const unsigned int db32[] = {0xFF000000, 0xFF222034, 0xFF45283C, 0xFF663931, 0xFF8F563B, 0xFFDF7126, 0xFFD9A066,
+                                     0xFFEEC39A, 0xFFFBF236, 0xFF99E550, 0xFF6ABE30, 0xFF37946E, 0xFF4B692F, 0xFF524B24,
+                                     0xFF323C39, 0xFF3F3F74, 0xFF306082, 0xFF5B6EE1, 0xFF639BFF, 0xFF5FCDE4, 0xFFCBDBFC,
+                                     0xFFFFFFFF, 0xFF9BADB7, 0xFF847E87, 0xFF696A6A, 0xFF595652, 0xFF76428A, 0xFFAC3232,
+                                     0xFFD95763, 0xFFD77BBA, 0xFF8F974A, 0xFF8A6F30};
+        for (int i = 0; i < 32; ++i)
+        {
+            unsigned int c = db32[i];
+            float a = ((c >> 24) & 0xFF) / 255.0f;
+            float b = ((c >> 16) & 0xFF) / 255.0f;
+            float g = ((c >> 8) & 0xFF) / 255.0f;
+            float r = (c & 0xFF) / 255.0f;
+            mode->m_ColorHistory.Add(TEVector4(r, g, b, a));
+        }
+    }
+
+    TimeGUI::Spacing();
     if (TimeGUI::Button("Resize Canvas", TEVector2(-1, 26)))
     {
         m_ShowResizeDialog = true;
@@ -304,6 +380,67 @@ void PixelPaintSubmode::DrawAnimationFrameStrip(SpriteMode *mode)
     TimeGUI::EndChild();
 }
 
+static void DrawPixelBufferSpans(TimeGUI::TimeGUIDrawList &dl, const TEArray<TEVector4> &pixels, int gridW, int gridH,
+                                 const TEVector2 &origin, float cellDim, float opacity = 1.0f,
+                                 const TEVector4 &tint = TEVector4(1.0f, 1.0f, 1.0f, 1.0f))
+{
+    if (pixels.empty() || gridW <= 0 || gridH <= 0 || pixels.size() < (size_t)(gridW * gridH))
+        return;
+
+    for (int y = 0; y < gridH; ++y)
+    {
+        int startX = -1;
+        TEVector4 runColor(0, 0, 0, 0);
+
+        for (int x = 0; x < gridW; ++x)
+        {
+            TEVector4 c = pixels[y * gridW + x];
+            c.x *= tint.x;
+            c.y *= tint.y;
+            c.z *= tint.z;
+            c.w *= opacity * tint.w;
+
+            if (c.w > 0.001f)
+            {
+                if (startX == -1)
+                {
+                    startX = x;
+                    runColor = c;
+                }
+                else if (fabsf(c.x - runColor.x) > 0.001f || fabsf(c.y - runColor.y) > 0.001f ||
+                         fabsf(c.z - runColor.z) > 0.001f || fabsf(c.w - runColor.w) > 0.001f)
+                {
+                    // Flush run
+                    TEVector2 p1 = TEVector2(origin.x + startX * cellDim, origin.y + y * cellDim);
+                    TEVector2 p2 = TEVector2(origin.x + x * cellDim, origin.y + (y + 1) * cellDim);
+                    dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(runColor));
+
+                    startX = x;
+                    runColor = c;
+                }
+            }
+            else
+            {
+                if (startX != -1)
+                {
+                    // Flush run
+                    TEVector2 p1 = TEVector2(origin.x + startX * cellDim, origin.y + y * cellDim);
+                    TEVector2 p2 = TEVector2(origin.x + x * cellDim, origin.y + (y + 1) * cellDim);
+                    dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(runColor));
+                    startX = -1;
+                }
+            }
+        }
+
+        if (startX != -1)
+        {
+            TEVector2 p1 = TEVector2(origin.x + startX * cellDim, origin.y + y * cellDim);
+            TEVector2 p2 = TEVector2(origin.x + gridW * cellDim, origin.y + (y + 1) * cellDim);
+            dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(runColor));
+        }
+    }
+}
+
 void PixelPaintSubmode::DrawCanvasViewport(SpriteMode *mode)
 {
     TimeGUI::BeginChild("##PixelCanvasPane", TEVector2(0, 0), true);
@@ -311,79 +448,134 @@ void PixelPaintSubmode::DrawCanvasViewport(SpriteMode *mode)
     TEVector2 canvasSize = TimeGUI::GetContentRegionAvail();
 
     TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
+    dl.PushClipRect(canvasPos, TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y), true);
     dl.AddRectFilled(canvasPos, TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
                      IM_COL32(18, 18, 22, 255));
 
-    int gridW = mode->m_PixelGridWidth;
-    int gridH = mode->m_PixelGridHeight;
-    float cellDim = std::min(canvasSize.x / gridW, canvasSize.y / gridH) * mode->m_CanvasZoom;
+    int gridW = Max(1, mode->m_PixelGridWidth);
+    int gridH = Max(1, mode->m_PixelGridHeight);
+    if (canvasSize.x <= 4.0f || canvasSize.y <= 4.0f)
+    {
+        TimeGUI::EndChild();
+        return;
+    }
+
+    if (mode->m_CanvasZoom <= 0.01f || std::isnan(mode->m_CanvasZoom) || std::isinf(mode->m_CanvasZoom))
+        mode->m_CanvasZoom = 1.0f;
+    if (std::isnan(mode->m_CanvasPan.x) || std::isinf(mode->m_CanvasPan.x))
+        mode->m_CanvasPan.x = 0.0f;
+    if (std::isnan(mode->m_CanvasPan.y) || std::isinf(mode->m_CanvasPan.y))
+        mode->m_CanvasPan.y = 0.0f;
+
+    float cellDim = Min(canvasSize.x / (float)gridW, canvasSize.y / (float)gridH) * mode->m_CanvasZoom;
+    if (cellDim <= 0.001f || std::isnan(cellDim) || std::isinf(cellDim))
+        cellDim = 1.0f;
+
     TEVector2 origin = TEVector2(canvasPos.x + (canvasSize.x - gridW * cellDim) * 0.5f + mode->m_CanvasPan.x,
                                  canvasPos.y + (canvasSize.y - gridH * cellDim) * 0.5f + mode->m_CanvasPan.y);
 
-    // 1. Checkerboard Background
-    float checkSize = std::max(8.0f, cellDim);
+    // 1. Checkerboard Background (Batched base rect + alternating grid blocks)
+    dl.AddRectFilled(origin, TEVector2(origin.x + gridW * cellDim, origin.y + gridH * cellDim),
+                     IM_COL32(26, 26, 30, 255));
+    float checkSize = Max(16.0f, cellDim);
     for (float y = 0; y < gridH * cellDim; y += checkSize)
     {
+        int iy = (int)(y / checkSize);
         for (float x = 0; x < gridW * cellDim; x += checkSize)
         {
             int ix = (int)(x / checkSize);
-            int iy = (int)(y / checkSize);
-            ImU32 col = ((ix + iy) % 2 == 0) ? IM_COL32(26, 26, 30, 255) : IM_COL32(34, 34, 40, 255);
-            dl.AddRectFilled(TEVector2(origin.x + x, origin.y + y),
-                             TEVector2(origin.x + std::min(x + checkSize, gridW * cellDim),
-                                       origin.y + std::min(y + checkSize, gridH * cellDim)),
-                             col);
+            if ((ix + iy) % 2 == 1)
+            {
+                dl.AddRectFilled(TEVector2(origin.x + x, origin.y + y),
+                                 TEVector2(origin.x + Min(x + checkSize, gridW * cellDim),
+                                           origin.y + Min(y + checkSize, gridH * cellDim)),
+                                 IM_COL32(34, 34, 40, 255));
+            }
         }
     }
 
-    // 2. Onion Skinning (Ghost Previous Frame)
-    if (m_EnableOnionSkin && mode->m_ActiveFrameIndex > 0)
+    // 2. Seamless 3x3 Tilemap Wrap Preview
+    if (m_SeamlessTileWrap && mode->m_ActiveFrameIndex >= 0 &&
+        mode->m_ActiveFrameIndex < (int)mode->m_PixelFrames.size())
     {
-        auto &prevFrame = mode->m_PixelFrames[mode->m_ActiveFrameIndex - 1];
-        for (const auto &layer : prevFrame.Layers)
+        const auto &frame = mode->m_PixelFrames[mode->m_ActiveFrameIndex];
+        for (int dy = -1; dy <= 1; ++dy)
         {
-            if (!layer.Visible)
-                continue;
-            for (int y = 0; y < gridH; y++)
+            for (int dx = -1; dx <= 1; ++dx)
             {
-                for (int x = 0; x < gridW; x++)
+                if (dx == 0 && dy == 0)
+                    continue;
+                TEVector2 tileOrigin = TEVector2(origin.x + dx * gridW * cellDim, origin.y + dy * gridH * cellDim);
+                for (const auto &layer : frame.Layers)
                 {
-                    const auto &c = layer.Pixels[y * gridW + x];
-                    if (c.w > 0.001f)
+                    if (layer.Visible)
                     {
-                        TEVector4 ghost = TEVector4(c.x, c.y, c.z, c.w * 0.25f);
-                        TEVector2 p1 = TEVector2(origin.x + x * cellDim, origin.y + y * cellDim);
-                        TEVector2 p2 = TEVector2(p1.x + cellDim, p1.y + cellDim);
-                        dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(ghost));
+                        DrawPixelBufferSpans(dl, layer.Pixels, gridW, gridH, tileOrigin, cellDim,
+                                             layer.Opacity * 0.45f);
                     }
                 }
             }
         }
     }
 
-    // 3. Composite Visible Layers of Active Frame
+    // 3. Bidirectional Onion Skinning (Past & Future Frames + Specific Keyframe)
+    if (m_EnableOnionSkin && mode->m_PixelFrames.size() > 1)
+    {
+        int curF = mode->m_ActiveFrameIndex;
+        int totalF = (int)mode->m_PixelFrames.size();
+
+        auto DrawGhost = [&](int fIdx, float baseAlpha, const TEVector4 &tint)
+        {
+            if (fIdx < 0 || fIdx >= totalF || fIdx == curF)
+                return;
+            const auto &gFrame = mode->m_PixelFrames[fIdx];
+            for (const auto &layer : gFrame.Layers)
+            {
+                if (layer.Visible)
+                {
+                    DrawPixelBufferSpans(dl, layer.Pixels, gridW, gridH, origin, cellDim, baseAlpha * layer.Opacity,
+                                         m_OnionColorTint ? tint : TEVector4(1.0f, 1.0f, 1.0f, 1.0f));
+                }
+            }
+        };
+
+        if (m_OnionMode == 0) // Relative Past/Future
+        {
+            // Past frames (tint warm/red)
+            for (int p = 1; p <= m_OnionPastFrames; ++p)
+            {
+                int pastIdx = curF - p;
+                if (pastIdx < 0)
+                    break;
+                float alpha = m_OnionOpacity / (float)p;
+                DrawGhost(pastIdx, alpha, TEVector4(1.0f, 0.3f, 0.3f, 1.0f));
+            }
+            // Future frames (tint cool/blue)
+            for (int f = 1; f <= m_OnionFutureFrames; ++f)
+            {
+                int futureIdx = curF + f;
+                if (futureIdx >= totalF)
+                    break;
+                float alpha = m_OnionOpacity / (float)f;
+                DrawGhost(futureIdx, alpha, TEVector4(0.3f, 0.6f, 1.0f, 1.0f));
+            }
+        }
+        else if (m_OnionMode == 1) // Specific Keyframe
+        {
+            DrawGhost(m_OnionKeyframeIndex, m_OnionOpacity, TEVector4(1.0f, 0.9f, 0.3f, 1.0f));
+        }
+    }
+
+    // 4. Composite Visible Layers of Active Frame (with Span Merging)
     if (mode->m_ActiveFrameIndex >= 0 && mode->m_ActiveFrameIndex < (int)mode->m_PixelFrames.size())
     {
         auto &frame = mode->m_PixelFrames[mode->m_ActiveFrameIndex];
         for (size_t l = 0; l < frame.Layers.size(); l++)
         {
             const auto &layer = frame.Layers[l];
-            if (!layer.Visible)
-                continue;
-
-            for (int y = 0; y < gridH; y++)
+            if (layer.Visible)
             {
-                for (int x = 0; x < gridW; x++)
-                {
-                    TEVector4 c = layer.Pixels[y * gridW + x];
-                    if (c.w > 0.001f)
-                    {
-                        c.w *= layer.Opacity;
-                        TEVector2 p1 = TEVector2(origin.x + x * cellDim, origin.y + y * cellDim);
-                        TEVector2 p2 = TEVector2(p1.x + cellDim, p1.y + cellDim);
-                        dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(c));
-                    }
-                }
+                DrawPixelBufferSpans(dl, layer.Pixels, gridW, gridH, origin, cellDim, layer.Opacity);
             }
         }
     }
@@ -515,19 +707,21 @@ void PixelPaintSubmode::DrawCanvasViewport(SpriteMode *mode)
                          mode->m_PixelGridWidth, mode->m_PixelGridHeight, mode->m_ActiveFrameIndex + 1,
                          (int)mode->m_PixelFrames.size());
 
+    dl.PopClipRect();
     TimeGUI::EndChild();
 }
 
 void PixelPaintSubmode::DrawLiveAnimatedPreview(SpriteMode *mode)
 {
-    TimeGUI::BeginChild("##PreviewPane", TEVector2(0, 160), true);
+    TimeGUI::BeginChild("##PreviewPane", TEVector2(0, 130), true);
     TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "PREVIEW");
     TimeGUI::Separator();
 
     TEVector2 previewPos = TimeGUI::GetCursorScreenPos();
     TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
-    float previewBox = 80.0f;
+    float previewBox = 72.0f;
 
+    dl.PushClipRect(previewPos, TEVector2(previewPos.x + previewBox, previewPos.y + previewBox), true);
     dl.AddRectFilled(previewPos, TEVector2(previewPos.x + previewBox, previewPos.y + previewBox),
                      IM_COL32(15, 15, 20, 255), 4.0f);
 
@@ -535,47 +729,40 @@ void PixelPaintSubmode::DrawLiveAnimatedPreview(SpriteMode *mode)
         m_PreviewFrameIndex < (int)mode->m_PixelFrames.size())
     {
         const auto &frame = mode->m_PixelFrames[m_PreviewFrameIndex];
-        int gridW = mode->m_PixelGridWidth;
-        int gridH = mode->m_PixelGridHeight;
-        float cellDim = previewBox / std::max(gridW, gridH);
+        int gridW = Max(1, mode->m_PixelGridWidth);
+        int gridH = Max(1, mode->m_PixelGridHeight);
+        float cellDim = previewBox / (float)Max(gridW, gridH);
 
         for (const auto &layer : frame.Layers)
         {
-            if (!layer.Visible)
-                continue;
-            for (int y = 0; y < gridH; y++)
+            if (layer.Visible)
             {
-                for (int x = 0; x < gridW; x++)
-                {
-                    TEVector4 c = layer.Pixels[y * gridW + x];
-                    if (c.w > 0.001f)
-                    {
-                        c.w *= layer.Opacity;
-                        TEVector2 p1 = TEVector2(previewPos.x + x * cellDim, previewPos.y + y * cellDim);
-                        TEVector2 p2 = TEVector2(p1.x + cellDim, p1.y + cellDim);
-                        dl.AddRectFilled(p1, p2, TimeGUI::ColorConvertFloat4ToU32(c));
-                    }
-                }
+                DrawPixelBufferSpans(dl, layer.Pixels, gridW, gridH, previewPos, cellDim, layer.Opacity);
             }
         }
     }
+    dl.PopClipRect();
 
-    TimeGUI::SetCursorPosX(previewBox + 16);
-    TimeGUI::SetNextItemWidth(100);
+    // Allocate layout space for the preview box
+    TimeGUI::Dummy(TEVector2(previewBox, previewBox));
+    TimeGUI::SameLine(previewBox + 16.0f);
+
+    TimeGUI::BeginGroup();
+    TimeGUI::SetNextItemWidth(90);
     TimeGUI::SliderInt("FPS", &m_PreviewFPS, 1, 30);
 
-    TimeGUI::SetCursorPosX(previewBox + 16);
-    if (TimeGUI::Button(m_IsPlayingPreview ? "Pause" : "Play", TEVector2(60, 24)))
+    if (TimeGUI::Button(m_IsPlayingPreview ? "Pause" : "Play", TEVector2(70, 24)))
     {
         m_IsPlayingPreview = !m_IsPlayingPreview;
     }
+    TimeGUI::EndGroup();
 
     TimeGUI::EndChild();
 }
 
 void PixelPaintSubmode::DrawLayersPanel(SpriteMode *mode)
 {
-    TimeGUI::BeginChild("##LayersPane", TEVector2(0, 150), true);
+    TimeGUI::BeginChild("##LayersPane", TEVector2(0, 160), true);
     TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "LAYERS");
     TimeGUI::SameLine(TimeGUI::GetWindowWidth() - 36);
 
@@ -601,18 +788,19 @@ void PixelPaintSubmode::DrawLayersPanel(SpriteMode *mode)
             auto &layer = frame.Layers[l];
             bool active = (mode->m_ActiveLayerIndex == l);
 
-            if (TimeGUI::Checkbox("##Vis", &layer.Visible))
-            {
-            }
+            TimeGUI::Checkbox("##Vis", &layer.Visible);
             TimeGUI::SameLine();
 
-            if (TimeGUI::Selectable(layer.Name.c_str(), active, 0, TEVector2(-40, 22)))
+            float totalRowW = TimeGUI::GetContentRegionAvail().x;
+            float nameW = std::max(50.0f, totalRowW - 48.0f);
+
+            if (TimeGUI::Selectable(layer.Name.c_str(), active, 0, TEVector2(nameW, 20)))
             {
                 mode->m_ActiveLayerIndex = l;
             }
 
             TimeGUI::SameLine();
-            TimeGUI::SetNextItemWidth(36);
+            TimeGUI::SetNextItemWidth(42);
             TimeGUI::DragFloat("##Op", &layer.Opacity, 0.05f, 0.0f, 1.0f, "%.1f");
 
             TimeGUI::PopID();
@@ -637,8 +825,11 @@ void PixelPaintSubmode::DrawTransformPanel(SpriteMode *mode)
             int w = mode->m_PixelGridWidth;
             int h = mode->m_PixelGridHeight;
 
+            float availW = TimeGUI::GetContentRegionAvail().x;
+            float btnW = std::max(60.0f, (availW - 8.0f) * 0.5f);
+
             // Flip Horizontal
-            if (TimeGUI::Button("Flip Horiz", TEVector2(80, 24)))
+            if (TimeGUI::Button("Flip Horiz", TEVector2(btnW, 24)))
             {
                 for (int y = 0; y < h; y++)
                 {
@@ -652,7 +843,7 @@ void PixelPaintSubmode::DrawTransformPanel(SpriteMode *mode)
             TimeGUI::SameLine();
 
             // Flip Vertical
-            if (TimeGUI::Button("Flip Vert", TEVector2(80, 24)))
+            if (TimeGUI::Button("Flip Vert", TEVector2(btnW, 24)))
             {
                 for (int y = 0; y < h / 2; y++)
                 {
@@ -665,7 +856,7 @@ void PixelPaintSubmode::DrawTransformPanel(SpriteMode *mode)
             }
 
             // Rotate 90 CW
-            if (TimeGUI::Button("Rotate 90", TEVector2(80, 24)) && w == h)
+            if (TimeGUI::Button("Rotate 90", TEVector2(btnW, 24)) && w == h)
             {
                 TEArray<TEVector4> rotated;
                 rotated.Resize(w * h, TEVector4(0, 0, 0, 0));

@@ -38,7 +38,7 @@ void SkeletalAnimationGameplayLib::SetTimeScale(Entity entity, float timeScale)
     }
 }
 
-bool SkeletalAnimationGameplayLib::GetBoneTransform(Entity entity, const TEString &boneName, glm::mat4 &outTransform)
+bool SkeletalAnimationGameplayLib::GetBoneTransform(Entity entity, const TEString &boneName, TEMatrix4 &outTransform)
 {
     if (entity && entity.HasComponent<SkeletalMesh2DComponent>())
     {
@@ -48,7 +48,7 @@ bool SkeletalAnimationGameplayLib::GetBoneTransform(Entity entity, const TEStrin
     return false;
 }
 
-bool SkeletalAnimationGameplayLib::GetBonePosition(Entity entity, const TEString &boneName, glm::vec2 &outPosition)
+bool SkeletalAnimationGameplayLib::GetBonePosition(Entity entity, const TEString &boneName, TEVector2 &outPosition)
 {
     if (entity && entity.HasComponent<SkeletalMesh2DComponent>())
     {
@@ -59,7 +59,7 @@ bool SkeletalAnimationGameplayLib::GetBonePosition(Entity entity, const TEString
 }
 
 bool SkeletalAnimationGameplayLib::AttachEntityToBone(Entity skeletalEntity, Entity childEntity,
-                                                      const TEString &boneName, const glm::vec2 &offset)
+                                                      const TEString &boneName, const TEVector2 &offset)
 {
     if (!skeletalEntity || !childEntity || !skeletalEntity.HasComponent<SkeletalMesh2DComponent>())
         return false;

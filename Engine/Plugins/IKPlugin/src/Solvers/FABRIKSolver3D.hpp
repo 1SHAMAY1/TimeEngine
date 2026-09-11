@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Utils/MathUtils.hpp"
 #include <cmath>
-#include <glm/glm.hpp>
-#include <vector>
 
 namespace IK
 {
@@ -10,24 +9,24 @@ namespace IK
 class FABRIKSolver3D
 {
 public:
-    static bool Solve(TEArray<glm::vec3> &points, const TEArray<float> &lengths, const glm::vec3 &target,
+    static bool Solve(TEArray<TEVector> &points, const TEArray<float> &lengths, const TEVector &target,
                       int maxIterations = 15, float tolerance = 0.5f)
     {
-        if (points.size() < 2 || lengths.size() != points.size() - 1)
+        if (points.Num() < 2 || lengths.Num() != points.Num() - 1)
             return false;
 
-        glm::vec3 origin = points[0];
+        TEVector origin = points[0];
         float totalLength = 0.0f;
-        for (float l : lengths)
-            totalLength += l;
+        for (size_t i = 0; i < lengths.Num(); ++i)
+            totalLength += lengths[i];
 
-        float distToTarget = glm::distance(origin, target);
+        float distToTarget = (target - origin).Length();
 
         // Case 1: Target unreachable -> stretch towards target
         if (distToTarget > totalLength)
         {
-            glm::vec3 dir = glm::normalize(target - origin);
-            for (size_t i = 0; i < lengths.size(); ++i)
+            TEVector dir = (target - origin).Normalized();
+            for (size_t i = 0; i < lengths.Num(); ++i)
             {
                 points[i + 1] = points[i] + dir * lengths[i];
             }
@@ -37,22 +36,22 @@ public:
         // Case 2: Target is reachable -> iterate Forward and Backward
         for (int iter = 0; iter < maxIterations; ++iter)
         {
-            if (glm::distance(points.back(), target) < tolerance)
+            if ((points[points.Num() - 1] - target).Length() < tolerance)
                 break;
 
             // Forward Reaching: set end effector to target
-            points.back() = target;
-            for (int i = static_cast<int>(points.size()) - 2; i >= 0; --i)
+            points[points.Num() - 1] = target;
+            for (int i = static_cast<int>(points.Num()) - 2; i >= 0; --i)
             {
-                glm::vec3 dir = glm::normalize(points[i] - points[i + 1]);
+                TEVector dir = (points[i] - points[i + 1]).Normalized();
                 points[i] = points[i + 1] + dir * lengths[i];
             }
 
             // Backward Reaching: restore root to origin
             points[0] = origin;
-            for (size_t i = 0; i < lengths.size(); ++i)
+            for (size_t i = 0; i < lengths.Num(); ++i)
             {
-                glm::vec3 dir = glm::normalize(points[i + 1] - points[i]);
+                TEVector dir = (points[i + 1] - points[i]).Normalized();
                 points[i + 1] = points[i] + dir * lengths[i];
             }
         }

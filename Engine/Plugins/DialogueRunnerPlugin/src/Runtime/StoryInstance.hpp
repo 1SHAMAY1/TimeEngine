@@ -57,10 +57,6 @@ public:
     TEString SaveStateNativeText() const;
     bool LoadStateNativeText(const TEString &text);
 
-    // Compatibility aliases
-    TEString SaveStateJson() const { return SaveStateNativeText(); }
-    bool LoadStateJson(const TEString &text) { return LoadStateNativeText(text); }
-
 private:
     void StepGraph();
 

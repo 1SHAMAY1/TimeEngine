@@ -66,6 +66,17 @@ private:
     bool m_ShowGrid = true;
     bool m_EnableOnionSkin = true;
 
+    // Advanced Onion Skinning State
+    int m_OnionMode = 0;          // 0: Relative Past/Future, 1: Specific Keyframe
+    int m_OnionPastFrames = 1;    // 0 to 5
+    int m_OnionFutureFrames = 1;  // 0 to 5
+    int m_OnionKeyframeIndex = 0; // Specific keyframe
+    float m_OnionOpacity = 0.30f;
+    bool m_OnionColorTint = true; // Red for past, Blue for future
+
+    // 3x3 Seamless Tilemap Wrap State
+    bool m_SeamlessTileWrap = false;
+
     // Color Swatches (Primary Left-Click, Secondary Right-Click)
     TEVector4 m_SecondaryColor = TEVector4(0.0f, 0.0f, 0.0f, 1.0f);
 

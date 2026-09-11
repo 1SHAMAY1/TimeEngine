@@ -1,6 +1,6 @@
 #include "Nodes/PCGGeneratorNodes.hpp"
+#include "Utils/MathUtils.hpp"
 #include <cmath>
-#include <vector>
 
 // ==========================================
 // PCGGridGeneratorNode
@@ -35,7 +35,7 @@ bool PCGGridGeneratorNode::Execute(PCGExecutionContext &ctx)
             float jx = (jitter > 0.0f) ? ctx.RandomFloat(-jitter, jitter) : 0.0f;
             float jy = (jitter > 0.0f) ? ctx.RandomFloat(-jitter, jitter) : 0.0f;
 
-            PCGPoint pt(glm::vec3(x + jx, y + jy, 0.0f), 1.0f, std::min(cellX, cellY) * 0.5f);
+            PCGPoint pt(TEVector(x + jx, y + jy, 0.0f), 1.0f, std::min(cellX, cellY) * 0.5f);
             pt.Seed = ctx.Seed + static_cast<uint32_t>(outData->GetCount());
             outData->AddPoint(pt);
         }
@@ -74,11 +74,11 @@ bool PCGRandomScatterNode::Execute(PCGExecutionContext &ctx)
         float rx = ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x);
         float ry = ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y);
 
-        PCGPoint pt(glm::vec3(rx, ry, 0.0f), 1.0f, 0.5f);
+        PCGPoint pt(TEVector(rx, ry, 0.0f), 1.0f, 0.5f);
         if (randomRot)
         {
             float angle = ctx.RandomFloat(0.0f, 6.2831853f);
-            pt.Rotation = glm::angleAxis(angle, glm::vec3(0.0f, 0.0f, 1.0f));
+            pt.Rotation = TEQuat::AngleAxis(angle, TEVector(0.0f, 0.0f, 1.0f));
         }
         pt.Seed = ctx.Seed + static_cast<uint32_t>(i);
         outData->AddPoint(pt);
@@ -105,6 +105,12 @@ PCGPoissonDiskNode::PCGPoissonDiskNode()
     AddOutputPointPin("Out");
 }
 
+struct GridCoord
+{
+    int x;
+    int y;
+};
+
 bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
 {
     float r = std::max(0.5f, std::stof(GetProperty("MinDistance", "3.0").c_str()));
@@ -114,40 +120,41 @@ bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
     int gridW = std::max(1, static_cast<int>(std::ceil((ctx.BoundsMax.x - ctx.BoundsMin.x) / cellSize)));
     int gridH = std::max(1, static_cast<int>(std::ceil((ctx.BoundsMax.y - ctx.BoundsMin.y) / cellSize)));
 
-    TEArray<int> grid(gridW * gridH, -1);
-    TEArray<glm::vec2> processList;
+    TEArray<int> grid;
+    grid.Resize(gridW * gridH, -1);
+    TEArray<TEVector2> processList;
     auto outData = CreateRef<PCGPointData>();
 
-    auto toGrid = [&](const glm::vec2 &p) -> glm::ivec2
+    auto toGrid = [&](const TEVector2 &p) -> GridCoord
     {
-        return glm::ivec2(std::clamp(static_cast<int>((p.x - ctx.BoundsMin.x) / cellSize), 0, gridW - 1),
-                          std::clamp(static_cast<int>((p.y - ctx.BoundsMin.y) / cellSize), 0, gridH - 1));
+        return GridCoord{std::clamp(static_cast<int>((p.x - ctx.BoundsMin.x) / cellSize), 0, gridW - 1),
+                         std::clamp(static_cast<int>((p.y - ctx.BoundsMin.y) / cellSize), 0, gridH - 1)};
     };
 
-    glm::vec2 firstPoint(ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
+    TEVector2 firstPoint(ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
                          ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y));
-    processList.push_back(firstPoint);
-    outData->AddPoint(PCGPoint(glm::vec3(firstPoint.x, firstPoint.y, 0.0f), 1.0f, r * 0.5f));
-    glm::ivec2 g0 = toGrid(firstPoint);
+    processList.Add(firstPoint);
+    outData->AddPoint(PCGPoint(TEVector(firstPoint.x, firstPoint.y, 0.0f), 1.0f, r * 0.5f));
+    GridCoord g0 = toGrid(firstPoint);
     grid[g0.y * gridW + g0.x] = 0;
 
-    while (!processList.empty())
+    while (!processList.IsEmpty())
     {
-        int idx = ctx.RandomInt(0, static_cast<int>(processList.size()) - 1);
-        glm::vec2 current = processList[idx];
+        int idx = ctx.RandomInt(0, static_cast<int>(processList.Num()) - 1);
+        TEVector2 current = processList[idx];
         bool found = false;
 
         for (int step = 0; step < k; ++step)
         {
             float angle = ctx.RandomFloat(0.0f, 6.2831853f);
             float dist = ctx.RandomFloat(r, 2.0f * r);
-            glm::vec2 candidate = current + glm::vec2(std::cos(angle) * dist, std::sin(angle) * dist);
+            TEVector2 candidate = current + TEVector2(std::cos(angle) * dist, std::sin(angle) * dist);
 
             if (candidate.x < ctx.BoundsMin.x || candidate.x > ctx.BoundsMax.x || candidate.y < ctx.BoundsMin.y ||
                 candidate.y > ctx.BoundsMax.y)
                 continue;
 
-            glm::ivec2 cg = toGrid(candidate);
+            GridCoord cg = toGrid(candidate);
             bool ok = true;
 
             int minX = std::max(0, cg.x - 2);
@@ -163,7 +170,7 @@ bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
                     if (ptIdx != -1)
                     {
                         const auto &neighbor = outData->GetPoints()[ptIdx];
-                        float d = glm::distance(candidate, glm::vec2(neighbor.Position.x, neighbor.Position.y));
+                        float d = (candidate - TEVector2(neighbor.Position.x, neighbor.Position.y)).Length();
                         if (d < r)
                             ok = false;
                     }
@@ -174,8 +181,8 @@ bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
             {
                 found = true;
                 int newPtIdx = static_cast<int>(outData->GetCount());
-                outData->AddPoint(PCGPoint(glm::vec3(candidate.x, candidate.y, 0.0f), 1.0f, r * 0.5f));
-                processList.push_back(candidate);
+                outData->AddPoint(PCGPoint(TEVector(candidate.x, candidate.y, 0.0f), 1.0f, r * 0.5f));
+                processList.Add(candidate);
                 grid[cg.y * gridW + cg.x] = newPtIdx;
                 break;
             }
@@ -183,7 +190,7 @@ bool PCGPoissonDiskNode::Execute(PCGExecutionContext &ctx)
 
         if (!found)
         {
-            processList.erase(processList.begin() + idx);
+            processList.RemoveAt(idx);
         }
     }
 
@@ -221,27 +228,27 @@ bool PCGSplinePathNode::Execute(PCGExecutionContext &ctx)
     float ey = std::stof(GetProperty("EndY", "0.0").c_str());
     float curve = std::stof(GetProperty("Curvature", "10.0").c_str());
 
-    glm::vec2 p0(sx, sy);
-    glm::vec2 p2(ex, ey);
-    glm::vec2 mid = (p0 + p2) * 0.5f;
-    glm::vec2 dir = glm::normalize(p2 - p0);
-    glm::vec2 perp(-dir.y, dir.x);
-    glm::vec2 p1 = mid + perp * curve;
+    TEVector2 p0(sx, sy);
+    TEVector2 p2(ex, ey);
+    TEVector2 mid = (p0 + p2) * 0.5f;
+    TEVector2 dir = (p2 - p0).Normalized();
+    TEVector2 perp(-dir.y, dir.x);
+    TEVector2 p1 = mid + perp * curve;
 
     auto outData = CreateRef<PCGPointData>();
-    float totalDist = glm::distance(p0, p2);
+    float totalDist = (p2 - p0).Length();
     int numSteps = std::max(2, static_cast<int>(totalDist / step));
 
     for (int i = 0; i <= numSteps; ++i)
     {
         float t = static_cast<float>(i) / static_cast<float>(numSteps);
         // Quadratic bezier
-        glm::vec2 pos = (1.0f - t) * (1.0f - t) * p0 + 2.0f * (1.0f - t) * t * p1 + t * t * p2;
-        glm::vec2 tangent = glm::normalize(2.0f * (1.0f - t) * (p1 - p0) + 2.0f * t * (p2 - p1));
+        TEVector2 pos = p0 * ((1.0f - t) * (1.0f - t)) + p1 * (2.0f * (1.0f - t) * t) + p2 * (t * t);
+        TEVector2 tangent = ((p1 - p0) * (2.0f * (1.0f - t)) + (p2 - p1) * (2.0f * t)).Normalized();
 
         float angle = std::atan2(tangent.y, tangent.x);
-        PCGPoint pt(glm::vec3(pos.x, pos.y, 0.0f), 1.0f, step * 0.5f);
-        pt.Rotation = glm::angleAxis(angle, glm::vec3(0.0f, 0.0f, 1.0f));
+        PCGPoint pt(TEVector(pos.x, pos.y, 0.0f), 1.0f, step * 0.5f);
+        pt.Rotation = TEQuat::AngleAxis(angle, TEVector(0.0f, 0.0f, 1.0f));
         outData->AddPoint(pt);
     }
 

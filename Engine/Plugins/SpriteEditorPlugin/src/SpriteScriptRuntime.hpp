@@ -42,6 +42,11 @@ public:
     void RegisterFunction(const TEString &name, NativeFn fn);
     const TEMap<TEString, TScriptValue> &GetGlobals() const { return m_Globals; }
     const TEArray<TEVector4> &GetPixelBuffer() const { return m_Context.PixelBuffer; }
+    int GetPixelWidth() const { return m_Context.PixelWidth; }
+    int GetPixelHeight() const { return m_Context.PixelHeight; }
+
+    int GetRequestedTotalFrames() const { return m_RequestedTotalFrames; }
+    void ClearRequestedTotalFrames() { m_RequestedTotalFrames = -1; }
 
     static TEString GetApiDocumentationMarkdown();
 
@@ -71,4 +76,5 @@ private:
     TEMap<TEString, TScriptValue> m_Globals;
     TEMap<TEString, NativeFn> m_NativeFunctions;
     TEMap<TEString, EventFuncNode *> m_EventMap;
+    int m_RequestedTotalFrames = -1;
 };

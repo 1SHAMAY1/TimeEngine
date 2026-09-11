@@ -40,7 +40,7 @@ void SkeletalMesh2DComponent::OnUpdate(float dt)
     m_Evaluator.Update(dt, m_CachedWorldTransform);
 }
 
-void SkeletalMesh2DComponent::OnRender(Renderer2D *renderer, const glm::mat4 &transform, void *userPayload)
+void SkeletalMesh2DComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &transform, void *userPayload)
 {
     if (!renderer)
         return;
@@ -55,7 +55,7 @@ void SkeletalMesh2DComponent::OnRender(Renderer2D *renderer, const glm::mat4 &tr
         if (slot.ActiveAttachmentName.IsEmpty())
             continue;
 
-        auto attachIt = slot.Attachments.find(slot.ActiveAttachmentName.c_str());
+        auto attachIt = slot.Attachments.find(slot.ActiveAttachmentName);
         if (attachIt == slot.Attachments.end())
             continue;
 
@@ -71,12 +71,11 @@ void SkeletalMesh2DComponent::OnRender(Renderer2D *renderer, const glm::mat4 &tr
                 if (i0 < attachment.Vertices.size() && i1 < attachment.Vertices.size() &&
                     i2 < attachment.Vertices.size())
                 {
-                    glm::vec2 p0 = attachment.Vertices[i0].DeformedPosition;
-                    glm::vec2 p1 = attachment.Vertices[i1].DeformedPosition;
-                    glm::vec2 p2 = attachment.Vertices[i2].DeformedPosition;
+                    TEVector2 p0 = attachment.Vertices[i0].DeformedPosition;
+                    TEVector2 p1 = attachment.Vertices[i1].DeformedPosition;
+                    TEVector2 p2 = attachment.Vertices[i2].DeformedPosition;
 
-                    renderer->SubmitTriangle(TEVector2(p0.x, p0.y), TEVector2(p1.x, p1.y), TEVector2(p2.x, p2.y),
-                                             nullptr);
+                    renderer->SubmitTriangle(p0, p1, p2, nullptr);
                 }
             }
         }
@@ -88,14 +87,13 @@ void SkeletalMesh2DComponent::OnRender(Renderer2D *renderer, const glm::mat4 &tr
         const auto &bones = m_Evaluator.GetHierarchy().GetBones();
         for (const auto &bone : bones)
         {
-            glm::vec2 startPos = glm::vec2(bone.WorldMatrix[3].x, bone.WorldMatrix[3].y);
-            glm::vec4 tipLocal = glm::vec4(bone.Length, 0.0f, 0.0f, 1.0f);
-            glm::vec4 tipWorld = bone.WorldMatrix * tipLocal;
-            glm::vec2 endPos = glm::vec2(tipWorld.x, tipWorld.y);
+            TEVector2 startPos = TEVector2(bone.WorldMatrix.m[3][0], bone.WorldMatrix.m[3][1]);
+            TEVector4 tipLocal = TEVector4(bone.Length, 0.0f, 0.0f, 1.0f);
+            TEVector4 tipWorld = bone.WorldMatrix * tipLocal;
+            TEVector2 endPos = TEVector2(tipWorld.x, tipWorld.y);
 
-            renderer->SubmitLine(TEVector2(startPos.x, startPos.y), TEVector2(endPos.x, endPos.y), 2.0f,
-                                 TEColor(0.2f, 0.8f, 1.0f, 0.8f));
-            renderer->SubmitCircle(TEVector2(startPos.x, startPos.y), 3.0f, nullptr);
+            renderer->SubmitLine(startPos, endPos, 2.0f, TEColor(0.2f, 0.8f, 1.0f, 0.8f));
+            renderer->SubmitCircle(startPos, 3.0f, nullptr);
         }
     }
 }
@@ -120,12 +118,12 @@ void SkeletalMesh2DComponent::Stop()
     m_Evaluator.ClearTracks();
 }
 
-bool SkeletalMesh2DComponent::GetBoneWorldTransform(const TEString &boneName, glm::mat4 &outTransform) const
+bool SkeletalMesh2DComponent::GetBoneWorldTransform(const TEString &boneName, TEMatrix4 &outTransform) const
 {
     return m_Evaluator.GetBoneWorldTransform(boneName, outTransform);
 }
 
-bool SkeletalMesh2DComponent::GetBoneWorldPosition(const TEString &boneName, glm::vec2 &outPos) const
+bool SkeletalMesh2DComponent::GetBoneWorldPosition(const TEString &boneName, TEVector2 &outPos) const
 {
     return m_Evaluator.GetBoneWorldPosition(boneName, outPos);
 }

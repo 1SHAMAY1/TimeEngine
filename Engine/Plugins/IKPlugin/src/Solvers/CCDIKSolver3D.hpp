@@ -1,11 +1,9 @@
 #pragma once
 
 #include "IIKSolver.hpp"
+#include "Utils/MathUtils.hpp"
 #include <algorithm>
 #include <cmath>
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <vector>
 
 namespace IK
 {
@@ -13,51 +11,52 @@ namespace IK
 class CCDIKSolver3D
 {
 public:
-    static bool Solve(TEArray<IKJoint3D> &joints, const glm::vec3 &target, int maxIterations = 10,
+    static bool Solve(TEArray<IKJoint3D> &joints, const TEVector &target, int maxIterations = 10,
                       float tolerance = 0.5f)
     {
-        if (joints.size() < 2)
+        if (joints.Num() < 2)
             return false;
 
         for (int iter = 0; iter < maxIterations; ++iter)
         {
-            glm::vec3 endEffector = joints.back().Position;
-            if (glm::distance(endEffector, target) < tolerance)
+            TEVector endEffector = joints[joints.Num() - 1].Position;
+            float dist = (endEffector - target).Length();
+            if (dist < tolerance)
                 break;
 
-            for (int i = static_cast<int>(joints.size()) - 2; i >= 0; --i)
+            for (int i = static_cast<int>(joints.Num()) - 2; i >= 0; --i)
             {
-                glm::vec3 jointPos = joints[i].Position;
-                glm::vec3 toEnd = endEffector - jointPos;
-                glm::vec3 toTarget = target - jointPos;
+                TEVector jointPos = joints[i].Position;
+                TEVector toEnd = endEffector - jointPos;
+                TEVector toTarget = target - jointPos;
 
-                float lenEnd = glm::length(toEnd);
-                float lenTarget = glm::length(toTarget);
+                float lenEnd = toEnd.Length();
+                float lenTarget = toTarget.Length();
 
                 if (lenEnd > 0.0001f && lenTarget > 0.0001f)
                 {
-                    glm::vec3 uEnd = toEnd / lenEnd;
-                    glm::vec3 uTarget = toTarget / lenTarget;
+                    TEVector uEnd = toEnd / lenEnd;
+                    TEVector uTarget = toTarget / lenTarget;
 
-                    float cosAngle = glm::dot(uEnd, uTarget);
+                    float cosAngle = uEnd.Dot(uTarget);
                     cosAngle = std::clamp(cosAngle, -1.0f, 1.0f);
                     float angle = std::acos(cosAngle);
 
                     if (angle > 0.001f)
                     {
-                        glm::vec3 axis = glm::cross(uEnd, uTarget);
-                        if (glm::length(axis) > 0.0001f)
+                        TEVector axis = uEnd.Cross(uTarget);
+                        if (axis.Length() > 0.0001f)
                         {
-                            axis = glm::normalize(axis);
-                            glm::quat rot = glm::angleAxis(angle, axis);
+                            axis = axis.Normalized();
+                            TEQuat rot = TEQuat::AngleAxis(angle, axis);
 
                             // Rotate position of subsequent joints
-                            for (size_t j = i + 1; j < joints.size(); ++j)
+                            for (size_t j = i + 1; j < joints.Num(); ++j)
                             {
-                                glm::vec3 offset = joints[j].Position - jointPos;
+                                TEVector offset = joints[j].Position - jointPos;
                                 joints[j].Position = jointPos + rot * offset;
                             }
-                            endEffector = joints.back().Position;
+                            endEffector = joints[joints.Num() - 1].Position;
                         }
                     }
                 }

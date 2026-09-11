@@ -44,14 +44,14 @@ bool SkeletalDataAsset::LoadFromFile(const TEString &path)
         return false;
     }
 
+    TEString content;
     file.seekg(0, std::ios::end);
-    size_t size = static_cast<size_t>(file.tellg());
+    size_t size = (size_t)file.tellg();
     file.seekg(0, std::ios::beg);
-
-    TEArray<char> buffer;
-    buffer.Resize(size + 1, '\0');
-    file.read(buffer.Data(), size);
-    TEString content = buffer.Data();
+    content.Reserve(size + 1);
+    file.read(content.Data(), size);
+    content.Data()[size] = '\0';
+    content.SyncFromBuffer();
 
     // Basic native JSON parse
     // Set up default fallback bone if empty

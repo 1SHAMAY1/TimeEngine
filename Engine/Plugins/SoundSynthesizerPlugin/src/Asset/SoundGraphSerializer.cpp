@@ -47,14 +47,14 @@ bool SoundGraphSerializer::Deserialize(TERef<SoundGraph> graph, const TEString &
     if (!in.is_open())
         return false;
 
+    TEString content;
     in.seekg(0, std::ios::end);
-    size_t size = static_cast<size_t>(in.tellg());
+    size_t size = (size_t)in.tellg();
     in.seekg(0, std::ios::beg);
-
-    TEArray<char> buffer;
-    buffer.Resize(size + 1, '\0');
-    in.read(buffer.Data(), size);
-    TEString content = buffer.Data();
+    content.Reserve(size + 1);
+    in.read(content.Data(), size);
+    content.Data()[size] = '\0';
+    content.SyncFromBuffer();
 
     TEArray<TEString> lines = content.Split('\n');
     for (size_t i = 0; i < lines.Size(); ++i)

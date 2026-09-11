@@ -6,9 +6,14 @@
 
 void CodeEditorSubmode::OnEnter(SpriteMode *mode)
 {
-    if (mode && mode->m_ScriptRuntime)
+    m_CodeEditor.SetLanguage(ECodeLanguage::TScript);
+    if (mode)
     {
-        mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
+        m_CodeEditor.SetText(mode->m_ProcBuffer);
+        if (mode->m_ScriptRuntime)
+        {
+            mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
+        }
     }
 }
 
@@ -18,6 +23,20 @@ void CodeEditorSubmode::OnExit(SpriteMode *mode) {}
 
 bool CodeEditorSubmode::OnShortcut(const TEString &shortcutId, SpriteMode *mode)
 {
+    if (m_CodeEditor.IsFocused())
+    {
+        if (m_CodeEditor.OnShortcut(shortcutId))
+        {
+            if (mode && m_CodeEditor.GetText() != mode->m_ProcBuffer)
+            {
+                mode->m_ProcBuffer = m_CodeEditor.GetText();
+                if (mode->m_ScriptRuntime)
+                    mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
+            }
+            return true;
+        }
+    }
+
     if (shortcutId == "Editor_Save" || shortcutId == "Script_Run")
     {
         if (mode && mode->m_ScriptRuntime)
@@ -34,6 +53,12 @@ void CodeEditorSubmode::OnTimeGUIRender(SpriteEditorLayer *layer, SpriteMode *mo
 {
     if (!mode)
         return;
+
+    // Ensure code editor is initialized with mode's script buffer
+    if (m_CodeEditor.GetText().empty() && !mode->m_ProcBuffer.empty())
+    {
+        m_CodeEditor.SetText(mode->m_ProcBuffer);
+    }
 
     // ── 2-Panel Clean Layout (Left: Code Panel, Right: Live Preview + Export) ──
     if (TimeGUI::BeginTable("##CodeStudioLayout", 2, TimeGUITableFlags_Resizable))
@@ -71,23 +96,48 @@ void CodeEditorSubmode::DrawCodeEditorPanel(SpriteMode *mode)
     TimeGUI::Spacing();
     TimeGUI::SameLine();
 
-    // Template selector
-    TimeGUI::SetNextItemWidth(180);
-    if (TimeGUI::Combo("##PresetCombo", &m_SelectedTemplateIdx, templateNames.data(), (int)templateNames.size()))
+    // Import Template Action Button
+    if (TimeGUI::Button("Import Template \xE2\x96\xBE", TEVector2(145, 24)))
     {
-        if (m_SelectedTemplateIdx >= 0 && m_SelectedTemplateIdx < (int)templates.size())
+        TimeGUI::OpenPopup("##ImportTemplatePopup");
+    }
+
+    if (TimeGUI::BeginPopup("##ImportTemplatePopup"))
+    {
+        TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "Choose Template to Import:");
+        TimeGUI::Separator();
+        for (int i = 0; i < (int)templates.size(); ++i)
         {
-            mode->m_ProcBuffer = templates[m_SelectedTemplateIdx].Code;
-            if (mode->m_ScriptRuntime)
-                mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
-            mode->SaveUndoState();
+            if (TimeGUI::Selectable(templates[i].Name))
+            {
+                mode->m_ProcBuffer = templates[i].Code;
+                m_CodeEditor.Clear();
+                m_CodeEditor.SetText(mode->m_ProcBuffer);
+                if (mode->m_ScriptRuntime)
+                {
+                    mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
+                    int req = mode->m_ScriptRuntime->GetRequestedTotalFrames();
+                    if (req >= 1)
+                    {
+                        mode->m_ProcTotalFrames = req;
+                        mode->m_ProcAnimFrame = 0;
+                    }
+                }
+                mode->SaveUndoState();
+            }
+            if (TimeGUI::IsItemHovered())
+            {
+                TimeGUI::SetTooltip(templates[i].Description);
+            }
         }
+        TimeGUI::EndPopup();
     }
 
     TimeGUI::SameLine();
     TimeGUI::PushStyleColor(TimeGUICol_Button, TEVector4(0.2f, 0.6f, 0.3f, 1.0f));
     if (TimeGUI::Button("Run / Recompile", TEVector2(120, 24)))
     {
+        mode->m_ProcBuffer = m_CodeEditor.GetText();
         if (mode->m_ScriptRuntime)
             mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
         mode->SaveUndoState();
@@ -104,11 +154,12 @@ void CodeEditorSubmode::DrawCodeEditorPanel(SpriteMode *mode)
     TimeGUI::SameLine();
     if (mode->m_ScriptRuntime && mode->m_ScriptRuntime->IsValid())
     {
-        TimeGUI::TextColored(TEVector4(0.2f, 0.9f, 0.3f, 1.0f), "● Ready");
+        TimeGUI::TextColored(TEVector4(0.2f, 0.9f, 0.3f, 1.0f), "[Ready]");
+        m_CodeEditor.ClearErrorMarkers();
     }
     else
     {
-        TimeGUI::TextColored(TEVector4(1.0f, 0.25f, 0.25f, 1.0f), "● Error");
+        TimeGUI::TextColored(TEVector4(1.0f, 0.25f, 0.25f, 1.0f), "[Error]");
         if (mode->m_ScriptRuntime)
         {
             TimeGUI::SameLine();
@@ -122,16 +173,18 @@ void CodeEditorSubmode::DrawCodeEditorPanel(SpriteMode *mode)
 
     TimeGUI::Separator();
 
-    // ── Code Text Area ────────────────────────────────────────────────────────
+    // ── Syntax-Colored UICodeEdit Block ───────────────────────────────────────
     TEVector2 avail = TimeGUI::GetContentRegionAvail();
-    if (TimeGUI::InputTextMultiline("##TScriptSource", mode->m_ProcBuffer, TEVector2(-1, avail.y - 8),
-                                    TimeGUIInputTextFlags_AllowTabInput))
+    m_CodeEditor.SetSize(TEVector2(avail.x, avail.y - 4.0f));
+    m_CodeEditor.Draw();
+
+    if (m_CodeEditor.GetText() != mode->m_ProcBuffer)
     {
+        mode->m_ProcBuffer = m_CodeEditor.GetText();
         if (mode->m_ScriptRuntime)
         {
             mode->m_ScriptRuntime->Compile(mode->m_ProcBuffer);
         }
-        mode->SaveUndoState();
     }
 
     TimeGUI::EndChild();
@@ -162,48 +215,64 @@ void CodeEditorSubmode::DrawPreviewAndTimelinePanel(SpriteMode *mode)
         TimeGUI::SetCursorPosX(TimeGUI::GetCursorPosX() + padX);
     }
 
+    TEVector2 canvasPos = TimeGUI::GetCursorScreenPos();
     TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
-    TEVector2 p = TimeGUI::GetCursorScreenPos();
 
-    // 1. Checkerboard Background
-    const float checkSize = 12.0f;
-    int checkCols = (int)(canvasSize.x / checkSize) + 1;
-    int checkRows = (int)(canvasSize.y / checkSize) + 1;
+    // Background Container
+    dl.AddRectFilled(canvasPos, TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
+                     IM_COL32(20, 20, 24, 255), 4.0f);
+    dl.AddRect(canvasPos, TEVector2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y), IM_COL32(40, 40, 50, 255),
+               4.0f);
 
-    for (int r = 0; r < checkRows; ++r)
+    // Checkerboard Background
+    float checkSize = 16.0f;
+    for (float y = 0; y < canvasSize.y; y += checkSize)
     {
-        for (int c = 0; c < checkCols; ++c)
+        for (float x = 0; x < canvasSize.x; x += checkSize)
         {
-            unsigned int chkCol = ((r + c) % 2 == 0)
-                                      ? TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.14f, 0.14f, 0.16f, 1.0f))
-                                      : TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.18f, 0.18f, 0.22f, 1.0f));
-            TEVector2 cp1 = TEVector2(std::min(p.x + c * checkSize, p.x + canvasSize.x),
-                                      std::min(p.y + r * checkSize, p.y + canvasSize.y));
-            TEVector2 cp2 = TEVector2(std::min(p.x + (c + 1) * checkSize, p.x + canvasSize.x),
-                                      std::min(p.y + (r + 1) * checkSize, p.y + canvasSize.y));
-            if (cp2.x > cp1.x && cp2.y > cp1.y)
-            {
-                dl.AddRectFilled(cp1, cp2, chkCol);
-            }
+            int ix = (int)(x / checkSize);
+            int iy = (int)(y / checkSize);
+            unsigned int col = ((ix + iy) % 2 == 0) ? IM_COL32(26, 26, 32, 255) : IM_COL32(34, 34, 42, 255);
+            dl.AddRectFilled(TEVector2(canvasPos.x + x, canvasPos.y + y),
+                             TEVector2(canvasPos.x + std::min(x + checkSize, canvasSize.x),
+                                       canvasPos.y + std::min(y + checkSize, canvasSize.y)),
+                             col);
         }
     }
 
-    // 2. Execute TScript procedural rendering
-    mode->ExecuteProceduralCode(dl, p, canvasSize, TimeGUI::GetIO().DeltaTime);
+    // Clamp frame to configured loop boundary
+    if (mode->m_ProcTotalFrames >= 1)
+    {
+        if (mode->m_ProcAnimFrame >= mode->m_ProcTotalFrames)
+        {
+            mode->m_ProcAnimFrame = mode->m_ProcAnimLoop ? 0 : mode->m_ProcTotalFrames - 1;
+            mode->m_ProcAnimTime = (float)mode->m_ProcAnimFrame / std::max(1.0f, mode->m_ProcFPS);
+        }
+        else if (mode->m_ProcAnimFrame < 0)
+        {
+            mode->m_ProcAnimFrame = 0;
+            mode->m_ProcAnimTime = 0.0f;
+        }
+    }
 
-    // 3. Viewport Border
-    dl.AddRect(p, TEVector2(p.x + canvasSize.x, p.y + canvasSize.y),
-               TimeGUI::ColorConvertFloat4ToU32(TEVector4(0.35f, 0.35f, 0.45f, 1.0f)), 4.0f, 0, 1.5f);
+    // Procedural Render
+    if (mode->m_ScriptRuntime)
+    {
+        float dt = TimeGUI::GetIO().DeltaTime;
+        mode->ExecuteProceduralCode(dl, canvasPos, canvasSize, dt);
+    }
 
+    // Dummy element to capture layout space
     TimeGUI::Dummy(canvasSize);
+
     TimeGUI::Spacing();
     TimeGUI::Separator();
 
-    // ── Linear Animation Timeline Bar ─────────────────────────────────────────
-    TimeGUI::BeginChild("##TimelineControlBar", TEVector2(0, 0), false, TimeGUIWindowFlags_NoScrollbar);
+    // ── Timeline Controls ─────────────────────────────────────────────────────
+    TimeGUI::BeginChild("##TimelineControlsPane", TEVector2(0, 54), false);
 
     // Play / Pause
-    if (TimeGUI::Button(mode->m_ProcAnimPlaying ? "Pause (||)" : "Play (>) ", TEVector2(85, 26)))
+    if (TimeGUI::Button(mode->m_ProcAnimPlaying ? "Pause" : "Play", TEVector2(60, 26)))
     {
         mode->m_ProcAnimPlaying = !mode->m_ProcAnimPlaying;
     }
@@ -227,23 +296,19 @@ void CodeEditorSubmode::DrawPreviewAndTimelinePanel(SpriteMode *mode)
 
     // Frame Scrubber
     int frameSlider = mode->m_ProcAnimFrame + 1;
-    TimeGUI::SetNextItemWidth(140);
-    if (TimeGUI::SliderInt("Frame", &frameSlider, 1, std::max(1, mode->m_ProcTotalFrames)))
+    TimeGUI::SetNextItemWidth(120);
+    if (TimeGUI::SliderInt("##FrameSlider", &frameSlider, 1, std::max(1, mode->m_ProcTotalFrames)))
     {
         mode->m_ProcAnimFrame = frameSlider - 1;
         mode->m_ProcAnimTime = (float)mode->m_ProcAnimFrame / std::max(1.0f, mode->m_ProcFPS);
     }
     TimeGUI::SameLine();
 
-    // Total Frames
-    TimeGUI::SetNextItemWidth(65);
-    TimeGUI::DragInt("Total", &mode->m_ProcTotalFrames, 1.0f, 1, 128);
+    // Total Frames (Read-only status driven by loop/script)
+    TimeGUI::Text("Frame:");
     TimeGUI::SameLine();
-
-    // FPS
-    TimeGUI::SetNextItemWidth(60);
-    TimeGUI::DragFloat("FPS", &mode->m_ProcFPS, 0.5f, 1.0f, 60.0f, "%.0f");
-    TimeGUI::SameLine();
+    TimeGUI::TextColored(TEVector4(0.4f, 0.8f, 1.0f, 1.0f), "%d / %d", frameSlider, mode->m_ProcTotalFrames);
+    TimeGUI::SameLine(0, 16.0f);
 
     // Loop toggle
     TimeGUI::Checkbox("Loop", &mode->m_ProcAnimLoop);
@@ -265,58 +330,58 @@ void CodeEditorSubmode::DrawApiHelpModal(SpriteMode *mode)
             if (TimeGUI::BeginTabItem("Vector Shapes"))
             {
                 TimeGUI::TextColored(TEVector4(1.0f, 0.85f, 0.2f, 1.0f), "Vector Primitives:");
-                TimeGUI::Text("• draw_rect(x, y, w, h, col, [rounding], [thickness])");
-                TimeGUI::Text("• draw_rect_filled(x, y, w, h, col, [rounding])");
-                TimeGUI::Text("• draw_circle(x, y, radius, col, [thickness])");
-                TimeGUI::Text("• draw_circle_filled(x, y, radius, col)");
-                TimeGUI::Text("• draw_ring(x, y, outer_r, inner_r, col)");
-                TimeGUI::Text("• draw_line(x1, y1, x2, y2, col, [thickness])");
-                TimeGUI::Text("• draw_triangle(x1, y1, x2, y2, x3, y3, col, [thickness])");
-                TimeGUI::Text("• draw_quad(x1, y1, x2, y2, x3, y3, x4, y4, col)");
-                TimeGUI::Text("• draw_ellipse(cx, cy, rx, ry, col, [rot], [thickness])");
-                TimeGUI::Text("• draw_star(cx, cy, spikes, outer_r, inner_r, col, [rot])");
-                TimeGUI::Text("• draw_polygon(cx, cy, radius, sides, col, [rot], [thickness])");
-                TimeGUI::Text("• draw_bezier(x1, y1, x2, y2, x3, y3, x4, y4, col, [thickness])");
+                TimeGUI::Text("- draw_rect(x, y, w, h, col, [rounding], [thickness])");
+                TimeGUI::Text("- draw_rect_filled(x, y, w, h, col, [rounding])");
+                TimeGUI::Text("- draw_circle(x, y, radius, col, [thickness])");
+                TimeGUI::Text("- draw_circle_filled(x, y, radius, col)");
+                TimeGUI::Text("- draw_ring(x, y, outer_r, inner_r, col)");
+                TimeGUI::Text("- draw_line(x1, y1, x2, y2, col, [thickness])");
+                TimeGUI::Text("- draw_triangle(x1, y1, x2, y2, x3, y3, col, [thickness])");
+                TimeGUI::Text("- draw_quad(x1, y1, x2, y2, x3, y3, x4, y4, col)");
+                TimeGUI::Text("- draw_ellipse(cx, cy, rx, ry, col, [rot], [thickness])");
+                TimeGUI::Text("- draw_star(cx, cy, spikes, outer_r, inner_r, col, [rot])");
+                TimeGUI::Text("- draw_polygon(cx, cy, radius, sides, col, [rot], [thickness])");
+                TimeGUI::Text("- draw_bezier(x1, y1, x2, y2, x3, y3, x4, y4, col, [thickness])");
                 TimeGUI::EndTabItem();
             }
 
             if (TimeGUI::BeginTabItem("Text & Typography"))
             {
                 TimeGUI::TextColored(TEVector4(1.0f, 0.85f, 0.2f, 1.0f), "Text Functions:");
-                TimeGUI::Text("• draw_text(x, y, text, col)");
-                TimeGUI::Text("• draw_text_outlined(x, y, text, col, outline_col, [thickness])");
-                TimeGUI::Text("• draw_text_shadowed(x, y, text, col, shadow_col, [offX], [offY])");
+                TimeGUI::Text("- draw_text(x, y, text, col)");
+                TimeGUI::Text("- draw_text_outlined(x, y, text, col, outline_col, [thickness])");
+                TimeGUI::Text("- draw_text_shadowed(x, y, text, col, shadow_col, [offX], [offY])");
                 TimeGUI::EndTabItem();
             }
 
             if (TimeGUI::BeginTabItem("Pixel Art"))
             {
                 TimeGUI::TextColored(TEVector4(1.0f, 0.85f, 0.2f, 1.0f), "Pixel Art Tools:");
-                TimeGUI::Text("• set_grid_size(width, height) - sets raster resolution (e.g. 16, 16)");
-                TimeGUI::Text("• set_pixel(x, y, col) / pixel(x, y, col)");
-                TimeGUI::Text("• get_pixel(x, y)");
-                TimeGUI::Text("• draw_pixel_rect(x, y, w, h, col)");
-                TimeGUI::Text("• draw_pixel_line(x1, y1, x2, y2, col)");
-                TimeGUI::Text("• draw_pixel_circle(cx, cy, r, col)");
-                TimeGUI::Text("• clear_pixels(col) / fill_pixels(col)");
+                TimeGUI::Text("- set_grid_size(width, height) - sets raster resolution (e.g. 16, 16)");
+                TimeGUI::Text("- set_pixel(x, y, col) / pixel(x, y, col)");
+                TimeGUI::Text("- get_pixel(x, y)");
+                TimeGUI::Text("- draw_pixel_rect(x, y, w, h, col)");
+                TimeGUI::Text("- draw_pixel_line(x1, y1, x2, y2, col)");
+                TimeGUI::Text("- draw_pixel_circle(cx, cy, r, col)");
+                TimeGUI::Text("- clear_pixels(col) / fill_pixels(col)");
                 TimeGUI::EndTabItem();
             }
 
             if (TimeGUI::BeginTabItem("Animation & Colors"))
             {
                 TimeGUI::TextColored(TEVector4(1.0f, 0.85f, 0.2f, 1.0f), "Animation:");
-                TimeGUI::Text("• time() - continuous time in seconds");
-                TimeGUI::Text("• frame() - current frame (0..total_frames-1)");
-                TimeGUI::Text("• total_frames() - total animation frames count");
-                TimeGUI::Text("• frame_progress() - normalized progress (0.0 to 1.0)");
-                TimeGUI::Text("• animate_wave(speed, min, max) - sinusoidal wave");
-                TimeGUI::Text("• animate_pingpong(speed, min, max) - bounce wave");
-                TimeGUI::Text("• animate_rotate(speed) - rotating angle in radians");
+                TimeGUI::Text("- time() - continuous time in seconds");
+                TimeGUI::Text("- frame() - current frame (0..total_frames-1)");
+                TimeGUI::Text("- total_frames() - total animation frames count");
+                TimeGUI::Text("- frame_progress() - normalized progress (0.0 to 1.0)");
+                TimeGUI::Text("- animate_wave(speed, min, max) - sinusoidal wave");
+                TimeGUI::Text("- animate_pingpong(speed, min, max) - bounce wave");
+                TimeGUI::Text("- animate_rotate(speed) - rotating angle in radians");
                 TimeGUI::Spacing();
                 TimeGUI::TextColored(TEVector4(1.0f, 0.85f, 0.2f, 1.0f), "Colors & Math:");
-                TimeGUI::Text("• rgb(r, g, b), rgba(r, g, b, a), hsv(h, s, v, [a]), hex(\"#FF0000\")");
-                TimeGUI::Text("• WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, ORANGE, PURPLE");
-                TimeGUI::Text("• sin(a), cos(a), tan(a), atan2(y, x), sqrt(v), abs(v), lerp(a, b, t)");
+                TimeGUI::Text("- rgb(r, g, b), rgba(r, g, b, a), hsv(h, s, v, [a]), hex(\"#FF0000\")");
+                TimeGUI::Text("- WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, ORANGE, PURPLE");
+                TimeGUI::Text("- sin(a), cos(a), tan(a), atan2(y, x), sqrt(v), abs(v), lerp(a, b, t)");
                 TimeGUI::EndTabItem();
             }
             TimeGUI::EndTabBar();
