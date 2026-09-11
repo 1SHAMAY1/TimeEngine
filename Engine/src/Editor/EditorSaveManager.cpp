@@ -187,3 +187,35 @@ void EditorSaveManager::Clear()
     GetSavablesMap().clear();
     s_ActiveSavable.reset();
 }
+
+// ── Save Prompt Dispatch ────────────────────────────────────────────────────
+
+static std::function<void(bool)> s_SavePromptCallback = nullptr;
+static std::function<void(std::function<void()>)> s_SavePromptWithActionCallback = nullptr;
+
+void EditorSaveManager::SetSavePromptCallback(std::function<void(bool)> onRequest) { s_SavePromptCallback = onRequest; }
+
+void EditorSaveManager::SetSavePromptWithActionCallback(std::function<void(std::function<void()>)> onRequest)
+{
+    s_SavePromptWithActionCallback = onRequest;
+}
+
+void EditorSaveManager::RequestSavePrompt(bool isAppExit)
+{
+    if (s_SavePromptCallback)
+        s_SavePromptCallback(isAppExit);
+    else
+        TE_CORE_WARN("[EditorSaveManager] RequestSavePrompt called but no save prompt callback registered.");
+}
+
+void EditorSaveManager::RequestSavePromptWithAction(std::function<void()> onProceed)
+{
+    if (s_SavePromptWithActionCallback)
+        s_SavePromptWithActionCallback(onProceed);
+    else
+    {
+        TE_CORE_WARN("[EditorSaveManager] RequestSavePromptWithAction called but no callback registered.");
+        if (onProceed)
+            onProceed();
+    }
+}

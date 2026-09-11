@@ -38,13 +38,13 @@ void TerminalPanel::ExecuteSystemCLI(const TEString &cmd)
         return;
     }
 
-    TEString lineBuffer;
-    lineBuffer.Reserve(512);
+    TEArray<uint8_t> lineBuffer;
+    lineBuffer.Resize(512);
     bool hasOutput = false;
 
-    while (fgets(lineBuffer.Data(), 512, pipe) != nullptr)
+    while (fgets(reinterpret_cast<char *>(lineBuffer.Data()), static_cast<int>(lineBuffer.Num()), pipe) != nullptr)
     {
-        TEString line = lineBuffer.Data();
+        TEString line = reinterpret_cast<const char *>(lineBuffer.Data());
         while (!line.IsEmpty() && (line.EndsWith("\n") || line.EndsWith("\r")))
         {
             line = line.Left(line.Length() - 1);

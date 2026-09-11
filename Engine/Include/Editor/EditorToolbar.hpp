@@ -25,14 +25,11 @@ public:
             // 0. Branding Icon (Thumbnail)
             if (brandIcon)
             {
-                TimeGUI::SetCursorPos(TEVector2(8, 4));
                 TimeGUI::TimeGUITextureID brandIconID =
                     (TimeGUI::TimeGUITextureID)(uintptr_t)brandIcon->GetRendererID();
                 TimeGUI::Image(brandIconID, TEVector2(26, 26));
                 TimeGUI::SameLine(0, 10);
             }
-
-            TimeGUI::SetCursorPosY(4.0f);
 
             // Render Left Region Registered Items
             auto leftItems = EditorToolbarRegistry::GetItems(EditorToolbarAlignment::Left);
@@ -52,7 +49,11 @@ public:
                 float targetCenterPos = (winWidth - totalCenterW) * 0.5f;
                 TimeGUI::SameLine(0, 0);
                 if (targetCenterPos > TimeGUI::GetCursorPosX())
-                    TimeGUI::SetCursorPosX(targetCenterPos);
+                {
+                    float gap = targetCenterPos - TimeGUI::GetCursorPosX();
+                    TimeGUI::Dummy(TEVector2(gap, 1.0f));
+                    TimeGUI::SameLine(0, 0);
+                }
 
                 for (size_t i = 0; i < centerItems.Num(); ++i)
                 {
@@ -71,7 +72,11 @@ public:
                 float targetRightPos = winWidth - totalRightW - 16.0f;
                 TimeGUI::SameLine(0, 0);
                 if (targetRightPos > TimeGUI::GetCursorPosX())
-                    TimeGUI::SetCursorPosX(targetRightPos);
+                {
+                    float gap = targetRightPos - TimeGUI::GetCursorPosX();
+                    TimeGUI::Dummy(TEVector2(gap, 1.0f));
+                    TimeGUI::SameLine(0, 0);
+                }
 
                 for (size_t i = 0; i < rightItems.Num(); ++i)
                 {

@@ -6,7 +6,6 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/EditorLayoutManager.hpp"
 #include "Editor/EditorSaveManager.hpp"
-#include "Editor/EditorToolbarOverlay.hpp"
 #include "Editor/EditorUtils.hpp"
 #include "Editor/Panels/IEditorPanel.hpp"
 #include "Layers/EditorLayer.hpp"
@@ -61,7 +60,7 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
         auto activeScene = editor->GetActiveScene();
         if (activeScene && activeScene->IsDirty())
         {
-            SaveAllToolbarOverlay::OpenSaveModalWithAction(createScenePrompt);
+            EditorSaveManager::RequestSavePromptWithAction(createScenePrompt);
         }
         else
         {
@@ -76,7 +75,7 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     saveAllItem.label = "Save All";
     saveAllItem.shortcut = "Ctrl+S";
     saveAllItem.priority = 1;
-    saveAllItem.onClick = [editor]() { SaveAllToolbarOverlay::OpenSaveModal(); };
+    saveAllItem.onClick = [editor]() { EditorSaveManager::RequestSavePrompt(); };
     editor->RegisterMenubarItem(saveAllItem);
 
     EditorMenubarItem saveAsItem;
@@ -113,7 +112,7 @@ void FileMenubarOverlay::RegisterMenubarItems(Ref<EditorLayer> editor)
     {
         if (EditorSaveManager::HasUnsavedChanges())
         {
-            SaveAllToolbarOverlay::OpenSaveModal(true);
+            EditorSaveManager::RequestSavePrompt(true);
         }
         else
         {

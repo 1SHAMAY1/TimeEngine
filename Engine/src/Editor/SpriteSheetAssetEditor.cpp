@@ -11,6 +11,13 @@ void SpriteSheetAssetEditor::DrawEditor(EditorTab &tab)
 {
     auto sheet = std::dynamic_pointer_cast<SpriteSheet>(tab.LoadedAsset);
     if (!sheet)
+    {
+        sheet = CreateRef<SpriteSheet>();
+        SpriteSheetSerializer serializer(sheet);
+        serializer.Deserialize(tab.AssetPath);
+        tab.LoadedAsset = sheet;
+    }
+    if (!sheet)
         return;
 
     static float s_SheetZoom = 1.0f;

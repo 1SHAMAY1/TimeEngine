@@ -29,4 +29,4 @@ template <typename T> struct AssetEditorAutoRegister
     AssetEditorAutoRegister() { AssetEditorRegistry::Register(CreateRef<T>()); }
 };
 
-#define TE_REGISTER_ASSET_EDITOR(EditorClass) static AssetEditorAutoRegister<EditorClass> s_AutoRegister_##EditorClass;
+#define TE_REGISTER_ASSET_EDITOR(EditorClass) inline AssetEditorAutoRegister<EditorClass> s_AutoRegister_##EditorClass;

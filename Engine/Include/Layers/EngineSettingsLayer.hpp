@@ -64,7 +64,7 @@ private:
     bool m_ShowConfirmationDialog = false;
     bool m_ShowValidationErrors = false;
     TEString m_ValidationErrorText;
-    TEString m_SelectedSettingsFile = "engine_settings.json";
+    TEString m_SelectedSettingsFile = "EngineSettings.ini";
 
     // ===== Temporary Settings (for UI) =====
     struct TempSettings

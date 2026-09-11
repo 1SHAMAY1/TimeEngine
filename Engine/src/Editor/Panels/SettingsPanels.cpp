@@ -61,6 +61,16 @@ void EditorSettingsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
             TimeGUI::Separator();
             TimeGUI::Spacing();
 
+            if (activeSetting->RequiresRestart())
+            {
+                TimeGUI::TextColored(
+                    TEColor(1.0f, 0.75f, 0.2f, 1.0f),
+                    "Notice: Changing settings in this section requires an application restart to take effect.");
+                TimeGUI::Spacing();
+                TimeGUI::Separator();
+                TimeGUI::Spacing();
+            }
+
             activeSetting->OnDrawSettingsUI(editor);
         }
         TimeGUI::EndChild();
@@ -123,6 +133,16 @@ void ProjectSettingsPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                                  activeSetting->GetDisplayName().c_str());
             TimeGUI::Separator();
             TimeGUI::Spacing();
+
+            if (activeSetting->RequiresRestart())
+            {
+                TimeGUI::TextColored(
+                    TEColor(1.0f, 0.75f, 0.2f, 1.0f),
+                    "Notice: Changing settings in this section requires an application restart to take effect.");
+                TimeGUI::Spacing();
+                TimeGUI::Separator();
+                TimeGUI::Spacing();
+            }
 
             activeSetting->OnDrawSettingsUI(editor);
         }

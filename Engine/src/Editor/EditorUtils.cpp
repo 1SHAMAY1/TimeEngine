@@ -268,69 +268,69 @@ void EditorUtils::SetEditorThemeColors()
     style.AntiAliasedLines = true;
     style.AntiAliasedFill = true;
 
-    // --- Colors (Minimal Dark Glass Theme) ---
+    // --- Colors (AAA Charcoal Slate Theme - Showcase Match) ---
     // Backgrounds
-    colors[TimeGUICol_WindowBg] = TEVector4(0.06f, 0.07f, 0.09f, 1.0f);
-    colors[TimeGUICol_ChildBg] = TEVector4(0.09f, 0.10f, 0.13f, 0.75f);
-    colors[TimeGUICol_PopupBg] = TEVector4(0.08f, 0.09f, 0.11f, 0.98f);
-    colors[TimeGUICol_MenuBarBg] = TEVector4(0.09f, 0.10f, 0.12f, 1.0f);
+    colors[TimeGUICol_WindowBg] = TEVector4(0.12f, 0.125f, 0.14f, 1.0f);
+    colors[TimeGUICol_ChildBg] = TEVector4(0.14f, 0.145f, 0.165f, 0.95f);
+    colors[TimeGUICol_PopupBg] = TEVector4(0.12f, 0.125f, 0.14f, 1.0f); // 100% opaque to prevent background bleed
+    colors[TimeGUICol_MenuBarBg] = TEVector4(0.10f, 0.105f, 0.12f, 1.0f);
 
     // Text
-    colors[TimeGUICol_Text] = TEVector4(0.90f, 0.92f, 0.95f, 1.0f);
-    colors[TimeGUICol_TextDisabled] = TEVector4(0.48f, 0.52f, 0.58f, 1.0f);
+    colors[TimeGUICol_Text] = TEVector4(0.92f, 0.93f, 0.96f, 1.0f);
+    colors[TimeGUICol_TextDisabled] = TEVector4(0.52f, 0.55f, 0.60f, 1.0f);
     colors[TimeGUICol_InputTextCursor] = TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Borders
-    colors[TimeGUICol_Border] = TEVector4(0.18f, 0.20f, 0.24f, 0.9f);
+    colors[TimeGUICol_Border] = TEVector4(0.22f, 0.24f, 0.28f, 0.75f);
     colors[TimeGUICol_BorderShadow] = TEVector4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    // Frame BG (Inputs, text boxes)
-    colors[TimeGUICol_FrameBg] = TEVector4(0.13f, 0.15f, 0.18f, 0.85f);
-    colors[TimeGUICol_FrameBgHovered] = TEVector4(0.20f, 0.23f, 0.28f, 1.0f);
-    colors[TimeGUICol_FrameBgActive] = TEVector4(0.16f, 0.18f, 0.22f, 1.0f);
+    // Frame BG (Inputs, text boxes, checkboxes)
+    colors[TimeGUICol_FrameBg] = TEVector4(0.16f, 0.17f, 0.20f, 0.85f);
+    colors[TimeGUICol_FrameBgHovered] = TEVector4(0.22f, 0.24f, 0.28f, 1.0f);
+    colors[TimeGUICol_FrameBgActive] = TEVector4(0.20f, 0.22f, 0.26f, 1.0f);
 
     // Tabs
-    colors[TimeGUICol_Tab] = TEVector4(0.11f, 0.13f, 0.16f, 1.0f);
-    colors[TimeGUICol_TabHovered] = TEVector4(0.22f, 0.26f, 0.34f, 1.0f);
-    colors[TimeGUICol_TabSelected] = TEVector4(0.16f, 0.18f, 0.23f, 1.0f);
-    colors[TimeGUICol_TabSelectedOverline] = TEVector4(0.28f, 0.56f, 0.92f, 1.0f);
-    colors[TimeGUICol_TabDimmed] = TEVector4(0.09f, 0.10f, 0.12f, 1.0f);
-    colors[TimeGUICol_TabDimmedSelected] = TEVector4(0.13f, 0.15f, 0.18f, 1.0f);
+    colors[TimeGUICol_Tab] = TEVector4(0.14f, 0.15f, 0.17f, 1.0f);
+    colors[TimeGUICol_TabHovered] = TEVector4(0.22f, 0.25f, 0.30f, 1.0f);
+    colors[TimeGUICol_TabSelected] = TEVector4(0.18f, 0.19f, 0.22f, 1.0f);
+    colors[TimeGUICol_TabSelectedOverline] = TEVector4(0.28f, 0.55f, 0.90f, 1.0f);
+    colors[TimeGUICol_TabDimmed] = TEVector4(0.12f, 0.125f, 0.14f, 1.0f);
+    colors[TimeGUICol_TabDimmedSelected] = TEVector4(0.15f, 0.16f, 0.18f, 1.0f);
 
     // Titles
-    colors[TimeGUICol_TitleBg] = TEVector4(0.08f, 0.09f, 0.11f, 1.0f);
-    colors[TimeGUICol_TitleBgActive] = TEVector4(0.11f, 0.13f, 0.16f, 1.0f);
-    colors[TimeGUICol_TitleBgCollapsed] = TEVector4(0.06f, 0.07f, 0.09f, 0.75f);
+    colors[TimeGUICol_TitleBg] = TEVector4(0.10f, 0.105f, 0.12f, 1.0f);
+    colors[TimeGUICol_TitleBgActive] = TEVector4(0.13f, 0.14f, 0.16f, 1.0f);
+    colors[TimeGUICol_TitleBgCollapsed] = TEVector4(0.08f, 0.09f, 0.10f, 0.75f);
 
     // Headers (Tree nodes, collapsing headers, selectables)
-    colors[TimeGUICol_Header] = TEVector4(0.16f, 0.19f, 0.24f, 0.7f);
-    colors[TimeGUICol_HeaderHovered] = TEVector4(0.24f, 0.28f, 0.36f, 0.85f);
-    colors[TimeGUICol_HeaderActive] = TEVector4(0.20f, 0.24f, 0.32f, 1.0f);
+    colors[TimeGUICol_Header] = TEVector4(0.20f, 0.22f, 0.26f, 0.70f);
+    colors[TimeGUICol_HeaderHovered] = TEVector4(0.26f, 0.30f, 0.36f, 0.85f);
+    colors[TimeGUICol_HeaderActive] = TEVector4(0.22f, 0.25f, 0.32f, 1.0f);
 
     // Buttons
-    colors[TimeGUICol_Button] = TEVector4(0.14f, 0.16f, 0.20f, 0.85f);
-    colors[TimeGUICol_ButtonHovered] = TEVector4(0.24f, 0.28f, 0.36f, 1.0f);
-    colors[TimeGUICol_ButtonActive] = TEVector4(0.18f, 0.21f, 0.27f, 1.0f);
+    colors[TimeGUICol_Button] = TEVector4(0.18f, 0.20f, 0.24f, 0.85f);
+    colors[TimeGUICol_ButtonHovered] = TEVector4(0.26f, 0.30f, 0.36f, 1.0f);
+    colors[TimeGUICol_ButtonActive] = TEVector4(0.22f, 0.25f, 0.30f, 1.0f);
 
     // Scrollbar
     colors[TimeGUICol_ScrollbarBg] = TEVector4(0.10f, 0.11f, 0.13f, 0.6f);
-    colors[TimeGUICol_ScrollbarGrab] = TEVector4(0.24f, 0.27f, 0.33f, 1.0f);
-    colors[TimeGUICol_ScrollbarGrabHovered] = TEVector4(0.32f, 0.36f, 0.44f, 1.0f);
-    colors[TimeGUICol_ScrollbarGrabActive] = TEVector4(0.40f, 0.46f, 0.56f, 1.0f);
+    colors[TimeGUICol_ScrollbarGrab] = TEVector4(0.26f, 0.29f, 0.35f, 1.0f);
+    colors[TimeGUICol_ScrollbarGrabHovered] = TEVector4(0.34f, 0.38f, 0.46f, 1.0f);
+    colors[TimeGUICol_ScrollbarGrabActive] = TEVector4(0.40f, 0.45f, 0.54f, 1.0f);
 
-    // Checkmark & Sliders
-    colors[TimeGUICol_CheckMark] = TEVector4(0.26f, 0.59f, 0.98f, 1.0f);
-    colors[TimeGUICol_SliderGrab] = TEVector4(0.26f, 0.59f, 0.98f, 0.9f);
-    colors[TimeGUICol_SliderGrabActive] = TEVector4(0.36f, 0.69f, 1.0f, 1.0f);
+    // Checkmark (High contrast white for clear visibility) & Sliders
+    colors[TimeGUICol_CheckMark] = TEVector4(1.0f, 1.0f, 1.0f, 1.0f);
+    colors[TimeGUICol_SliderGrab] = TEVector4(0.28f, 0.55f, 0.90f, 0.9f);
+    colors[TimeGUICol_SliderGrabActive] = TEVector4(0.36f, 0.65f, 0.98f, 1.0f);
 
     // Separators
-    colors[TimeGUICol_Separator] = TEVector4(0.22f, 0.24f, 0.28f, 0.8f);
-    colors[TimeGUICol_SeparatorHovered] = TEVector4(0.30f, 0.35f, 0.45f, 1.0f);
-    colors[TimeGUICol_SeparatorActive] = TEVector4(0.26f, 0.59f, 0.98f, 1.0f);
+    colors[TimeGUICol_Separator] = TEVector4(0.20f, 0.22f, 0.26f, 0.80f);
+    colors[TimeGUICol_SeparatorHovered] = TEVector4(0.28f, 0.32f, 0.40f, 1.0f);
+    colors[TimeGUICol_SeparatorActive] = TEVector4(0.28f, 0.55f, 0.90f, 1.0f);
 
     // Docking
-    colors[TimeGUICol_DockingPreview] = TEVector4(0.26f, 0.59f, 0.98f, 0.4f);
-    colors[TimeGUICol_DockingEmptyBg] = TEVector4(0.08f, 0.09f, 0.10f, 1.0f);
+    colors[TimeGUICol_DockingPreview] = TEVector4(0.28f, 0.55f, 0.90f, 0.4f);
+    colors[TimeGUICol_DockingEmptyBg] = TEVector4(0.10f, 0.105f, 0.12f, 1.0f);
 }
 
 void EditorUtils::DrawInfinite2DGrid(TimeGUIDrawList &dl, const TEVector2 &viewportMin, const TEVector2 &viewportSize,
@@ -536,6 +536,60 @@ void EditorUtils::DrawRestartIcon(TimeGUIDrawList &dl, const TEVector2 &center, 
     TEVector2 a1 = TEVector2(tip.x + arr * 0.9f, tip.y - arr * 0.3f);
     TEVector2 a2 = TEVector2(tip.x - arr * 0.2f, tip.y - arr * 0.9f);
     dl.AddTriangleFilled(tip, a1, a2, color);
+}
+
+void EditorUtils::DrawStandaloneIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
+{
+    // Window / Screen with a Play arrow inside
+    float w = size * 0.44f;
+    float h = size * 0.34f;
+    TEVector2 rMin(center.x - w, center.y - h);
+    TEVector2 rMax(center.x + w, center.y + h);
+
+    // Outer window frame
+    dl.AddRect(rMin, rMax, color, 2.0f, 0, 1.8f);
+
+    // Top title bar line
+    float titleH = h * 0.5f;
+    dl.AddLine(TEVector2(rMin.x, rMin.y + titleH), TEVector2(rMax.x, rMin.y + titleH), color, 1.2f);
+
+    // Little play triangle inside
+    float playHalf = (h - titleH) * 0.45f;
+    float playCenterY = center.y + titleH * 0.25f;
+    TEVector2 p1(center.x - playHalf * 0.6f, playCenterY - playHalf);
+    TEVector2 p2(center.x - playHalf * 0.6f, playCenterY + playHalf);
+    TEVector2 p3(center.x + playHalf * 0.8f, playCenterY);
+    dl.AddTriangleFilled(p1, p2, p3, color);
+}
+
+void EditorUtils::DrawPackageIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
+{
+    // Isometric 3D Box / Package icon
+    float r = size * 0.44f;
+
+    TEVector2 top(center.x, center.y - r * 0.95f);
+    TEVector2 topR(center.x + r * 0.866f, center.y - r * 0.45f);
+    TEVector2 topL(center.x - r * 0.866f, center.y - r * 0.45f);
+    TEVector2 mid(center.x, center.y + r * 0.05f);
+    TEVector2 botR(center.x + r * 0.866f, center.y + r * 0.55f);
+    TEVector2 botL(center.x - r * 0.866f, center.y + r * 0.55f);
+    TEVector2 bot(center.x, center.y + r * 1.05f);
+
+    // Top face outline
+    TEVector2 topFace[4] = {top, topR, mid, topL};
+    dl.AddPolyline(topFace, 4, color, TimeGUIDrawFlags_Closed, 1.6f);
+
+    // Left face outline
+    TEVector2 leftFace[4] = {topL, mid, bot, botL};
+    dl.AddPolyline(leftFace, 4, color, TimeGUIDrawFlags_Closed, 1.6f);
+
+    // Right face outline
+    TEVector2 rightFace[4] = {topR, mid, bot, botR};
+    dl.AddPolyline(rightFace, 4, color, TimeGUIDrawFlags_Closed, 1.6f);
+
+    // Inner center seam
+    dl.AddLine(top, mid, color, 1.4f);
+    dl.AddLine(mid, bot, color, 1.6f);
 }
 
 void EditorUtils::DrawSelectIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color)
