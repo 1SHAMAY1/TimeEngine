@@ -14,6 +14,7 @@ Each link below redirects to the detailed, dedicated architecture document for t
 * 🎯 **[Input Subsystem Architecture](Input/ARCHITECTURE.md)** (`Engine/src/Input/`) — High-level action mapping context system (`InputSystem`, `InputAction`, `InputMappingContext`), priority contexts, and entity binding callbacks (`InputComponent`).
 * 📷 **[Camera Subsystem Architecture](Camera/ARCHITECTURE.md)** (`Engine/src/Camera/`) — 2D/3D camera matrix calculation (`Camera`), 2D orthographic projection (`OrthographicCamera`), 3D perspective projection (`PerspectiveCamera`), controllers, and player tracking (`PlayerCameraComponent`).
 * 🖥️ **[Window Subsystem Architecture](Window/ARCHITECTURE.md)** (`Engine/src/Window/`) — OS native window abstraction (`IWindow`), window creation (`WindowsWindow`), GLFW event hooks, VSync toggles, and swap chain buffer swapping.
+* 🖼️ **[UI Engine & UIAPI Subsystem Architecture](UI/ARCHITECTURE.md)** (`Engine/src/UI/`) — Multi-backend UI abstraction (`UIEngine`, `UIAPI`), default `ForgeUIAPI`, `ImGuiUIAPI`, and thread-safe context binding.
 * 🧰 **[Utils Subsystem Architecture](Utils/ARCHITECTURE.md)** (`Engine/src/Utils/`) — Core engine toolbox, 2D engine math primitives (`MathUtils`), vendor-agnostic GUI wrappers (`TimeGUI`), and OS-specific platform file/registry utilities.
 
 ---

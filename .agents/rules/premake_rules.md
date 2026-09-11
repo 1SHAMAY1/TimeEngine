@@ -33,7 +33,8 @@ premake5 check-copyright
 - **`TE_MEM03`**: Prohibits `std::string`, `std::wstring`, `std::string_view`. Enforces TimeEngine `TEString` across all files (exempting `TEString.hpp` / `TEString.cpp`).
 
 ### 2. 🛡️ Strict Vendor Isolation Rule ([`VendorLeakageRule.lua`](file:///e:/TimeEngine/Scripts/Premake/Rules/VendorLeakageRule.lua))
-- **ImGui** (`TE_VND08`): **Strictly allowed ONLY in `Utils/TimeGUI`** (`Engine/src/Utils/TimeGUI.*` & `Engine/Include/Utils/TimeGUI.hpp`) and `Engine/src/Utils/MathUtils.cpp` for vector type bridging. All UI and Editor layers must use the `TimeGUI` wrapper.
+- **ImGui** (`TE_VND08`): **Strictly allowed ONLY in `Engine/src/UI/ImGui/`** (`ImGuiUIAPI.*`). Strictly forbidden in `TimeGUI.hpp`, `TimeGUI.cpp`, and any client code outside the ImGui backend.
+- **ForgeUI** (`TE_VND11`): **Strictly allowed ONLY in `Engine/src/UI/ForgeUI/`** (`ForgeUIAPI.*`). Strictly forbidden in `TimeGUI.hpp`, `TimeGUI.cpp`, and any client code outside the ForgeUI backend.
 - **stb_image** (`TE_VND09`): **Strictly allowed ONLY in Asset Manager** (`Engine/src/Core/Asset/*` & `Engine/Include/Core/Asset/*`).
 - **OpenGL / GLAD** (`TE_VND03`): **Strictly allowed ONLY in `Renderer/OpenGL/`**.
 - **OpenGL ES** (`TE_VND04`): **Strictly allowed ONLY in `Renderer/OpenGLES/`**.

@@ -59,6 +59,7 @@ Each link below opens a detailed, dedicated architectural reference document:
 * 🎯 **[High-Level Input Architecture](src/Input/ARCHITECTURE.md)** — Action mapping contexts (`InputSystem`, `InputAction`, `InputMappingContext`), priority contexts, and `InputComponent`.
 * 📷 **[Camera Subsystem Architecture](src/Camera/ARCHITECTURE.md)** — 2D/3D camera matrix calculation (`Camera`), `OrthographicCamera`, `PerspectiveCamera`, and `PlayerCameraComponent`.
 * 🖥️ **[Window Subsystem Architecture](src/Window/ARCHITECTURE.md)** — Native window abstraction (`IWindow`, `WindowsWindow`), GLFW callbacks, VSync, and swap chain buffers.
+* 🖼️ **[UI Engine & UIAPI Subsystem Architecture](src/UI/ARCHITECTURE.md)** — Multi-backend UI abstraction (`UIEngine`, `UIAPI`), default `ForgeUIAPI`, `ImGuiUIAPI`, and thread-safe context binding.
 * 🧰 **[Utils Subsystem Architecture](src/Utils/ARCHITECTURE.md)** — Core engine toolbox, 2D engine math primitives (`MathUtils`), vendor-agnostic GUI wrappers (`TimeGUI`), and OS platform utilities.
   * 🪟 **[Win32 Platform Architecture](src/Utils/Platform/Windows/ARCHITECTURE.md)** — Win32 file dialogs (`IFileDialog`), HKCU Windows Registry associations, and executable path resolution.
   * 🐧 **[Unix Platform Architecture](src/Utils/Platform/Unix/ARCHITECTURE.md)** — POSIX executable path resolution (`/proc/self/exe`), native Unix dialogs, and MIME registrations.
