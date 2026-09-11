@@ -126,13 +126,22 @@ project "TimeEditor"
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h"
     }
 
     filter { "system:not macosx" }
         removefiles {
             "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
             "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        }
+    filter {}
+
+    filter { "system:not windows" }
+        removefiles {
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h"
         }
     filter {}
 

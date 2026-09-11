@@ -19,7 +19,7 @@ filter { "system:windows", "action:vs*" }
     end
 filter {}
 
-filter { "system:windows", "action:vs*", "configurations:Debug" }
+filter { "system:windows", "action:vs*", "configurations:Debug", "kind:not StaticLib" }
     local customToolset = os.getenv("PlatformToolset")
     if customToolset == "ClangCL" then
         linkoptions { "/DEBUG:GHASH" }
@@ -62,6 +62,7 @@ IncludeDir["Vulkan"]         = "%{wks.location}/Vendor/Vulkan/include"
 IncludeDir["volk"]           = "%{wks.location}/Vendor/volk"
 IncludeDir["OpenGLES"]       = "%{wks.location}/Vendor/OpenGL-Registry/api"
 IncludeDir["miniaudio"]      = "%{wks.location}/Vendor/miniaudio"
+IncludeDir["ForgeUI"]        = "%{wks.location}/Vendor/ForgeUI/include"
 
 -- ========== Automated VS Code / IDE Configuration Generator ==========
 
@@ -90,7 +91,8 @@ function GenerateVSCodeConfig()
         "${workspaceFolder}/Vendor/Velox/include",
         "${workspaceFolder}/Vendor/Vulkan/include",
         "${workspaceFolder}/Vendor/volk",
-        "${workspaceFolder}/Vendor/OpenGL-Registry/api"
+        "${workspaceFolder}/Vendor/OpenGL-Registry/api",
+        "${workspaceFolder}/Vendor/ForgeUI/include"
       ],
       "defines": [
         "TE_PLATFORM_WINDOWS",
