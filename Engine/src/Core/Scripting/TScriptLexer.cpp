@@ -134,14 +134,20 @@ TScriptToken TScriptLexer::MakeErrorToken(const TEString &message)
     return TScriptToken{TScriptTokenType::Error, message, m_Line, m_Column};
 }
 
+static inline bool SafeIsDigit(char c) { return std::isdigit(static_cast<unsigned char>(c)); }
+
+static inline bool SafeIsAlpha(char c) { return std::isalpha(static_cast<unsigned char>(c)); }
+
+static inline bool SafeIsAlnum(char c) { return std::isalnum(static_cast<unsigned char>(c)); }
+
 TScriptToken TScriptLexer::LexNumber()
 {
-    while (std::isdigit(Peek()))
+    while (SafeIsDigit(Peek()))
         Advance();
-    if (Peek() == '.' && std::isdigit(PeekNext()))
+    if (Peek() == '.' && SafeIsDigit(PeekNext()))
     {
         Advance(); // Eat '.'
-        while (std::isdigit(Peek()))
+        while (SafeIsDigit(Peek()))
             Advance();
     }
     return MakeToken(TScriptTokenType::Number);
@@ -167,7 +173,7 @@ TScriptToken TScriptLexer::LexString()
 
 TScriptToken TScriptLexer::LexIdentifierOrKeyword()
 {
-    while (std::isalnum(Peek()) || Peek() == '_')
+    while (SafeIsAlnum(Peek()) || Peek() == '_')
         Advance();
     TEString text = m_Source.substr(m_Start, m_Current - m_Start);
 
@@ -200,13 +206,13 @@ TEArray<TScriptToken> TScriptLexer::Tokenize()
             continue;
         }
 
-        if (std::isdigit(c))
+        if (SafeIsDigit(c))
         {
             tokens.push_back(LexNumber());
             continue;
         }
 
-        if (std::isalpha(c) || c == '_')
+        if (SafeIsAlpha(c) || c == '_')
         {
             tokens.push_back(LexIdentifierOrKeyword());
             continue;

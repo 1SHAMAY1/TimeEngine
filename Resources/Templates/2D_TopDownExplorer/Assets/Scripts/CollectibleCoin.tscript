@@ -1,0 +1,34 @@
+﻿// CollectibleCoin.tscript
+class CollectibleCoin : TComponent
+
+    T_REGISTER_PROPERTY(float, coin_value, 1.0)
+    T_REGISTER_PROPERTY(float, bob_speed, 4.0)
+
+    public:
+        float timer = 0.0
+        float base_y = 0.0
+        bool collected = false
+
+    on_ready() {
+        base_y = transform.position.y
+        timer = 0.0
+        collected = false
+    }
+
+    on_update(float dt) {
+        if (collected) {
+            return
+        }
+
+        // Idle floating / bobbing effect
+        timer += dt * bob_speed
+        transform.position.y = base_y + (sin(timer) * 0.1)
+    }
+
+    on_collision(other) {
+        if (other.Tag == Player && !collected) {
+            collected = true
+            transform.position.y = -1000.0 // Hide
+            TE_CORE_INFO(Player gathered Shiny Coin!)
+        }
+    }

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <glm/glm.hpp>
 #include <typeindex>
 
 template <typename T> struct TEPropertyDrawer;

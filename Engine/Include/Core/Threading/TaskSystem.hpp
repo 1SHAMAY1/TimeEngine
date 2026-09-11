@@ -10,6 +10,9 @@
 #include <thread>
 #include <unordered_map>
 
+#include "Renderer/RenderCommand.hpp"
+#include "Renderer/RendererContext.hpp"
+
 #ifdef TE_EDITOR
 #include "Utils/TimeGUI.hpp"
 #endif
@@ -67,13 +70,19 @@ public:
 private:
     void ThreadLoop()
     {
-        if (m_NativeWindow)
+        GraphicsAPI currentAPI = RendererContext::GetAPI();
+
+        if (currentAPI == GraphicsAPI::OpenGL || currentAPI == GraphicsAPI::OpenGLES)
         {
-            IWindow::MakeContextCurrent(m_NativeWindow);
-#if defined(TE_EDITOR) && defined(TE_SUPPORT_OPENGL)
-            TimeGUI::InitOpenGLBackend();
+#if defined(TE_SUPPORT_OPENGL)
+            if (m_NativeWindow)
+                IWindow::MakeContextCurrent(m_NativeWindow);
 #endif
         }
+
+#if defined(TE_EDITOR)
+        TimeGUI::InitOpenGLBackend(); // routes to active render backend
+#endif
 
         while (true)
         {
@@ -95,9 +104,24 @@ private:
                 currentJob();
             }
 
-            if (m_NativeWindow)
+            switch (currentAPI)
             {
-                IWindow::SwapBuffers(m_NativeWindow);
+            case GraphicsAPI::DirectX11:
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+                RenderCommand::Present();
+#endif
+                break;
+            case GraphicsAPI::OpenGL:
+            case GraphicsAPI::OpenGLES:
+#if defined(TE_SUPPORT_OPENGL)
+                if (m_NativeWindow)
+                {
+                    IWindow::SwapBuffers(m_NativeWindow);
+                }
+#endif
+                break;
+            default:
+                break;
             }
 
             {
@@ -107,10 +131,15 @@ private:
             m_DoneCV.notify_one();
         }
 
-#if defined(TE_EDITOR) && defined(TE_SUPPORT_OPENGL)
+#if defined(TE_EDITOR)
         TimeGUI::ShutdownOpenGLBackend();
 #endif
-        IWindow::MakeContextCurrent(nullptr);
+        if (currentAPI == GraphicsAPI::OpenGL || currentAPI == GraphicsAPI::OpenGLES)
+        {
+#if defined(TE_SUPPORT_OPENGL)
+            IWindow::MakeContextCurrent(nullptr);
+#endif
+        }
     }
 
     void *m_NativeWindow = nullptr;

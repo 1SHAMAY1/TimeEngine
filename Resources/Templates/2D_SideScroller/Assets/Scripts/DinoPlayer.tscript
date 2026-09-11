@@ -1,0 +1,68 @@
+﻿// DinoPlayer.tscript
+class DinoPlayer : TComponent
+
+    T_REGISTER_PROPERTY(float, jump_force, 14.0)
+    T_REGISTER_PROPERTY(float, gravity, 32.0)
+    T_REGISTER_PROPERTY(float, ground_y, -2.5)
+
+    public:
+        float velocity_y = 0.0
+        bool is_grounded = true
+        bool is_ducking = false
+        bool is_alive = true
+        float score = 0.0
+
+    on_ready() {
+        TE_CORE_INFO(Dino Runner Player Initialized!)
+        transform.position.x = -6.0
+        transform.position.y = ground_y
+    }
+
+    on_update(float dt) {
+        if (!is_alive) {
+            return
+        }
+
+        score += dt * 10.0
+
+        // Handle Jump Input (Space / Up Arrow)
+        if (Input.IsActionJustPressed(Jump) && is_grounded) {
+            velocity_y = jump_force
+            is_grounded = false
+            TE_CORE_INFO(Dino Jumped!)
+        }
+
+        // Handle Ducking Input (Down Arrow / Shift)
+        if (Input.IsActionPressed(Duck)) {
+            is_ducking = true
+            transform.scale.y = 0.6
+            transform.scale.x = 1.3
+            // Fast fall if mid-air
+            if (!is_grounded) {
+                velocity_y -= gravity * dt * 1.5
+            }
+        } else {
+            is_ducking = false
+            transform.scale.y = 1.2
+            transform.scale.x = 1.0
+        }
+
+        // Apply Physics & Gravity
+        if (!is_grounded) {
+            velocity_y -= gravity * dt
+            transform.position.y += velocity_y * dt
+
+            if (transform.position.y <= ground_y) {
+                transform.position.y = ground_y
+                velocity_y = 0.0
+                is_grounded = true
+            }
+        }
+    }
+
+    on_collision(other) {
+        if (other.Tag == Obstacle && is_alive) {
+            is_alive = false
+            TE_CORE_WARN(Dino Hit an Obstacle! Game Over. Final Score:  + score)
+        }
+    }

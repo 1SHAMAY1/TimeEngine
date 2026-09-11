@@ -1,0 +1,6 @@
+﻿Sprite: Coin_Gold
+TexturePath: Sprites/Coin_Gold.png
+UVs: 0 0 1 1
+Pivot: 0.5 0.5
+PixelsPerUnit: 32
+ColliderPoints: 0

@@ -2,11 +2,10 @@
 #include "Core/Application.h"
 #include "Core/Log.h"
 #include "Core/Settings/GeneralEngineSettings.hpp"
+#include "Renderer/RendererContext.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include "Window/IWindow.hpp"
 #include <algorithm>
-#include <fstream>
-#include <sstream>
 TE_REGISTER_SETTINGS(GeneralEngineSettings);
 
 GeneralEngineSettings::GeneralEngineSettings()
@@ -381,7 +380,20 @@ void GeneralEngineSettings::LoadFromFile(const TEString &filename)
                                       TEString value = line.Mid(pos + 1).Trim();
 
                                       // Parse settings based on key
-                                      if (key == "TargetFrameRate")
+                                      if (key == "GraphicsAPI")
+                                      {
+                                          if (value == "DirectX11")
+                                              RendererContext::SetAPI(GraphicsAPI::DirectX11);
+                                          else if (value == "OpenGL")
+                                              RendererContext::SetAPI(GraphicsAPI::OpenGL);
+                                          else if (value == "Vulkan")
+                                              RendererContext::SetAPI(GraphicsAPI::Vulkan);
+                                          else if (value == "OpenGLES")
+                                              RendererContext::SetAPI(GraphicsAPI::OpenGLES);
+                                          else if (value == "Metal")
+                                              RendererContext::SetAPI(GraphicsAPI::Metal);
+                                      }
+                                      else if (key == "TargetFrameRate")
                                       {
                                           SetTargetFrameRate(value.ToFloat());
                                       }
@@ -422,23 +434,51 @@ void GeneralEngineSettings::LoadFromFile(const TEString &filename)
 
 void GeneralEngineSettings::SaveToFile(const TEString &filename)
 {
-    std::ofstream file(filename);
-    if (!file.is_open())
+    TEString content = "; =========================================\n"
+                       "; TimeEngine Engine Configuration File (.ini)\n"
+                       "; =========================================\n\n"
+                       "[Rendering]\n"
+                       "GraphicsAPI=";
+
+    switch (RendererContext::GetAPI())
     {
-        TE_CORE_ERROR("Failed to create settings file: {0}", filename);
-        return;
+    case GraphicsAPI::DirectX11:
+        content += "DirectX11\n";
+        break;
+    case GraphicsAPI::OpenGL:
+        content += "OpenGL\n";
+        break;
+    case GraphicsAPI::Vulkan:
+        content += "Vulkan\n";
+        break;
+    case GraphicsAPI::OpenGLES:
+        content += "OpenGLES\n";
+        break;
+    case GraphicsAPI::Metal:
+        content += "Metal\n";
+        break;
+    default:
+        content += "DirectX11\n";
+        break;
     }
 
-    file << "# TimeEngine Configuration File\n";
-    file << "TargetFrameRate=" << m_TargetFrameRate << "\n";
-    file << "UnlimitedFrameRate=" << (m_UnlimitedFrameRate ? "true" : "false") << "\n";
-    file << "VSync=" << (m_VSyncEnabled ? "true" : "false") << "\n";
-    file << "LogLevel=" << m_LogLevel << "\n";
-    file << "WindowWidth=" << m_WindowWidth << "\n";
-    file << "WindowHeight=" << m_WindowHeight << "\n";
-    file << "AudioVolume=" << m_AudioVolume << "\n";
+    content += "\n[Engine]\n";
+    content += "TargetFrameRate=" + TEString::FromFloat(m_TargetFrameRate) + "\n";
+    content += "UnlimitedFrameRate=" + TEString(m_UnlimitedFrameRate ? "true" : "false") + "\n";
+    content += "VSync=" + TEString(m_VSyncEnabled ? "true" : "false") + "\n";
+    content += "LogLevel=" + m_LogLevel + "\n";
+    content += "WindowWidth=" + TEString::FromInt(m_WindowWidth) + "\n";
+    content += "WindowHeight=" + TEString::FromInt(m_WindowHeight) + "\n";
+    content += "AudioVolume=" + TEString::FromFloat(m_AudioVolume) + "\n";
 
-    TE_CORE_INFO("Engine settings saved to: {0}", filename);
+    if (TEFileSystem::WriteAllText(filename, content))
+    {
+        TE_CORE_INFO("Engine settings saved to: {0}", filename);
+    }
+    else
+    {
+        TE_CORE_ERROR("Failed to write settings file: {0}", filename);
+    }
 }
 
 void GeneralEngineSettings::ResetToDefaults()

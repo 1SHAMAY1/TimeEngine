@@ -58,7 +58,8 @@ void LogoLayer::OnTimeGUIRender()
                 m_TargetProgress = 1.0f;
                 m_StatusText = "Ready. Launching Workspace...";
                 m_FinishTime = m_Time;
-                TE_CORE_INFO("[LogoLayer] Async plugin loading complete! FinishTime: %.2fs", m_FinishTime);
+                TE_CORE_INFO(
+                    TEString::Format("[LogoLayer] Async plugin loading complete! FinishTime: %.2fs", m_FinishTime));
                 break;
             }
         }
@@ -69,7 +70,8 @@ void LogoLayer::OnTimeGUIRender()
             m_TargetProgress = 1.0f;
             m_StatusText = "Ready. Launching Workspace...";
             m_FinishTime = m_Time;
-            TE_CORE_INFO("[LogoLayer] PluginManager reports fully loaded! FinishTime: %.2fs", m_FinishTime);
+            TE_CORE_INFO(
+                TEString::Format("[LogoLayer] PluginManager reports fully loaded! FinishTime: %.2fs", m_FinishTime));
         }
     }
 
@@ -100,8 +102,9 @@ void LogoLayer::OnTimeGUIRender()
     if (shouldLogHeartbeat)
     {
         s_LastLogTime = m_Time;
-        TE_CORE_INFO("[LogoLayer] Heartbeat | Time: %.2fs | Progress: %.1f%% | Alpha: %.2f | Status: %s", m_Time,
-                     m_DisplayProgress * 100.0f, alpha, m_StatusText.c_str());
+        TE_CORE_INFO(
+            TEString::Format("[LogoLayer] Heartbeat | Time: %.2fs | Progress: %.1f%% | Alpha: %.2f | Status: %s",
+                             m_Time, m_DisplayProgress * 100.0f, alpha, m_StatusText.c_str()));
     }
 
     // ── Render Loading Screen Visuals ─────────────────────────────────────────
@@ -113,8 +116,9 @@ void LogoLayer::OnTimeGUIRender()
     static bool s_LoggedViewport = false;
     if (!s_LoggedViewport && screenSize.x > 0.0f)
     {
-        TE_CORE_INFO("[LogoLayer] Main Viewport: (%.1f, %.1f) - Size: (%.1f, %.1f) - Center: (%.1f, %.1f)", screenPos.x,
-                     screenPos.y, screenSize.x, screenSize.y, center.x, center.y);
+        TE_CORE_INFO(
+            TEString::Format("[LogoLayer] Main Viewport: (%.1f, %.1f) - Size: (%.1f, %.1f) - Center: (%.1f, %.1f)",
+                             screenPos.x, screenPos.y, screenSize.x, screenSize.y, center.x, center.y));
         s_LoggedViewport = true;
     }
 

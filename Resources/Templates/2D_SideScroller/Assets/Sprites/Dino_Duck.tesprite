@@ -1,0 +1,6 @@
+﻿Sprite: Dino_Duck
+TexturePath: Sprites/Dino_Duck.png
+UVs: 0 0 1 1
+Pivot: 0.5 0.5
+PixelsPerUnit: 32
+ColliderPoints: 0

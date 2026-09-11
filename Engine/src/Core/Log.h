@@ -17,7 +17,7 @@ struct LogMessage
 class TE_API Log
 {
 public:
-    static void Init(bool logToFile = true, const TEString &file = "TimeEngineLog.json");
+    static void Init(bool logToFile = true, const TEString &file = "TimeEngineLog.json", bool silentBanner = false);
 
     inline static CustomizableLogger &GetCoreLogger() { return *s_CoreLogger; }
     inline static CustomizableLogger &GetClientLogger() { return *s_ClientLogger; }

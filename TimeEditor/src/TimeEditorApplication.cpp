@@ -105,6 +105,47 @@ Scope<Application> CreateApplication(int argc, char **argv)
     TEString startScene = "";
     bool isStandalone = false;
 
+    // Check if running from a packaged standalone build directory (contains Config/DefaultEngine.ini or Content/)
+    TEString appDir = executablePath.GetParentPath();
+    TEString defaultEngineIni = appDir / "Config" / "DefaultEngine.ini";
+    if (TEFileSystem::Exists(defaultEngineIni))
+    {
+        isStandalone = true;
+        TE_CORE_INFO("Packaged standalone environment detected via %s", defaultEngineIni.c_str());
+
+        // Parse startup settings from DefaultEngine.ini
+        TEFileSystem::ForEachLine(defaultEngineIni,
+                                  [&](const TEString &line) -> bool
+                                  {
+                                      if (line.find("StartScene=") == 0)
+                                      {
+                                          startScene = line.substr(11);
+                                          if (startScene.StartsWith("/") || startScene.StartsWith("\\"))
+                                              startScene = startScene.Substr(1);
+                                          startScene = appDir / startScene;
+                                      }
+                                      else if (line.find("ProjectName=") == 0)
+                                      {
+                                          startProject = line.substr(12);
+                                      }
+                                      else if (line.find("PreferredAPI=") == 0)
+                                      {
+                                          TEString apiName = line.substr(13);
+                                          if (apiName.Contains("DirectX 11"))
+                                              RendererContext::SetAPI(GraphicsAPI::DirectX11);
+                                          else if (apiName.Contains("Vulkan"))
+                                              RendererContext::SetAPI(GraphicsAPI::Vulkan);
+                                          else if (apiName.Contains("OpenGL"))
+                                              RendererContext::SetAPI(GraphicsAPI::OpenGL);
+                                          else if (apiName.Contains("Metal"))
+                                              RendererContext::SetAPI(GraphicsAPI::Metal);
+                                          else if (apiName.Contains("OpenGLES") || apiName.Contains("WebGL"))
+                                              RendererContext::SetAPI(GraphicsAPI::OpenGLES);
+                                      }
+                                      return true;
+                                  });
+    }
+
     for (int i = 1; i < argc; ++i)
     {
         TEString arg = argv[i];

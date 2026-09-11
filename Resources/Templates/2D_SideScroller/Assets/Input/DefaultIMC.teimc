@@ -1,0 +1,42 @@
+﻿InputMappingContext: DinoRunnerIMC
+Mappings:
+  - Action: Jump
+    ValueType: 0
+    BindingType: 0
+    Code: 32
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: Jump
+    ValueType: 0
+    BindingType: 0
+    Code: 265
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: Duck
+    ValueType: 0
+    BindingType: 0
+    Code: 264
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: Duck
+    ValueType: 0
+    BindingType: 0
+    Code: 340
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: Restart
+    ValueType: 0
+    BindingType: 0
+    Code: 257
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05

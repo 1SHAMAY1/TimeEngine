@@ -46,6 +46,9 @@ public:
     static TERef<Project> Load(const TEString &path);
     static bool SaveActive(const TEString &path);
 
+    static void LoadProjectSettings();
+    static void SaveProjectSettings();
+
 private:
     ProjectConfig m_Config;
     TEString m_ProjectDirectory;

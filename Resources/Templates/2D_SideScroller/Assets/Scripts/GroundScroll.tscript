@@ -1,0 +1,16 @@
+﻿// GroundScroll.tscript
+class GroundScroll : TComponent
+
+    T_REGISTER_PROPERTY(float, scroll_speed, 8.0)
+    T_REGISTER_PROPERTY(float, segment_width, 24.0)
+    T_REGISTER_PROPERTY(float, reset_x, -24.0)
+    T_REGISTER_PROPERTY(float, start_x, 24.0)
+
+    on_update(float dt) {
+        transform.position.x -= scroll_speed * dt
+
+        // Infinite Wrap-around Object Pooling
+        if (transform.position.x <= reset_x) {
+            transform.position.x += segment_width * 2.0
+        }
+    }

@@ -1,0 +1,74 @@
+﻿InputMappingContext: SlimeExplorerIMC
+Mappings:
+  - Action: MoveRight
+    ValueType: 0
+    BindingType: 0
+    Code: 68
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveRight
+    ValueType: 0
+    BindingType: 0
+    Code: 262
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveLeft
+    ValueType: 0
+    BindingType: 0
+    Code: 65
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveLeft
+    ValueType: 0
+    BindingType: 0
+    Code: 263
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveUp
+    ValueType: 0
+    BindingType: 0
+    Code: 87
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveUp
+    ValueType: 0
+    BindingType: 0
+    Code: 265
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveDown
+    ValueType: 0
+    BindingType: 0
+    Code: 83
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: MoveDown
+    ValueType: 0
+    BindingType: 0
+    Code: 264
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05
+  - Action: Interact
+    ValueType: 0
+    BindingType: 0
+    Code: 69
+    Remappable: true
+    ScaleNegate: false
+    Multiplier: 1
+    Deadzone: 0.05

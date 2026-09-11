@@ -15,9 +15,40 @@ inline int RunEngine(int argc, char **argv)
 {
     try
     {
-        Log::Init();
-        TE_CORE_INFO("Log Initialized!");
-        TE_CLIENT_INFO("Welcome to Time Engine.");
+        bool silentMode = false;
+        TEString exePath = PlatformUtils::GetExecutablePath();
+        if (!exePath.IsEmpty())
+        {
+            TEString appDir = exePath.GetParentPath();
+            TEString iniPath = appDir / "Config" / "DefaultEngine.ini";
+            if (TEFileSystem::Exists(iniPath))
+            {
+                TEFileSystem::ForEachLine(iniPath,
+                                          [&](const TEString &line) -> bool
+                                          {
+                                              if (line.find("Verbosity=Error") != TEString::npos ||
+                                                  line.find("Configuration=Shipping") != TEString::npos)
+                                              {
+                                                  silentMode = true;
+                                              }
+                                              return true;
+                                          });
+            }
+        }
+
+#ifdef TE_PLATFORM_WINDOWS
+        if (silentMode)
+        {
+            ::FreeConsole();
+        }
+#endif
+
+        Log::Init(true, "TimeEngineLog.json", silentMode);
+        if (!silentMode)
+        {
+            TE_CORE_INFO("Log Initialized!");
+            TE_CLIENT_INFO("Welcome to Time Engine.");
+        }
 
 #ifdef TE_PLATFORM_WINDOWS
         SetCurrentProcessExplicitAppUserModelID(L"TimeEngine.TimeEditor");

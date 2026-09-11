@@ -35,7 +35,10 @@ void ShortcutManager::Shutdown()
     std::lock_guard<std::mutex> lock(s_ListenerMutex);
     s_IsShutdown = true;
     if (s_ListenersRef)
+    {
         s_ListenersRef->clear();
+        s_ListenersRef = nullptr;
+    }
     TE_CORE_INFO("[ShortcutManager] Shutdown complete. Listeners cleared.");
 }
 
@@ -166,9 +169,11 @@ TEArray<Shortcut> ShortcutManager::GetShortcutsByContext(const TEString &context
 
 void ShortcutManager::AddListener(const TEString &listenerName, ShortcutListenerFn listener)
 {
-    if (listenerName.empty() || !listener)
+    if (listenerName.empty() || !listener || s_IsShutdown)
         return;
     std::lock_guard<std::mutex> lock(s_ListenerMutex);
+    if (s_IsShutdown)
+        return;
     GetListeners()[listenerName] = listener;
 }
 
@@ -177,13 +182,12 @@ void ShortcutManager::RemoveListener(const TEString &listenerName)
     if (listenerName.empty() || s_IsShutdown)
         return;
     std::lock_guard<std::mutex> lock(s_ListenerMutex);
-    if (s_IsShutdown)
+    if (s_IsShutdown || !s_ListenersRef)
         return;
-    auto &listeners = GetListeners();
-    auto it = listeners.find(listenerName);
-    if (it != listeners.end())
+    auto it = s_ListenersRef->find(listenerName);
+    if (it != s_ListenersRef->end())
     {
-        listeners.erase(it);
+        s_ListenersRef->erase(it);
     }
 }
 

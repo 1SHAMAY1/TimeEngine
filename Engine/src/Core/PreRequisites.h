@@ -290,6 +290,17 @@ inline HMODULE LoadLibraryW(const wchar_t *wpath)
 #endif
 
 // ====================================================================================
+// Packaging & Shipping Gameplay Macros
+// ====================================================================================
+#if defined(TE_SHIPPING)
+#define TE_DEVELOPMENT_ONLY(code)
+#define TE_SHIPPING_ONLY(code) code
+#else
+#define TE_DEVELOPMENT_ONLY(code) code
+#define TE_SHIPPING_ONLY(code)
+#endif
+
+// ====================================================================================
 // Centralized Graphics API Support Detection
 // ====================================================================================
 #ifdef TE_PLATFORM_WINDOWS

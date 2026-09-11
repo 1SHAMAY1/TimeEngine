@@ -3,7 +3,6 @@
 
 #include "Utils/TimeGUI.hpp"
 #include <GLFW/glfw3.h>
-#include <imgui.h>
 
 void *Input::s_Window = nullptr;
 TEMap<KeyCode, InputState> Input::s_KeyStates;
@@ -132,124 +131,92 @@ void Input::Update(float deltaTime)
     }
 }
 
-int Input::ToImGuiKey(KeyCode key)
+TimeGUIKey Input::ToTimeGUIKey(KeyCode key)
 {
     switch (key)
     {
     case Key::Tab:
-        return ImGuiKey_Tab;
+        return TimeGUIKey_Tab;
     case Key::Left:
-        return ImGuiKey_LeftArrow;
+        return TimeGUIKey_LeftArrow;
     case Key::Right:
-        return ImGuiKey_RightArrow;
+        return TimeGUIKey_RightArrow;
     case Key::Up:
-        return ImGuiKey_UpArrow;
+        return TimeGUIKey_UpArrow;
     case Key::Down:
-        return ImGuiKey_DownArrow;
+        return TimeGUIKey_DownArrow;
     case Key::PageUp:
-        return ImGuiKey_PageUp;
+        return TimeGUIKey_PageUp;
     case Key::PageDown:
-        return ImGuiKey_PageDown;
+        return TimeGUIKey_PageDown;
     case Key::Home:
-        return ImGuiKey_Home;
+        return TimeGUIKey_Home;
     case Key::End:
-        return ImGuiKey_End;
+        return TimeGUIKey_End;
     case Key::Insert:
-        return ImGuiKey_Insert;
+        return TimeGUIKey_Insert;
     case Key::Delete:
-        return ImGuiKey_Delete;
+        return TimeGUIKey_Delete;
     case Key::Backspace:
-        return ImGuiKey_Backspace;
+        return TimeGUIKey_Backspace;
     case Key::Space:
-        return ImGuiKey_Space;
+        return TimeGUIKey_Space;
     case Key::Enter:
-        return ImGuiKey_Enter;
+        return TimeGUIKey_Enter;
     case Key::Escape:
-        return ImGuiKey_Escape;
+        return TimeGUIKey_Escape;
     case Key::A:
-        return ImGuiKey_A;
+        return TimeGUIKey_A;
     case Key::B:
-        return ImGuiKey_B;
+        return TimeGUIKey_B;
     case Key::C:
-        return ImGuiKey_C;
+        return TimeGUIKey_C;
     case Key::D:
-        return ImGuiKey_D;
+        return TimeGUIKey_D;
     case Key::E:
-        return ImGuiKey_E;
+        return TimeGUIKey_E;
     case Key::F:
-        return ImGuiKey_F;
+        return TimeGUIKey_F;
     case Key::G:
-        return ImGuiKey_G;
+        return TimeGUIKey_G;
     case Key::H:
-        return ImGuiKey_H;
+        return TimeGUIKey_H;
     case Key::I:
-        return ImGuiKey_I;
+        return TimeGUIKey_I;
     case Key::J:
-        return ImGuiKey_J;
+        return TimeGUIKey_J;
     case Key::K:
-        return ImGuiKey_K;
+        return TimeGUIKey_K;
     case Key::L:
-        return ImGuiKey_L;
+        return TimeGUIKey_L;
     case Key::M:
-        return ImGuiKey_M;
+        return TimeGUIKey_M;
     case Key::N:
-        return ImGuiKey_N;
+        return TimeGUIKey_N;
     case Key::O:
-        return ImGuiKey_O;
+        return TimeGUIKey_O;
     case Key::P:
-        return ImGuiKey_P;
+        return TimeGUIKey_P;
     case Key::Q:
-        return ImGuiKey_Q;
+        return TimeGUIKey_Q;
     case Key::R:
-        return ImGuiKey_R;
+        return TimeGUIKey_R;
     case Key::S:
-        return ImGuiKey_S;
+        return TimeGUIKey_S;
     case Key::T:
-        return ImGuiKey_T;
+        return TimeGUIKey_T;
     case Key::U:
-        return ImGuiKey_U;
+        return TimeGUIKey_U;
     case Key::V:
-        return ImGuiKey_V;
+        return TimeGUIKey_V;
     case Key::W:
-        return ImGuiKey_W;
+        return TimeGUIKey_W;
     case Key::X:
-        return ImGuiKey_X;
+        return TimeGUIKey_X;
     case Key::Y:
-        return ImGuiKey_Y;
+        return TimeGUIKey_Y;
     case Key::Z:
-        return ImGuiKey_Z;
-    case Key::D0:
-        return ImGuiKey_0;
-    case Key::D1:
-        return ImGuiKey_1;
-    case Key::D2:
-        return ImGuiKey_2;
-    case Key::D3:
-        return ImGuiKey_3;
-    case Key::D4:
-        return ImGuiKey_4;
-    case Key::D5:
-        return ImGuiKey_5;
-    case Key::D6:
-        return ImGuiKey_6;
-    case Key::D7:
-        return ImGuiKey_7;
-    case Key::D8:
-        return ImGuiKey_8;
-    case Key::D9:
-        return ImGuiKey_9;
-    case Key::LeftShift:
-        return ImGuiKey_LeftShift;
-    case Key::RightShift:
-        return ImGuiKey_RightShift;
-    case Key::LeftControl:
-        return ImGuiKey_LeftCtrl;
-    case Key::RightControl:
-        return ImGuiKey_RightCtrl;
-    case Key::LeftAlt:
-        return ImGuiKey_LeftAlt;
-    case Key::RightAlt:
-        return ImGuiKey_RightAlt;
+        return TimeGUIKey_Z;
     }
-    return ImGuiKey_None;
+    return TimeGUIKey_None;
 }

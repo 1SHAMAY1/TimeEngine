@@ -45,6 +45,14 @@ static TermCaps DetectTerminal()
             if (SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
                 caps.ansi = true;
         }
+
+        HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD inMode = 0;
+        if (hIn != INVALID_HANDLE_VALUE && GetConsoleMode(hIn, &inMode))
+        {
+            SetConsoleMode(hIn, (inMode & ~ENABLE_QUICK_EDIT_MODE) | ENABLE_EXTENDED_FLAGS);
+        }
+
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
     }
@@ -178,14 +186,17 @@ static void PrintBanner(const TermCaps &caps)
     std::fflush(stdout);
 }
 
-void Log::Init(bool logToFile, const TEString &file)
+void Log::Init(bool logToFile, const TEString &file, bool silentBanner)
 {
     if (s_Initialized)
         return;
     s_Initialized = true;
 
-    TermCaps caps = DetectTerminal();
-    PrintBanner(caps);
+    if (!silentBanner)
+    {
+        TermCaps caps = DetectTerminal();
+        PrintBanner(caps);
+    }
 
     s_CoreLogger = CreateScope<CustomizableLogger>(logToFile, "Core_" + file);
     s_ClientLogger = CreateScope<CustomizableLogger>(logToFile, "Client_" + file);

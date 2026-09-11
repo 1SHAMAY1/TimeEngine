@@ -15,6 +15,10 @@ public:
     TScriptProgram CachedAST;
     bool ASTValid = false;
     TEString CompileError;
+    TScriptDiagnostic Diagnostic;
+    TEString CompileSuggestion;
+    int ErrorLine = 0;
+    int ErrorColumn = 0;
 
     void Recompile();
 
