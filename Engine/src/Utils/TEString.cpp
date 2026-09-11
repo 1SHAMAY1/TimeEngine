@@ -264,10 +264,9 @@ void TEString::AutoCompact(size_t thresholdRatio)
 
 void TEString::SyncFromBuffer()
 {
-    if (!m_Data.empty() || m_Data.capacity() > 0)
+    if (m_Data.data() != nullptr)
     {
-        size_t actualLen = strlen(m_Data.data());
-        m_Data.resize(actualLen);
+        m_Data = std::string(m_Data.data());
         RecomputeHashOnMutate();
     }
 }

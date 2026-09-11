@@ -194,9 +194,8 @@ bool PlatformUtils::LaunchProcess(const TEString &executablePath, const TEString
     ZeroMemory(&pi, sizeof(pi));
 
     TEString fullCommand = "\"" + executablePath + "\" " + commandLineArgs;
-    TEArray<char> cmdBuffer(fullCommand.c_str(), fullCommand.c_str() + fullCommand.length() + 1);
 
-    BOOL success = CreateProcessA(NULL, cmdBuffer.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+    BOOL success = CreateProcessA(NULL, fullCommand.Data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 
     if (success)
     {

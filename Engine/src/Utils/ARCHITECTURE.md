@@ -15,29 +15,24 @@ The `Utils` module in TimeEngine provides foundational, vendor-decoupled utility
 
 ---
 
-## 1. Math Utilities (`MathUtils`)
+## 1. Math Subsystem (`MathAPI` & `MathUtils`)
 
-`TE::MathUtils` (`Engine/Include/Utils/MathUtils.hpp`) defines engine math primitives, avoiding hard vendor dependencies in engine header files.
+`TE::MathEngine` (`Engine/Include/Utils/Math/MathEngine.hpp`) and `TE::MathAPI` (`Engine/Include/Utils/Math/MathAPI.hpp`) provide an abstract, backend-switchable linear algebra engine. High-level primitives in `MathUtils.hpp` delegate all matrix multiplications, quaternions, and projection computations to the active `MathAPI` backend (`GLMMathAPI` or `CustomMathAPI`).
 
-
-### Key Types & Conversion Overloads
-- **`TEVector2` / `TEVector` / `TEVector4`**: 2D, 3D, and 4D float vectors (with primary 2D focus for engine transforms, UI alignment, and sprite positioning) equipped with magnitude, normalization, dot/cross products, linear interpolation (`Lerp`), and seamless conversion to/from UI types (`ImVec2`, `ImVec4`).
-- **`TEMatrix4`**: 4x4 matrix struct with matrix-matrix multiplication, vector transform, and 2D orthographic projection generators (`TEMatrix4::Ortho`).
-- **`TERotator` & `TEQuat`**: Rotator storing Euler angles (`Pitch`, `Yaw`, and `Roll`) with conversion to quaternions (`ToQuat()`) and rotation matrices.
+### Key Types & Clean Architecture
+- **`TEVector2` / `TEVector` / `TEVector4`**: Pure float vector value types equipped with magnitude, normalization, dot/cross products, and linear interpolation (`Lerp`).
+- **`TEMatrix4`**: 4x4 matrix struct with multiplication, transformations, and orthographic/perspective projections dispatched via `MathAPI`.
+- **`TERotator` & `TEQuat`**: Rotator storing Euler angles (`Pitch`, `Yaw`, and `Roll`) with conversion to quaternions (`ToQuat()`) and rotation matrices via `MathAPI`.
 - **`TETransform`**: Standard transform structure bundling `Position`, `Rotation`, and `Scale`.
-
+- **`ProjectMathSettings`**: Project settings page under "Core" $\rightarrow$ "Math Engine & Backend" enabling runtime backend switching.
 
 ```cpp
-// Conversion & Operator Excerpt from MathUtils.hpp
+// Pure engine math types in MathUtils.hpp - Zero Vendor Leakage
 struct TE_API TEVector2
 {
     float x = 0.0f, y = 0.0f;
     float Length() const { return std::sqrt(x * x + y * y); }
     TEVector2 Normalized() const { ... }
-    
-    // Vendor-agnostic implicit conversion to ImGui ImVec2
-    ImVec2 ToImVec2() const;
-    operator ImVec2() const;
 };
 
 inline TEVector Cross(const TEVector &a, const TEVector &b)
@@ -50,17 +45,19 @@ inline TEVector Cross(const TEVector &a, const TEVector &b)
 
 ## 2. TimeGUI Abstraction Layer (`TimeGUI`)
 
-[`TE::TimeGUI`](../../Include/Utils/TimeGUI.hpp) wraps Dear ImGui behind clean TimeEngine-native types. This shields engine code from third-party ImGui header leaks and allows switching or extending the UI frontend transparently.
+[`TE::TimeGUI`](../../Include/Utils/TimeGUI.hpp) acts as the high-level static facade wrapping immediate-mode GUI operations behind clean TimeEngine-native types (`TEVector2`, `TEVector4`, `TEColor`, `TEString`).
 
-### Architecture Highlights
-- **Opaque Handles & Cast Proxies**: Types like `TimeGUIFont`, `TimeGUIDrawList`, and `TimeGUITextureID` (`void*`) wrap third-party pointers safely:
+### Architecture & UI Subsystem Delegation
+- **Delegated Subsystem Pipeline**: Lifecycle calls (`Init`, `Shutdown`, `InitOpenGLBackend`, `ShutdownOpenGLBackend`, `BindWidgetThreadContext`, `PrepareGLFWFrame`, `BeginFrame`, `EndFrame`, `RenderDrawData`) delegate directly to the [`UIEngine`](../UI/ARCHITECTURE.md) subsystem and its active [`UIAPI`](../../Include/UI/UIAPI.hpp) backend (`ForgeUIAPI` or `ImGuiUIAPI`).
+- **Vendor Insulation**: Shields engine code, editor inspectors, and game plugins from third-party GUI headers.
+- **Opaque Handles & Cast Proxies**: Types like `TimeGUIFont`, `TimeGUIDrawList`, and `TimeGUITextureID` wrap native draw data safely:
 ```cpp
 struct TE_API TimeGUIDrawList
 {
     void *nativeDrawList = nullptr;
     void AddLine(const TEVector2 &p1, const TEVector2 &p2, unsigned int color, float thickness = 1.0f);
     void AddRectFilled(const TEVector2 &p1, const TEVector2 &p2, unsigned int color, float rounding = 0.0f);
-    ::ImDrawList *operator->() const { return static_cast<::ImDrawList *>(nativeDrawList); }
+    template <typename T> T *As() const { return static_cast<T *>(nativeDrawList); }
 };
 ```
 - **Engine-Native Enums**: Wraps `ImGuiWindowFlags`, `ImGuiCol`, `ImGuiStyleVar`, and `ImGuiKey` into `TimeGUIWindowFlags`, `TimeGUICol`, `TimeGUIStyleVar`, and `TimeGUIKey`.

@@ -2,10 +2,7 @@
 #include "Renderer/TEColor.hpp"
 #include "Utils/MathUtils.hpp"
 #include "Utils/TEString.hpp"
-
-// Forward declaration of raw global ImDrawList and ImFont to keep headers clean and allow operator-> mapping
-struct ImDrawList;
-struct ImFont;
+#include "UI/UITypes.hpp"
 
 #ifndef TIMEGUI_COL32
 #define TIMEGUI_COL32(R, G, B, A)                                                                                      \
@@ -15,31 +12,16 @@ struct ImFont;
 #endif
 
 #ifndef IM_COL32
-typedef unsigned int ImU32;
-#ifndef IM_COL32_R_SHIFT
-#ifdef IMGUI_USE_BGRA_PACKED_COLOR
-#define IM_COL32_R_SHIFT 16
-#define IM_COL32_G_SHIFT 8
-#define IM_COL32_B_SHIFT 0
-#define IM_COL32_A_SHIFT 24
-#define IM_COL32_A_MASK 0xFF000000
-#else
-#define IM_COL32_R_SHIFT 0
-#define IM_COL32_G_SHIFT 8
-#define IM_COL32_B_SHIFT 16
-#define IM_COL32_A_SHIFT 24
-#define IM_COL32_A_MASK 0xFF000000
+#define IM_COL32(R, G, B, A) TIMEGUI_COL32(R, G, B, A)
 #endif
+#ifndef IM_COL32_WHITE
+#define IM_COL32_WHITE TIMEGUI_COL32_WHITE
 #endif
-#define IM_COL32(R, G, B, A)                                                                                           \
-    (((ImU32)(A) << IM_COL32_A_SHIFT) | ((ImU32)(B) << IM_COL32_B_SHIFT) | ((ImU32)(G) << IM_COL32_G_SHIFT) |          \
-     ((ImU32)(R) << IM_COL32_R_SHIFT))
-#define IM_COL32_WHITE IM_COL32(255, 255, 255, 255)
-#define IM_COL32_BLACK IM_COL32(0, 0, 0, 255)
-#define IM_COL32_BLACK_TRANS IM_COL32(0, 0, 0, 0)
+#ifndef IM_COL32_BLACK
+#define IM_COL32_BLACK TIMEGUI_COL32_BLACK
 #endif
 
-// Convenience alias – matches ImU32 so LogoLayer / draw code can use unsigned int directly
+// Convenience alias for 32-bit packed RGBA color
 typedef unsigned int TimeGUIColor32;
 
 namespace TimeGUI
@@ -83,7 +65,7 @@ typedef int TimeGUIWindowFlags;
 enum TimeGUIDrawFlags_
 {
     TimeGUIDrawFlags_None = 0,
-    TimeGUIDrawFlags_Closed = 1 << 0, // Matches ImDrawFlags_Closed
+    TimeGUIDrawFlags_Closed = 1 << 9, // Matches Dear ImGui 1.92+ ImDrawFlags_Closed
 };
 typedef int TimeGUIDrawFlags;
 
@@ -584,54 +566,10 @@ enum TimeGUISeparatorFlags_
 };
 typedef int TimeGUISeparatorFlags;
 
-// Clean font wrapper
-struct TE_API TimeGUIFont
-{
-    void *nativeFont = nullptr;
-    TEVector2 CalcTextSizeA(float size, float max_width, float wrap_width, const char *text_begin) const;
-    ::ImFont *operator->() const;
-};
-
-// Synced clean IO wrapper structure
-struct TE_API TimeGUIIO
-{
-    float DeltaTime = 0.0f;
-    float MouseWheel = 0.0f;
-    TEVector2 MouseDelta;
-    TEVector2 DisplaySize;
-    bool KeyShift = false;
-    bool KeyCtrl = false;
-    bool KeyAlt = false;
-    bool KeySuper = false;
-    bool WantTextInput = false;
-    bool WantCaptureKeyboard = false;
-    bool WantCaptureMouse = false;
-    int ConfigFlags = 0;
-    TimeGUIFont DefaultFont;
-};
-
-// Synced clean Style wrapper structure
-struct TE_API TimeGUIStyle
-{
-    float WindowRounding = 0.0f;
-    float ChildRounding = 0.0f;
-    float FrameRounding = 0.0f;
-    float PopupRounding = 0.0f;
-    float TabRounding = 0.0f;
-    float GrabRounding = 0.0f;
-    float ScrollbarRounding = 0.0f;
-    float WindowBorderSize = 0.0f;
-    float FrameBorderSize = 0.0f;
-    float PopupBorderSize = 0.0f;
-    float IndentSpacing = 0.0f;
-    TEVector2 ItemSpacing;
-    TEVector2 FramePadding;
-    TEVector2 WindowPadding;
-    bool AntiAliasedLines = true;
-    bool AntiAliasedFill = true;
-
-    TEColor Colors[TimeGUICol_COUNT];
-};
+// Typedefs to independent UI types for backward compatibility
+typedef UIFont TimeGUIFont;
+typedef UIIO TimeGUIIO;
+typedef UIStyle TimeGUIStyle;
 
 // Clean DrawList wrapper
 struct TE_API TimeGUIDrawList
@@ -668,11 +606,7 @@ struct TE_API TimeGUIDrawList
     int GetVertexCount() const;
     int GetCommandCount() const;
 
-    // Cast helper to obtain low-level ImDrawList if needed inside implementations
     template <typename T> T *As() const { return static_cast<T *>(nativeDrawList); }
-
-    // Member access operator to allow direct use of dl->...
-    ::ImDrawList *operator->() const { return static_cast<::ImDrawList *>(nativeDrawList); }
 };
 
 // Lifecycle management (Context, Backends, Frame Flow)
@@ -859,6 +793,10 @@ TE_API TEVector2 GetCursorScreenPos();
 TE_API float GetFrameHeight();
 TE_API TEVector2 GetContentRegionAvail();
 TE_API void SetScrollHereY(float centerYRatio = 0.5f);
+TE_API float GetScrollY();
+TE_API void SetScrollY(float scrollY);
+TE_API TEArray<unsigned int> GetInputQueueCharacters();
+TE_API void ClearInputQueueCharacters();
 
 TE_API bool IsItemHovered(int flags = 0);
 TE_API bool IsItemActive();
@@ -929,7 +867,6 @@ TE_API void SetItemDefaultFocus();
 TE_API void SetMouseCursor(int cursorType);
 TE_API unsigned int GetColorU32(const TEColor &color);
 TE_API unsigned int GetColorU32(TimeGUICol idx, float alpha_mul = 1.0f);
-TE_API TEVector2 CalcTextSize(const TEString &text);
 
 TE_API TEVector4 ColorConvertU32ToFloat4(unsigned int in);
 TE_API unsigned int ColorConvertFloat4ToU32(const TEVector4 &in);
@@ -963,6 +900,7 @@ TE_API void ColorConvertHSVtoRGB(float h, float s, float v, float &out_r, float 
 TE_API void ColorConvertRGBtoHSV(float r, float g, float b, float &out_h, float &out_s, float &out_v);
 
 TE_API TimeGUIDrawList GetBackgroundDrawList();
+TE_API TimeGUIDrawList GetForegroundDrawList();
 TE_API TimeGUIFont GetDefaultFont();
 TE_API TimeGUITextureID GetFontAtlasTextureID();
 

@@ -4,9 +4,7 @@
 
 #include "Core/PreRequisites.h"
 
-// ImVec2 and ImVec4 are forward declared so we don't have to include imgui.h in MathUtils.hpp
-struct ImVec2;
-struct ImVec4;
+class TEColor;
 
 // ===== TEVector2 =====
 struct TE_API TEVector2
@@ -15,7 +13,6 @@ struct TE_API TEVector2
 
     TEVector2() = default;
     TEVector2(float x, float y) : x(x), y(y) {}
-    TEVector2(const ImVec2 &v);
     TEVector2(const struct TEVector4 &v);
 
     static float Length(const TEVector2 &v) { return v.Length(); }
@@ -31,9 +28,6 @@ struct TE_API TEVector2
     }
 
     TEVector2 Perpendicular() const { return {-y, x}; }
-
-    ImVec2 ToImVec2() const;
-    operator ImVec2() const;
 
     TEVector2 operator+(const TEVector2 &rhs) const { return {x + rhs.x, y + rhs.y}; }
     TEVector2 operator-(const TEVector2 &rhs) const { return {x - rhs.x, y - rhs.y}; }
@@ -175,10 +169,7 @@ struct TE_API TEVector4
 
     TEVector4() = default;
     TEVector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-    TEVector4(const ImVec4 &v);
-
-    ImVec4 ToImVec4() const;
-    operator ImVec4() const;
+    TEVector4(const TEColor &c);
 
     float &operator[](int index)
     {
@@ -314,6 +305,10 @@ public:
     TEQuat(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
     TEMatrix4 ToMatrix() const;
+    static TEQuat FromMatrix(const TEMatrix4 &m);
+    static TEQuat AngleAxis(float angleRadians, const TEVector &axis);
+
+    TEVector operator*(const TEVector &v) const;
 
     bool operator==(const TEQuat &other) const { return x == other.x && y == other.y && z == other.z && w == other.w; }
     bool operator!=(const TEQuat &other) const { return !(*this == other); }
