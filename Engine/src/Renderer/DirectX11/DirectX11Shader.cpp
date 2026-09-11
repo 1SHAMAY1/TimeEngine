@@ -15,7 +15,6 @@
 #include "Renderer/DirectX11/DirectX11RendererAPI.hpp"
 #include "Renderer/DirectX11/DirectX11Shader.hpp"
 #include <cstring>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 // ID3DBlob is typedef'd as ID3D10Blob in d3dcommon.h — use ID3D10Blob throughout
@@ -191,7 +190,7 @@ static uint32_t AlignOffset(uint32_t floatOffset, uint32_t floatsNeeded)
     return floatOffset;
 }
 
-void DirectX11Shader::SetUniformMat4(const TEString &name, const glm::mat4 &value)
+void DirectX11Shader::SetUniformMat4(const TEString &name, const TEMatrix4 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -206,11 +205,11 @@ void DirectX11Shader::SetUniformMat4(const TEString &name, const glm::mat4 &valu
         offset = it->second;
     }
     if (offset + 16 <= 256)
-        std::memcpy(&m_CBData.data[offset], glm::value_ptr(value), 16 * sizeof(float));
+        std::memcpy(&m_CBData.data[offset], &value.m[0][0], 16 * sizeof(float));
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform4f(const TEString &name, const glm::vec4 &value)
+void DirectX11Shader::SetUniform4f(const TEString &name, const TEVector4 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -225,11 +224,14 @@ void DirectX11Shader::SetUniform4f(const TEString &name, const glm::vec4 &value)
         offset = it->second;
     }
     if (offset + 4 <= 256)
-        std::memcpy(&m_CBData.data[offset], glm::value_ptr(value), 4 * sizeof(float));
+    {
+        float data[4] = {value.x, value.y, value.z, value.w};
+        std::memcpy(&m_CBData.data[offset], data, 4 * sizeof(float));
+    }
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform3f(const TEString &name, const glm::vec3 &value)
+void DirectX11Shader::SetUniform3f(const TEString &name, const TEVector &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -244,11 +246,14 @@ void DirectX11Shader::SetUniform3f(const TEString &name, const glm::vec3 &value)
         offset = it->second;
     }
     if (offset + 3 <= 256)
-        std::memcpy(&m_CBData.data[offset], glm::value_ptr(value), 3 * sizeof(float));
+    {
+        float data[3] = {value.x, value.y, value.z};
+        std::memcpy(&m_CBData.data[offset], data, 3 * sizeof(float));
+    }
     m_Dirty = true;
 }
 
-void DirectX11Shader::SetUniform2f(const TEString &name, const glm::vec2 &value)
+void DirectX11Shader::SetUniform2f(const TEString &name, const TEVector2 &value)
 {
     auto it = m_UniformOffsets.find(name);
     uint32_t offset;
@@ -263,7 +268,10 @@ void DirectX11Shader::SetUniform2f(const TEString &name, const glm::vec2 &value)
         offset = it->second;
     }
     if (offset + 2 <= 256)
-        std::memcpy(&m_CBData.data[offset], glm::value_ptr(value), 2 * sizeof(float));
+    {
+        float data[2] = {value.x, value.y};
+        std::memcpy(&m_CBData.data[offset], data, 2 * sizeof(float));
+    }
     m_Dirty = true;
 }
 

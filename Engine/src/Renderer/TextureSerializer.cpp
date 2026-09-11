@@ -1,20 +1,15 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/TextureSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/Project/Project.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include <fstream>
-#include <sstream>
 
 TextureSerializer::TextureSerializer(const TERef<Texture> &texture) : m_Texture(texture) {}
 
 bool TextureSerializer::Serialize(const TEString &filepath)
 {
-    std::ofstream hout(filepath.c_str());
-    if (!hout.is_open())
-    {
-        TE_CORE_ERROR("TextureSerializer: Failed to open file for writing at {0}", filepath.c_str());
+    if (!m_Texture)
         return false;
-    }
 
     TEString filterStr = (m_Texture->GetFilterMode() == TextureFilterMode::Nearest) ? "Nearest" : "Linear";
     TEString wrapStr = "Repeat";
@@ -23,18 +18,17 @@ bool TextureSerializer::Serialize(const TEString &filepath)
     else if (m_Texture->GetWrapMode() == TextureWrapMode::MirroredRepeat)
         wrapStr = "MirroredRepeat";
 
-    hout << "Texture2D: " << m_Texture->GetName().c_str() << "\n";
-    hout << "ImagePath: " << m_Texture->GetFilePath().c_str() << "\n";
-    hout << "Width: " << m_Texture->GetWidth() << "\n";
-    hout << "Height: " << m_Texture->GetHeight() << "\n";
-    hout << "Channels: " << m_Texture->GetChannels() << "\n";
-    hout << "FilterMode: " << filterStr.c_str() << "\n";
-    hout << "WrapMode: " << wrapStr.c_str() << "\n";
-    hout << "GenerateMipmaps: " << (m_Texture->GetGenerateMipmaps() ? "true" : "false") << "\n";
-    hout << "PremultipliedAlpha: " << (m_Texture->GetPremultipliedAlpha() ? "true" : "false") << "\n";
+    TEString content = "Texture2D: " + m_Texture->GetName() + "\n";
+    content += "ImagePath: " + m_Texture->GetFilePath() + "\n";
+    content += "Width: " + TEString::FromInt64(static_cast<int64_t>(m_Texture->GetWidth())) + "\n";
+    content += "Height: " + TEString::FromInt64(static_cast<int64_t>(m_Texture->GetHeight())) + "\n";
+    content += "Channels: " + TEString::FromInt64(static_cast<int64_t>(m_Texture->GetChannels())) + "\n";
+    content += "FilterMode: " + filterStr + "\n";
+    content += "WrapMode: " + wrapStr + "\n";
+    content += "GenerateMipmaps: " + TEString(m_Texture->GetGenerateMipmaps() ? "true" : "false") + "\n";
+    content += "PremultipliedAlpha: " + TEString(m_Texture->GetPremultipliedAlpha() ? "true" : "false") + "\n";
 
-    hout.close();
-    return true;
+    return TEFileSystem::WriteAllText(filepath, content);
 }
 
 bool TextureSerializer::Deserialize(const TEString &filepath)
@@ -92,7 +86,30 @@ bool TextureSerializer::Deserialize(const TEString &filepath)
         TEString resolvedPath = imagePath;
         if (!TEFileSystem::Exists(resolvedPath))
         {
-            resolvedPath = filepath.GetParentPath() / imagePath;
+            // 1. Check relative to .tetexture file directory
+            TEString parentRel = filepath.GetParentPath() / imagePath;
+            if (TEFileSystem::Exists(parentRel))
+            {
+                resolvedPath = parentRel;
+            }
+            else
+            {
+                // 2. Check filename in same directory as .tetexture
+                TEString fileInSameDir = filepath.GetParentPath() / imagePath.GetFilename();
+                if (TEFileSystem::Exists(fileInSameDir))
+                {
+                    resolvedPath = fileInSameDir;
+                }
+                else if (Project::GetActive())
+                {
+                    // 3. Check relative to active project Asset Directory
+                    TEString assetDirRel = Project::GetAssetDirectory() / imagePath;
+                    if (TEFileSystem::Exists(assetDirRel))
+                    {
+                        resolvedPath = assetDirRel;
+                    }
+                }
+            }
         }
 
         if (TEFileSystem::Exists(resolvedPath))

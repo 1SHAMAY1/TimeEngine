@@ -16,7 +16,7 @@ void MetalRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint3
 {
 }
 
-void MetalRendererAPI::SetClearColor(const glm::vec4 &color)
+void MetalRendererAPI::SetClearColor(const TEVector4 &color)
 {
 }
 

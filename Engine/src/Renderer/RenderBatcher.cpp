@@ -7,7 +7,7 @@
 
 void RenderBatcher::Begin() { m_DrawCommands.Empty(); }
 
-void RenderBatcher::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const glm::mat4 &transform,
+void RenderBatcher::Submit(const TERef<VertexArray> &vao, const TERef<Material> &material, const TEMatrix4 &transform,
                            uint32_t indexCount, int blendMode, const TEColor &color)
 {
     m_DrawCommands.Add({vao, material, transform, color, indexCount, blendMode});

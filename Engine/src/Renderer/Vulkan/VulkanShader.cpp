@@ -82,13 +82,13 @@ void VulkanShader::Bind() const
 
 void VulkanShader::Unbind() const {}
 
-void VulkanShader::SetUniformMat4(const TEString &name, const glm::mat4 &value) {}
+void VulkanShader::SetUniformMat4(const TEString &name, const TEMatrix4 &value) {}
 
-void VulkanShader::SetUniform4f(const TEString &name, const glm::vec4 &value) {}
+void VulkanShader::SetUniform4f(const TEString &name, const TEVector4 &value) {}
 
-void VulkanShader::SetUniform3f(const TEString &name, const glm::vec3 &value) {}
+void VulkanShader::SetUniform3f(const TEString &name, const TEVector &value) {}
 
-void VulkanShader::SetUniform2f(const TEString &name, const glm::vec2 &value) {}
+void VulkanShader::SetUniform2f(const TEString &name, const TEVector2 &value) {}
 
 void VulkanShader::SetUniform1f(const TEString &name, float value) {}
 

@@ -1,8 +1,8 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/SpriteSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/Project/Project.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include <fstream>
 
 SpriteSerializer::SpriteSerializer(const TERef<Sprite> &sprite) : m_Sprite(sprite) {}
 
@@ -11,36 +11,29 @@ bool SpriteSerializer::Serialize(const TEString &filepath)
     if (!m_Sprite)
         return false;
 
-    std::ofstream hout(filepath.c_str());
-    if (!hout.is_open())
-    {
-        TE_CORE_ERROR("SpriteSerializer: Failed to open file for writing at {0}", filepath.c_str());
-        return false;
-    }
-
-    hout << "Sprite: " << m_Sprite->GetName().c_str() << "\n";
-    hout << "TexturePath: " << m_Sprite->GetTexturePath().c_str() << "\n";
+    TEString content = "Sprite: " + m_Sprite->GetName() + "\n";
+    content += "TexturePath: " + m_Sprite->GetTexturePath() + "\n";
 
     float u0, v0, u1, v1;
     m_Sprite->GetUVs(u0, v0, u1, v1);
-    hout << "UVs: " << u0 << " " << v0 << " " << u1 << " " << v1 << "\n";
+    content += "UVs: " + TEString::FromFloat(u0) + " " + TEString::FromFloat(v0) + " " + TEString::FromFloat(u1) + " " +
+               TEString::FromFloat(v1) + "\n";
 
     float px, py;
     m_Sprite->GetPivot(px, py);
-    hout << "Pivot: " << px << " " << py << "\n";
+    content += "Pivot: " + TEString::FromFloat(px) + " " + TEString::FromFloat(py) + "\n";
 
-    hout << "PixelsPerUnit: " << m_Sprite->GetPixelsPerUnit() << "\n";
+    content += "PixelsPerUnit: " + TEString::FromFloat(m_Sprite->GetPixelsPerUnit()) + "\n";
 
     const auto &pts = m_Sprite->GetCustomColliderPoints();
-    hout << "ColliderPoints: " << pts.Num();
+    content += "ColliderPoints: " + TEString::FromInt64(static_cast<int64_t>(pts.Num()));
     for (const auto &pt : pts)
     {
-        hout << " " << pt.x << " " << pt.y;
+        content += " " + TEString::FromFloat(pt.x) + " " + TEString::FromFloat(pt.y);
     }
-    hout << "\n";
+    content += "\n";
 
-    hout.close();
-    return true;
+    return TEFileSystem::WriteAllText(filepath, content);
 }
 
 bool SpriteSerializer::Deserialize(const TEString &filepath)
@@ -56,18 +49,45 @@ bool SpriteSerializer::Deserialize(const TEString &filepath)
                                      {
                                          if (line.StartsWith("Sprite: "))
                                          {
-                                             m_Sprite->SetName(line.Mid(8));
+                                             m_Sprite->SetName(line.Mid(8).Trim());
                                          }
                                          else if (line.StartsWith("TexturePath: "))
                                          {
-                                             TEString texPath = line.Mid(13);
-                                             if (!texPath.IsEmpty() && !TEFileSystem::Exists(texPath))
+                                             TEString texPath = line.Mid(13).Trim();
+                                             if (!texPath.IsEmpty())
                                              {
-                                                 TEString relativeTex = filepath.GetParentPath() / texPath;
-                                                 if (TEFileSystem::Exists(relativeTex))
-                                                     texPath = relativeTex;
+                                                 TEString resolvedPath = texPath;
+                                                 if (!TEFileSystem::Exists(resolvedPath))
+                                                 {
+                                                     // 1. Check relative to .tesprite file directory
+                                                     TEString parentRel = filepath.GetParentPath() / texPath;
+                                                     if (TEFileSystem::Exists(parentRel))
+                                                     {
+                                                         resolvedPath = parentRel;
+                                                     }
+                                                     else
+                                                     {
+                                                         // 2. Check filename in same directory as .tesprite
+                                                         TEString fileInSameDir =
+                                                             filepath.GetParentPath() / texPath.GetFilename();
+                                                         if (TEFileSystem::Exists(fileInSameDir))
+                                                         {
+                                                             resolvedPath = fileInSameDir;
+                                                         }
+                                                         else if (Project::GetActive())
+                                                         {
+                                                             // 3. Check relative to active project Asset Directory
+                                                             TEString assetDirRel =
+                                                                 Project::GetAssetDirectory() / texPath;
+                                                             if (TEFileSystem::Exists(assetDirRel))
+                                                             {
+                                                                 resolvedPath = assetDirRel;
+                                                             }
+                                                         }
+                                                     }
+                                                 }
+                                                 m_Sprite->SetTexturePath(resolvedPath);
                                              }
-                                             m_Sprite->SetTexturePath(texPath);
                                          }
                                          else if (line.StartsWith("UVs: "))
                                          {

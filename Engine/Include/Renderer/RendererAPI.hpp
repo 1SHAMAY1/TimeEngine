@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Renderer/GraphicsAPI.hpp"
-#include <glm/glm.hpp>
+#include "Utils/MathUtils.hpp"
 
 enum class BlendFactor
 {
@@ -19,10 +19,11 @@ public:
 
     virtual void Init() = 0;
     virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
-    virtual void SetClearColor(const glm::vec4 &color) = 0;
+    virtual void SetClearColor(const TEVector4 &color) = 0;
     virtual void Clear() = 0;
     virtual void DrawIndexed(uint32_t vao, uint32_t indexCount) = 0;
     virtual void SetBlendMode(int blendMode) = 0;
+    virtual void Present() {} // No-op by default; DX11 overrides to call SwapChain->Present()
 
     virtual bool LoadLoader(void *(*loadProc)(const char *)) = 0;
     virtual TEString GetVersionString() = 0;

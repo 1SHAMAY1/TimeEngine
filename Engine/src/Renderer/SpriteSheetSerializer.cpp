@@ -1,52 +1,51 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/SpriteSheetSerializer.hpp"
 #include "Core/Log.h"
+#include "Core/Project/Project.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include <fstream>
-#include <sstream>
 
 SpriteSheetSerializer::SpriteSheetSerializer(const TERef<SpriteSheet> &spriteSheet) : m_SpriteSheet(spriteSheet) {}
 
 bool SpriteSheetSerializer::Serialize(const TEString &filepath)
 {
-    std::ofstream hout(filepath.c_str());
-    if (!hout.is_open())
-    {
-        TE_CORE_ERROR("SpriteSheetSerializer: Failed to open file for writing at {0}", filepath.c_str());
+    if (!m_SpriteSheet)
         return false;
-    }
 
-    hout << "SpriteSheet: " << m_SpriteSheet->GetName().c_str() << "\n";
-    hout << "TexturePath: " << m_SpriteSheet->GetTexturePath().c_str() << "\n";
-    hout << "CellWidth: " << m_SpriteSheet->GetCellWidth() << "\n";
-    hout << "CellHeight: " << m_SpriteSheet->GetCellHeight() << "\n";
-    hout << "PaddingX: " << m_SpriteSheet->GetPaddingX() << "\n";
-    hout << "PaddingY: " << m_SpriteSheet->GetPaddingY() << "\n";
-    hout << "OffsetX: " << m_SpriteSheet->GetOffsetX() << "\n";
-    hout << "OffsetY: " << m_SpriteSheet->GetOffsetY() << "\n";
+    TEString content = "SpriteSheet: " + m_SpriteSheet->GetName() + "\n";
+    content += "TexturePath: " + m_SpriteSheet->GetTexturePath() + "\n";
+    content += "CellWidth: " + TEString::FromInt64(static_cast<int64_t>(m_SpriteSheet->GetCellWidth())) + "\n";
+    content += "CellHeight: " + TEString::FromInt64(static_cast<int64_t>(m_SpriteSheet->GetCellHeight())) + "\n";
+    content += "PaddingX: " + TEString::FromInt64(static_cast<int64_t>(m_SpriteSheet->GetPaddingX())) + "\n";
+    content += "PaddingY: " + TEString::FromInt64(static_cast<int64_t>(m_SpriteSheet->GetPaddingY())) + "\n";
+    content += "OffsetX: " + TEString::FromInt64(static_cast<int64_t>(m_SpriteSheet->GetOffsetX())) + "\n";
+    content += "OffsetY: " + TEString::FromInt64(static_cast<int64_t>(m_SpriteSheet->GetOffsetY())) + "\n";
 
     const auto &subFrames = m_SpriteSheet->GetSubFrames();
-    hout << "SubFrameCount: " << subFrames.Num() << "\n";
+    content += "SubFrameCount: " + TEString::FromInt64(static_cast<int64_t>(subFrames.Num())) + "\n";
     for (const auto &f : subFrames)
     {
-        hout << "SubFrame: " << f.Name.c_str() << "," << f.Index << "," << f.X << "," << f.Y << "," << f.Width << ","
-             << f.Height << "," << f.U0 << "," << f.V0 << "," << f.U1 << "," << f.V1 << "\n";
+        content += "SubFrame: " + f.Name + "," + TEString::FromInt64(static_cast<int64_t>(f.Index)) + "," +
+                   TEString::FromInt64(static_cast<int64_t>(f.X)) + "," +
+                   TEString::FromInt64(static_cast<int64_t>(f.Y)) + "," +
+                   TEString::FromInt64(static_cast<int64_t>(f.Width)) + "," +
+                   TEString::FromInt64(static_cast<int64_t>(f.Height)) + "," + TEString::FromFloat(f.U0) + "," +
+                   TEString::FromFloat(f.V0) + "," + TEString::FromFloat(f.U1) + "," + TEString::FromFloat(f.V1) + "\n";
     }
 
     const auto &anims = m_SpriteSheet->GetAnimations();
-    hout << "AnimCount: " << anims.Num() << "\n";
+    content += "AnimCount: " + TEString::FromInt64(static_cast<int64_t>(anims.Num())) + "\n";
     for (const auto &a : anims)
     {
-        hout << "Anim: " << a.Name.c_str() << "," << a.FPS << "," << (a.Loop ? "1" : "0") << ",";
+        content += "Anim: " + a.Name + "," + TEString::FromFloat(a.FPS) + "," + (a.Loop ? "1" : "0") + ",";
         for (size_t i = 0; i < a.FrameIndices.Num(); ++i)
         {
-            hout << a.FrameIndices[i] << (i + 1 < a.FrameIndices.Num() ? ";" : "");
+            content += TEString::FromInt64(static_cast<int64_t>(a.FrameIndices[i])) +
+                       (i + 1 < a.FrameIndices.Num() ? ";" : "");
         }
-        hout << "\n";
+        content += "\n";
     }
 
-    hout.close();
-    return true;
+    return TEFileSystem::WriteAllText(filepath, content);
 }
 
 bool SpriteSheetSerializer::Deserialize(const TEString &filepath)
@@ -133,13 +132,33 @@ bool SpriteSheetSerializer::Deserialize(const TEString &filepath)
         TEString resolvedPath = texPath;
         if (!TEFileSystem::Exists(resolvedPath))
         {
-            resolvedPath = filepath.GetParentPath() / texPath;
+            // 1. Check relative to .tespritesheet file directory
+            TEString parentRel = filepath.GetParentPath() / texPath;
+            if (TEFileSystem::Exists(parentRel))
+            {
+                resolvedPath = parentRel;
+            }
+            else
+            {
+                // 2. Check filename in same directory as .tespritesheet
+                TEString fileInSameDir = filepath.GetParentPath() / texPath.GetFilename();
+                if (TEFileSystem::Exists(fileInSameDir))
+                {
+                    resolvedPath = fileInSameDir;
+                }
+                else if (Project::GetActive())
+                {
+                    // 3. Check relative to active project Asset Directory
+                    TEString assetDirRel = Project::GetAssetDirectory() / texPath;
+                    if (TEFileSystem::Exists(assetDirRel))
+                    {
+                        resolvedPath = assetDirRel;
+                    }
+                }
+            }
         }
 
-        if (TEFileSystem::Exists(resolvedPath))
-        {
-            m_SpriteSheet->SetTexturePath(resolvedPath);
-        }
+        m_SpriteSheet->SetTexturePath(resolvedPath);
     }
 
     m_SpriteSheet->SetSubFrames(subFrames);

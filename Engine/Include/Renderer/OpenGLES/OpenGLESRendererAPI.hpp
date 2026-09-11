@@ -8,7 +8,7 @@ public:
 
     virtual void Init() override;
     virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
-    virtual void SetClearColor(const glm::vec4 &color) override;
+    virtual void SetClearColor(const TEVector4 &color) override;
     virtual void Clear() override;
     virtual void DrawIndexed(uint32_t vao, uint32_t indexCount) override;
     virtual void SetBlendMode(int blendMode) override;
@@ -24,4 +24,9 @@ public:
     virtual void SetBlendFunc(BlendFactor src, BlendFactor dst) override;
     virtual void SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dstRGB, BlendFactor srcAlpha,
                                       BlendFactor dstAlpha) override;
+
+private:
+    TEString m_Vendor;
+    TEString m_Renderer;
+    TEString m_Version;
 };

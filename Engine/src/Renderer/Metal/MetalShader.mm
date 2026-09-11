@@ -113,19 +113,19 @@ void MetalShader::Unbind() const
 {
 }
 
-void MetalShader::SetUniformMat4(const TEString &name, const glm::mat4 &value)
+void MetalShader::SetUniformMat4(const TEString &name, const TEMatrix4 &value)
 {
 }
 
-void MetalShader::SetUniform4f(const TEString &name, const glm::vec4 &value)
+void MetalShader::SetUniform4f(const TEString &name, const TEVector4 &value)
 {
 }
 
-void MetalShader::SetUniform3f(const TEString &name, const glm::vec3 &value)
+void MetalShader::SetUniform3f(const TEString &name, const TEVector &value)
 {
 }
 
-void MetalShader::SetUniform2f(const TEString &name, const glm::vec2 &value)
+void MetalShader::SetUniform2f(const TEString &name, const TEVector2 &value)
 {
 }
 

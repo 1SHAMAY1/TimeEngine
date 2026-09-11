@@ -1,7 +1,5 @@
 #pragma once
 #include "Core/PreRequisites.h"
-#include <glm/glm.hpp>
-#include <memory>
 
 struct FramebufferSpecification
 {

@@ -40,10 +40,11 @@ public:
     void InitWithWindow(void *hwnd, uint32_t width, uint32_t height);
 
     virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
-    virtual void SetClearColor(const glm::vec4 &color) override;
+    virtual void SetClearColor(const TEVector4 &color) override;
     virtual void Clear() override;
     virtual void DrawIndexed(uint32_t vao, uint32_t indexCount) override;
     virtual void SetBlendMode(int blendMode) override;
+    virtual void Present() override;
 
     virtual bool LoadLoader(void *(*loadProc)(const char *)) override;
     virtual TEString GetVersionString() override;
@@ -63,7 +64,7 @@ private:
     void ReleaseRenderTargets();
     // NOTE: ToDXBlend is a file-local free function in the .cpp (requires D3D11_BLEND from d3d11.h)
 
-    glm::vec4 m_ClearColor = {0.1f, 0.1f, 0.1f, 1.0f};
+    TEVector4 m_ClearColor = {0.1f, 0.1f, 0.1f, 1.0f};
     int m_ViewportX = 0;
     int m_ViewportY = 0;
     uint32_t m_ViewportW = 0;

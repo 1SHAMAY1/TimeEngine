@@ -5,7 +5,7 @@
 #endif
 #include "Renderer/RendererContext.hpp"
 #include "Utils/MathUtils.hpp"
-#include <glm/glm.hpp>
+#include <cmath>
 #include <iomanip>
 
 TEColor::TEColor() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
@@ -13,6 +13,8 @@ TEColor::TEColor() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 TEColor::TEColor(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
 
 TEColor::TEColor(const TEVector4 &color) : r(color.x), g(color.y), b(color.z), a(color.w) {}
+
+TEVector4::TEVector4(const TEColor &c) : x(c.r), y(c.g), z(c.b), w(c.a) {}
 
 TEColor &TEColor::operator=(const TEVector4 &color)
 {
@@ -109,8 +111,10 @@ const TEColor &TEColor::Transparent()
 
 TEColor TEColor::ToLinear(const TEColor &srgb)
 {
-    glm::vec3 linear = glm::pow(glm::vec3(srgb.r, srgb.g, srgb.b), glm::vec3(2.2f));
-    return TEColor(linear.x, linear.y, linear.z, srgb.a);
+    float linR = std::pow(srgb.r, 2.2f);
+    float linG = std::pow(srgb.g, 2.2f);
+    float linB = std::pow(srgb.b, 2.2f);
+    return TEColor(linR, linG, linB, srgb.a);
 }
 
 TEColor TEColor::FromHex(const TEString &hex)

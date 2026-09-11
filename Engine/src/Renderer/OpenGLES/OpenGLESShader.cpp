@@ -2,7 +2,6 @@
 #include "Renderer/OpenGLES/OpenGLESShader.hpp"
 #include "Core/Log.h"
 #include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 static uint32_t CompileGLESShader(uint32_t type, const TEString &source)
@@ -60,22 +59,22 @@ int OpenGLESShader::GetUniformLocation(const TEString &name)
     return glGetUniformLocation(m_RendererID, name.c_str());
 }
 
-void OpenGLESShader::SetUniformMat4(const TEString &name, const glm::mat4 &value)
+void OpenGLESShader::SetUniformMat4(const TEString &name, const TEMatrix4 &value)
 {
-    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &value.m[0][0]);
 }
 
-void OpenGLESShader::SetUniform4f(const TEString &name, const glm::vec4 &value)
+void OpenGLESShader::SetUniform4f(const TEString &name, const TEVector4 &value)
 {
     glUniform4f(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
-void OpenGLESShader::SetUniform3f(const TEString &name, const glm::vec3 &value)
+void OpenGLESShader::SetUniform3f(const TEString &name, const TEVector &value)
 {
     glUniform3f(GetUniformLocation(name), value.x, value.y, value.z);
 }
 
-void OpenGLESShader::SetUniform2f(const TEString &name, const glm::vec2 &value)
+void OpenGLESShader::SetUniform2f(const TEString &name, const TEVector2 &value)
 {
     glUniform2f(GetUniformLocation(name), value.x, value.y);
 }

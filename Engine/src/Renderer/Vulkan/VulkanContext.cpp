@@ -1,13 +1,12 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanContext.hpp"
 #include "GameFrameWork/GameplayUtils.hpp"
-#include <iostream>
-#include <vector>
+#include "Core/Log.h"
 
 void VulkanContext::Init(void *windowHandle)
 {
     s_WindowHandle = windowHandle;
-    std::cout << "[Vulkan] Initializing Context\n";
+    TE_CORE_INFO("[Vulkan] Initializing Context");
     CreateInstance();
     SelectPhysicalDevice();
     CreateLogicalDevice();
@@ -16,7 +15,7 @@ void VulkanContext::Init(void *windowHandle)
 
 void VulkanContext::Shutdown()
 {
-    std::cout << "[Vulkan] Shutting down Context\n";
+    TE_CORE_INFO("[Vulkan] Shutting down Context");
     if (s_CommandPool)
     {
         vkDestroyCommandPool(s_Device, s_CommandPool, nullptr);

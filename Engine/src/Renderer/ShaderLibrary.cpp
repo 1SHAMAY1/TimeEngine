@@ -13,10 +13,13 @@
 #include "Renderer/Vulkan/VulkanShader.hpp"
 #include "Renderer/Vulkan/VulkanShaderLibrary.hpp"
 #endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+#include "Renderer/DirectX11/DirectX11Shader.hpp"
+#include "Renderer/DirectX11/DirectX11ShaderLibrary.hpp"
+#endif
 #include "Renderer/RendererContext.hpp"
 #include "Renderer/Shader.hpp"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "Utils/Math/MathEngine.hpp"
 
 TEMap<TEString, TERef<Shader>> ShaderLibrary::s_ShaderCache;
 
@@ -36,6 +39,10 @@ TERef<Shader> ShaderLibrary::CreateBasicShader()
 #ifdef TE_SUPPORT_VULKAN
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanBasicShader();
+#endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11BasicShader();
 #endif
     default:
         return Shader::Create(GetBasicVertexShader(), GetBasicFragmentShader());
@@ -58,6 +65,10 @@ TERef<Shader> ShaderLibrary::CreateTextureShader()
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanTextureShader();
 #endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11TextureShader();
+#endif
     default:
         return Shader::Create(GetTextureVertexShader(), GetTextureFragmentShader());
     }
@@ -78,6 +89,10 @@ TERef<Shader> ShaderLibrary::CreateColorShader()
 #ifdef TE_SUPPORT_VULKAN
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanColorShader();
+#endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11ColorShader();
 #endif
     default:
         return Shader::Create(GetColorVertexShader(), GetColorFragmentShader());
@@ -100,6 +115,10 @@ TERef<Shader> ShaderLibrary::CreateStandardShader()
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanStandardShader();
 #endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11StandardShader();
+#endif
     default:
         return Shader::Create(GetColorVertexShader(), GetStandardFragmentShader());
     }
@@ -121,6 +140,10 @@ TERef<Shader> ShaderLibrary::CreateLightingShader()
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanLightingShader();
 #endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11LightingShader();
+#endif
     default:
         return Shader::Create(GetLightingVertexShader(), GetLightingFragmentShader());
     }
@@ -128,16 +151,28 @@ TERef<Shader> ShaderLibrary::CreateLightingShader()
 
 TERef<Shader> ShaderLibrary::CreateLight2DShader()
 {
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
+        return DirectX11ShaderLibrary::CreateDirectX11Light2DShader();
+#endif
     return Shader::Create(GetLight2DVertexShader(), GetLight2DFragmentShader());
 }
 
 TERef<Shader> ShaderLibrary::CreateAmbientGradientShader()
 {
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
+        return DirectX11ShaderLibrary::CreateDirectX11AmbientGradientShader();
+#endif
     return Shader::Create(GetLight2DVertexShader(), GetAmbientGradientFragmentShader());
 }
 
 TERef<Shader> ShaderLibrary::CreateLightBlendShader()
 {
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    if (RendererContext::GetAPI() == GraphicsAPI::DirectX11)
+        return DirectX11ShaderLibrary::CreateDirectX11LightBlendShader();
+#endif
     return Shader::Create(GetLightBlendVertexShader(), GetLightBlendFragmentShader());
 }
 
@@ -156,6 +191,10 @@ TERef<Shader> ShaderLibrary::CreateParticleShader()
 #ifdef TE_SUPPORT_VULKAN
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanParticleShader();
+#endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11ParticleShader();
 #endif
     default:
         return Shader::Create(GetParticleVertexShader(), GetParticleFragmentShader());
@@ -178,6 +217,10 @@ TERef<Shader> ShaderLibrary::CreatePostProcessShader()
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanPostProcessShader();
 #endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11PostProcessShader();
+#endif
     default:
         return Shader::Create(GetPostProcessVertexShader(), GetPostProcessFragmentShader());
     }
@@ -199,13 +242,17 @@ TERef<Shader> ShaderLibrary::CreateUIShader()
     case GraphicsAPI::Vulkan:
         return VulkanShaderLibrary::CreateVulkanUIShader();
 #endif
+#if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return DirectX11ShaderLibrary::CreateDirectX11UIShader();
+#endif
     default:
         return Shader::Create(GetUIVertexShader(), GetUIFragmentShader());
     }
 }
 
 // ===== Common Shader Functions =====
-void ShaderLibrary::SetMVP(Shader *shader, const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection)
+void ShaderLibrary::SetMVP(Shader *shader, const TEMatrix4 &model, const TEMatrix4 &view, const TEMatrix4 &projection)
 {
     if (shader)
     {
@@ -218,10 +265,10 @@ void ShaderLibrary::SetMVP(Shader *shader, const glm::mat4 &model, const glm::ma
 
 void ShaderLibrary::SetColor(Shader *shader, const TEColor &color)
 {
-    SetColor(shader, reinterpret_cast<const glm::vec4 &>(color.GetValue()));
+    SetColor(shader, TEVector4(color.GetR(), color.GetG(), color.GetB(), color.GetA()));
 }
 
-void ShaderLibrary::SetColor(Shader *shader, const glm::vec4 &color)
+void ShaderLibrary::SetColor(Shader *shader, const TEVector4 &color)
 {
     if (shader)
     {
@@ -229,7 +276,7 @@ void ShaderLibrary::SetColor(Shader *shader, const glm::vec4 &color)
     }
 }
 
-void ShaderLibrary::SetTransform(Shader *shader, const glm::mat4 &transform)
+void ShaderLibrary::SetTransform(Shader *shader, const TEMatrix4 &transform)
 {
     if (shader)
     {
@@ -237,7 +284,7 @@ void ShaderLibrary::SetTransform(Shader *shader, const glm::mat4 &transform)
     }
 }
 
-void ShaderLibrary::SetViewProjection(Shader *shader, const glm::mat4 &viewProjection)
+void ShaderLibrary::SetViewProjection(Shader *shader, const TEMatrix4 &viewProjection)
 {
     if (shader)
     {
@@ -245,7 +292,7 @@ void ShaderLibrary::SetViewProjection(Shader *shader, const glm::mat4 &viewProje
     }
 }
 
-void ShaderLibrary::SetLightPosition(Shader *shader, const glm::vec3 &position)
+void ShaderLibrary::SetLightPosition(Shader *shader, const TEVector &position)
 {
     if (shader)
     {
@@ -257,7 +304,7 @@ void ShaderLibrary::SetLightColor(Shader *shader, const TEColor &color)
 {
     if (shader)
     {
-        shader->SetUniform4f("u_LightColor", reinterpret_cast<const glm::vec4 &>(color.GetValue()));
+        shader->SetUniform4f("u_LightColor", TEVector4(color.GetR(), color.GetG(), color.GetB(), color.GetA()));
     }
 }
 
@@ -302,7 +349,7 @@ void ShaderLibrary::SetTime(Shader *shader, float time)
     }
 }
 
-void ShaderLibrary::SetResolution(Shader *shader, const glm::vec2 &resolution)
+void ShaderLibrary::SetResolution(Shader *shader, const TEVector2 &resolution)
 {
     if (shader)
     {
@@ -310,7 +357,7 @@ void ShaderLibrary::SetResolution(Shader *shader, const glm::vec2 &resolution)
     }
 }
 
-void ShaderLibrary::SetCameraPosition(Shader *shader, const glm::vec3 &position)
+void ShaderLibrary::SetCameraPosition(Shader *shader, const TEVector &position)
 {
     if (shader)
     {
@@ -322,7 +369,7 @@ void ShaderLibrary::SetFog(Shader *shader, const TEColor &color, float density, 
 {
     if (shader)
     {
-        shader->SetUniform4f("u_FogColor", reinterpret_cast<const glm::vec4 &>(color.GetValue()));
+        shader->SetUniform4f("u_FogColor", TEVector4(color.GetR(), color.GetG(), color.GetB(), color.GetA()));
         shader->SetUniform1f("u_FogDensity", density);
         shader->SetUniform1f("u_FogStart", start);
         shader->SetUniform1f("u_FogEnd", end);
@@ -330,31 +377,32 @@ void ShaderLibrary::SetFog(Shader *shader, const TEColor &color, float density, 
 }
 
 // ===== Utility Functions =====
-glm::mat4 ShaderLibrary::CreateModelMatrix(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale)
+TEMatrix4 ShaderLibrary::CreateModelMatrix(const TEVector &position, const TEVector &rotation, const TEVector &scale)
 {
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, position);
-    model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::scale(model, scale);
+    float degToRad = 3.14159265358979323846f / 180.0f;
+    TEMatrix4 model = MathEngine::Get().GetActiveAPI()->Translate(TEMatrix4(1.0f), position);
+    model = MathEngine::Get().GetActiveAPI()->Rotate(model, rotation.x * degToRad, TEVector(1.0f, 0.0f, 0.0f));
+    model = MathEngine::Get().GetActiveAPI()->Rotate(model, rotation.y * degToRad, TEVector(0.0f, 1.0f, 0.0f));
+    model = MathEngine::Get().GetActiveAPI()->Rotate(model, rotation.z * degToRad, TEVector(0.0f, 0.0f, 1.0f));
+    model = MathEngine::Get().GetActiveAPI()->Scale(model, scale);
     return model;
 }
 
-glm::mat4 ShaderLibrary::CreateViewMatrix(const glm::vec3 &position, const glm::vec3 &target, const glm::vec3 &up)
+TEMatrix4 ShaderLibrary::CreateViewMatrix(const TEVector &position, const TEVector &target, const TEVector &up)
 {
-    return glm::lookAt(position, target, up);
+    return MathEngine::Get().GetActiveAPI()->LookAt(position, target, up);
 }
 
-glm::mat4 ShaderLibrary::CreateProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane)
+TEMatrix4 ShaderLibrary::CreateProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane)
 {
-    return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+    float fovRad = fov * (3.14159265358979323846f / 180.0f);
+    return MathEngine::Get().GetActiveAPI()->Perspective(fovRad, aspectRatio, nearPlane, farPlane);
 }
 
-glm::mat4 ShaderLibrary::CreateOrthographicMatrix(float left, float right, float bottom, float top, float nearPlane,
+TEMatrix4 ShaderLibrary::CreateOrthographicMatrix(float left, float right, float bottom, float top, float nearPlane,
                                                   float farPlane)
 {
-    return glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+    return MathEngine::Get().GetActiveAPI()->Ortho(left, right, bottom, top, nearPlane, farPlane);
 }
 
 // ===== Color Utilities =====
@@ -362,7 +410,7 @@ void ShaderLibrary::SetTint(Shader *shader, const TEColor &tint, float intensity
 {
     if (shader)
     {
-        shader->SetUniform4f("u_Tint", reinterpret_cast<const glm::vec4 &>(tint.GetValue()));
+        shader->SetUniform4f("u_Tint", TEVector4(tint.GetR(), tint.GetG(), tint.GetB(), tint.GetA()));
         shader->SetUniform1f("u_TintIntensity", intensity);
     }
 }
@@ -405,9 +453,12 @@ void ShaderLibrary::SetMaterial(Shader *shader, const TEColor &ambient, const TE
 {
     if (shader)
     {
-        shader->SetUniform4f("u_Material.ambient", reinterpret_cast<const glm::vec4 &>(ambient.GetValue()));
-        shader->SetUniform4f("u_Material.diffuse", reinterpret_cast<const glm::vec4 &>(diffuse.GetValue()));
-        shader->SetUniform4f("u_Material.specular", reinterpret_cast<const glm::vec4 &>(specular.GetValue()));
+        shader->SetUniform4f("u_Material.ambient",
+                             TEVector4(ambient.GetR(), ambient.GetG(), ambient.GetB(), ambient.GetA()));
+        shader->SetUniform4f("u_Material.diffuse",
+                             TEVector4(diffuse.GetR(), diffuse.GetG(), diffuse.GetB(), diffuse.GetA()));
+        shader->SetUniform4f("u_Material.specular",
+                             TEVector4(specular.GetR(), specular.GetG(), specular.GetB(), specular.GetA()));
         shader->SetUniform1f("u_Material.shininess", shininess);
     }
 }
@@ -416,7 +467,8 @@ void ShaderLibrary::SetEmissive(Shader *shader, const TEColor &emissive)
 {
     if (shader)
     {
-        shader->SetUniform4f("u_Emissive", reinterpret_cast<const glm::vec4 &>(emissive.GetValue()));
+        shader->SetUniform4f("u_Emissive",
+                             TEVector4(emissive.GetR(), emissive.GetG(), emissive.GetB(), emissive.GetA()));
     }
 }
 
@@ -469,7 +521,7 @@ void ShaderLibrary::SetAOMap(Shader *shader, int slot)
 }
 
 // ===== Animation Support =====
-void ShaderLibrary::SetBoneTransforms(Shader *shader, const TEArray<glm::mat4> &boneTransforms)
+void ShaderLibrary::SetBoneTransforms(Shader *shader, const TEArray<TEMatrix4> &boneTransforms)
 {
 #ifdef TE_SUPPORT_OPENGL
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL && shader)
@@ -488,7 +540,7 @@ void ShaderLibrary::SetAnimationTime(Shader *shader, float time)
     }
 }
 
-void ShaderLibrary::SetBlendWeights(Shader *shader, const glm::vec4 &weights)
+void ShaderLibrary::SetBlendWeights(Shader *shader, const TEVector4 &weights)
 {
     if (shader)
     {
@@ -523,7 +575,7 @@ void ShaderLibrary::SetChromaticAberration(Shader *shader, float intensity)
     }
 }
 
-void ShaderLibrary::SetMotionBlur(Shader *shader, const glm::mat4 &previousViewProjection)
+void ShaderLibrary::SetMotionBlur(Shader *shader, const TEMatrix4 &previousViewProjection)
 {
     if (shader)
     {
@@ -557,7 +609,7 @@ void ShaderLibrary::SetParticleSize(Shader *shader, float size)
     }
 }
 
-void ShaderLibrary::SetParticleVelocity(Shader *shader, const glm::vec3 &velocity)
+void ShaderLibrary::SetParticleVelocity(Shader *shader, const TEVector &velocity)
 {
     if (shader)
     {
@@ -565,7 +617,7 @@ void ShaderLibrary::SetParticleVelocity(Shader *shader, const glm::vec3 &velocit
     }
 }
 
-void ShaderLibrary::SetParticleAcceleration(Shader *shader, const glm::vec3 &acceleration)
+void ShaderLibrary::SetParticleAcceleration(Shader *shader, const TEVector &acceleration)
 {
     if (shader)
     {
@@ -577,8 +629,10 @@ void ShaderLibrary::SetParticleColor(Shader *shader, const TEColor &startColor, 
 {
     if (shader)
     {
-        shader->SetUniform4f("u_ParticleStartColor", reinterpret_cast<const glm::vec4 &>(startColor.GetValue()));
-        shader->SetUniform4f("u_ParticleEndColor", reinterpret_cast<const glm::vec4 &>(endColor.GetValue()));
+        shader->SetUniform4f("u_ParticleStartColor",
+                             TEVector4(startColor.GetR(), startColor.GetG(), startColor.GetB(), startColor.GetA()));
+        shader->SetUniform4f("u_ParticleEndColor",
+                             TEVector4(endColor.GetR(), endColor.GetG(), endColor.GetB(), endColor.GetA()));
     }
 }
 
