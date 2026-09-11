@@ -24,6 +24,8 @@ void ProjectRenderingSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
                                                   GraphicsAPI::OpenGLES};
 #elif defined(TE_PLATFORM_LINUX)
     static const GraphicsAPI s_AvailableAPIs[] = {GraphicsAPI::OpenGL, GraphicsAPI::Vulkan, GraphicsAPI::OpenGLES};
+#else
+    static const GraphicsAPI s_AvailableAPIs[] = {GraphicsAPI::OpenGL};
 #endif
     constexpr int s_APICount = sizeof(s_AvailableAPIs) / sizeof(s_AvailableAPIs[0]);
 

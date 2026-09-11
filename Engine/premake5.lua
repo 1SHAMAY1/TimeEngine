@@ -96,6 +96,11 @@ project "Engine"
         }
     filter {}
 
+    -- Exclude ForgeUI backend while in development
+    removefiles {
+        "src/UI/ForgeUI/**"
+    }
+
     -- Exclude Metal and macOS specific source files on non-macOS platforms
     filter "system:not macosx"
         removefiles {
@@ -191,15 +196,22 @@ project "Engine"
     links {
         "Customizable_Logger",
         "Velox",
-        "glfw3",
-        "ForgeUI"
+        "glfw3"
+        -- "ForgeUI"
     }
 
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
+        defines {
+            "TE_PLATFORM_LINUX",
+            "IMGUI_IMPL_OPENGL_LOADER_GLAD"
+        }
         links { "GL" }
     filter "system:macosx"
+        defines {
+            "TE_PLATFORM_MACOS"
+        }
         links {
             "Cocoa.framework",
             "IOKit.framework",
@@ -210,7 +222,7 @@ project "Engine"
         }
     filter {}
 
-    dependson { "Logger", "Velox", "ForgeUI" }
+    dependson { "Logger", "Velox" } -- "ForgeUI"
 
     local rootDir = _MAIN_SCRIPT_DIR or _WORKING_DIR or "."
     for _, pluginPath in ipairs(os.matchfiles(rootDir .. "/Engine/Plugins/*/*.teplugin")) do
@@ -238,9 +250,9 @@ project "Engine"
         prebuildcommands {
             '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
         }
-    filter { "system:macosx" }
+    filter { "system:macosx", "action:gmake*" }
         prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
+            'premake5 --file="%{wks.location}/Premake5.lua" check-rules'
         }
     filter {}
 
@@ -260,7 +272,8 @@ project "Engine"
             "ole32",
             "uuid",
             "pdh",
-            "ws2_32"
+            "ws2_32",
+            "dwmapi"
         }
 
     filter { "system:windows", "action:vs*" }

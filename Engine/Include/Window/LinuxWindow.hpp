@@ -1,5 +1,5 @@
-﻿#pragma once
-#include IWindow.hpp
+#pragma once
+#include "Window/IWindow.hpp"
 
 struct GLFWwindow;
 
@@ -19,6 +19,10 @@ public:
     bool IsVSync() const override;
 
     void *GetNativeWindow() const override { return m_Window; }
+
+    void ShowWindow() override;
+    bool IsVisible() const override;
+
     void *GetGLLoaderFunction() const;
 
 private:

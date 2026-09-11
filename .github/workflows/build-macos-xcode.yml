@@ -66,6 +66,10 @@ jobs:
         if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: premake5 xcode4 --file=Premake5.lua
 
+      - name: Code Quality & Architecture Check
+        if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: premake5 check-rules --file=Premake5.lua
+
       - name: Build Xcode Project
         if: steps.filter.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: xcodebuild -workspace TimeEngine.xcworkspace -scheme TimeEditor -configuration Debug -destination 'platform=macOS' build

@@ -33,7 +33,8 @@
 #include <expected> // C++23 Expected error handling
 #endif
 
-#ifdef __MINGW32__
+#include <cstring>
+#if defined(__MINGW32__) && __has_include(<sec_api/string_s.h>)
 #include <sec_api/string_s.h>
 #endif
 
@@ -41,6 +42,20 @@
 // Platform Detection & API Export Macros
 // ====================================================================================
 // Used to support DLL export/import on Windows.
+
+#if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__WINDOWS__)
+#ifndef TE_PLATFORM_WINDOWS
+#define TE_PLATFORM_WINDOWS
+#endif
+#elif defined(__APPLE__) || defined(__MACH__)
+#ifndef TE_PLATFORM_MACOS
+#define TE_PLATFORM_MACOS
+#endif
+#elif defined(__linux__) || defined(__gnu_linux__)
+#ifndef TE_PLATFORM_LINUX
+#define TE_PLATFORM_LINUX
+#endif
+#endif
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4251) // class 'xxx' needs to have dll-interface to be used by clients of class 'yyy'

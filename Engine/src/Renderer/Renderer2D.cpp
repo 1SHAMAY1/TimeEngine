@@ -194,9 +194,9 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     }
     else if (light.Type == TELightType::Spot)
     {
-        float baseAngle = atan2(light.Direction.y, light.Direction.x);
+        float baseAngle = std::atan2(light.Direction.y, light.Direction.x);
         float finalAngle = baseAngle + rotationRadians;
-        TEVector2 finalDirection = {cos(finalAngle), sin(finalAngle)};
+        TEVector2 finalDirection(std::cos(finalAngle), std::sin(finalAngle));
 
         lightMaterial->SetUniform("u_Direction", finalDirection);
         lightMaterial->SetUniform("u_InnerAngle", light.InnerAngle);
@@ -213,8 +213,8 @@ void Renderer2D::SubmitLight(const LightComponent &light, const TEVector2 &posit
     }
     else if (light.Type == TELightType::Line)
     {
-        float length = sqrt(light.LineOffset.x * light.LineOffset.x + light.LineOffset.y * light.LineOffset.y);
-        float angle = atan2(light.LineOffset.y, light.LineOffset.x);
+        float length = std::sqrt(light.LineOffset.x * light.LineOffset.x + light.LineOffset.y * light.LineOffset.y);
+        float angle = std::atan2(light.LineOffset.y, light.LineOffset.x);
 
         lightMaterial->SetUniform("u_LineLength", length);
         lightMaterial->SetUniform("u_Radius", light.Radius);
@@ -245,7 +245,7 @@ void Renderer2D::SubmitShadow(const TEVector2 &lightPos, float lightRadius, cons
     for (const auto &v : vertices)
     {
         TEVector2 dir = TEVector2(v.x, v.y) - lp;
-        angles.Add(atan2(dir.y, dir.x));
+        angles.Add(std::atan2(dir.y, dir.x));
     }
 
     // Find the two vertices that form the widest angular spread from the light.

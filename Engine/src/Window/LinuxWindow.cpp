@@ -266,4 +266,17 @@ void LinuxWindow::SetVSync(bool enabled)
 
 bool LinuxWindow::IsVSync() const { return m_Data.VSync; }
 
+void LinuxWindow::ShowWindow()
+{
+    if (m_Window)
+        glfwShowWindow(m_Window);
+}
+
+bool LinuxWindow::IsVisible() const
+{
+    if (m_Window)
+        return glfwGetWindowAttrib(m_Window, GLFW_VISIBLE) == GLFW_TRUE;
+    return false;
+}
+
 #endif // TE_PLATFORM_LINUX

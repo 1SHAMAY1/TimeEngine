@@ -353,15 +353,3 @@ bool WindowsWindow::IsVisible() const
         return glfwGetWindowAttrib(m_Window, GLFW_VISIBLE) == GLFW_TRUE;
     return false;
 }
-
-void IWindow::Terminate() { glfwTerminate(); }
-
-void *IWindow::GetCurrentContext() { return glfwGetCurrentContext(); }
-
-void IWindow::MakeContextCurrent(void *context) { glfwMakeContextCurrent(static_cast<GLFWwindow *>(context)); }
-
-void IWindow::SwapBuffers(void *nativeWindow)
-{
-    if (nativeWindow)
-        glfwSwapBuffers(static_cast<GLFWwindow *>(nativeWindow));
-}

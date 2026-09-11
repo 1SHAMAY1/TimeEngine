@@ -10,7 +10,8 @@ TEScope<UIAPI> UIAPI::Create(UIBackendType type)
     case UIBackendType::DearImGui:
         return CreateScope<ImGuiUIAPI>();
     case UIBackendType::ForgeUI:
-        return CreateScope<ForgeUIAPI>();
+        // ForgeUI backend is currently experimental; fallback to default
+        return nullptr;
     }
     return nullptr;
 }

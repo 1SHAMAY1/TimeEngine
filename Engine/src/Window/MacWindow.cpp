@@ -260,4 +260,17 @@ void MacWindow::SetVSync(bool enabled)
 
 bool MacWindow::IsVSync() const { return m_Data.VSync; }
 
+void MacWindow::ShowWindow()
+{
+    if (m_Window)
+        glfwShowWindow(m_Window);
+}
+
+bool MacWindow::IsVisible() const
+{
+    if (m_Window)
+        return glfwGetWindowAttrib(m_Window, GLFW_VISIBLE) == GLFW_TRUE;
+    return false;
+}
+
 #endif // TE_PLATFORM_MACOS

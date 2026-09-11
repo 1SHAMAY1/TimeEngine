@@ -87,6 +87,16 @@ for _, pluginPath in ipairs(allPlugins) do
                 "uuid"
             }
 
+        filter "system:linux"
+            defines {
+                "TE_PLATFORM_LINUX"
+            }
+
+        filter "system:macosx"
+            defines {
+                "TE_PLATFORM_MACOS"
+            }
+
         -- Force-run rule checker before any compilation begins
         filter { "system:windows", "action:vs*" }
             prebuildcommands {
@@ -100,9 +110,9 @@ for _, pluginPath in ipairs(allPlugins) do
             prebuildcommands {
                 '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
             }
-        filter { "system:macosx" }
+        filter { "system:macosx", "action:gmake*" }
             prebuildcommands {
-                '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
+                'premake5 --file="%{wks.location}/Premake5.lua" check-rules'
             }
         filter {}
 

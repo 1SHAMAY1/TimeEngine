@@ -205,10 +205,12 @@ project "TimeEditor"
         }
 
     filter "system:macosx"
+        defines { "TE_PLATFORM_MACOS" }
         links {
             "Engine",
             "Customizable_Logger",
             "Velox",
+            "glfw3",
             "Cocoa.framework",
             "IOKit.framework",
             "CoreFoundation.framework",
@@ -220,6 +222,7 @@ project "TimeEditor"
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
+        defines { "TE_PLATFORM_LINUX" }
         links { "GL" }
     filter {}
 
@@ -242,9 +245,9 @@ project "TimeEditor"
         prebuildcommands {
             '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
         }
-    filter { "system:macosx" }
+    filter { "system:macosx", "action:gmake*" }
         prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
+            'premake5 --file="%{wks.location}/Premake5.lua" check-rules'
         }
     filter {}
 
