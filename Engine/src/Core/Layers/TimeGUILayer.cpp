@@ -2,6 +2,7 @@
 #include "Layers/TimeGUILayer.hpp"
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "UI/UIEngine.hpp"
 #include "Utils/TimeGUI.hpp"
 
 TimeGUILayer::TimeGUILayer(const TEString &name) : Layer(name) {}
@@ -26,18 +27,21 @@ void TimeGUILayer::OnAttach()
         return;
     }
 
-    if (!TimeGUI::Init(window))
+    UIEngine &engine = UIEngine::Get();
+
+    if (!engine.Initialize(window))
     {
-        TE_CORE_CRITICAL("TimeGUI::Init failed!");
+        TE_CORE_CRITICAL("UIEngine::Initialize failed!");
         return;
     }
 
-    TE_CORE_INFO("TimeGUI Layer initialized successfully.");
+    TE_CORE_INFO("TimeGUI Layer initialized (backend: {0}).", UIBackendTypeToString(engine.GetBackendType()));
 }
 
 void TimeGUILayer::OnDetach()
 {
     TimeGUI::Shutdown();
+    UIEngine::Get().Shutdown();
     m_Initialized = false;
 }
 

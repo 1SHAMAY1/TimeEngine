@@ -1,5 +1,5 @@
 #include "Core/PreRequisites.h"
-#include "Utils/TimeGUIMetal.hpp"
+#include "UI/ImGui/ImGuiMetalBackend.hpp"
 #include "Core/Log.h"
 
 #ifdef TE_SUPPORT_METAL
@@ -22,13 +22,13 @@ static id<MTLTexture> s_DummyTexture = nil;
 
 extern "C" {
 
-bool TimeGUI_InitMetalBackend(void *nativeWindow)
+bool ImGui_InitMetalBackend(void *nativeWindow)
 {
     @autoreleasepool {
         s_MetalDevice = MTLCreateSystemDefaultDevice();
         if (!s_MetalDevice)
         {
-            TE_CORE_ERROR("[TimeGUI] Failed to create default Metal device.");
+            TE_CORE_ERROR("[ImGuiMetalBackend] Failed to create default Metal device.");
             return false;
         }
 
@@ -69,12 +69,12 @@ bool TimeGUI_InitMetalBackend(void *nativeWindow)
         ImGuiIO &io = ImGui::GetIO();
         io.Fonts->Build();
 
-        TE_CORE_INFO("[TimeGUI] Metal backend initialized successfully.");
+        TE_CORE_INFO("[ImGuiMetalBackend] Metal backend initialized successfully.");
         return true;
     }
 }
 
-void TimeGUI_ShutdownMetalBackend()
+void ImGui_ShutdownMetalBackend()
 {
     @autoreleasepool {
         ImGui_ImplMetal_Shutdown();
@@ -86,7 +86,7 @@ void TimeGUI_ShutdownMetalBackend()
     }
 }
 
-void TimeGUI_PrepareMetalFrame()
+void ImGui_PrepareMetalFrame()
 {
     @autoreleasepool {
         MTLRenderPassDescriptor *renderPassDesc = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -99,7 +99,7 @@ void TimeGUI_PrepareMetalFrame()
     }
 }
 
-void TimeGUI_RenderMetalDrawData(void *drawData)
+void ImGui_RenderMetalDrawData(void *drawData)
 {
     if (!drawData || !s_CommandQueue || !s_MetalLayer)
         return;
