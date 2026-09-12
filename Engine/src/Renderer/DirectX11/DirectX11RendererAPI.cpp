@@ -79,6 +79,13 @@ void DirectX11RendererAPI::Init()
     // No-op: InitWithWindow() is called from WindowsWindow after HWND is available.
 }
 
+void DirectX11RendererAPI::Present()
+{
+    DX11Context &ctx = DX11Context::Get();
+    if (ctx.SwapChain)
+        ctx.SwapChain->Present(0, 0);
+}
+
 void DirectX11RendererAPI::InitWithWindow(void *hwnd, uint32_t width, uint32_t height)
 {
     DX11Context &ctx = DX11Context::Get();
@@ -153,6 +160,16 @@ void DirectX11RendererAPI::InitWithWindow(void *hwnd, uint32_t width, uint32_t h
     ctx.Device->CreateBlendState(&blendDesc, &blendState);
     ctx.DeviceContext->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
     blendState->Release();
+
+    // Initial clear and present to dark color prevents unpainted frame flash
+    const float clearColor[4] = {0.04f, 0.05f, 0.08f, 1.0f};
+    if (ctx.RenderTargetView)
+        ctx.DeviceContext->ClearRenderTargetView(ctx.RenderTargetView, clearColor);
+    if (ctx.DepthStencilView)
+        ctx.DeviceContext->ClearDepthStencilView(ctx.DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,
+                                                 0);
+    if (ctx.SwapChain)
+        ctx.SwapChain->Present(0, 0);
 }
 
 // -------------------------------------------------------------------------
@@ -218,12 +235,36 @@ void DirectX11RendererAPI::ReleaseRenderTargets()
 // -------------------------------------------------------------------------
 void DirectX11RendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
+    DX11Context &ctx = DX11Context::Get();
+
+    // Check if swapchain backbuffer dimensions need to be updated
+    if (ctx.SwapChain && width > 0 && height > 0 && (width != m_ViewportW || height != m_ViewportH))
+    {
+        m_ViewportW = width;
+        m_ViewportH = height;
+
+        if (ctx.DeviceContext)
+        {
+            ID3D11RenderTargetView *nullRTV[1] = {nullptr};
+            ctx.DeviceContext->OMSetRenderTargets(1, nullRTV, nullptr);
+        }
+
+        ReleaseRenderTargets();
+
+        HRESULT hr = ctx.SwapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
+        if (SUCCEEDED(hr))
+        {
+            CreateRenderTargetView();
+            CreateDepthStencilView(width, height);
+        }
+    }
+
     m_ViewportX = static_cast<int>(x);
     m_ViewportY = static_cast<int>(y);
     m_ViewportW = width;
     m_ViewportH = height;
 
-    if (!DX11Context::Get().DeviceContext)
+    if (!ctx.DeviceContext)
         return;
 
     D3D11_VIEWPORT vp = {};
@@ -233,15 +274,15 @@ void DirectX11RendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, u
     vp.Height = static_cast<float>(height);
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
-    DX11Context::Get().DeviceContext->RSSetViewports(1, &vp);
+    ctx.DeviceContext->RSSetViewports(1, &vp);
 }
 
-void DirectX11RendererAPI::SetClearColor(const glm::vec4 &color) { m_ClearColor = color; }
+void DirectX11RendererAPI::SetClearColor(const TEVector4 &color) { m_ClearColor = color; }
 
 void DirectX11RendererAPI::Clear()
 {
     DX11Context &ctx = DX11Context::Get();
-    float c[4] = {m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a};
+    float c[4] = {m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w};
     if (ctx.RenderTargetView)
         ctx.DeviceContext->ClearRenderTargetView(ctx.RenderTargetView, c);
     if (ctx.DepthStencilView)
@@ -313,10 +354,10 @@ void DirectX11RendererAPI::GetClearColor(float *color)
 {
     if (!color)
         return;
-    color[0] = m_ClearColor.r;
-    color[1] = m_ClearColor.g;
-    color[2] = m_ClearColor.b;
-    color[3] = m_ClearColor.a;
+    color[0] = m_ClearColor.x;
+    color[1] = m_ClearColor.y;
+    color[2] = m_ClearColor.z;
+    color[3] = m_ClearColor.w;
 }
 
 void DirectX11RendererAPI::ReadPixelsRGBA(int x, int y, int width, int height, void *outPixels)

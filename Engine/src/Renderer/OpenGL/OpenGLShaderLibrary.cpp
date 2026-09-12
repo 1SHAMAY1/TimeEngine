@@ -4,7 +4,6 @@
 #include "Renderer/OpenGL/OpenGLShader.hpp"
 #include "Renderer/RendererContext.hpp"
 #include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 // ===== OpenGL-Specific Shader Creation =====
@@ -86,7 +85,7 @@ void OpenGLShaderLibrary::SetUniform1f(OpenGLShader *shader, const TEString &nam
     }
 }
 
-void OpenGLShaderLibrary::SetUniform2f(OpenGLShader *shader, const TEString &name, const glm::vec2 &value)
+void OpenGLShaderLibrary::SetUniform2f(OpenGLShader *shader, const TEString &name, const TEVector2 &value)
 {
     if (shader)
     {
@@ -98,7 +97,7 @@ void OpenGLShaderLibrary::SetUniform2f(OpenGLShader *shader, const TEString &nam
     }
 }
 
-void OpenGLShaderLibrary::SetUniform3f(OpenGLShader *shader, const TEString &name, const glm::vec3 &value)
+void OpenGLShaderLibrary::SetUniform3f(OpenGLShader *shader, const TEString &name, const TEVector &value)
 {
     if (shader)
     {
@@ -110,7 +109,7 @@ void OpenGLShaderLibrary::SetUniform3f(OpenGLShader *shader, const TEString &nam
     }
 }
 
-void OpenGLShaderLibrary::SetUniform4f(OpenGLShader *shader, const TEString &name, const glm::vec4 &value)
+void OpenGLShaderLibrary::SetUniform4f(OpenGLShader *shader, const TEString &name, const TEVector4 &value)
 {
     if (shader)
     {
@@ -122,39 +121,27 @@ void OpenGLShaderLibrary::SetUniform4f(OpenGLShader *shader, const TEString &nam
     }
 }
 
-void OpenGLShaderLibrary::SetUniformMat3(OpenGLShader *shader, const TEString &name, const glm::mat3 &value)
+void OpenGLShaderLibrary::SetUniformMat4(OpenGLShader *shader, const TEString &name, const TEMatrix4 &value)
 {
     if (shader)
     {
         int location = shader->GetUniformLocation(name);
         if (location != -1)
         {
-            glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
-        }
-    }
-}
-
-void OpenGLShaderLibrary::SetUniformMat4(OpenGLShader *shader, const TEString &name, const glm::mat4 &value)
-{
-    if (shader)
-    {
-        int location = shader->GetUniformLocation(name);
-        if (location != -1)
-        {
-            glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+            glUniformMatrix4fv(location, 1, GL_FALSE, &value.m[0][0]);
         }
     }
 }
 
 void OpenGLShaderLibrary::SetUniformMat4Array(OpenGLShader *shader, const TEString &name,
-                                              const TEArray<glm::mat4> &values)
+                                              const TEArray<TEMatrix4> &values)
 {
     if (shader)
     {
         int location = shader->GetUniformLocation(name);
         if (location != -1 && !values.IsEmpty())
         {
-            glUniformMatrix4fv(location, (GLsizei)values.Size(), GL_FALSE, glm::value_ptr(values[0]));
+            glUniformMatrix4fv(location, (GLsizei)values.Size(), GL_FALSE, &values[0].m[0][0]);
         }
     }
 }

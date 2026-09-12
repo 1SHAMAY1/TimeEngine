@@ -284,10 +284,11 @@ bool DialogueTreeSerializer::LoadFromFile(DialogueGraph &graph, const TEString &
     size_t size = static_cast<size_t>(in.tellg());
     in.seekg(0, std::ios::beg);
 
-    TEArray<char> buffer;
-    buffer.Resize(size + 1, '\0');
-    in.read(buffer.Data(), size);
-    TEString content = buffer.Data();
+    TEString content;
+    content.Reserve(size + 1);
+    in.read(content.Data(), size);
+    content.Data()[size] = '\0';
+    content.SyncFromBuffer();
 
     return DeserializeFromNativeText(graph, content);
 }

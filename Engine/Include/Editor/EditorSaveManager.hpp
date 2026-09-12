@@ -36,4 +36,13 @@ public:
     static bool IsAutoSaveEnabled();
 
     static void Clear();
+
+    // ── Save Prompt Dispatch ────────────────────────────────────────────────────
+    // Called by EditorLayer, Menubar, ContentBrowser — no knowledge of toolbar impl needed.
+    // SaveAllToolbarOverlay registers its callbacks at startup.
+    static void RequestSavePrompt(bool isAppExit = false);
+    static void RequestSavePromptWithAction(std::function<void()> onProceed);
+
+    static void SetSavePromptCallback(std::function<void(bool)> onRequest);
+    static void SetSavePromptWithActionCallback(std::function<void(std::function<void()>)> onRequest);
 };

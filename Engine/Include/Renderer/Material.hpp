@@ -6,7 +6,7 @@
 #include "Renderer/Shader.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
-#include <glm/glm.hpp>
+#include "Utils/MathUtils.hpp"
 
 enum class MaterialPassNodeType
 {
@@ -58,10 +58,10 @@ public:
 
     void SetUniform(const TEString &name, float value);
     void SetUniform(const TEString &name, int value);
-    void SetUniform(const TEString &name, const glm::vec2 &value);
-    void SetUniform(const TEString &name, const glm::vec3 &value);
-    void SetUniform(const TEString &name, const glm::vec4 &value);
-    void SetUniform(const TEString &name, const glm::mat4 &value);
+    void SetUniform(const TEString &name, const TEVector2 &value);
+    void SetUniform(const TEString &name, const TEVector &value);
+    void SetUniform(const TEString &name, const TEVector4 &value);
+    void SetUniform(const TEString &name, const TEMatrix4 &value);
 
     void SetShader(const TERef<Shader> &shader);
     TERef<Shader> GetShader() const;
@@ -114,10 +114,10 @@ private:
 
     TEMap<TEString, float> m_FloatUniforms;
     TEMap<TEString, int> m_IntUniforms;
-    TEMap<TEString, glm::vec2> m_Vec2Uniforms;
-    TEMap<TEString, glm::vec3> m_Vec3Uniforms;
-    TEMap<TEString, glm::vec4> m_Vec4Uniforms;
-    TEMap<TEString, glm::mat4> m_Mat4Uniforms;
+    TEMap<TEString, TEVector2> m_Vec2Uniforms;
+    TEMap<TEString, TEVector> m_Vec3Uniforms;
+    TEMap<TEString, TEVector4> m_Vec4Uniforms;
+    TEMap<TEString, TEMatrix4> m_Mat4Uniforms;
 
     TEArray<MaterialPassNode> m_PassStack;
 

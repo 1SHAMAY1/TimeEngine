@@ -1,0 +1,30 @@
+﻿// DinoGameManager.tscript
+class DinoGameManager : TComponent
+
+    T_REGISTER_PROPERTY(float, high_score, 0.0)
+
+    public:
+        float current_score = 0.0
+        bool is_game_over = false
+
+    on_ready() {
+        TE_CORE_INFO(Dino Runner Game Manager Ready!)
+        current_score = 0.0
+        is_game_over = false
+    }
+
+    on_update(float dt) {
+        if (!is_game_over) {
+            current_score += dt * 10.0
+            if (current_score > high_score) {
+                high_score = current_score
+            }
+        } else {
+            // Check for restart action
+            if (Input.IsActionJustPressed(Restart)) {
+                TE_CORE_INFO(Restarting Dino Runner...)
+                current_score = 0.0
+                is_game_over = false
+            }
+        }
+    }

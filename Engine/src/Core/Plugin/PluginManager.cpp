@@ -3,6 +3,8 @@
 #include "Core/Log.h"
 #include "Core/Project/Project.hpp"
 #include "Core/Threading/Threading.hpp"
+#include "Editor/MCPToolRegistry.hpp"
+#include "Input/ShortcutManager.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TEFileSystem.hpp"
 #include <fstream>
@@ -281,6 +283,7 @@ void PluginManager::Shutdown()
     EditorSettingsRegistry::Clear();
     ProjectSettingsRegistry::Clear();
     EngineSettingsRegistry::ClearAll();
+    MCPToolRegistry::Clear();
 
     // Unload in reverse order of loading
     for (auto it = s_LoadedPluginInstances.rbegin(); it != s_LoadedPluginInstances.rend(); ++it)

@@ -221,6 +221,14 @@ function M.CheckFile(filepath)
                         message = "Prefix 'TE::' is prohibited for engine types. Types are accessible globally via standard aliases.",
                         snippet = trimmed
                     })
+                elseif code:find("namespace%s+TE%f[%A]") and not code:find("using%s+namespace%s+TE") then
+                    table.insert(violations, {
+                        file = filepath,
+                        line = lineNum,
+                        code = "TE_NS04",
+                        message = "Enclosing code in 'namespace TE' is prohibited. Engine classes belong in the global namespace.",
+                        snippet = trimmed
+                    })
                 end
             end
 
@@ -244,12 +252,12 @@ function M.CheckFile(filepath)
                         message = "Direct 'string' variable or function return type is prohibited. Use TimeEngine 'TEString' instead.",
                         snippet = trimmed
                     })
-                elseif codeWithoutStrings:find("%f[%a]char32_t%f[%A]") or codeWithoutStrings:find("%f[%a]char16_t%f[%A]") or codeWithoutStrings:find("%f[%a]char8_t%f[%A]") or codeWithoutStrings:find("%f[%a]wchar_t%f[%A]") or codeWithoutStrings:find("%f[%a]char%s+[%a_]+%s*%[%s*%d+%s*%]") or codeWithoutStrings:find("%f[%a]char%s+[%a_]+%s*%[%s*MAX_PATH%s*%]") or codeWithoutStrings:find("unsigned%s+char%s*%*%s*[%a_]+") or codeWithoutStrings:find("%f[%a]uint8_t%s*%*%s*[%a_]+") then
+                elseif codeWithoutStrings:find("%f[%a]char32_t%f[%A]") or codeWithoutStrings:find("%f[%a]char16_t%f[%A]") or codeWithoutStrings:find("%f[%a]char8_t%f[%A]") or codeWithoutStrings:find("%f[%a]wchar_t%f[%A]") or codeWithoutStrings:find("%f[%a]char%s+[%a_]+%s*%[%s*%d+%s*%]") or codeWithoutStrings:find("%f[%a]char%s+[%a_]+%s*%[%s*MAX_PATH%s*%]") or codeWithoutStrings:find("unsigned%s+char%s*%*%s*[%a_]+") or codeWithoutStrings:find("%f[%a]uint8_t%s*%*%s*[%a_]+") or codeWithoutStrings:find("TEArray%s*<%s*char%s*>") or codeWithoutStrings:find("TEArray%s*<%s*const%s+char%s*>") then
                     table.insert(violations, {
                         file = filepath,
                         line = lineNum,
                         code = "TE_CHAR01",
-                        message = "Direct raw 'char[]' buffer, 'unsigned char*', or 'char32_t' / 'char16_t' / 'wchar_t' is prohibited. Use TimeEngine 'TEString' or 'TEArray<uint8_t>' instead.",
+                        message = "Direct raw 'char[]' buffer, 'TEArray<char>', 'unsigned char*', or 'char32_t' / 'char16_t' / 'wchar_t' is prohibited. Use TimeEngine 'TEString' or 'TEArray<uint8_t>' instead.",
                         snippet = trimmed
                     })
                 end

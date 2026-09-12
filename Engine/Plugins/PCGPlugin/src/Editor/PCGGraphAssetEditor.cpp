@@ -20,7 +20,7 @@ void PCGGraphAssetEditor::DrawToolbar(PCGGraphAsset &asset, const TEString &asse
     TimeGUI::SameLine();
     if (TimeGUI::Button("Execute Test"))
     {
-        PCGExecutionContext ctx(1337, glm::vec3(-50.0f, -50.0f, 0.0f), glm::vec3(50.0f, 50.0f, 0.0f));
+        PCGExecutionContext ctx(1337, TEVector(-50.0f, -50.0f, 0.0f), TEVector(50.0f, 50.0f, 0.0f));
         if (asset.GetGraph().Execute(ctx))
         {
             size_t totalPoints = 0;

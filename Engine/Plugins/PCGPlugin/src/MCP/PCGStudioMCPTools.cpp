@@ -28,7 +28,7 @@ TE_REGISTER_MCP_TOOL(pcg_execute_graph, "Execute a PCG graph file from disk and 
                      [](const TEString &paramsJson) -> TEString
                      {
                          PCGGraph graph;
-                         PCGExecutionContext ctx(1337, glm::vec3(-50.0f, -50.0f, 0.0f), glm::vec3(50.0f, 50.0f, 0.0f));
+                         PCGExecutionContext ctx(1337, TEVector(-50.0f, -50.0f, 0.0f), TEVector(50.0f, 50.0f, 0.0f));
                          bool ok = graph.Execute(ctx);
                          if (ok)
                              return "{\"status\":\"success\",\"generated\":true}";

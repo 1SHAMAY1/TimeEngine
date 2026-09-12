@@ -1,0 +1,34 @@
+// ==============================================================================
+// TimeEngine Template Content - CollectibleCoin.tscript
+// Extends: TComponent
+// Description: Rotating coin pickup with trigger collision and sound trigger.
+// ==============================================================================
+
+class CollectibleCoin : TComponent
+
+    T_REGISTER_PROPERTY(int, score_points, 100)
+    T_REGISTER_PROPERTY(float, rotation_speed, 180.0)
+    T_REGISTER_PROPERTY(float, bobbing_height, 0.15)
+
+    public:
+        float initial_y = 0.0
+        float timer = 0.0
+
+    on_ready() {
+        initial_y = transform.position.y
+        timer = 0.0
+    }
+
+    on_update(float dt) {
+        timer += dt
+        transform.position.y = initial_y + Math.Sin(timer * 3.0) * bobbing_height
+        transform.rotation.z += rotation_speed * dt
+    }
+
+    on_collision(other) {
+        if (other.GetTag() == "Player") {
+            Audio.PlaySound("Assets/Sounds/Coin.wav", 0.75)
+            GameManager.AddScore(score_points)
+            Destroy(this.entity)
+        }
+    }

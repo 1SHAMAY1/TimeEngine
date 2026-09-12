@@ -3,8 +3,8 @@
 #include "Core/PCGPointData.hpp"
 #include "Core/PreRequisites.h"
 #include "GameFrameWork/GameplayUtils.hpp"
+#include "Utils/MathUtils.hpp"
 #include <atomic>
-#include <glm/glm.hpp>
 #include <random>
 
 class Scene;
@@ -12,9 +12,9 @@ class Scene;
 struct PCGExecutionContext
 {
     uint32_t Seed = 1337;
-    glm::vec3 BoundsMin = {-50.0f, -50.0f, 0.0f};
-    glm::vec3 BoundsMax = {50.0f, 50.0f, 0.0f};
-    glm::vec3 Origin = {0.0f, 0.0f, 0.0f};
+    TEVector BoundsMin = {-50.0f, -50.0f, 0.0f};
+    TEVector BoundsMax = {50.0f, 50.0f, 0.0f};
+    TEVector Origin = {0.0f, 0.0f, 0.0f};
 
     Scene *TargetScene = nullptr;
     uint32_t TargetEntityID = 0;
@@ -25,7 +25,7 @@ struct PCGExecutionContext
     TEMap<uint64_t, PCGPointDataRef> PinDataCache;
 
     PCGExecutionContext() = default;
-    PCGExecutionContext(uint32_t seed, const glm::vec3 &bMin, const glm::vec3 &bMax, Scene *scene = nullptr)
+    PCGExecutionContext(uint32_t seed, const TEVector &bMin, const TEVector &bMax, Scene *scene = nullptr)
         : Seed(seed), BoundsMin(bMin), BoundsMax(bMax), TargetScene(scene)
     {
     }

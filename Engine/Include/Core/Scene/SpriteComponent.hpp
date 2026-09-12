@@ -3,8 +3,6 @@
 #include "GameFrameWork/TComponent.hpp"
 #include "Renderer/TEColor.hpp"
 #include "Renderer/Texture.hpp"
-#include <glm/glm.hpp>
-#include <memory>
 
 class SpriteComponent : public TComponent
 {

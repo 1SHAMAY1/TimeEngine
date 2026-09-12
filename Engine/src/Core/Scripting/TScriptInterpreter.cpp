@@ -134,7 +134,7 @@ void TScriptInterpreter::RestoreVariables(const TEMap<TEString, TScriptValue> &s
 
 TScriptValue TScriptInterpreter::CallBuiltin(const TEString &name, const TEArray<TScriptValue> &args)
 {
-    if (name == "TE_CORE_INFO" || name == "TE_CLIENT_LOG" || name == "print")
+    if (name == "TELog.Info" || name == "TE_CORE_INFO" || name == "TE_CLIENT_LOG" || name == "print")
     {
         TEString msg;
         for (size_t i = 0; i < args.size(); ++i)
@@ -144,7 +144,7 @@ TScriptValue TScriptInterpreter::CallBuiltin(const TEString &name, const TEArray
         TE_CORE_INFO("[TScript] {0}", msg);
         return TScriptValue::Nil();
     }
-    if (name == "TE_CORE_WARN")
+    if (name == "TELog.Warn" || name == "TE_CORE_WARN")
     {
         TEString msg;
         for (size_t i = 0; i < args.size(); ++i)
@@ -154,7 +154,7 @@ TScriptValue TScriptInterpreter::CallBuiltin(const TEString &name, const TEArray
         TE_CORE_WARN("[TScript] {0}", msg);
         return TScriptValue::Nil();
     }
-    if (name == "TE_CORE_ERROR")
+    if (name == "TELog.Error" || name == "TE_CORE_ERROR")
     {
         TEString msg;
         for (size_t i = 0; i < args.size(); ++i)
@@ -163,6 +163,22 @@ TScriptValue TScriptInterpreter::CallBuiltin(const TEString &name, const TEArray
         }
         TE_CORE_ERROR("[TScript] {0}", msg);
         return TScriptValue::Nil();
+    }
+    if (name == "GameplayUtils.IsShippingBuild")
+    {
+        return TScriptValue::Bool(GameplayUtils::IsShippingBuild());
+    }
+    if (name == "GameplayUtils.IsDevelopmentBuild")
+    {
+        return TScriptValue::Bool(GameplayUtils::IsDevelopmentBuild());
+    }
+    if (name == "GameplayUtils.IsEditor")
+    {
+        return TScriptValue::Bool(GameplayUtils::IsEditor());
+    }
+    if (name == "GameplayUtils.IsStandalone")
+    {
+        return TScriptValue::Bool(GameplayUtils::IsStandalone());
     }
     if (name == "min" && args.size() >= 2)
     {

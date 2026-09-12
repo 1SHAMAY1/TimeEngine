@@ -21,7 +21,8 @@ local vendorRules = {
         allowedPaths = {
             "Engine/src/Window/", "Engine/Include/Window/",
             "Engine/src/Platform/Windows/", "Engine/src/Platform/Linux/", "Engine/src/Platform/Mac/",
-            "Engine/src/Utils/Platform/", "Engine/src/Utils/TimeGUI", "Engine/src/Core/Input/Input.cpp"
+            "Engine/src/Utils/Platform/", "Engine/src/Utils/TimeGUI", "Engine/src/Core/Input/Input.cpp",
+            "Engine/src/UI/"
         },
         msg = "GLFW header/symbol leaked outside Window/Platform backend. Must use TimeEngine Window & Input abstractions."
     },
@@ -85,12 +86,21 @@ local vendorRules = {
         name = "ImGui",
         id = "TE_VND08",
         headerPatterns = { "#%s*include%s*[<\"]imgui", "#%s*include%s*[<\"]backends/imgui", "#%s*include%s*[<\"]imconfig%.h" },
-        symbolPatterns = { "%f[%a]ImGui::", "%f[%a]ImVec2%f[%A]", "%f[%a]ImVec4%f[%A]", "%f[%a]ImDrawList%f[%A]", "%f[%a]ImFont%f[%A]" },
+        symbolPatterns = { "%f[%a]ImGui::", "%f[%a]ImVec2%f[%A]", "%f[%a]ImVec4%f[%A]", "%f[%a]ImDrawList%f[%A]", "%f[%a]ImFont%f[%A]", "%f[%a]ImGuiContext%f[%A]", "%f[%a]ImDrawData%f[%A]" },
         allowedPaths = {
-            "Engine/src/Utils/TimeGUI", "Engine/Include/Utils/TimeGUI",
-            "Engine/src/Utils/MathUtils.cpp", "Engine/src/Core/Input/Input.cpp"
+            "Engine/src/UI/ImGui", "Engine/src/UI/ImGuiBackend.cpp"
         },
-        msg = "ImGui header/symbol leaked outside TimeGUI. All UI, Editor, and Panels must use TimeGUI wrapper."
+        msg = "ImGui header/symbol leaked outside UI subsystem backend (Engine/src/UI/ImGui/). TimeGUI and client code must NOT reference ImGui directly."
+    },
+    {
+        name = "ForgeUI",
+        id = "TE_VND11",
+        headerPatterns = { "#%s*include%s*[<\"]ForgeUI", "#%s*include%s*[<\"]ForgeUI/" },
+        symbolPatterns = { "%f[%a]forge::", "%f[%a]ForgeContext%f[%A]", "%f[%a]ForgeDrawList%f[%A]" },
+        allowedPaths = {
+            "Engine/src/UI/ForgeUI", "Engine/src/UI/ForgeUIBackend.cpp"
+        },
+        msg = "ForgeUI header/symbol leaked outside UI subsystem backend (Engine/src/UI/ForgeUI/). TimeGUI and client code must NOT reference ForgeUI directly."
     },
     {
         name = "STB Libraries (stb_image, stb_truetype, stb_image_write, stb_rect_pack)",
@@ -118,12 +128,43 @@ local vendorRules = {
             "Engine/src/Utils/Logger", "Engine/Include/Utils/Logger", "Engine/src/Core/Log.cpp"
         },
         msg = "Customizable_Logger header/symbol leaked directly. Must use TimeEngine Logger and TE_LOG_* macros."
+    },
+    {
+        name = "GLM",
+        id = "TE_VND12",
+        headerPatterns = { "#%s*include%s*[<\"]glm/" },
+        symbolPatterns = { "%f[%a]glm::", "%f[%a]glm::vec2%f[%A]", "%f[%a]glm::vec3%f[%A]", "%f[%a]glm::vec4%f[%A]", "%f[%a]glm::mat4%f[%A]", "%f[%a]glm::quat%f[%A]" },
+        allowedPaths = {
+            "Engine/src/Utils/Math/GLM/"
+        },
+        msg = "GLM header/symbol leaked outside Math Subsystem GLM backend (Engine/src/Utils/Math/GLM/). Must use TimeEngine Math abstractions (TEMatrix4, TEVector, TEQuat, etc.)."
+    },
+    {
+        name = "TimeGUI Anti-Cycle Rule",
+        id = "TE_VND13",
+        headerPatterns = { "#%s*include%s*[<\"][^>\"]*TimeGUI" },
+        symbolPatterns = { "%f[%a]TimeGUI::" },
+        forbiddenPaths = {
+            "Engine/src/UI/ImGui", "Engine/src/UI/ForgeUI"
+        },
+        msg = "Cyclic dependency violation: TimeGUI facade cannot be called or included inside UI backend implementations (ImGui, ForgeUI, or Metal/OpenGL/DX11 UI backend glue). Architecture flow is TimeGUI -> UIEngine/UIAPI -> Backend (ImGui/ForgeUI)."
     }
 }
 
 local function isPathAllowed(normPath, allowedList)
+    if not allowedList then return true end
     for _, allowed in ipairs(allowedList) do
         if normPath:find(allowed, 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
+local function isPathForbidden(normPath, forbiddenList)
+    if not forbiddenList then return false end
+    for _, forbidden in ipairs(forbiddenList) do
+        if normPath:find(forbidden, 1, true) then
             return true
         end
     end
@@ -197,7 +238,14 @@ function M.CheckFile(filepath)
                 end
 
                 if matched then
-                    if not isPathAllowed(normPath, rule.allowedPaths) then
+                    local isViolation = false
+                    if rule.allowedPaths and not isPathAllowed(normPath, rule.allowedPaths) then
+                        isViolation = true
+                    elseif rule.forbiddenPaths and isPathForbidden(normPath, rule.forbiddenPaths) then
+                        isViolation = true
+                    end
+
+                    if isViolation then
                         table.insert(violations, {
                             file = filepath,
                             line = lineNum,

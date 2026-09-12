@@ -24,4 +24,11 @@ struct IKJoint2D
     float MaxAngle = 3.14159f;
 };
 
+struct IKJoint3D
+{
+    TEVector Position = {0.0f, 0.0f, 0.0f};
+    TEQuat Rotation;
+    float Length = 50.0f;
+};
+
 } // namespace IK

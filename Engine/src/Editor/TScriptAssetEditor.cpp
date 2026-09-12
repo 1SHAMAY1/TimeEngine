@@ -2,7 +2,14 @@
 #include "Editor/TScriptAssetEditor.hpp"
 #include "Core/Scripting/TScriptAsset.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
+#include "Editor/TScriptAutoComplete.hpp"
+#include "Editor/TScriptSyntaxHighlighter.hpp"
 #include "Utils/TimeGUI.hpp"
+
+TScriptAssetEditor::TScriptAssetEditor() : m_CodeEdit("##TScriptCodeEdit")
+{
+    m_CodeEdit.SetLanguage(ECodeLanguage::TScript);
+}
 
 void TScriptAssetEditor::DrawEditor(EditorTab &tab)
 {
@@ -19,11 +26,40 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
         return;
     }
 
+    // Sync loaded content into UICodeEdit if newly opened
+    if (m_LastLoadedPath != tab.AssetPath)
+    {
+        m_CodeEdit.SetText(scriptAsset->SourceText);
+        m_LastLoadedPath = tab.AssetPath;
+
+        m_CodeEdit.OnTextChanged = [&tab, scriptAsset](const TEString &newText)
+        {
+            scriptAsset->SourceText = newText;
+            AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+            scriptAsset->Recompile();
+        };
+    }
+
+    // Pass compiler diagnostics to UICodeEdit
+    if (!scriptAsset->ASTValid && scriptAsset->ErrorLine > 0)
+    {
+        m_CodeEdit.SetErrorMarker(scriptAsset->ErrorLine, scriptAsset->CompileError);
+    }
+    else
+    {
+        m_CodeEdit.ClearErrorMarkers();
+    }
+
     TimeGUI::TextColored(TEColor(0.2f, 0.8f, 1.0f, 1.0f), "TScript Editor: %s", scriptAsset->GetName().c_str());
     TimeGUI::SameLine();
     TimeGUI::TextDisabled("(%s)", tab.AssetPath.c_str());
 
-    TimeGUI::SameLine(TimeGUI::GetWindowWidth() - 180.0f);
+    TimeGUI::SameLine(TimeGUI::GetWindowWidth() - 360.0f);
+    if (TimeGUI::Button("Find (Ctrl+F)", TEVector2(85.0f, 24.0f)))
+    {
+        m_CodeEdit.ToggleSearchBar();
+    }
+    TimeGUI::SameLine();
     if (TimeGUI::Button("Save Script", TEVector2(80.0f, 24.0f)))
     {
         if (scriptAsset->SaveToFile(tab.AssetPath))
@@ -36,6 +72,11 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
     {
         scriptAsset->Recompile();
     }
+    TimeGUI::SameLine();
+    if (TimeGUI::Button(m_ShowAPIBrowser ? "APIs [ON]" : "APIs [OFF]", TEVector2(80.0f, 24.0f)))
+    {
+        m_ShowAPIBrowser = !m_ShowAPIBrowser;
+    }
 
     TimeGUI::Separator();
 
@@ -44,8 +85,6 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
     bool hasUpdate = false;
     bool hasCollision = false;
     bool hasInput = false;
-    bool hasTimer = false;
-    bool hasDestroy = false;
 
     auto checkEvent = [&](const TEString &name)
     {
@@ -57,10 +96,6 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
             hasCollision = true;
         else if (name == "on_input")
             hasInput = true;
-        else if (name == "on_timer")
-            hasTimer = true;
-        else if (name == "on_destroy")
-            hasDestroy = true;
     };
 
     for (const auto &cls : scriptAsset->CachedAST.classes)
@@ -91,7 +126,8 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
     }
     else
     {
-        TimeGUI::TextColored(TEColor(1.0f, 0.3f, 0.3f, 1.0f), "Status: Error: %s", scriptAsset->CompileError.c_str());
+        TimeGUI::TextColored(TEColor(1.0f, 0.3f, 0.3f, 1.0f), "Status: Syntax Error at Line %d, Col %d",
+                             scriptAsset->ErrorLine, scriptAsset->ErrorColumn);
     }
 
     TimeGUI::SameLine();
@@ -109,12 +145,79 @@ void TScriptAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::TextColored(hasInput ? TEColor(0.2f, 1.0f, 0.3f, 1.0f) : TEColor(0.5f, 0.5f, 0.5f, 1.0f), "on_input %s",
                          hasInput ? "[OK]" : "[-]");
 
+    // Rich Actionable Diagnostics Banner
+    if (!scriptAsset->ASTValid && !scriptAsset->CompileError.empty())
+    {
+        TimeGUI::Spacing();
+        TimeGUI::TextColored(TEColor(1.0f, 0.35f, 0.35f, 1.0f), "[Error Details]: %s",
+                             scriptAsset->CompileError.c_str());
+        if (!scriptAsset->CompileSuggestion.empty())
+        {
+            TimeGUI::TextColored(TEColor(0.3f, 0.9f, 0.7f, 1.0f), "💡 Suggested Fix: %s",
+                                 scriptAsset->CompileSuggestion.c_str());
+        }
+    }
+
     TimeGUI::Separator();
 
-    // Source code editor
-    if (TimeGUI::InputTextMultiline("##ScriptSource", scriptAsset->SourceText, TEVector2(-1.0f, -1.0f)))
+    float totalAvailWidth = TimeGUI::GetContentRegionAvail().x;
+    float editorAreaWidth = m_ShowAPIBrowser ? (totalAvailWidth - 280.0f) : totalAvailWidth;
+
+    // Main UICodeEdit Widget
+    TimeGUI::BeginChild("##CodeEditContainer", TEVector2(editorAreaWidth, -1.0f), false);
     {
-        AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+        m_CodeEdit.SetSize(TEVector2(-1.0f, -1.0f));
+        m_CodeEdit.Draw();
+    }
+    TimeGUI::EndChild();
+
+    // Right Sidebar: API & Auto-Recommendations Browser
+    if (m_ShowAPIBrowser)
+    {
+        TimeGUI::SameLine();
+        TimeGUI::BeginChild("##APIBrowserPane", TEVector2(270.0f, -1.0f), true);
+        {
+            TimeGUI::TextColored(TEColor(0.3f, 0.9f, 0.6f, 1.0f), "✨ TScript API & Snippets");
+            TimeGUI::TextDisabled("Click '+ Insert' to add to script");
+            TimeGUI::Separator();
+
+            TimeGUI::InputText("Search##APISearch", m_FilterBuffer);
+            TimeGUI::Spacing();
+
+            auto completions = TScriptAutoComplete::GetCompletions(m_FilterBuffer, "");
+            for (size_t i = 0; i < completions.size(); i++)
+            {
+                const auto &item = completions[i];
+                TEString btnId = "+##" + TEString::FromInt((int)i);
+
+                if (TimeGUI::SmallButton(btnId.c_str()))
+                {
+                    m_CodeEdit.InsertTextAtCursor(item.InsertText);
+                    scriptAsset->SourceText = m_CodeEdit.GetText();
+                    AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
+                    scriptAsset->Recompile();
+                }
+                TimeGUI::SameLine();
+
+                TEColor kindColor(0.8f, 0.8f, 0.8f, 1.0f);
+                if (item.Kind == TScriptCompletionKind::Hook)
+                    kindColor = TEColor(0.9f, 0.9f, 0.4f, 1.0f);
+                else if (item.Kind == TScriptCompletionKind::Function)
+                    kindColor = TEColor(0.4f, 0.8f, 1.0f, 1.0f);
+                else if (item.Kind == TScriptCompletionKind::Property)
+                    kindColor = TEColor(0.7f, 0.5f, 1.0f, 1.0f);
+                else if (item.Kind == TScriptCompletionKind::Snippet)
+                    kindColor = TEColor(1.0f, 0.6f, 0.8f, 1.0f);
+
+                TimeGUI::TextColored(kindColor, "%s", item.Label.c_str());
+                if (!item.Detail.empty())
+                {
+                    TimeGUI::TextDisabled("  %s", item.Detail.c_str());
+                }
+                TimeGUI::Spacing();
+            }
+        }
+        TimeGUI::EndChild();
     }
 }
 
@@ -122,7 +225,6 @@ void TScriptAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) co
 {
     TimeGUI::TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
     float w = max.x - min.x;
-    float h = max.y - min.y;
     float pad = w * 0.12f;
 
     // Card background in Purple / Violet

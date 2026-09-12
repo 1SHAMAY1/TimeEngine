@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Utils/TEString.hpp"
-#include <glm/glm.hpp>
 
 class TE_API TEColor
 {
@@ -14,17 +13,8 @@ public:
     // ===== Constructors =====
     TEColor(); // Default = Black
     TEColor(float r, float g, float b, float a = 1.0f);
-    TEColor(const glm::vec4 &color) : r(color.x), g(color.y), b(color.z), a(color.w) {}
     TEColor(const struct TEVector4 &color);
 
-    TEColor &operator=(const glm::vec4 &color)
-    {
-        r = color.x;
-        g = color.y;
-        b = color.z;
-        a = color.w;
-        return *this;
-    }
     TEColor &operator=(const struct TEVector4 &color);
 
     // ===== Static Named Colors =====
@@ -42,9 +32,11 @@ public:
     // ===== Accessor =====
     const TEColor &GetValue() const { return *this; }
     TEColor &GetValue() { return *this; }
+    float GetR() const { return r; }
+    float GetG() const { return g; }
+    float GetB() const { return b; }
+    float GetA() const { return a; }
 
     // ===== Arithmetic =====
     TEColor operator*(float scalar) const { return TEColor(r * scalar, g * scalar, b * scalar, a); }
-
-    operator glm::vec4() const { return {r, g, b, a}; }
 };

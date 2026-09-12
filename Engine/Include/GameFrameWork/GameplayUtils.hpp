@@ -500,6 +500,29 @@ class TE_API GameplayUtils : public TFunctionLibrary
 public:
     inline static const TEString StaticClassName = "GameplayUtils";
 
+    // ── Build & Packaging Environment Queries ───────────────────────────
+    static bool IsShippingBuild()
+    {
+#if defined(TE_SHIPPING)
+        return true;
+#else
+        return false;
+#endif
+    }
+
+    static bool IsDevelopmentBuild() { return !IsShippingBuild(); }
+
+    static bool IsEditor()
+    {
+#if defined(TE_EDITOR)
+        return true;
+#else
+        return false;
+#endif
+    }
+
+    static bool IsStandalone() { return !IsEditor(); }
+
     // ── Container helpers ───────────────────────────────────────────────
     template <typename Container, typename Predicate>
     static auto FindFirst(Container &container, Predicate pred) -> decltype(container.Data())

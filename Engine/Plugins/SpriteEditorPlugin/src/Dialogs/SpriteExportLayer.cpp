@@ -6,8 +6,6 @@
 #include "Utils/MathUtils.hpp"
 #include "Utils/PlatformUtils.hpp"
 #include "Utils/TEFileSystem.hpp"
-#include <fstream>
-#include <iomanip>
 
 SpriteExportLayer::SpriteExportLayer(SpriteMode *mode) : Layer("SpriteExportLayer"), m_SpriteMode(mode) {}
 
@@ -20,8 +18,14 @@ void SpriteExportLayer::OnUpdate()
     if (!m_IsOpen || !m_SpriteMode)
         return;
 
-    int frameCount = (m_SpriteMode->m_ActiveSubmodeIndex == 2) ? Max(1, m_SpriteMode->m_ProcTotalFrames)
-                                                               : (int)m_SpriteMode->m_PixelFrames.size();
+    int frameCount = 1;
+    if (m_SpriteMode->m_ActiveSubmodeIndex == 2)
+        frameCount = Max(1, m_SpriteMode->m_ProcTotalFrames);
+    else if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+        frameCount = Max(1, (int)m_SpriteMode->m_VectorFrames.Size());
+    else
+        frameCount = Max(1, (int)m_SpriteMode->m_PixelFrames.size());
+
     if (frameCount <= 0)
         return;
 
@@ -77,6 +81,11 @@ void SpriteExportLayer::Open(SpriteMode *mode)
         frameCount = Max(1, m_SpriteMode->m_ProcTotalFrames);
         m_SingleFrameIndex = Clamp(m_SpriteMode->m_ProcAnimFrame, 0, frameCount - 1);
     }
+    else if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+    {
+        frameCount = Max(1, (int)m_SpriteMode->m_VectorFrames.Size());
+        m_SingleFrameIndex = Clamp(m_SpriteMode->m_ActiveVectorFrameIndex, 0, frameCount - 1);
+    }
     else
     {
         frameCount = (int)m_SpriteMode->m_PixelFrames.size();
@@ -115,22 +124,35 @@ void SpriteExportLayer::Close()
     m_ActiveDragHandle = -1;
 }
 
+void SpriteExportLayer::GetEffectiveGridDimensions(int &outW, int &outH) const
+{
+    outW = 32;
+    outH = 32;
+    if (!m_SpriteMode)
+        return;
+
+    if (m_SpriteMode->m_ActiveSubmodeIndex == 2)
+    {
+        if (m_SpriteMode->m_ScriptRuntime)
+        {
+            outW = Max(1, m_SpriteMode->m_ScriptRuntime->GetPixelWidth());
+            outH = Max(1, m_SpriteMode->m_ScriptRuntime->GetPixelHeight());
+            return;
+        }
+    }
+
+    outW = Max(1, m_SpriteMode->m_PixelGridWidth);
+    outH = Max(1, m_SpriteMode->m_PixelGridHeight);
+}
+
 void SpriteExportLayer::ResetCropToFull()
 {
-    if (m_SpriteMode)
-    {
-        m_CropX = 0;
-        m_CropY = 0;
-        m_CropW = Max(1, m_SpriteMode->m_PixelGridWidth);
-        m_CropH = Max(1, m_SpriteMode->m_PixelGridHeight);
-    }
-    else
-    {
-        m_CropX = 0;
-        m_CropY = 0;
-        m_CropW = 32;
-        m_CropH = 32;
-    }
+    int gridW = 32, gridH = 32;
+    GetEffectiveGridDimensions(gridW, gridH);
+    m_CropX = 0;
+    m_CropY = 0;
+    m_CropW = gridW;
+    m_CropH = gridH;
 }
 
 void SpriteExportLayer::OnTimeGUIRender()
@@ -141,22 +163,23 @@ void SpriteExportLayer::OnTimeGUIRender()
     TimeGUI::OpenPopup("Sprite Export Suite##ModalDialog");
     TEVector2 center = TimeGUI::GetMainViewport().Pos;
     TEVector2 size = TimeGUI::GetMainViewport().Size;
-    float modalW = Min(1080.0f, size.x - 40.0f);
-    float modalH = Min(740.0f, size.y - 40.0f);
+    float modalW = Min(1200.0f, size.x - 30.0f);
+    float modalH = Min(820.0f, size.y - 30.0f);
     TimeGUI::SetNextWindowPos(TEVector2(center.x + (size.x - modalW) * 0.5f, center.y + (size.y - modalH) * 0.5f));
     TimeGUI::SetNextWindowSize(TEVector2(modalW, modalH));
 
-    if (TimeGUI::BeginPopupModal("Sprite Export Suite##ModalDialog", &m_IsOpen, TimeGUIWindowFlags_NoResize))
+    if (TimeGUI::BeginPopupModal("Sprite Export Suite##ModalDialog", &m_IsOpen,
+                                 TimeGUIWindowFlags_NoResize | TimeGUIWindowFlags_NoScrollbar |
+                                     TimeGUIWindowFlags_NoScrollWithMouse))
     {
-        TimeGUI::TextColored(TEVector4(0.35f, 0.75f, 1.0f, 1.0f), "ADVANCED SPRITE EXPORT SUITE");
-        TimeGUI::SameLine(modalW - 170.0f);
-        TimeGUI::TextDisabled("v2.0 Dual-Pipeline");
+        TimeGUI::TextColored(TEVector4(0.35f, 0.75f, 1.0f, 1.0f), "Sprite Export");
         TimeGUI::Separator();
         TimeGUI::Spacing();
 
         // Main Content Region inside Child to prevent any footer collision
-        float contentHeight = modalH - 110.0f;
-        if (TimeGUI::BeginChild("##SpriteExportContent", TEVector2(0.0f, contentHeight), false))
+        float contentHeight = modalH - 120.0f;
+        if (TimeGUI::BeginChild("##SpriteExportContent", TEVector2(0.0f, contentHeight), false,
+                                TimeGUIWindowFlags_NoScrollbar | TimeGUIWindowFlags_NoScrollWithMouse))
         {
             if (TimeGUI::BeginTabBar("##SpriteExportTabs", TimeGUITabBarFlags_None))
             {
@@ -321,8 +344,8 @@ void SpriteExportLayer::DrawSingleFramePipeline()
 
         TimeGUI::Checkbox("Enable Interactive Crop", &m_EnableCrop);
 
-        int origW = m_SpriteMode->m_PixelGridWidth;
-        int origH = m_SpriteMode->m_PixelGridHeight;
+        int origW = 32, origH = 32;
+        GetEffectiveGridDimensions(origW, origH);
 
         if (m_EnableCrop)
         {
@@ -346,19 +369,9 @@ void SpriteExportLayer::DrawSingleFramePipeline()
             if (TimeGUI::DragInt("Height##CropH", &m_CropH, 1.0f, 1, origH - m_CropY))
                 m_CropH = Clamp(m_CropH, 1, origH - m_CropY);
 
-            TimeGUI::Spacing();
-            if (TimeGUI::Button("Full Frame (Reset)", TEVector2(130.0f, 24.0f)))
+            if (TimeGUI::Button("Reset Crop to Full Frame", TEVector2(180.0f, 22.0f)))
             {
                 ResetCropToFull();
-            }
-            TimeGUI::SameLine();
-            if (TimeGUI::Button("Center Square Crop", TEVector2(140.0f, 24.0f)))
-            {
-                int side = Min(origW, origH);
-                m_CropW = side;
-                m_CropH = side;
-                m_CropX = (origW - side) / 2;
-                m_CropY = (origH - side) / 2;
             }
 
             TimeGUI::EndChild();
@@ -391,8 +404,8 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
 
     dl.PushClipRect(previewPos, TEVector2(previewPos.x + previewSize.x, previewPos.y + previewSize.y), true);
 
-    int gridW = m_SpriteMode->m_PixelGridWidth;
-    int gridH = m_SpriteMode->m_PixelGridHeight;
+    int gridW = 32, gridH = 32;
+    GetEffectiveGridDimensions(gridW, gridH);
     float baseCellDim = Min((previewSize.x - 30.0f) / gridW, (previewSize.y - 30.0f) / gridH);
     float cellDim = baseCellDim * m_SinglePreviewZoom;
 
@@ -411,16 +424,23 @@ void SpriteExportLayer::DrawSingleFramePreview(const TEVector2 &previewPos, cons
                          TimeGUI::ColorConvertFloat4ToU32(m_BackgroundColor));
     }
 
-    // 3. Render composited frame pixels or procedural TScript output
+    // 3. Render composited frame pixels, vector shapes, or procedural TScript output
     if (m_SpriteMode->m_ActiveSubmodeIndex == 2)
     {
-        // Procedural TScript code preview
+        // Procedural TScript code preview (strictly deterministic frame-based evaluation)
         if (m_SpriteMode->m_ScriptRuntime && m_SpriteMode->m_ScriptRuntime->IsValid())
         {
-            m_SpriteMode->m_ScriptRuntime->Execute(dl, origin, TEVector2(gridW * cellDim, gridH * cellDim),
-                                                   m_SpriteMode->m_ProcAnimTime, 0.0f, m_SingleFrameIndex,
-                                                   Max(1, m_SpriteMode->m_ProcTotalFrames), gridW, gridH);
+            int totalFrames = Max(1, m_SpriteMode->m_ProcTotalFrames);
+            float frameTime = (float)m_SingleFrameIndex / (float)Max(1, m_AnimFPS);
+            m_SpriteMode->m_ScriptRuntime->Execute(dl, origin, TEVector2(gridW * cellDim, gridH * cellDim), frameTime,
+                                                   0.0f, m_SingleFrameIndex, totalFrames, gridW, gridH);
         }
+    }
+    else if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+    {
+        // Vector Shapes preview
+        m_SpriteMode->RenderVectorShapes(dl, origin, TEVector2(gridW * cellDim, gridH * cellDim), 1.0f, TEVector2(0, 0),
+                                         -1, -1, m_SingleFrameIndex);
     }
     else if (m_SingleFrameIndex >= 0 && m_SingleFrameIndex < (int)m_SpriteMode->m_PixelFrames.size())
     {
@@ -673,8 +693,8 @@ void SpriteExportLayer::DrawSpritesheetPipeline()
         return;
     }
 
-    int gridW = m_SpriteMode->m_PixelGridWidth;
-    int gridH = m_SpriteMode->m_PixelGridHeight;
+    int gridW = 32, gridH = 32;
+    GetEffectiveGridDimensions(gridW, gridH);
 
     if (TimeGUI::BeginTable("##SpritesheetLayout", 2, TimeGUITableFlags_None))
     {
@@ -774,6 +794,8 @@ void SpriteExportLayer::DrawSpritesheetPipeline()
             TimeGUI::ColorEdit4("##SheetBgColor", &m_BackgroundColor.x, TimeGUIColorEditFlags_NoAlpha);
         }
 
+        TimeGUI::Checkbox("Generate 2D Normal Map (_normal.png)", &m_GenerateNormalMap);
+
         TimeGUI::Spacing();
         TimeGUI::Text("Pixel Scaling Multiplier:");
         TimeGUI::RadioButton("1x##SheetScale", &m_ScaleMultiplier, 1);
@@ -830,10 +852,15 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
 
     dl.PushClipRect(previewPos, TEVector2(previewPos.x + previewSize.x, previewPos.y + previewSize.y), true);
 
-    int gridW = m_SpriteMode->m_PixelGridWidth;
-    int gridH = m_SpriteMode->m_PixelGridHeight;
-    int frameCount = (m_SpriteMode->m_ActiveSubmodeIndex == 2) ? Max(1, m_SpriteMode->m_ProcTotalFrames)
-                                                               : (int)m_SpriteMode->m_PixelFrames.size();
+    int gridW = 32, gridH = 32;
+    GetEffectiveGridDimensions(gridW, gridH);
+    int frameCount = 1;
+    if (m_SpriteMode->m_ActiveSubmodeIndex == 2)
+        frameCount = Max(1, m_SpriteMode->m_ProcTotalFrames);
+    else if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+        frameCount = Max(1, (int)m_SpriteMode->m_VectorFrames.Size());
+    else
+        frameCount = Max(1, (int)m_SpriteMode->m_PixelFrames.size());
 
     if (!m_ShowFullSheetPreview)
     {
@@ -853,6 +880,11 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                                                        (float)m_AnimFrameIndex / Max(1, m_AnimFPS), 0.0f,
                                                        m_AnimFrameIndex, frameCount, gridW, gridH);
             }
+        }
+        else if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+        {
+            m_SpriteMode->RenderVectorShapes(dl, origin, TEVector2(gridW * baseCellDim, gridH * baseCellDim), 1.0f,
+                                             TEVector2(0, 0), -1, -1, m_AnimFrameIndex);
         }
         else if (m_AnimFrameIndex >= 0 && m_AnimFrameIndex < frameCount)
         {
@@ -915,6 +947,9 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
             float cellOriginY = origin.y + (m_SheetPadding + r * (cellH + m_SheetSpacing)) * finalScale;
             float cellPixelDim = finalScale;
 
+            dl.PushClipRect(TEVector2(cellOriginX, cellOriginY),
+                            TEVector2(cellOriginX + cellW * finalScale, cellOriginY + cellH * finalScale), true);
+
             if (m_SpriteMode->m_ActiveSubmodeIndex == 2)
             {
                 if (m_SpriteMode->m_ScriptRuntime && m_SpriteMode->m_ScriptRuntime->IsValid())
@@ -923,6 +958,12 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                         dl, TEVector2(cellOriginX, cellOriginY), TEVector2(cellW * finalScale, cellH * finalScale),
                         (float)f / Max(1, m_AnimFPS), 0.0f, f, frameCount, gridW, gridH);
                 }
+            }
+            else if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+            {
+                m_SpriteMode->RenderVectorShapes(dl, TEVector2(cellOriginX, cellOriginY),
+                                                 TEVector2(cellW * finalScale, cellH * finalScale), 1.0f,
+                                                 TEVector2(0, 0), -1, -1, f);
             }
             else if (f < (int)m_SpriteMode->m_PixelFrames.size())
             {
@@ -950,6 +991,8 @@ void SpriteExportLayer::DrawSpritesheetPreview(const TEVector2 &previewPos, cons
                     }
                 }
             }
+
+            dl.PopClipRect();
 
             // Cell boundary line
             dl.AddRect(TEVector2(cellOriginX, cellOriginY),
@@ -1022,12 +1065,16 @@ void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int heig
         if (m_SpriteMode->m_ScriptRuntime && m_SpriteMode->m_ScriptRuntime->IsValid())
         {
             int totalFrames = Max(1, m_SpriteMode->m_ProcTotalFrames);
+            float frameTime = (float)frameIndex / (float)Max(1, m_AnimFPS);
             m_SpriteMode->m_ScriptRuntime->Execute(TimeGUI::TimeGUIDrawList(nullptr), TEVector2(0, 0),
-                                                   TEVector2((float)width, (float)height), (float)frameIndex / 12.0f,
-                                                   0.0f, frameIndex, totalFrames, width, height);
+                                                   TEVector2((float)width, (float)height), frameTime, 0.0f, frameIndex,
+                                                   totalFrames, width, height);
 
+            int bufW = m_SpriteMode->m_ScriptRuntime->GetPixelWidth();
+            int bufH = m_SpriteMode->m_ScriptRuntime->GetPixelHeight();
             const auto &pixelBuf = m_SpriteMode->m_ScriptRuntime->GetPixelBuffer();
-            if (pixelBuf.size() >= (size_t)(width * height))
+
+            if (bufW == width && bufH == height && pixelBuf.size() >= (size_t)(width * height))
             {
                 for (int y = 0; y < height; y++)
                 {
@@ -1057,6 +1104,78 @@ void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int heig
                             outPixels[idx + 1] = (unsigned char)Clamp((int)(col.y * 255.0f + 0.5f), 0, 255);
                             outPixels[idx + 2] = (unsigned char)Clamp((int)(col.z * 255.0f + 0.5f), 0, 255);
                             outPixels[idx + 3] = (unsigned char)Clamp((int)(col.w * 255.0f + 0.5f), 0, 255);
+                        }
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    if (m_SpriteMode->m_ActiveSubmodeIndex == 1)
+    {
+        // Rasterize vector shapes
+        int vecIdx = (frameIndex >= 0 && frameIndex < (int)m_SpriteMode->m_VectorFrames.Size())
+                         ? frameIndex
+                         : m_SpriteMode->m_ActiveVectorFrameIndex;
+        if (vecIdx >= 0 && vecIdx < (int)m_SpriteMode->m_VectorFrames.Size())
+        {
+            const auto &vecFrame = m_SpriteMode->m_VectorFrames[vecIdx];
+            for (const auto &elem : vecFrame.Elements)
+            {
+                if (elem.Type == VectorShapeType::Rectangle && elem.Points.size() >= 2)
+                {
+                    int x0 = Clamp((int)(elem.Points[0].x * width), 0, width - 1);
+                    int y0 = Clamp((int)(elem.Points[0].y * height), 0, height - 1);
+                    int x1 = Clamp((int)(elem.Points[1].x * width), 0, width - 1);
+                    int y1 = Clamp((int)(elem.Points[1].y * height), 0, height - 1);
+                    if (x0 > x1)
+                        std::swap(x0, x1);
+                    if (y0 > y1)
+                        std::swap(y0, y1);
+
+                    for (int y = y0; y <= y1; y++)
+                    {
+                        for (int x = x0; x <= x1; x++)
+                        {
+                            int idx = (y * width + x) * 4;
+                            if (elem.FillColor.w > 0.01f)
+                            {
+                                outPixels[idx + 0] = (unsigned char)(elem.FillColor.x * 255.0f);
+                                outPixels[idx + 1] = (unsigned char)(elem.FillColor.y * 255.0f);
+                                outPixels[idx + 2] = (unsigned char)(elem.FillColor.z * 255.0f);
+                                outPixels[idx + 3] = (unsigned char)(elem.FillColor.w * 255.0f);
+                            }
+                        }
+                    }
+                }
+                else if ((elem.Type == VectorShapeType::Circle || elem.Type == VectorShapeType::Semicircle) &&
+                         !elem.Points.empty())
+                {
+                    float cx = elem.Points[0].x * width;
+                    float cy = elem.Points[0].y * height;
+                    float r = elem.Radius * width;
+                    int x0 = Clamp((int)(cx - r), 0, width - 1);
+                    int x1 = Clamp((int)(cx + r), 0, width - 1);
+                    int y0 = Clamp((int)(cy - r), 0, height - 1);
+                    int y1 = Clamp((int)(cy + r), 0, height - 1);
+
+                    for (int y = y0; y <= y1; y++)
+                    {
+                        for (int x = x0; x <= x1; x++)
+                        {
+                            float d = std::hypot((float)x - cx, (float)y - cy);
+                            if (d <= r)
+                            {
+                                int idx = (y * width + x) * 4;
+                                if (elem.FillColor.w > 0.01f)
+                                {
+                                    outPixels[idx + 0] = (unsigned char)(elem.FillColor.x * 255.0f);
+                                    outPixels[idx + 1] = (unsigned char)(elem.FillColor.y * 255.0f);
+                                    outPixels[idx + 2] = (unsigned char)(elem.FillColor.z * 255.0f);
+                                    outPixels[idx + 3] = (unsigned char)(elem.FillColor.w * 255.0f);
+                                }
+                            }
                         }
                     }
                 }
@@ -1131,13 +1250,63 @@ void SpriteExportLayer::CompositeFramePixels(int frameIndex, int width, int heig
     }
 }
 
+void SpriteExportLayer::GenerateNormalMap(const TEArray<unsigned char> &srcPixels, int width, int height,
+                                          TEArray<unsigned char> &outNormals)
+{
+    outNormals.Resize(width * height * 4);
+    if (srcPixels.IsEmpty() || width <= 0 || height <= 0)
+        return;
+
+    auto GetHeight = [&](int x, int y) -> float
+    {
+        x = Clamp(x, 0, width - 1);
+        y = Clamp(y, 0, height - 1);
+        int idx = (y * width + x) * 4;
+        float r = srcPixels[idx + 0] / 255.0f;
+        float g = srcPixels[idx + 1] / 255.0f;
+        float b = srcPixels[idx + 2] / 255.0f;
+        float a = srcPixels[idx + 3] / 255.0f;
+        return (0.299f * r + 0.587f * g + 0.114f * b) * a;
+    };
+
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            // Sobel Filter Kernel
+            float tl = GetHeight(x - 1, y - 1);
+            float t = GetHeight(x, y - 1);
+            float tr = GetHeight(x + 1, y - 1);
+            float l = GetHeight(x - 1, y);
+            float r = GetHeight(x + 1, y);
+            float bl = GetHeight(x - 1, y + 1);
+            float b = GetHeight(x, y + 1);
+            float br = GetHeight(x + 1, y + 1);
+
+            float dX = (tr + 2.0f * r + br) - (tl + 2.0f * l + bl);
+            float dY = (bl + 2.0f * b + br) - (tl + 2.0f * t + tr);
+            float dZ = 0.35f;
+
+            float len = Sqrt(dX * dX + dY * dY + dZ * dZ);
+            if (len < 0.0001f)
+                len = 1.0f;
+
+            int idx = (y * width + x) * 4;
+            outNormals[idx + 0] = (unsigned char)Clamp((int)((-dX / len * 0.5f + 0.5f) * 255.0f + 0.5f), 0, 255);
+            outNormals[idx + 1] = (unsigned char)Clamp((int)((-dY / len * 0.5f + 0.5f) * 255.0f + 0.5f), 0, 255);
+            outNormals[idx + 2] = (unsigned char)Clamp((int)((dZ / len * 0.5f + 0.5f) * 255.0f + 0.5f), 0, 255);
+            outNormals[idx + 3] = srcPixels[idx + 3];
+        }
+    }
+}
+
 void SpriteExportLayer::ExecuteSingleFrameExport()
 {
     if (!m_SpriteMode)
         return;
 
-    int origW = m_SpriteMode->m_PixelGridWidth;
-    int origH = m_SpriteMode->m_PixelGridHeight;
+    int origW = 32, origH = 32;
+    GetEffectiveGridDimensions(origW, origH);
 
     TEArray<unsigned char> fullFramePixels;
     CompositeFramePixels(m_SingleFrameIndex, origW, origH, fullFramePixels);
@@ -1203,13 +1372,14 @@ void SpriteExportLayer::ExecuteSpritesheetExport()
     if (!m_SpriteMode)
         return;
 
-    int frameCount = (m_SpriteMode->m_ActiveSubmodeIndex == 2) ? Max(1, m_SpriteMode->m_ProcTotalFrames)
-                                                               : (int)m_SpriteMode->m_PixelFrames.size();
+    int frameCount = (m_SpriteMode->m_ActiveSubmodeIndex == 2)   ? Max(1, m_SpriteMode->m_ProcTotalFrames)
+                     : (m_SpriteMode->m_ActiveSubmodeIndex == 1) ? Max(1, (int)m_SpriteMode->m_VectorFrames.Size())
+                                                                 : (int)m_SpriteMode->m_PixelFrames.size();
     if (frameCount <= 0)
         return;
 
-    int gridW = m_SpriteMode->m_PixelGridWidth;
-    int gridH = m_SpriteMode->m_PixelGridHeight;
+    int gridW = 32, gridH = 32;
+    GetEffectiveGridDimensions(gridW, gridH);
     int scale = Max(1, m_ScaleMultiplier);
 
     int cellW = gridW * scale;
@@ -1276,105 +1446,46 @@ void SpriteExportLayer::ExecuteSpritesheetExport()
     TE_CORE_INFO("[SpriteExportLayer] Animation Spritesheet exported successfully ({0}x{1} px, {2} frames) to: {3}",
                  sheetW, sheetH, frameCount, finalPath);
 
-    // Optional Metadata Export
+    // Optional 2D Normal Map Export
+    if (m_GenerateNormalMap)
+    {
+        TEArray<unsigned char> normalBytes;
+        GenerateNormalMap(sheetBytes, sheetW, sheetH, normalBytes);
+        TEString normalPath = finalPath;
+        if (normalPath.EndsWith(".png") || normalPath.EndsWith(".PNG"))
+            normalPath = normalPath.Left(normalPath.Length() - 4) + "_normal.png";
+        else
+            normalPath += "_normal.png";
+        AssetManager::ExportImagePNG(normalPath, sheetW, sheetH, 4, normalBytes.GetData());
+        TE_CORE_INFO("[SpriteExportLayer] 2D Normal Map exported successfully to: {0}", normalPath);
+    }
+
+    // Optional Metadata Export (.tesheet)
     if (m_ExportMetadata)
     {
         TEString basePath = finalPath;
         if (basePath.EndsWith(".png") || basePath.EndsWith(".PNG"))
             basePath = basePath.Left(basePath.Length() - 4);
 
-        if (m_MetadataFormat == SpriteMetadataFormat::JSON || m_MetadataFormat == SpriteMetadataFormat::Both)
-        {
-            ExportMetadataJson(basePath + ".json", sheetW, sheetH, cellW, cellH, cols, rows, frameCount);
-        }
-
-        if (m_MetadataFormat == SpriteMetadataFormat::TESheet || m_MetadataFormat == SpriteMetadataFormat::Both)
-        {
-            ExportMetadataTESheet(basePath + ".tesheet", finalPath, sheetW, sheetH, cellW, cellH, cols, rows,
-                                  frameCount);
-        }
+        ExportMetadataTESheet(basePath + ".tesheet", finalPath, sheetW, sheetH, cellW, cellH, cols, rows, frameCount);
     }
-}
-
-void SpriteExportLayer::ExportMetadataJson(const TEString &jsonPath, int sheetW, int sheetH, int cellW, int cellH,
-                                           int cols, int rows, int frameCount)
-{
-    std::ofstream out(jsonPath.c_str());
-    if (!out.is_open())
-    {
-        TE_CORE_ERROR("[SpriteExportLayer] Failed to open metadata JSON file for writing: {0}", jsonPath);
-        return;
-    }
-
-    TEString textureFilename = m_ExportPath.GetFilename();
-
-    out << "{\n";
-    out << "  \"meta\": {\n";
-    out << "    \"app\": \"TimeEngine Sprite Editor\",\n";
-    out << "    \"version\": \"2.0\",\n";
-    out << "    \"image\": \"" << textureFilename.c_str() << "\",\n";
-    out << "    \"format\": \"RGBA8888\",\n";
-    out << "    \"size\": {\"w\": " << sheetW << ", \"h\": " << sheetH << "},\n";
-    out << "    \"scale\": " << m_ScaleMultiplier << ",\n";
-    out << "    \"frames_count\": " << frameCount << ",\n";
-    out << "    \"columns\": " << cols << ",\n";
-    out << "    \"rows\": " << rows << ",\n";
-    out << "    \"padding\": " << m_SheetPadding << ",\n";
-    out << "    \"spacing\": " << m_SheetSpacing << ",\n";
-    out << "    \"cell_size\": {\"w\": " << cellW << ", \"h\": " << cellH << "},\n";
-    out << "    \"fps\": " << m_AnimFPS << "\n";
-    out << "  },\n";
-    out << "  \"frames\": [\n";
-
-    for (int f = 0; f < frameCount; f++)
-    {
-        int c = f % cols;
-        int r = f / cols;
-        int cellX = m_SheetPadding + c * (cellW + m_SheetSpacing);
-        int cellY = m_SheetPadding + r * (cellH + m_SheetSpacing);
-        int durationMs = (m_AnimFPS > 0) ? (int)(1000.0f / (float)m_AnimFPS) : 83;
-
-        out << "    {\n";
-        out << "      \"filename\": \"frame_" << f << "\",\n";
-        out << "      \"frame\": {\"x\": " << cellX << ", \"y\": " << cellY << ", \"w\": " << cellW
-            << ", \"h\": " << cellH << "},\n";
-        out << "      \"rotated\": false,\n";
-        out << "      \"trimmed\": false,\n";
-        out << "      \"spriteSourceSize\": {\"x\": 0, \"y\": 0, \"w\": " << cellW << ", \"h\": " << cellH << "},\n";
-        out << "      \"sourceSize\": {\"w\": " << cellW << ", \"h\": " << cellH << "},\n";
-        out << "      \"duration\": " << durationMs << "\n";
-        out << "    }" << (f + 1 < frameCount ? ",\n" : "\n");
-    }
-
-    out << "  ]\n";
-    out << "}\n";
-    out.close();
-
-    TE_CORE_INFO("[SpriteExportLayer] Metadata JSON exported successfully to: {0}", jsonPath);
 }
 
 void SpriteExportLayer::ExportMetadataTESheet(const TEString &tesheetPath, const TEString &texturePath, int sheetW,
                                               int sheetH, int cellW, int cellH, int cols, int rows, int frameCount)
 {
-    std::ofstream out(tesheetPath.c_str());
-    if (!out.is_open())
-    {
-        TE_CORE_ERROR("[SpriteExportLayer] Failed to open .tesheet file for writing: {0}", tesheetPath);
-        return;
-    }
-
     TEString sheetName = tesheetPath.GetStem();
 
-    out << "SpriteSheet: " << sheetName.c_str() << "\n";
-    out << "TexturePath: " << texturePath.c_str() << "\n";
-    out << "CellWidth: " << cellW << "\n";
-    out << "CellHeight: " << cellH << "\n";
-    out << "PaddingX: " << m_SheetPadding << "\n";
-    out << "PaddingY: " << m_SheetPadding << "\n";
-    out << "OffsetX: " << m_SheetPadding << "\n";
-    out << "OffsetY: " << m_SheetPadding << "\n";
+    TEString content = "SpriteSheet: " + sheetName + "\n";
+    content += "TexturePath: " + texturePath + "\n";
+    content += "CellWidth: " + TEString::FromInt(cellW) + "\n";
+    content += "CellHeight: " + TEString::FromInt(cellH) + "\n";
+    content += "PaddingX: " + TEString::FromInt(m_SheetPadding) + "\n";
+    content += "PaddingY: " + TEString::FromInt(m_SheetPadding) + "\n";
+    content += "OffsetX: " + TEString::FromInt(m_SheetPadding) + "\n";
+    content += "OffsetY: " + TEString::FromInt(m_SheetPadding) + "\n";
 
-    out << "SubFrameCount: " << frameCount << "\n";
+    content += "SubFrameCount: " + TEString::FromInt(frameCount) + "\n";
     for (int f = 0; f < frameCount; f++)
     {
         int c = f % cols;
@@ -1387,18 +1498,26 @@ void SpriteExportLayer::ExportMetadataTESheet(const TEString &tesheetPath, const
         float u1 = (sheetW > 0) ? ((float)(cellX + cellW) / (float)sheetW) : 1.0f;
         float v1 = (sheetH > 0) ? ((float)(cellY + cellH) / (float)sheetH) : 1.0f;
 
-        out << "SubFrame: Frame_" << f << "," << f << "," << cellX << "," << cellY << "," << cellW << "," << cellH
-            << "," << u0 << "," << v0 << "," << u1 << "," << v1 << "\n";
+        content += "SubFrame: Frame_" + TEString::FromInt(f) + "," + TEString::FromInt(f) + "," +
+                   TEString::FromInt(cellX) + "," + TEString::FromInt(cellY) + "," + TEString::FromInt(cellW) + "," +
+                   TEString::FromInt(cellH) + "," + TEString::FromFloat(u0) + "," + TEString::FromFloat(v0) + "," +
+                   TEString::FromFloat(u1) + "," + TEString::FromFloat(v1) + "\n";
     }
 
-    out << "AnimCount: 1\n";
-    out << "Anim: Default," << (float)m_AnimFPS << "," << (m_AnimLoop ? "1" : "0") << ",";
+    content += "AnimCount: 1\n";
+    content += "Anim: Default," + TEString::FromFloat((float)m_AnimFPS) + "," + (m_AnimLoop ? "1" : "0") + ",";
     for (int f = 0; f < frameCount; f++)
     {
-        out << f << (f + 1 < frameCount ? ";" : "");
+        content += TEString::FromInt(f) + (f + 1 < frameCount ? ";" : "");
     }
-    out << "\n";
+    content += "\n";
 
-    out.close();
-    TE_CORE_INFO("[SpriteExportLayer] Native .tesheet metadata exported successfully to: {0}", tesheetPath);
+    if (TEFileSystem::WriteAllText(tesheetPath, content))
+    {
+        TE_CORE_INFO("[SpriteExportLayer] Native .tesheet metadata exported successfully to: {0}", tesheetPath);
+    }
+    else
+    {
+        TE_CORE_ERROR("[SpriteExportLayer] Failed to write .tesheet file: {0}", tesheetPath);
+    }
 }

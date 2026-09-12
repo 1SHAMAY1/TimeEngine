@@ -1,0 +1,41 @@
+// ==============================================================================
+// TimeEngine Template Content - CameraFollow2D.tscript
+// Extends: TComponent
+// Description: Smooth player tracking with horizontal lookahead & vertical clamping.
+// ==============================================================================
+
+class CameraFollow2D : TComponent
+
+    T_REGISTER_PROPERTY(float, smooth_speed, 6.0)
+    T_REGISTER_PROPERTY(float, lookahead_distance, 2.5)
+
+    public:
+        float min_y = -3.0
+        float max_y = 12.0
+
+    on_ready() {
+        TE_CORE_INFO("CameraFollow2D ready.")
+    }
+
+    on_update(float dt) {
+        let player = Scene.FindEntityByTag("Player")
+        if (!player) {
+            return;
+        }
+
+        let playerPos = player.GetPosition()
+        let targetX = playerPos.x
+
+        let vel = player.GetVelocity()
+        if (vel.x > 0.2) {
+            targetX += lookahead_distance
+        } else if (vel.x < -0.2) {
+            targetX -= lookahead_distance
+        }
+
+        let targetY = Math.Clamp(playerPos.y + 1.2, min_y, max_y)
+        let currentPos = transform.position
+
+        transform.position.x = Math.Lerp(currentPos.x, targetX, smooth_speed * dt)
+        transform.position.y = Math.Lerp(currentPos.y, targetY, smooth_speed * dt)
+    }

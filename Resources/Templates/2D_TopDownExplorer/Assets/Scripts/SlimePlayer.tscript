@@ -1,0 +1,65 @@
+﻿// SlimePlayer.tscript
+class SlimePlayer : TComponent
+
+    T_REGISTER_PROPERTY(float, move_speed, 6.0)
+    T_REGISTER_PROPERTY(int, level, 1)
+    T_REGISTER_PROPERTY(float, current_xp, 0.0)
+    T_REGISTER_PROPERTY(float, xp_for_next_level, 100.0)
+
+    public:
+        float coin_count = 0.0
+        float bounce_timer = 0.0
+
+    on_ready() {
+        TE_CORE_INFO(Slime Explorer Player Initialized at Level  + level)
+    }
+
+    on_update(float dt) {
+        float move_x = 0.0
+        float move_y = 0.0
+
+        if (Input.IsActionPressed(MoveRight) || Input.IsKeyPressed(Key.D) || Input.IsKeyPressed(Key.Right)) {
+            move_x += 1.0
+        }
+        if (Input.IsActionPressed(MoveLeft) || Input.IsKeyPressed(Key.A) || Input.IsKeyPressed(Key.Left)) {
+            move_x -= 1.0
+        }
+        if (Input.IsActionPressed(MoveUp) || Input.IsKeyPressed(Key.W) || Input.IsKeyPressed(Key.Up)) {
+            move_y += 1.0
+        }
+        if (Input.IsActionPressed(MoveDown) || Input.IsKeyPressed(Key.S) || Input.IsKeyPressed(Key.Down)) {
+            move_y -= 1.0
+        }
+
+        // Apply movement vector
+        if (move_x != 0.0 || move_y != 0.0) {
+            transform.position.x += move_x * move_speed * dt
+            transform.position.y += move_y * move_speed * dt
+
+            // Juicy Slime Squish/Bounce animation
+            bounce_timer += dt * 10.0
+            transform.scale.x = 1.0 + (sin(bounce_timer) * 0.15)
+            transform.scale.y = 1.0 - (sin(bounce_timer) * 0.15)
+        } else {
+            bounce_timer = 0.0
+            transform.scale.x = 1.0
+            transform.scale.y = 1.0
+        }
+    }
+
+    public void AddXP(float amount) {
+        current_xp += amount
+        if (current_xp >= xp_for_next_level) {
+            current_xp -= xp_for_next_level
+            level += 1
+            xp_for_next_level *= 1.5
+            move_speed += 0.5
+            TE_CORE_INFO(LEVEL UP! Slime reached Level  + level + ! New Speed:  + move_speed)
+        }
+    }
+
+    public void AddCoin(float val) {
+        coin_count += val
+        AddXP(val * 10.0)
+        TE_CORE_INFO(Collected Coin! Total Coins:  + coin_count)
+    }

@@ -56,7 +56,7 @@ public:
     TE_API static bool GetMouseButtonUp(int button);
 
     // --- TimeGUI Key Mapping ---
-    TE_API static int ToImGuiKey(KeyCode key);
+    TE_API static TimeGUIKey ToTimeGUIKey(KeyCode key);
 
 private:
     static void *s_Window;

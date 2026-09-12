@@ -1,0 +1,22 @@
+﻿// ShipController.tscript
+class ShipController : TComponent
+
+    T_REGISTER_PROPERTY(float, fire_rate, 0.2)
+    T_REGISTER_PROPERTY(float, projectile_speed, 18.0)
+    T_REGISTER_PROPERTY(int, health, 100)
+
+    private:
+        float m_fire_timer = 0.0
+
+    on_ready() {
+        TE_CORE_INFO(ShipController online. Systems initialized.)
+    }
+
+    on_update(float dt) {
+        m_fire_timer += dt
+    }
+
+    on_collision(other) {
+        health -= 10
+        TE_CORE_WARN(Ship hit! Current Health:  + health)
+    }

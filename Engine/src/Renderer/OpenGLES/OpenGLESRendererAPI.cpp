@@ -41,7 +41,7 @@ void OpenGLESRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, ui
     glViewport(static_cast<GLint>(x), static_cast<GLint>(y), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 }
 
-void OpenGLESRendererAPI::SetClearColor(const glm::vec4 &color) { glClearColor(color.r, color.g, color.b, color.a); }
+void OpenGLESRendererAPI::SetClearColor(const TEVector4 &color) { glClearColor(color.x, color.y, color.z, color.w); }
 
 void OpenGLESRendererAPI::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
@@ -73,25 +73,50 @@ void OpenGLESRendererAPI::SetBlendMode(int blendMode)
 
 bool OpenGLESRendererAPI::LoadLoader(void *(*loadProc)(const char *))
 {
-    return gladLoadGLLoader((GLADloadproc)loadProc);
+    bool success = gladLoadGLLoader((GLADloadproc)loadProc);
+    if (success)
+    {
+        const char *vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
+        if (vendor)
+            m_Vendor = vendor;
+        const char *renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+        if (renderer)
+            m_Renderer = renderer;
+        const char *version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+        if (version)
+            m_Version = version;
+    }
+    return success;
 }
 
 TEString OpenGLESRendererAPI::GetVersionString()
 {
+    if (!m_Version.IsEmpty())
+        return m_Version;
     const char *version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
-    return version ? version : "Unknown";
+    if (version)
+        m_Version = version;
+    return m_Version.IsEmpty() ? "Unknown" : m_Version;
 }
 
 TEString OpenGLESRendererAPI::GetGPUVendor()
 {
+    if (!m_Vendor.IsEmpty())
+        return m_Vendor;
     const char *vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
-    return vendor ? vendor : "Unknown";
+    if (vendor)
+        m_Vendor = vendor;
+    return m_Vendor.IsEmpty() ? "Unknown" : m_Vendor;
 }
 
 TEString OpenGLESRendererAPI::GetGPURenderer()
 {
+    if (!m_Renderer.IsEmpty())
+        return m_Renderer;
     const char *renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
-    return renderer ? renderer : "Unknown";
+    if (renderer)
+        m_Renderer = renderer;
+    return m_Renderer.IsEmpty() ? "Unknown" : m_Renderer;
 }
 
 void OpenGLESRendererAPI::GetViewport(int *viewport) { glGetIntegerv(GL_VIEWPORT, viewport); }

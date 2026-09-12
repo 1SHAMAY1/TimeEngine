@@ -10,6 +10,25 @@ void OpenGLRendererAPI::Init()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    if (m_Vendor.IsEmpty())
+    {
+        const char *vendor = (const char *)glGetString(GL_VENDOR);
+        if (vendor)
+            m_Vendor = vendor;
+    }
+    if (m_Renderer.IsEmpty())
+    {
+        const char *renderer = (const char *)glGetString(GL_RENDERER);
+        if (renderer)
+            m_Renderer = renderer;
+    }
+    if (m_Version.IsEmpty())
+    {
+        const char *version = (const char *)glGetString(GL_VERSION);
+        if (version)
+            m_Version = version;
+    }
 }
 
 void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -17,7 +36,7 @@ void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint
     glViewport(x, y, width, height);
 }
 
-void OpenGLRendererAPI::SetClearColor(const glm::vec4 &color) { glClearColor(color.r, color.g, color.b, color.a); }
+void OpenGLRendererAPI::SetClearColor(const TEVector4 &color) { glClearColor(color.x, color.y, color.z, color.w); }
 
 void OpenGLRendererAPI::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
@@ -47,24 +66,52 @@ void OpenGLRendererAPI::SetBlendMode(int blendMode)
     }
 }
 
-bool OpenGLRendererAPI::LoadLoader(void *(*loadProc)(const char *)) { return gladLoadGLLoader((GLADloadproc)loadProc); }
+bool OpenGLRendererAPI::LoadLoader(void *(*loadProc)(const char *))
+{
+    bool success = gladLoadGLLoader((GLADloadproc)loadProc);
+    if (success)
+    {
+        const char *vendor = (const char *)glGetString(GL_VENDOR);
+        if (vendor)
+            m_Vendor = vendor;
+        const char *renderer = (const char *)glGetString(GL_RENDERER);
+        if (renderer)
+            m_Renderer = renderer;
+        const char *version = (const char *)glGetString(GL_VERSION);
+        if (version)
+            m_Version = version;
+    }
+    return success;
+}
 
 TEString OpenGLRendererAPI::GetVersionString()
 {
+    if (!m_Version.IsEmpty())
+        return m_Version;
     const char *version = (const char *)glGetString(GL_VERSION);
-    return version ? version : "Unknown";
+    if (version)
+        m_Version = version;
+    return m_Version.IsEmpty() ? "Unknown" : m_Version;
 }
 
 TEString OpenGLRendererAPI::GetGPUVendor()
 {
+    if (!m_Vendor.IsEmpty())
+        return m_Vendor;
     const char *vendor = (const char *)glGetString(GL_VENDOR);
-    return vendor ? vendor : "Unknown";
+    if (vendor)
+        m_Vendor = vendor;
+    return m_Vendor.IsEmpty() ? "Unknown" : m_Vendor;
 }
 
 TEString OpenGLRendererAPI::GetGPURenderer()
 {
+    if (!m_Renderer.IsEmpty())
+        return m_Renderer;
     const char *renderer = (const char *)glGetString(GL_RENDERER);
-    return renderer ? renderer : "Unknown";
+    if (renderer)
+        m_Renderer = renderer;
+    return m_Renderer.IsEmpty() ? "Unknown" : m_Renderer;
 }
 
 static GLenum GetGLBlendFactor(BlendFactor factor)

@@ -56,6 +56,8 @@ project "Engine"
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h",
 
         -- volk
         "%{wks.location}/Vendor/volk/volk.c"
@@ -78,18 +80,37 @@ project "Engine"
         removefiles {
             "src/Renderer/DirectX11/**",
             "Include/Renderer/DirectX11/**",
-            "src/Utils/Platform/Windows/**"
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h",
+            "src/Utils/Platform/Windows/**",
+            "src/Window/WindowsWindow.cpp",
+            "Include/Window/WindowsWindow.hpp"
         }
     filter {}
 
-    -- Exclude Metal specific source files on non-macOS platforms
+    -- Exclude Linux specific source files on non-Linux platforms
+    filter "system:not linux"
+        removefiles {
+            "src/Window/LinuxWindow.cpp",
+            "Include/Window/LinuxWindow.hpp"
+        }
+    filter {}
+
+    -- Exclude ForgeUI backend while in development
+    removefiles {
+        "src/UI/ForgeUI/**"
+    }
+
+    -- Exclude Metal and macOS specific source files on non-macOS platforms
     filter "system:not macosx"
         removefiles {
             "src/Renderer/Metal/**",
             "Include/Renderer/Metal/**",
             "src/**.mm",
             "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
+            "src/Window/MacWindow.cpp",
+            "Include/Window/MacWindow.hpp"
         }
     filter {}
     
@@ -126,6 +147,7 @@ project "Engine"
 
     includedirs {
         "%{IncludeDir.ImGui}",
+        "%{IncludeDir.ForgeUI}",
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
         "%{IncludeDir.Logger}",
@@ -142,6 +164,7 @@ project "Engine"
 
     externalincludedirs {
         "%{IncludeDir.ImGui}",
+        "%{IncludeDir.ForgeUI}",
         "%{IncludeDir.Engine}",
         "%{IncludeDir.Engine_Include}",
         "%{IncludeDir.Logger}",
@@ -174,13 +197,21 @@ project "Engine"
         "Customizable_Logger",
         "Velox",
         "glfw3"
+        -- "ForgeUI"
     }
 
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
+        defines {
+            "TE_PLATFORM_LINUX",
+            "IMGUI_IMPL_OPENGL_LOADER_GLAD"
+        }
         links { "GL" }
     filter "system:macosx"
+        defines {
+            "TE_PLATFORM_MACOS"
+        }
         links {
             "Cocoa.framework",
             "IOKit.framework",
@@ -191,7 +222,7 @@ project "Engine"
         }
     filter {}
 
-    dependson { "Logger", "Velox" }
+    dependson { "Logger", "Velox" } -- "ForgeUI"
 
     local rootDir = _MAIN_SCRIPT_DIR or _WORKING_DIR or "."
     for _, pluginPath in ipairs(os.matchfiles(rootDir .. "/Engine/Plugins/*/*.teplugin")) do
@@ -219,9 +250,9 @@ project "Engine"
         prebuildcommands {
             '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
         }
-    filter { "system:macosx" }
+    filter { "system:macosx", "action:gmake*" }
         prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
+            'premake5 --file="%{wks.location}/Premake5.lua" check-rules'
         }
     filter {}
 
@@ -241,7 +272,8 @@ project "Engine"
             "ole32",
             "uuid",
             "pdh",
-            "ws2_32"
+            "ws2_32",
+            "dwmapi"
         }
 
     filter { "system:windows", "action:vs*" }

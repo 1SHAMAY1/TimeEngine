@@ -83,7 +83,7 @@ bool PCGWilsonMazeNode::Execute(PCGExecutionContext &ctx)
         for (int x = 0; x < w; ++x)
         {
             int idx = y * w + x;
-            glm::vec3 pos(startX + x * spacing, startY + y * spacing, 0.0f);
+            TEVector pos(startX + x * spacing, startY + y * spacing, 0.0f);
             if (inTree[idx])
             {
                 PCGPoint pt(pos, 1.0f, spacing * 0.5f);
@@ -177,7 +177,7 @@ bool PCGCellularAutomataNode::Execute(PCGExecutionContext &ctx)
     {
         for (int x = 0; x < w; ++x)
         {
-            glm::vec3 pos(startX + x * cellSize, startY + y * cellSize, 0.0f);
+            TEVector pos(startX + x * cellSize, startY + y * cellSize, 0.0f);
             if (map[y * w + x] == 0)
             {
                 PCGPoint pt(pos, 1.0f, cellSize * 0.5f);
@@ -287,7 +287,7 @@ bool PCGBSPRoomNode::Execute(PCGExecutionContext &ctx)
     {
         if (r)
         {
-            glm::vec3 center(r->x + r->w * 0.5f, r->y + r->h * 0.5f, 0.0f);
+            TEVector center(r->x + r->w * 0.5f, r->y + r->h * 0.5f, 0.0f);
             PCGPoint pt(center, 1.0f, std::min(r->w, r->h) * 0.5f);
             pt.SetAttribute("RoomWidth", PCGAttributeValue(r->w * 0.8f));
             pt.SetAttribute("RoomHeight", PCGAttributeValue(r->h * 0.8f));
@@ -322,13 +322,13 @@ bool PCGDrunkardWalkNode::Execute(PCGExecutionContext &ctx)
     float stepLen = std::max(0.5f, std::stof(GetProperty("StepLength", "2.0").c_str()));
 
     auto outData = CreateRef<PCGPointData>();
-    glm::vec2 pos(ctx.Origin.x, ctx.Origin.y);
+    TEVector2 pos(ctx.Origin.x, ctx.Origin.y);
 
-    glm::vec2 dirs[4] = {{0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, -1.0f}, {-1.0f, 0.0f}};
+    TEVector2 dirs[4] = {{0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, -1.0f}, {-1.0f, 0.0f}};
 
     for (int i = 0; i < steps; ++i)
     {
-        outData->AddPoint(PCGPoint(glm::vec3(pos.x, pos.y, 0.0f), 1.0f, stepLen * 0.5f));
+        outData->AddPoint(PCGPoint(TEVector(pos.x, pos.y, 0.0f), 1.0f, stepLen * 0.5f));
         int d = ctx.RandomInt(0, 3);
         pos += dirs[d] * stepLen;
     }
@@ -373,7 +373,7 @@ bool PCGWaveFunctionCollapseNode::Execute(PCGExecutionContext &ctx)
         for (int x = 0; x < gx; ++x)
         {
             int choice = ctx.RandomInt(0, numTypes - 1);
-            glm::vec3 pos(startX + x * tileSize, startY + y * tileSize, 0.0f);
+            TEVector pos(startX + x * tileSize, startY + y * tileSize, 0.0f);
             PCGPoint pt(pos, 1.0f, tileSize * 0.5f);
             pt.SetAttribute("TileTag", PCGAttributeValue(tileTypes[choice]));
             outData->AddPoint(pt);

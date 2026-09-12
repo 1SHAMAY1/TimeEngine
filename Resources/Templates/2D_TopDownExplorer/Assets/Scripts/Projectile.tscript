@@ -1,0 +1,35 @@
+// ==============================================================================
+// TimeEngine Template Content - Projectile.tscript
+// Extends: TComponent
+// Description: Linear directional velocity, lifetime auto-destruction & collision.
+// ==============================================================================
+
+class Projectile : TComponent
+
+    T_REGISTER_PROPERTY(float, speed, 16.0)
+    T_REGISTER_PROPERTY(float, lifetime, 3.0)
+
+    public:
+        float timer = 0.0
+
+    on_ready() {
+        timer = 0.0
+    }
+
+    on_update(float dt) {
+        timer += dt
+        if (timer >= lifetime) {
+            Destroy(this.entity)
+            return
+        }
+
+        let rad = transform.rotation.z * (3.14159265 / 180.0)
+        transform.position.x += Math.Cos(rad) * speed * dt
+        transform.position.y += Math.Sin(rad) * speed * dt
+    }
+
+    on_collision(other) {
+        if (other.GetTag() == "Enemy") {
+            Destroy(this.entity)
+        }
+    }

@@ -1,0 +1,18 @@
+// ==============================================================================
+// TimeEngine Template Content - KillZone.tscript
+// Extends: TComponent
+// Description: Out-of-bounds fall boundary detection with automatic checkpoint respawn.
+// ==============================================================================
+
+class KillZone : TComponent
+
+    T_REGISTER_PROPERTY(float, respawn_x, 0.0)
+    T_REGISTER_PROPERTY(float, respawn_y, 2.0)
+
+    on_collision(other) {
+        if (other.GetTag() == "Player") {
+            other.transform.position.x = respawn_x
+            other.transform.position.y = respawn_y
+            other.SetVelocity(0.0, 0.0)
+        }
+    }

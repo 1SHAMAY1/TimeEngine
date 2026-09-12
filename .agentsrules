@@ -16,12 +16,14 @@ When assisting with the TimeEngine codebase, follow these rules:
   - Use `TE::WeakRef<T>` for non-owning observers to break reference cycles (`std::weak_ptr`).
 - **Engine Strings**:
   - Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` for string operations, function signatures, and component properties instead of raw `std::string` or `const char*`.
+- **File I/O & Filesystem**:
+  - Always use `TEFileSystem` (`WriteAllText`, `ReadAllText`, `ForEachLine`, `Exists`, `CreateDirectories`) for file operations instead of raw `std::ofstream`, `std::ifstream`, `std::fstream`, or `std::filesystem`.
 - **Gameplay Containers & Utilities**:
   - Prefer `TEArray<T>`, `TEOption<T>`, `TESpan<T>`, and `TEResult<T, E>` (from `GameFrameWork/GameplayUtils.hpp`).
 - **Math & Vectors**:
   - Always use engine math types (`TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` from `Utils/MathUtils.hpp`) instead of raw GLM types or raw vendor vectors.
 - **Resources**: Use existing classes like `Texture2D`, `Shader`, and `VertexArray` instead of raw OpenGL/DirectX/Vulkan calls where possible.
-- **GUI Rendering**: Never use raw `ImGui` or include `imgui.h`/`imgui_internal.h` outside of the wrapper layer. All engine layers and systems MUST use the clean non-vendor GUI wrapper namespace (`TE::TimeGUI`) and wrapper classes (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`, etc.). Do not expose or return vendor types (like `ImVec4`, `ImDrawList*`, `ImFont*`) in function signatures or variables outside the wrapper implementation (`TimeGUI.cpp` / `TimeGUILayer.cpp`).
+- **GUI Rendering**: Never use raw `ImGui` or include `imgui.h`/`imgui_internal.h` outside of the wrapper layer. All engine layers and systems MUST use the clean non-vendor GUI wrapper namespace (`TE::TimeGUI`) and wrapper classes (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`, etc.). Do not expose or return vendor types (like `ImVec4`, `ImDrawList*`, `ImFont*`) in function signatures or variables outside the wrapper implementation. Conversely, `TimeGUI` must NEVER be called or included within `Engine/src/UI/` backends (`ImGui`, `ForgeUI`, or backend render glue); dependencies flow strictly one-way (`TimeGUI` -> `UIEngine`/`UIAPI` -> Backends).
 
 ## 2. Architecture Guidelines
 - Follow the **ECS** (Entity-Component System) pattern for scene objects.

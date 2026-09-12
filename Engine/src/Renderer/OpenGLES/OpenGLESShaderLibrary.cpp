@@ -1,6 +1,5 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/OpenGLES/OpenGLESShaderLibrary.hpp"
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 // ---------------------------------------------------------------------------
@@ -299,37 +298,35 @@ void OpenGLESShaderLibrary::SetUniform1f(OpenGLESShader *shader, const TEString 
     shader->Bind();
     shader->SetUniform1f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform2f(OpenGLESShader *shader, const TEString &name, const glm::vec2 &value)
+void OpenGLESShaderLibrary::SetUniform2f(OpenGLESShader *shader, const TEString &name, const TEVector2 &value)
 {
     shader->Bind();
     shader->SetUniform2f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform3f(OpenGLESShader *shader, const TEString &name, const glm::vec3 &value)
+void OpenGLESShaderLibrary::SetUniform3f(OpenGLESShader *shader, const TEString &name, const TEVector &value)
 {
     shader->Bind();
     shader->SetUniform3f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniform4f(OpenGLESShader *shader, const TEString &name, const glm::vec4 &value)
+void OpenGLESShaderLibrary::SetUniform4f(OpenGLESShader *shader, const TEString &name, const TEVector4 &value)
 {
     shader->Bind();
     shader->SetUniform4f(name, value);
 }
-void OpenGLESShaderLibrary::SetUniformMat3(OpenGLESShader *shader, const TEString &name, const glm::mat3 &value)
-{
-    shader->Bind();
-    glUniformMatrix3fv(shader->GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
-}
-void OpenGLESShaderLibrary::SetUniformMat4(OpenGLESShader *shader, const TEString &name, const glm::mat4 &value)
+void OpenGLESShaderLibrary::SetUniformMat4(OpenGLESShader *shader, const TEString &name, const TEMatrix4 &value)
 {
     shader->Bind();
     shader->SetUniformMat4(name, value);
 }
 void OpenGLESShaderLibrary::SetUniformMat4Array(OpenGLESShader *shader, const TEString &name,
-                                                const TEArray<glm::mat4> &values)
+                                                const TEArray<TEMatrix4> &values)
 {
     shader->Bind();
-    glUniformMatrix4fv(shader->GetUniformLocation(name), static_cast<GLsizei>(values.Num()), GL_FALSE,
-                       glm::value_ptr(values[0]));
+    if (!values.IsEmpty())
+    {
+        glUniformMatrix4fv(shader->GetUniformLocation(name), static_cast<GLsizei>(values.Num()), GL_FALSE,
+                           &values[0].m[0][0]);
+    }
 }
 
 // ---------------------------------------------------------------------------

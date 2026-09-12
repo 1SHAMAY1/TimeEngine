@@ -98,8 +98,7 @@ void MaterialPreviewViewport::Draw(const TERef<MaterialAsset> &material)
 
         // Allow dragging light position
         TEVector2 mousePos = TimeGUI::GetMousePos();
-        if (TimeGUI::IsMouseDown(0) &&
-            glm::distance(glm::vec2(mousePos.x, mousePos.y), glm::vec2(lightScreenPos.x, lightScreenPos.y)) <= 20.0f)
+        if (TimeGUI::IsMouseDown(0) && (mousePos - lightScreenPos).Length() <= 20.0f)
         {
             m_LightPos = mousePos - center + TEVector2(150.0f, 150.0f);
         }

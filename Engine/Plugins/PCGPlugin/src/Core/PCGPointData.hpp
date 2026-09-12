@@ -19,13 +19,13 @@ public:
     bool IsEmpty() const { return m_Points.IsEmpty(); }
 
     void FilterByDensity(float minDensity, float maxDensity = 1.0f);
-    void TransformPoints(const glm::vec3 &translation, const glm::quat &rotation, const glm::vec3 &scale);
+    void TransformPoints(const TEVector &translation, const TEQuat &rotation, const TEVector &scale);
 
     void UnionWith(const PCGPointData &other);
     void IntersectWith(const PCGPointData &other, float matchRadius = 1.0f);
     void DifferenceWith(const PCGPointData &other, float matchRadius = 1.0f);
 
-    void GetBounds(glm::vec3 &outMin, glm::vec3 &outMax) const;
+    void GetBounds(TEVector &outMin, TEVector &outMax) const;
 
 private:
     TEArray<PCGPoint> m_Points;

@@ -1,16 +1,16 @@
 #pragma once
 
+#include "Utils/MathUtils.hpp"
 #include <algorithm>
 #include <cmath>
-#include <glm/glm.hpp>
 
 namespace IK
 {
 
 struct FootPlacementResult
 {
-    glm::vec3 FootTargetPosition = {0.0f, 0.0f, 0.0f};
-    glm::vec3 SurfaceNormal = {0.0f, 1.0f, 0.0f};
+    TEVector FootTargetPosition = {0.0f, 0.0f, 0.0f};
+    TEVector SurfaceNormal = {0.0f, 1.0f, 0.0f};
     float PelvisOffset = 0.0f;
     bool IsGrounded = false;
 };
@@ -18,8 +18,8 @@ struct FootPlacementResult
 class FootGrounder
 {
 public:
-    static FootPlacementResult Evaluate(const glm::vec3 &defaultFootPos, float raycastHitHeight,
-                                        const glm::vec3 &groundNormal, float maxStepUp = 30.0f,
+    static FootPlacementResult Evaluate(const TEVector &defaultFootPos, float raycastHitHeight,
+                                        const TEVector &groundNormal, float maxStepUp = 30.0f,
                                         float maxStepDown = 50.0f)
     {
         FootPlacementResult result;
@@ -36,7 +36,7 @@ public:
         else
         {
             result.FootTargetPosition = defaultFootPos;
-            result.SurfaceNormal = glm::vec3(0.0f, 1.0f, 0.0f);
+            result.SurfaceNormal = TEVector(0.0f, 1.0f, 0.0f);
             result.PelvisOffset = 0.0f;
             result.IsGrounded = false;
         }

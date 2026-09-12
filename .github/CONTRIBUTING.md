@@ -103,32 +103,35 @@ We use `.clang-format` to maintain consistent C++ code style.
 - **Local Rule Check**: You can run `premake5 check-rules` locally to verify architecture and coding safety rules.
 
 ### Memory Management & Smart Pointers
-- **No Raw Owning Pointers**: Never use `new` / `delete` or unmanaged raw pointers for memory ownership.
-- **Unique Ownership**: Use `TE::Scope<T>` and create instances using `TE::CreateScope<T>(...)` (aliases for `std::unique_ptr` / `std::make_unique`).
-- **Shared Ownership**: Use `TE::Ref<T>` and create instances using `TE::CreateRef<T>(...)` (aliases for `std::shared_ptr` / `std::make_shared`).
-- **Weak Observers**: Use `TE::WeakRef<T>` (`std::weak_ptr`) to observe objects without taking ownership and to prevent circular reference leaks.
+- **No Raw Owning Pointers**: Never use `new` / `delete`, `malloc` / `free`, or unmanaged raw pointers for memory ownership.
+- **Unique Ownership**: Use `Scope<T>` (or `TEScope<T>`) and create instances using `CreateScope<T>(...)` (aliases for `std::unique_ptr` / `std::make_unique`). Do NOT prefix with `TE::` or `TimeEngine::`.
+- **Shared Ownership**: Use `Ref<T>` (or `TERef<T>`) and create instances using `CreateRef<T>(...)` (aliases for `std::shared_ptr` / `std::make_shared`). Do NOT prefix with `TE::` or `TimeEngine::`.
+- **Weak Observers**: Use `WeakRef<T>` (or `TEWeakRef<T>`) (`std::weak_ptr`) to observe objects without taking ownership and to prevent circular reference leaks.
 
-### Engine Types Over Raw / STL Types
-- **Strings**: Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` instead of raw `std::string` or `const char*` across engine public APIs, components, properties, and serialization.
-- **Dynamic Arrays**: Use `TEArray<T>` (from `GameFrameWork/GameplayUtils.hpp`) with engine methods (`Add()`, `Num()`, `IsEmpty()`, `Clear()`).
-- **Optional & Results**: Use `TEOption<T>` / `TENone`, `TESpan<T>`, and `TEResult<T, E>` / `TEUnexpected<E>` (from `GameFrameWork/GameplayUtils.hpp`) for clean error handling.
+### Engine Types & Containers Over Raw / STL Types
+- **Global Namespace (No `TE::` Qualifier)**: All engine types and smart pointer aliases live in the global scope via standard engine headers. Never qualify types with `TE::` or `TimeEngine::` and never wrap engine code in `namespace TE` (`TE_NS01`-`TE_NS04` rules).
+- **Strings**: Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` instead of raw `std::string`, `std::wstring`, or `const char*` across engine public APIs, components, properties, and serialization.
+- **Filesystem & Paths**: Always use `TEFileSystem` (`WriteAllText`, `ReadAllText`, `ForEachLine`, `Exists`) and `TEString` path methods (`GetStem()`, `GetFilename()`, `GetParentPath()`, `GetExtension()`) instead of `<filesystem>` or legacy STL path methods (`TE_MEM04`, `TE_STR01`).
+- **Dynamic Arrays & Containers**: Use `TEArray<T>` (with `Add()`, `Num()`, `IsEmpty()`, `Clear()`), `TEMap<K, V>`, and `TESet<K>` instead of `std::vector`, `std::unordered_map`, or `std::unordered_set`.
+- **Optional & Results**: Use `TEOption<T>` / `TENone`, `TESpan<T>`, and `TEResult<T, E>` / `TEUnexpected<E>` (from `GameFrameWork/GameplayUtils.hpp`) for clean, exception-free error handling.
 - **Math & Vectors**: Always use engine math types (`TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` from `Utils/MathUtils.hpp`) rather than raw GLM or vendor math structs.
-- **GUI Abstraction**: Never call raw `ImGui` functions or include `imgui.h` outside `TimeGUI.cpp` / `TimeGUILayer.cpp`. Use the `TE::TimeGUI` abstraction wrapper namespace and types (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`).
+
+### Strict Vendor Isolation & UI Architecture
+- **UI Vendor Insulation**: UI vendor libraries (`ImGui`, `ForgeUI`) must NEVER be referenced directly in public headers, `TimeGUI` public headers, or engine client code (`TE_VND08`, `TE_VND11`). All UI rendering goes through the abstract `UIAPI` interface / `TimeGUI` wrapper inside `Engine/src/UI/`.
+- **Physics & Windowing Insulation**: Never leak `Velox` (`vx*`, `TE_VND01`), `GLFW` (`glfw*`, `TE_VND02`), or raw graphics API headers (`glad/glad.h`, `d3d11.h`, `vulkan/`, `Metal/`) into gameplay or editor code. Use `PhysicsWorld`, `IWindow`, and `Renderer2D` / `RenderCommand`.
 
 ### Writing Plugins & MCP Tools
 - **Writing Plugins**:
   - Save descriptors as `<PluginName>.teplugin` (containing `Name: ...`, `Version: ...`, `Description: ...`, `Enabled: true/false`).
-  - Keep the DLL inside the same plugin subdirectory. Discovered dynamically by `PluginManager`.
+  - Place the dynamic library (`.dll` / `.so` / `.dylib`) in the plugin folder, discovered dynamically by `PluginManager`.
 - **Writing MCP Tools**:
-  - Add tool schemas to `Tool_GetEngineInfo()` inside `MCPPlugin.cpp`.
-  - Add dispatch handlers inside `DispatchToolCall()` mapping to your custom `Tool_<Name>` method.
+  - Register tools declaratively using the macro `TE_REGISTER_MCP_TOOL(Name, Description, SchemaJson, Handler)` or dynamically via `MCPToolRegistry::RegisterTool()`.
 
 ### Component Registration
-When adding new components to the ECS (under `Engine/Include/Core/Scene/`), make sure to use the reflection macros so they register with the serialization and Editor systems:
+When adding new components to the ECS (under `Engine/Include/Core/ECS/`), make sure to use reflection macros so they register with the serialization and Editor systems:
 - Register the component using `T_REGISTER_COMPONENT(MyComponent, "My Component Name")`.
 - Register each property using `T_REGISTER_PROPERTY(MyComponent, Type, VariableName, "Display Name")`.
-
-This allows the Editor's **Properties** panel to draw the controls automatically without writing manual ImGui code.
+This allows the Editor's **Properties** panel to draw the controls automatically without writing manual UI code.
 
 ---
 

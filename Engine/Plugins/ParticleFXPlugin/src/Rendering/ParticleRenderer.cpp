@@ -4,7 +4,7 @@
 #include "Renderer/RenderCommand.hpp"
 #include "Renderer/Texture.hpp"
 #include "Renderer/VertexBuffer.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+#include "Utils/Math/MathEngine.hpp"
 
 ParticleRenderer::ParticleRenderer(uint32_t maxParticles)
     : m_MaxParticles(maxParticles), m_MaxVertices(maxParticles * 4), m_MaxIndices(maxParticles * 6)
@@ -46,7 +46,7 @@ void ParticleRenderer::Init()
     m_VAO->SetIndexBuffer(m_IBO);
 }
 
-void ParticleRenderer::Begin(const glm::mat4 &viewProjection)
+void ParticleRenderer::Begin(const TEMatrix4 &viewProjection)
 {
     Init();
     m_ViewProjection = viewProjection;
@@ -67,10 +67,10 @@ void ParticleRenderer::Render(const ParticlePool &pool, EParticleBlendMode blend
     }
 
     // Quad vertex offsets
-    static const glm::vec4 quadPositions[4] = {
+    static const TEVector4 quadPositions[4] = {
         {-0.5f, -0.5f, 0.0f, 1.0f}, {0.5f, -0.5f, 0.0f, 1.0f}, {0.5f, 0.5f, 0.0f, 1.0f}, {-0.5f, 0.5f, 0.0f, 1.0f}};
 
-    static const glm::vec2 texCoords[4] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+    static const TEVector2 texCoords[4] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 
     for (const auto &p : pool.GetParticles())
     {
@@ -80,20 +80,23 @@ void ParticleRenderer::Render(const ParticlePool &pool, EParticleBlendMode blend
         if (m_IndexCount >= m_MaxIndices)
             Flush();
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(p.Position.x, p.Position.y, p.Position.z));
-        if (std::abs(p.Rotation) > 0.0001f)
-            transform = glm::rotate(transform, p.Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-        transform = glm::scale(transform, glm::vec3(p.Size, p.Size, 1.0f));
+        TEMatrix4 translation = MathEngine::Get().GetActiveAPI()->Translate(
+            TEMatrix4(1.0f), TEVector(p.Position.x, p.Position.y, p.Position.z));
+        TEMatrix4 rotation =
+            MathEngine::Get().GetActiveAPI()->Rotate(TEMatrix4(1.0f), p.Rotation, TEVector(0.0f, 0.0f, 1.0f));
+        TEMatrix4 scale = MathEngine::Get().GetActiveAPI()->Scale(TEMatrix4(1.0f), TEVector(p.Size, p.Size, 1.0f));
+        TEMatrix4 transform = translation * rotation * scale;
 
-        glm::vec4 pColor = glm::vec4(p.Color.x, p.Color.y, p.Color.z, p.Color.w);
+        TEVector4 pColor(p.Color.x, p.Color.y, p.Color.z, p.Color.w);
 
         for (int i = 0; i < 4; ++i)
         {
             ParticleVertex vertex;
-            vertex.Position = glm::vec3(transform * quadPositions[i]);
+            TEVector4 transformedPos = transform * quadPositions[i];
+            vertex.Position = TEVector(transformedPos.x, transformedPos.y, transformedPos.z);
             vertex.TexCoord = texCoords[i];
             vertex.Color = pColor;
-            m_VertexBufferBase.push_back(vertex);
+            m_VertexBufferBase.Add(vertex);
         }
 
         m_IndexCount += 6;

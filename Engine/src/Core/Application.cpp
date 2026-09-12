@@ -3,6 +3,7 @@
 #include "Core/Asset/AssetManager.hpp"
 #include "Core/Audio/AudioEngine.hpp"
 #include "Core/Plugin/PluginManager.hpp"
+#include "Core/Settings/GeneralEngineSettings.hpp"
 #include "Core/Threading/Threading.hpp"
 #include "Events/ApplicationEvent.h"
 #include "Input/ShortcutManager.hpp"
@@ -10,7 +11,10 @@
 #include "Layers/TimeGUILayer.hpp"
 #include "Log.h"
 #include "Renderer/RenderCommand.hpp"
+#include "Renderer/RendererContext.hpp"
 #include "Renderer/TEColor.hpp"
+#include "Utils/Math/MathEngine.hpp"
+#include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
 #include "Window/IWindow.hpp"
 
@@ -22,7 +26,20 @@ Application::Application() : m_Running(true)
     s_Instance = this;
 
     Log::Init(true, "TimeEngineLog.json");
+    MathEngine::Get().Initialize();
     TE_CORE_INFO("Application Constructor called.");
+
+    // Load saved EngineSettings.ini before creating the window or initializing graphics contexts
+    auto &settings = GeneralEngineSettings::Get();
+    TEString configPath = settings.GetConfigPath() + "EngineSettings.ini";
+    if (TEFileSystem::Exists(configPath))
+    {
+        settings.LoadFromFile(configPath);
+    }
+    else if (TEFileSystem::Exists("EngineSettings.ini"))
+    {
+        settings.LoadFromFile("EngineSettings.ini");
+    }
 
     // Initialize Thread pools
     INIT_MAIN_THREAD();
@@ -33,14 +50,40 @@ Application::Application() : m_Running(true)
 
     m_Window = IWindow::Create();
 
-    if (!RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction()))
+    switch (RendererContext::GetAPI())
     {
-        TE_CORE_ERROR("Failed to initialize GLAD via RenderCommand!");
-        m_Running = false;
-        return;
+    case GraphicsAPI::DirectX11:
+        TE_CORE_INFO("Graphics Backend: DirectX 11 (Version: {0}, GPU: {1})", RenderCommand::GetVersionString(),
+                     RenderCommand::GetGPURenderer());
+        break;
+    case GraphicsAPI::OpenGL:
+    case GraphicsAPI::OpenGLES:
+#if defined(TE_SUPPORT_OPENGL)
+        if (!RenderCommand::LoadLoader((void *(*)(const char *))m_Window->GetGLLoaderFunction()))
+        {
+            TE_CORE_ERROR("Failed to initialize GLAD via RenderCommand!");
+            m_Running = false;
+            return;
+        }
+        TE_CORE_INFO("Graphics Backend: OpenGL (Version: {0}, GPU: {1})", RenderCommand::GetVersionString(),
+                     RenderCommand::GetGPURenderer());
+#else
+        TE_CORE_ERROR("OpenGL requested but not supported in this build!");
+#endif
+        break;
+    case GraphicsAPI::Metal:
+        TE_CORE_INFO("Graphics Backend: Metal (Version: {0}, GPU: {1})", RenderCommand::GetVersionString(),
+                     RenderCommand::GetGPURenderer());
+        break;
+    case GraphicsAPI::Vulkan:
+        TE_CORE_INFO("Graphics Backend: Vulkan (Version: {0}, GPU: {1})", RenderCommand::GetVersionString(),
+                     RenderCommand::GetGPURenderer());
+        break;
+    case GraphicsAPI::None:
+    default:
+        TE_CORE_WARN("Graphics Backend: Unknown / None");
+        break;
     }
-
-    TE_CORE_INFO("OpenGL Version: {0}", RenderCommand::GetVersionString());
 
 #ifdef TE_EDITOR
     // === TimeGUI Layer Setup (Initialize while OpenGL context is active) ===
@@ -105,7 +148,11 @@ Application::Application() : m_Running(true)
     PluginManager::Initialize();
 }
 
-Application::~Application() { TE_CORE_INFO("Application Destructor called."); }
+Application::~Application()
+{
+    MathEngine::Get().Shutdown();
+    TE_CORE_INFO("Application Destructor called.");
+}
 
 void Application::Close() { m_Running = false; }
 
@@ -191,6 +238,10 @@ void Application::Run()
 #endif
             });
         TaskSystem::WaitRenderFrame(); // Wait for Render Thread before next frame starts
+
+        // Show window once the first frame has been rendered and presented
+        if (m_Window && !m_Window->IsVisible())
+            m_Window->ShowWindow();
 
         // 4. Stage 3: Deferred layer modifications
         m_LayerStack.ProcessDeferredRemovals();

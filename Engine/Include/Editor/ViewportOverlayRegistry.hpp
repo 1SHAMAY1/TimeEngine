@@ -50,7 +50,7 @@ template <typename T> struct ViewportOverlayRegisterer
     ViewportOverlayRegisterer() { ViewportOverlayOwnerRegistry::RegisterOverlay(CreateRef<T>()); }
 };
 
-#define TE_REGISTER_VIEWPORT_OVERLAY(Type) static ViewportOverlayRegisterer<Type> Type##_ViewportOverlayReg;
+#define TE_REGISTER_VIEWPORT_OVERLAY(Type) inline ViewportOverlayRegisterer<Type> Type##_ViewportOverlayReg;
 
 struct ViewportOverlayItem
 {

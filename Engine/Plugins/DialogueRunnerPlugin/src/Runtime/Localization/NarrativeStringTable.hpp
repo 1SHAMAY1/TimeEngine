@@ -24,10 +24,6 @@ public:
     TEString SerializeNativeText() const;
     bool DeserializeNativeText(const TEString &text);
 
-    // Compatibility aliases
-    TEString SerializeJson() const { return SerializeNativeText(); }
-    bool DeserializeJson(const TEString &text) { return DeserializeNativeText(text); }
-
 private:
     TEString m_ActiveLanguage = "en_US";
     TEString m_FallbackLanguage = "en_US";

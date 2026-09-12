@@ -61,10 +61,19 @@ Traditional game development forces creators to constantly context-switch betwee
    cd TimeEngine
    ```
 
-2. **Initialize Submodules** (Required for all platforms):
-   ```bash
-   bash Scripts/SetupSubmodules.sh
-   ```
+2. **Initialize Submodules & Tools**:
+   * **Windows**:
+     ```cmd
+     Scripts\Windows\SetupSubmodules.bat
+     ```
+   * **macOS**:
+     ```bash
+     bash Scripts/Mac/SetupSubmodules.sh
+     ```
+   * **Linux**:
+     ```bash
+     bash Scripts/Linux/SetupSubmodules.sh
+     ```
 
 3. **Generate Workspace & Project Files**:
    * **Windows (Visual Studio / MSVC)**:

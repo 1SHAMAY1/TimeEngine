@@ -2,6 +2,7 @@
 
 #include "../SpriteEditorTypes.hpp"
 #include "ISubmode.hpp"
+#include "UI/Widgets/UICodeEdit.hpp"
 
 class CodeEditorSubmode : public ISubmode
 {
@@ -26,4 +27,5 @@ private:
     bool m_ShowApiHelp = false;
     int m_SelectedTemplateIdx = 0;
     bool m_Initialized = false;
+    UICodeEdit m_CodeEditor{"##SpriteTScriptCodeEdit"};
 };

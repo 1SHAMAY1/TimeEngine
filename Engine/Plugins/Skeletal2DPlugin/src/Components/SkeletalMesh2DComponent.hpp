@@ -26,7 +26,7 @@ public:
 
     void OnCreate();
     void OnUpdate(float dt);
-    void OnRender(class Renderer2D *renderer, const glm::mat4 &transform, void *userPayload = nullptr);
+    void OnRender(class Renderer2D *renderer, const TEMatrix4 &transform, void *userPayload = nullptr);
 
     // Skeletal Asset Binding
     void SetSkeletalAsset(TERef<Skeletal2D::SkeletalDataAsset> asset);
@@ -39,8 +39,8 @@ public:
     void Stop();
 
     // Bone Transform Queries
-    bool GetBoneWorldTransform(const TEString &boneName, glm::mat4 &outTransform) const;
-    bool GetBoneWorldPosition(const TEString &boneName, glm::vec2 &outPos) const;
+    bool GetBoneWorldTransform(const TEString &boneName, TEMatrix4 &outTransform) const;
+    bool GetBoneWorldPosition(const TEString &boneName, TEVector2 &outPos) const;
 
     Skeletal2D::SkeletalPoseEvaluator &GetEvaluator() { return m_Evaluator; }
     const Skeletal2D::SkeletalPoseEvaluator &GetEvaluator() const { return m_Evaluator; }
@@ -48,5 +48,5 @@ public:
 private:
     TERef<Skeletal2D::SkeletalDataAsset> m_SkeletalAsset = nullptr;
     Skeletal2D::SkeletalPoseEvaluator m_Evaluator;
-    glm::mat4 m_CachedWorldTransform = glm::mat4(1.0f);
+    TEMatrix4 m_CachedWorldTransform = TEMatrix4(1.0f);
 };

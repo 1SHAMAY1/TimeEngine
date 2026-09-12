@@ -15,13 +15,12 @@ TERef<VulkanShader> VulkanShaderLibrary::CreateVulkanComputeShader(const TEStrin
 
 void VulkanShaderLibrary::SetUniform1i(VulkanShader *shader, const TEString &name, int value) {}
 void VulkanShaderLibrary::SetUniform1f(VulkanShader *shader, const TEString &name, float value) {}
-void VulkanShaderLibrary::SetUniform2f(VulkanShader *shader, const TEString &name, const glm::vec2 &value) {}
-void VulkanShaderLibrary::SetUniform3f(VulkanShader *shader, const TEString &name, const glm::vec3 &value) {}
-void VulkanShaderLibrary::SetUniform4f(VulkanShader *shader, const TEString &name, const glm::vec4 &value) {}
-void VulkanShaderLibrary::SetUniformMat3(VulkanShader *shader, const TEString &name, const glm::mat3 &value) {}
-void VulkanShaderLibrary::SetUniformMat4(VulkanShader *shader, const TEString &name, const glm::mat4 &value) {}
+void VulkanShaderLibrary::SetUniform2f(VulkanShader *shader, const TEString &name, const TEVector2 &value) {}
+void VulkanShaderLibrary::SetUniform3f(VulkanShader *shader, const TEString &name, const TEVector &value) {}
+void VulkanShaderLibrary::SetUniform4f(VulkanShader *shader, const TEString &name, const TEVector4 &value) {}
+void VulkanShaderLibrary::SetUniformMat4(VulkanShader *shader, const TEString &name, const TEMatrix4 &value) {}
 void VulkanShaderLibrary::SetUniformMat4Array(VulkanShader *shader, const TEString &name,
-                                              const TEArray<glm::mat4> &values)
+                                              const TEArray<TEMatrix4> &values)
 {
 }
 

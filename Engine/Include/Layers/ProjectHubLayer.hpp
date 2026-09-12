@@ -36,9 +36,22 @@ private:
     void LoadRecentProjects();
     void SaveRecentProjects();
 
+    struct ProjectTemplateInfo
+    {
+        TEString Name;
+        TEString FolderName;
+        TEString Path;
+        TEString StartScene;
+        TEString Description;
+    };
+
+    void ScanTemplates();
+
 private:
     TEArray<TEString> m_RecentProjects;
+    TEArray<ProjectTemplateInfo> m_DiscoveredTemplates;
     HubView m_CurrentView = HubView::RecentProjects;
+    int m_SelectedTemplateIndex = 1; // 0 = Empty, 1..N = Discovered templates
 
     TEString m_NewProjectName = "NewProject";
     TEString m_NewProjectPath;

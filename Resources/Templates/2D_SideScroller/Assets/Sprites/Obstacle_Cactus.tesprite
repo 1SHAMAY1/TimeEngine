@@ -1,0 +1,6 @@
+﻿Sprite: Obstacle_Cactus
+TexturePath: Sprites/Obstacle_Cactus.png
+UVs: 0 0 1 1
+Pivot: 0.5 0.5
+PixelsPerUnit: 32
+ColliderPoints: 0

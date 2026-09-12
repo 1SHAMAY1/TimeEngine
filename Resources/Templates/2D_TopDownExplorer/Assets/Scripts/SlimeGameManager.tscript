@@ -1,0 +1,9 @@
+﻿// SlimeGameManager.tscript
+class SlimeGameManager : TComponent
+
+    T_REGISTER_PROPERTY(int, total_coins, 0)
+    T_REGISTER_PROPERTY(int, items_found, 0)
+
+    on_ready() {
+        TE_CORE_INFO(Slime Explorer Game Manager initialized. Explore and collect all treasures!)
+    }

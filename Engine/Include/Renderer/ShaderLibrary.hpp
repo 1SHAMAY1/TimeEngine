@@ -3,9 +3,7 @@
 #include "GameFrameWork/GameplayUtils.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TEColor.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "Utils/MathUtils.hpp"
 
 class ShaderLibrary
 {
@@ -24,28 +22,28 @@ public:
     static TERef<Shader> CreateLightBlendShader();
 
     // ===== Common Shader Functions =====
-    static void SetMVP(Shader *shader, const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
+    static void SetMVP(Shader *shader, const TEMatrix4 &model, const TEMatrix4 &view, const TEMatrix4 &projection);
     static void SetColor(Shader *shader, const TEColor &color);
-    static void SetColor(Shader *shader, const glm::vec4 &color);
-    static void SetTransform(Shader *shader, const glm::mat4 &transform);
-    static void SetViewProjection(Shader *shader, const glm::mat4 &viewProjection);
-    static void SetLightPosition(Shader *shader, const glm::vec3 &position);
+    static void SetColor(Shader *shader, const TEVector4 &color);
+    static void SetTransform(Shader *shader, const TEMatrix4 &transform);
+    static void SetViewProjection(Shader *shader, const TEMatrix4 &viewProjection);
+    static void SetLightPosition(Shader *shader, const TEVector &position);
     static void SetLightColor(Shader *shader, const TEColor &color);
     static void SetAmbientLight(Shader *shader, float intensity);
     static void SetDiffuseLight(Shader *shader, float intensity);
     static void SetSpecularLight(Shader *shader, float intensity, float shininess);
     static void SetTexture(Shader *shader, int slot);
     static void SetTime(Shader *shader, float time);
-    static void SetResolution(Shader *shader, const glm::vec2 &resolution);
-    static void SetCameraPosition(Shader *shader, const glm::vec3 &position);
+    static void SetResolution(Shader *shader, const TEVector2 &resolution);
+    static void SetCameraPosition(Shader *shader, const TEVector &position);
     static void SetFog(Shader *shader, const TEColor &color, float density, float start, float end);
 
     // ===== Utility Functions =====
-    static glm::mat4 CreateModelMatrix(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale);
-    static glm::mat4 CreateViewMatrix(const glm::vec3 &position, const glm::vec3 &target,
-                                      const glm::vec3 &up = glm::vec3(0, 1, 0));
-    static glm::mat4 CreateProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane);
-    static glm::mat4 CreateOrthographicMatrix(float left, float right, float bottom, float top, float nearPlane,
+    static TEMatrix4 CreateModelMatrix(const TEVector &position, const TEVector &rotation, const TEVector &scale);
+    static TEMatrix4 CreateViewMatrix(const TEVector &position, const TEVector &target,
+                                      const TEVector &up = TEVector(0, 1, 0));
+    static TEMatrix4 CreateProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane);
+    static TEMatrix4 CreateOrthographicMatrix(float left, float right, float bottom, float top, float nearPlane,
                                               float farPlane);
 
     // ===== Color Utilities =====
@@ -67,22 +65,22 @@ public:
     static void SetAOMap(Shader *shader, int slot);
 
     // ===== Animation Support =====
-    static void SetBoneTransforms(Shader *shader, const TEArray<glm::mat4> &boneTransforms);
+    static void SetBoneTransforms(Shader *shader, const TEArray<TEMatrix4> &boneTransforms);
     static void SetAnimationTime(Shader *shader, float time);
-    static void SetBlendWeights(Shader *shader, const glm::vec4 &weights);
+    static void SetBlendWeights(Shader *shader, const TEVector4 &weights);
 
     // ===== Post-Processing =====
     static void SetBloom(Shader *shader, float threshold, float intensity);
     static void SetVignette(Shader *shader, float intensity, float radius);
     static void SetChromaticAberration(Shader *shader, float intensity);
-    static void SetMotionBlur(Shader *shader, const glm::mat4 &previousViewProjection);
+    static void SetMotionBlur(Shader *shader, const TEMatrix4 &previousViewProjection);
     static void SetDepthOfField(Shader *shader, float focusDistance, float focusRange);
 
     // ===== Particle System =====
     static void SetParticleLife(Shader *shader, float life);
     static void SetParticleSize(Shader *shader, float size);
-    static void SetParticleVelocity(Shader *shader, const glm::vec3 &velocity);
-    static void SetParticleAcceleration(Shader *shader, const glm::vec3 &acceleration);
+    static void SetParticleVelocity(Shader *shader, const TEVector &velocity);
+    static void SetParticleAcceleration(Shader *shader, const TEVector &acceleration);
     static void SetParticleColor(Shader *shader, const TEColor &startColor, const TEColor &endColor);
 
 protected:

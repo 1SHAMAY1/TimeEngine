@@ -21,12 +21,11 @@ public:
     // ===== OpenGL-Specific Functions =====
     static void SetUniform1i(OpenGLShader *shader, const TEString &name, int value);
     static void SetUniform1f(OpenGLShader *shader, const TEString &name, float value);
-    static void SetUniform2f(OpenGLShader *shader, const TEString &name, const glm::vec2 &value);
-    static void SetUniform3f(OpenGLShader *shader, const TEString &name, const glm::vec3 &value);
-    static void SetUniform4f(OpenGLShader *shader, const TEString &name, const glm::vec4 &value);
-    static void SetUniformMat3(OpenGLShader *shader, const TEString &name, const glm::mat3 &value);
-    static void SetUniformMat4(OpenGLShader *shader, const TEString &name, const glm::mat4 &value);
-    static void SetUniformMat4Array(OpenGLShader *shader, const TEString &name, const TEArray<glm::mat4> &values);
+    static void SetUniform2f(OpenGLShader *shader, const TEString &name, const TEVector2 &value);
+    static void SetUniform3f(OpenGLShader *shader, const TEString &name, const TEVector &value);
+    static void SetUniform4f(OpenGLShader *shader, const TEString &name, const TEVector4 &value);
+    static void SetUniformMat4(OpenGLShader *shader, const TEString &name, const TEMatrix4 &value);
+    static void SetUniformMat4Array(OpenGLShader *shader, const TEString &name, const TEArray<TEMatrix4> &values);
 
     // ===== OpenGL State Management =====
     static void EnableBlending();

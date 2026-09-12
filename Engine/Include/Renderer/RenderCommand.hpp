@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/PreRequisites.h"
 #include "Renderer/RendererAPI.hpp"
-#include <glm/glm.hpp>
+#include "Utils/MathUtils.hpp"
 
 class TE_API RenderCommand
 {
@@ -11,10 +11,15 @@ public:
     {
         s_RendererAPI->SetViewport(x, y, width, height);
     }
-    static void SetClearColor(const glm::vec4 &color) { s_RendererAPI->SetClearColor(color); }
+    static void SetClearColor(const TEVector4 &color) { s_RendererAPI->SetClearColor(color); }
     static void Clear() { s_RendererAPI->Clear(); }
     static void DrawIndexed(uint32_t vao, uint32_t indexCount) { s_RendererAPI->DrawIndexed(vao, indexCount); }
     static void SetBlendMode(int blendMode) { s_RendererAPI->SetBlendMode(blendMode); }
+    static void Present()
+    {
+        if (s_RendererAPI)
+            s_RendererAPI->Present();
+    }
 
     static bool LoadLoader(void *(*loadProc)(const char *))
     {
@@ -40,6 +45,7 @@ public:
     }
 
     static RendererAPI *GetAPIInstance() { return s_RendererAPI.get(); }
+    static void RecreateAPI();
 
 private:
     static TEScope<RendererAPI> s_RendererAPI;

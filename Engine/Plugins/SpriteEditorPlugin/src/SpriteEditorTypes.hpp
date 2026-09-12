@@ -78,9 +78,17 @@ struct PixelFrame
     float Duration = 0.1f; // in seconds (for animation timing)
 };
 
+struct VectorFrame
+{
+    TEArray<VectorElement> Elements;
+    float Duration = 0.1f;
+};
+
 struct SpriteModeState
 {
     TEArray<VectorElement> VectorElements;
+    TEArray<VectorFrame> VectorFrames;
+    int ActiveVectorFrameIndex = 0;
     TEString ProcBuffer;
     TEArray<CustomKeyword> Keywords;
     TEArray<PixelFrame> PixelFrames;

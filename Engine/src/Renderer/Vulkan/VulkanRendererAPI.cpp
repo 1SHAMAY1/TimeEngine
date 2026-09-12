@@ -1,16 +1,16 @@
 #include "Core/PreRequisites.h"
 #include "Renderer/Vulkan/VulkanRendererAPI.hpp"
-#include <iostream>
+#include "Core/Log.h"
 #include <volk.h>
 
-void VulkanRendererAPI::Init() { std::cout << "[Vulkan] Initializing VulkanRendererAPI\n"; }
+void VulkanRendererAPI::Init() { TE_CORE_INFO("[Vulkan] Initializing VulkanRendererAPI"); }
 
 void VulkanRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
-    std::cout << "[Vulkan] SetViewport: x=" << x << ", y=" << y << ", width=" << width << ", height=" << height << "\n";
+    TE_CORE_DEBUG("[Vulkan] SetViewport: x=", x, ", y=", y, ", width=", width, ", height=", height);
 }
 
-void VulkanRendererAPI::SetClearColor(const glm::vec4 &color)
+void VulkanRendererAPI::SetClearColor(const TEVector4 &color)
 {
     // Vulkan clear color is typically handled per render pass / framebuffer clear attachment
 }

@@ -126,13 +126,22 @@ project "TimeEditor"
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
         "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h"
     }
 
     filter { "system:not macosx" }
         removefiles {
             "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
             "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        }
+    filter {}
+
+    filter { "system:not windows" }
+        removefiles {
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h"
         }
     filter {}
 
@@ -196,10 +205,12 @@ project "TimeEditor"
         }
 
     filter "system:macosx"
+        defines { "TE_PLATFORM_MACOS" }
         links {
             "Engine",
             "Customizable_Logger",
             "Velox",
+            "glfw3",
             "Cocoa.framework",
             "IOKit.framework",
             "CoreFoundation.framework",
@@ -211,6 +222,7 @@ project "TimeEditor"
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
+        defines { "TE_PLATFORM_LINUX" }
         links { "GL" }
     filter {}
 
@@ -233,9 +245,9 @@ project "TimeEditor"
         prebuildcommands {
             '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
         }
-    filter { "system:macosx" }
+    filter { "system:macosx", "action:gmake*" }
         prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Mac/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
+            'premake5 --file="%{wks.location}/Premake5.lua" check-rules'
         }
     filter {}
 

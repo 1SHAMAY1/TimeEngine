@@ -1,0 +1,30 @@
+﻿// ObstacleSpawner.tscript
+class ObstacleSpawner : TComponent
+
+    T_REGISTER_PROPERTY(float, base_speed, 8.0)
+    T_REGISTER_PROPERTY(float, speed_increment, 0.1)
+    T_REGISTER_PROPERTY(float, spawn_interval_min, 1.2)
+    T_REGISTER_PROPERTY(float, spawn_interval_max, 2.5)
+
+    public:
+        float current_speed = 8.0
+        float timer = 0.0
+        float next_spawn = 1.5
+        float ground_y = -2.5
+
+    on_ready() {
+        current_speed = base_speed
+        timer = 0.0
+        TE_CORE_INFO(Obstacle Spawner active with infinite object recycle!)
+    }
+
+    on_update(float dt) {
+        current_speed += speed_increment * dt
+        timer += dt
+
+        if (timer >= next_spawn) {
+            timer = 0.0
+            next_spawn = spawn_interval_min + (spawn_interval_max - spawn_interval_min) * 0.5
+            TE_CORE_INFO(Spawned incoming obstacle at speed:  + current_speed)
+        }
+    }

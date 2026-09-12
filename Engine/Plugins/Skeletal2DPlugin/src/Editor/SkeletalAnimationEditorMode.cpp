@@ -317,7 +317,7 @@ void SkeletalAnimationEditorMode::OnUpdate(float dt)
     }
 
     m_Evaluator.SetTimeScale(m_PlaybackSpeed);
-    m_Evaluator.Update(dt, glm::mat4(1.0f));
+    m_Evaluator.Update(dt, TEMatrix4(1.0f));
 }
 
 void SkeletalAnimationEditorMode::OnTimeGUIRender()
@@ -326,7 +326,7 @@ void SkeletalAnimationEditorMode::OnTimeGUIRender()
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 6.0f);
     TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(8, 8));
 
-    TimeGUI::SetNextWindowDockID(TimeGUI::GetID("MyDockSpace"), TimeGUICond_FirstUseEver);
+    TimeGUI::SetNextWindowDockID(TimeGUI::GetID("MyDockSpace"), TimeGUICond_Always);
     TimeGUI::Begin(GetWorkspaceWindowName().c_str(), nullptr,
                    TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoMove);
 
@@ -718,10 +718,10 @@ void SkeletalAnimationEditorMode::DrawOutlinerAndInspector()
                 SaveUndoState();
             }
 
-            float rotDeg = glm::degrees(bone->RestPose.Rotation);
+            float rotDeg = bone->RestPose.Rotation * (180.0f / 3.14159265f);
             if (TimeGUI::DragFloat("Rest Rot##BoneRot", &rotDeg, 1.0f, -360.0f, 360.0f, "%.1f deg"))
             {
-                bone->RestPose.Rotation = glm::radians(rotDeg);
+                bone->RestPose.Rotation = rotDeg * (3.14159265f / 180.0f);
                 bone->LocalPose.Rotation = bone->RestPose.Rotation;
                 m_ActiveAsset->GetHierarchy().CalculateBindPoseMatrices();
                 m_Evaluator.SetHierarchy(m_ActiveAsset->GetHierarchy());

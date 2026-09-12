@@ -16,13 +16,13 @@ TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonFile(const TEString &j
     }
 
     file.seekg(0, std::ios::end);
-    size_t size = static_cast<size_t>(file.tellg());
+    size_t size = (size_t)file.tellg();
     file.seekg(0, std::ios::beg);
-
-    TEArray<char> buffer;
-    buffer.Resize(size + 1, '\0');
-    file.read(buffer.Data(), size);
-    TEString content = buffer.Data();
+    TEString content;
+    content.Reserve(size + 1);
+    file.read(content.Data(), size);
+    content.Data()[size] = '\0';
+    content.SyncFromBuffer();
 
     TEString assetName = jsonPath;
     int lastSlash = assetName.FindLast("/");
@@ -105,7 +105,7 @@ TERef<SkeletalDataAsset> SpineJsonImporter::ImportFromJsonString(const TEString 
                 if (rotPos != TEString::npos)
                 {
                     size_t colon = boneObj.find(':', rotPos);
-                    rot = glm::radians(TEString(boneObj.substr(colon + 1)).ToFloat());
+                    rot = TEString(boneObj.substr(colon + 1)).ToFloat() * (3.14159265f / 180.0f);
                 }
 
                 int parentIndex = -1;

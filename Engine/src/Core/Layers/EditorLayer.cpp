@@ -14,7 +14,7 @@
 #include "Core/Scene/TransformComponent.hpp"
 #include "Core/Settings/EngineSettings.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
-#include "Editor/DefaultModes.hpp"
+#include "Editor/Modes/SelectionMode.hpp"
 #include "Editor/EditorGizmoOverlays.hpp"
 #include "Editor/EditorLayoutManager.hpp"
 #include "Editor/EditorMenubarOverlay.hpp"
@@ -37,7 +37,6 @@
 #include "Utils/TEFileSystem.hpp"
 #include "Utils/TimeGUI.hpp"
 
-#include "Utils/TEFileSystem.hpp"
 #ifndef TE_BIND_EVENT_FN
 #define TE_BIND_EVENT_FN(fn)                                                                                           \
     [this](auto &&...args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
@@ -142,7 +141,8 @@ void EditorLayer::OnAttach()
         }
     }
 
-    InitEditorModes();
+    EditorModeRegistry::RegisterMode<SelectionMode>();
+    EditorModeRegistry::SetActiveMode("Selection Mode");
 
     // Connect universal shortcut listener
     ShortcutManager::AddListener("EditorLayer", [this](const TEString &shortcutId) { return OnShortcut(shortcutId); });
@@ -270,7 +270,7 @@ bool EditorLayer::OnWindowClose(WindowCloseEvent &e)
 {
     if (EditorSaveManager::HasUnsavedChanges())
     {
-        SaveAllToolbarOverlay::OpenSaveModal(true);
+        EditorSaveManager::RequestSavePrompt(true);
         return true;
     }
     return false;

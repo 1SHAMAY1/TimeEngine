@@ -243,9 +243,9 @@ bool PCGElevationSlopeNode::Execute(PCGExecutionContext &ctx)
         if (pt.Position.z >= minElev && pt.Position.z <= maxElev)
         {
             // Compute simulated slope from normal rotation
-            glm::vec3 up = pt.Rotation * glm::vec3(0.0f, 1.0f, 0.0f);
-            float slopeAngle =
-                std::acos(std::clamp(glm::dot(up, glm::vec3(0.0f, 1.0f, 0.0f)), -1.0f, 1.0f)) * (180.0f / 3.1415927f);
+            TEVector up = pt.Rotation * TEVector(0.0f, 1.0f, 0.0f);
+            float upDotUp = up.x * 0.0f + up.y * 1.0f + up.z * 0.0f; // dot with (0,1,0)
+            float slopeAngle = std::acos(std::clamp(upDotUp, -1.0f, 1.0f)) * (180.0f / 3.1415927f);
 
             if (slopeAngle <= maxSlope)
             {

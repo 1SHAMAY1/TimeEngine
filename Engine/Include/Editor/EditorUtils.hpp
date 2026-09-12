@@ -101,6 +101,8 @@ public:
     static void DrawPauseIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawStopIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawRestartIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
+    static void DrawStandaloneIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
+    static void DrawPackageIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawSelectIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawTranslateIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);
     static void DrawRotateIcon(TimeGUIDrawList &dl, const TEVector2 &center, float size, unsigned int color);

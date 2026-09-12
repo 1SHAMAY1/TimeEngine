@@ -1,5 +1,5 @@
-﻿#pragma once
-#include <vector>
+#pragma once
+#include "Core/PreRequisites.h"
 #include <volk.h>
 
 class VulkanContext

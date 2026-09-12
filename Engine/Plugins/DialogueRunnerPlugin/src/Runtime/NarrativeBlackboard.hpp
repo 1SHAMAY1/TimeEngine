@@ -31,10 +31,6 @@ public:
     TEString SerializeNativeText() const;
     bool DeserializeNativeText(const TEString &text);
 
-    // Compatibility aliases
-    TEString SerializeJson() const { return SerializeNativeText(); }
-    bool DeserializeJson(const TEString &text) { return DeserializeNativeText(text); }
-
 private:
     TEMap<TEString, NarrativeValue> m_Variables;
     TEArray<VariableChangeCallback> m_Observers;

@@ -54,13 +54,13 @@ bool PCGEntitySpawnerNode::Execute(PCGExecutionContext &ctx)
             {
                 auto *box = e.AddComponent<BoxComponent>();
                 if (box)
-                    box->BaseColor = TEColor(pt.Color.r, pt.Color.g, pt.Color.b, pt.Color.a);
+                    box->BaseColor = TEColor(pt.Color.x, pt.Color.y, pt.Color.z, pt.Color.w);
             }
             else if (compType == "CircleComponent")
             {
                 auto *circle = e.AddComponent<CircleComponent>();
                 if (circle)
-                    circle->BaseColor = TEColor(pt.Color.r, pt.Color.g, pt.Color.b, pt.Color.a);
+                    circle->BaseColor = TEColor(pt.Color.x, pt.Color.y, pt.Color.z, pt.Color.w);
             }
         }
     }

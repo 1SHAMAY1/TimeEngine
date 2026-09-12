@@ -74,4 +74,45 @@ group "Vendor"
         language "C++"
         files { }
         includedirs { "%{IncludeDir.Logger}" }
+
+--    project "ForgeUI"
+--        location "ForgeUI"
+--        kind "StaticLib"
+--        language "C++"
+--        cppdialect "C++20"
+--        staticruntime "off"
+--
+--        targetdir ("%{wks.location}/Bin/" .. outputdir .. "/%{prj.name}")
+--        objdir ("%{wks.location}/Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
+--
+--        files {
+--            "ForgeUI/include/**.h",
+--            "ForgeUI/src/**.cpp",
+--            "ForgeUI/src/**.h"
+--        }
+--
+--        includedirs {
+--            "%{IncludeDir.ForgeUI}",
+--            "%{IncludeDir.GLAD}",
+--            "%{IncludeDir.GLFW}"
+--        }
+--
+--        externalincludedirs {
+--            "%{IncludeDir.ForgeUI}",
+--            "%{IncludeDir.GLAD}",
+--            "%{IncludeDir.GLFW}"
+--        }
+--
+--        filter "system:windows"
+--            systemversion "latest"
+--            defines { "WIN32", "_CRT_SECURE_NO_WARNINGS" }
+--
+--        filter "configurations:Debug"
+--            symbols "On"
+--
+--        filter "configurations:Release"
+--            optimize "On"
+--
+--        filter "configurations:Dist"
+--            optimize "On"
 group ""

@@ -57,11 +57,51 @@ bool TScriptParser::MatchAny(std::initializer_list<TScriptTokenType> types)
     return false;
 }
 
-TScriptToken TScriptParser::Consume(TScriptTokenType type, const TEString &message)
+void TScriptParser::SetError(const TEString &message, const TEString &suggestion)
+{
+    if (HasError())
+        return;
+
+    const auto &tok = Peek();
+    m_Diagnostic.line = tok.line;
+    m_Diagnostic.column = tok.column;
+    m_Diagnostic.length = (int)tok.lexeme.length();
+    if (m_Diagnostic.length <= 0)
+        m_Diagnostic.length = 1;
+    m_Diagnostic.message = message;
+    m_Diagnostic.suggestion = suggestion;
+
+    TEString fullMsg = "Line " + TEString::FromInt(tok.line) + ":" + TEString::FromInt(tok.column) + ": " + message;
+    if (!tok.lexeme.empty())
+        fullMsg += " (got '" + tok.lexeme + "')";
+    if (!suggestion.empty())
+        fullMsg += " [Suggestion: " + suggestion + "]";
+    m_Error = fullMsg;
+}
+
+TScriptToken TScriptParser::Consume(TScriptTokenType type, const TEString &message, const TEString &suggestion)
 {
     if (Check(type))
         return Advance();
-    m_Error = "Line " + TEString::FromInt(Peek().line) + ": " + message + " (got '" + Peek().lexeme + "')";
+
+    TEString sug = suggestion;
+    if (sug.empty())
+    {
+        if (type == TScriptTokenType::RParen)
+            sug = "Add closing parenthesis ')'";
+        else if (type == TScriptTokenType::RBrace)
+            sug = "Add closing brace '}' to close block";
+        else if (type == TScriptTokenType::LBrace)
+            sug = "Add opening brace '{' to start block";
+        else if (type == TScriptTokenType::Identifier)
+            sug = "Provide a valid identifier";
+        else if (type == TScriptTokenType::Colon)
+            sug = "Add colon ':'";
+        else if (type == TScriptTokenType::Semicolon)
+            sug = "Add semicolon ';'";
+    }
+
+    SetError(message, sug);
     return Peek();
 }
 
@@ -272,6 +312,20 @@ TERef<BlockNode> TScriptParser::ParseBlock()
     return CreateRef<BlockNode>(stmts);
 }
 
+TERef<BlockNode> TScriptParser::ParseBlockOrStatement()
+{
+    SkipNewlinesAndSemicolons();
+    if (Check(TScriptTokenType::LBrace))
+    {
+        return ParseBlock();
+    }
+
+    StmtNode stmt = ParseStatement();
+    if (!stmt)
+        return CreateRef<BlockNode>(TEArray<StmtNode>{});
+    return CreateRef<BlockNode>(TEArray<StmtNode>{stmt});
+}
+
 StmtNode TScriptParser::ParseStatement()
 {
     if (Check(TScriptTokenType::If))
@@ -296,11 +350,11 @@ StmtNode TScriptParser::ParseStatement()
 StmtNode TScriptParser::ParseIfStatement()
 {
     Consume(TScriptTokenType::If, "Expected 'if'");
-    Consume(TScriptTokenType::LParen, "Expected '('");
+    Consume(TScriptTokenType::LParen, "Expected '('", "Wrap condition in parentheses '(' and ')'");
     ExprNode condition = ParseExpression();
-    Consume(TScriptTokenType::RParen, "Expected ')'");
+    Consume(TScriptTokenType::RParen, "Expected ')'", "Close condition parentheses ')'");
 
-    TERef<BlockNode> thenBlock = ParseBlock();
+    TERef<BlockNode> thenBlock = ParseBlockOrStatement();
     TERef<BlockNode> elseBlock = nullptr;
 
     SkipNewlinesAndSemicolons();
@@ -313,7 +367,7 @@ StmtNode TScriptParser::ParseIfStatement()
         }
         else
         {
-            elseBlock = ParseBlock();
+            elseBlock = ParseBlockOrStatement();
         }
     }
 
@@ -323,18 +377,18 @@ StmtNode TScriptParser::ParseIfStatement()
 StmtNode TScriptParser::ParseWhileStatement()
 {
     Consume(TScriptTokenType::While, "Expected 'while'");
-    Consume(TScriptTokenType::LParen, "Expected '('");
+    Consume(TScriptTokenType::LParen, "Expected '('", "Wrap loop condition in '(' and ')'");
     ExprNode condition = ParseExpression();
-    Consume(TScriptTokenType::RParen, "Expected ')'");
+    Consume(TScriptTokenType::RParen, "Expected ')'", "Close loop condition ')'");
 
-    TERef<BlockNode> body = ParseBlock();
+    TERef<BlockNode> body = ParseBlockOrStatement();
     return CreateRef<WhileNode>(condition, body);
 }
 
 StmtNode TScriptParser::ParseForStatement()
 {
     Consume(TScriptTokenType::For, "Expected 'for'");
-    Consume(TScriptTokenType::LParen, "Expected '('");
+    Consume(TScriptTokenType::LParen, "Expected '('", "Wrap loop header in '(' and ')'");
 
     // Check for range-for: for (var item : collection)
     if ((Check(TScriptTokenType::Var) || Check(TScriptTokenType::FloatKw) || Check(TScriptTokenType::IntKw)) &&
@@ -345,7 +399,7 @@ StmtNode TScriptParser::ParseForStatement()
         Consume(TScriptTokenType::Colon, "Expected ':'");
         ExprNode coll = ParseExpression();
         Consume(TScriptTokenType::RParen, "Expected ')'");
-        TERef<BlockNode> body = ParseBlock();
+        TERef<BlockNode> body = ParseBlockOrStatement();
         return CreateRef<ForRangeNode>(varTok.lexeme, coll, body);
     }
 
@@ -369,7 +423,7 @@ StmtNode TScriptParser::ParseForStatement()
     }
     Consume(TScriptTokenType::RParen, "Expected ')'");
 
-    TERef<BlockNode> body = ParseBlock();
+    TERef<BlockNode> body = ParseBlockOrStatement();
     return CreateRef<ForCStyleNode>(init, cond, step, body);
 }
 

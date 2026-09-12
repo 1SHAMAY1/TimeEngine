@@ -3,6 +3,15 @@
 #include "Core/Scripting/TScriptAST.hpp"
 #include "Core/Scripting/TScriptLexer.hpp"
 
+struct TScriptDiagnostic
+{
+    TEString message;
+    TEString suggestion;
+    int line = 1;
+    int column = 1;
+    int length = 1;
+};
+
 class TE_API TScriptParser
 {
 public:
@@ -11,6 +20,12 @@ public:
     TScriptProgram ParseProgram();
     bool HasError() const { return !m_Error.empty(); }
     const TEString &GetError() const { return m_Error; }
+    const TScriptDiagnostic &GetDiagnostic() const { return m_Diagnostic; }
+    const TEString &GetSuggestion() const { return m_Diagnostic.suggestion; }
+    int GetErrorLine() const { return m_Diagnostic.line; }
+    int GetErrorColumn() const { return m_Diagnostic.column; }
+
+    void SetError(const TEString &message, const TEString &suggestion = "");
 
 private:
     const TScriptToken &Peek() const;
@@ -20,7 +35,7 @@ private:
     bool Check(TScriptTokenType type) const;
     bool Match(TScriptTokenType type);
     bool MatchAny(std::initializer_list<TScriptTokenType> types);
-    TScriptToken Consume(TScriptTokenType type, const TEString &message);
+    TScriptToken Consume(TScriptTokenType type, const TEString &message, const TEString &suggestion = "");
     void SkipNewlinesAndSemicolons();
 
     void ParseClassDecl(TScriptProgram &program);
@@ -29,6 +44,7 @@ private:
     StmtNode ParsePropertyDecl();
     StmtNode ParseEventFunc();
     TERef<BlockNode> ParseBlock();
+    TERef<BlockNode> ParseBlockOrStatement();
 
     StmtNode ParseStatement();
     StmtNode ParseIfStatement();
@@ -53,4 +69,5 @@ private:
     TEArray<TScriptToken> m_Tokens;
     size_t m_Current = 0;
     TEString m_Error;
+    TScriptDiagnostic m_Diagnostic;
 };

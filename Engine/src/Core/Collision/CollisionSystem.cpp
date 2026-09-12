@@ -2,7 +2,7 @@
 #include "Core/Collision/CollisionSystem.hpp"
 #include "Core/Collision/CollisionTypes.hpp"
 #include <algorithm>
-#include <glm/glm.hpp>
+#include <cfloat>
 
 void CollisionSystem::Process()
 {

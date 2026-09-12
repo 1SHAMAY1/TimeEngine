@@ -5,7 +5,7 @@
 #include "Core/Scene/SceneSerializer.hpp"
 #include "Editor/AssetEditorRegistry.hpp"
 #include "Editor/EditorSaveManager.hpp"
-#include "Editor/EditorToolbarOverlay.hpp"
+#include "Editor/EditorSaveManager.hpp"
 #include "Editor/EditorUtils.hpp"
 #include "Layers/EditorLayer.hpp"
 #include "UI/Widgets/UISearchBar.hpp"
@@ -386,7 +386,7 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 auto activeScene = editor->GetActiveScene();
                 if (activeScene && activeScene->IsDirty())
                 {
-                    SaveAllToolbarOverlay::OpenSaveModalWithAction(loadSceneAction);
+                    EditorSaveManager::RequestSavePromptWithAction(loadSceneAction);
                 }
                 else
                 {
@@ -472,7 +472,7 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                     auto activeScene = editor->GetActiveScene();
                     if (activeScene && activeScene->IsDirty())
                     {
-                        SaveAllToolbarOverlay::OpenSaveModalWithAction(loadSceneAction);
+                        EditorSaveManager::RequestSavePromptWithAction(loadSceneAction);
                     }
                     else
                     {

@@ -1,0 +1,17 @@
+﻿// InventoryItem.tscript
+class InventoryItem : TComponent
+
+    T_REGISTER_PROPERTY(string, item_name, Ancient Relic)
+    T_REGISTER_PROPERTY(string, item_description, A magical gemstone radiating strange slime energy.)
+    T_REGISTER_PROPERTY(int, quantity, 1)
+
+    public:
+        bool is_picked_up = false
+
+    on_collision(other) {
+        if (other.Tag == Player && !is_picked_up) {
+            is_picked_up = true
+            transform.position.y = -1000.0 // Pickup
+            TE_CORE_INFO(Acquired Item:  + item_name +  -  + item_description)
+        }
+    }

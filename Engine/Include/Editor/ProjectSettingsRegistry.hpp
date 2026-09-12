@@ -11,6 +11,11 @@ public:
     virtual TEString GetCategory() const = 0;
     virtual TEString GetDisplayName() const = 0;
     virtual void OnDrawSettingsUI(Ref<EditorLayer> editor) = 0;
+    virtual bool RequiresRestart() const { return m_RequiresRestart; }
+    void SetRequiresRestart(bool requiresRestart) { m_RequiresRestart = requiresRestart; }
+
+private:
+    bool m_RequiresRestart = false;
 };
 
 class TE_API ProjectSettingsRegistry
@@ -27,7 +32,13 @@ private:
 
 template <typename T> struct ProjectSettingsRegisterer
 {
-    ProjectSettingsRegisterer() { ProjectSettingsRegistry::Register(CreateRef<T>()); }
+    ProjectSettingsRegisterer(bool requiresRestart = false)
+    {
+        auto inst = CreateRef<T>();
+        inst->SetRequiresRestart(requiresRestart);
+        ProjectSettingsRegistry::Register(inst);
+    }
 };
 
-#define TE_REGISTER_PROJECT_SETTINGS(Type) static ProjectSettingsRegisterer<Type> Type##_ProjectSettingsReg;
+#define TE_REGISTER_PROJECT_SETTINGS(Type, ...)                                                                        \
+    inline ProjectSettingsRegisterer<Type> Type##_ProjectSettingsReg{__VA_ARGS__};

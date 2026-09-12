@@ -27,6 +27,9 @@ void TScriptAsset::Recompile()
 {
     ASTValid = false;
     CompileError = "";
+    CompileSuggestion = "";
+    ErrorLine = 0;
+    ErrorColumn = 0;
 
     TScriptLexer lexer(SourceText);
     auto tokens = lexer.Tokenize();
@@ -37,6 +40,10 @@ void TScriptAsset::Recompile()
     if (parser.HasError())
     {
         CompileError = parser.GetError();
+        Diagnostic = parser.GetDiagnostic();
+        CompileSuggestion = parser.GetSuggestion();
+        ErrorLine = parser.GetErrorLine();
+        ErrorColumn = parser.GetErrorColumn();
         ASTValid = false;
     }
     else

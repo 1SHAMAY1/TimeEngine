@@ -32,6 +32,9 @@ public:
     virtual void OnExit() override;
     virtual bool OnShortcut(const TEString &shortcutId) override;
 
+    // Submode Management
+    void SwitchSubmode(int newIdx);
+
     // Undo / Redo System
     void SaveUndoState();
     void Undo();
@@ -42,7 +45,8 @@ public:
     void PerformExport();
     void ExecuteProceduralCode(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float dt);
     void RenderVectorShapes(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom = 1.0f,
-                            TEVector2 pan = TEVector2(0, 0), int hoveredIdx = -1, int selectedIdx = -1);
+                            TEVector2 pan = TEVector2(0, 0), int hoveredIdx = -1, int selectedIdx = -1,
+                            int frameIndex = -1);
     void RenderPixelGrid(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom = 1.0f,
                          TEVector2 pan = TEVector2(0, 0), int frameIndex = -1);
 
@@ -55,6 +59,8 @@ public:
     int m_ActiveSubmodeIndex = 0; // Default to PixelPaint
 
     // Vector Editor State
+    TEArray<VectorFrame> m_VectorFrames;
+    int m_ActiveVectorFrameIndex = 0;
     TEArray<VectorElement> m_VectorElements;
     VectorShapeType m_ActiveVectorTool = VectorShapeType::Pen;
     TEVector4 m_ActiveFillColor = TEVector4(1.0f, 1.0f, 1.0f, 0.0f);

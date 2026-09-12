@@ -17,6 +17,10 @@
 #include "Renderer/Metal/MetalFramebuffer.hpp"
 #endif
 
+#if defined(TE_PLATFORM_WINDOWS)
+#include "Renderer/DirectX11/DirectX11Framebuffer.hpp"
+#endif
+
 TERef<Framebuffer> Framebuffer::Create(const FramebufferSpecification &spec)
 {
     switch (RendererContext::GetAPI())
@@ -26,6 +30,10 @@ TERef<Framebuffer> Framebuffer::Create(const FramebufferSpecification &spec)
 #ifdef TE_SUPPORT_OPENGL
     case GraphicsAPI::OpenGL:
         return CreateRef<OpenGLFramebuffer>(spec);
+#endif
+#if defined(TE_PLATFORM_WINDOWS)
+    case GraphicsAPI::DirectX11:
+        return CreateRef<DirectX11Framebuffer>(spec);
 #endif
 #if defined(TE_PLATFORM_MOBILE)
     case GraphicsAPI::OpenGLES:

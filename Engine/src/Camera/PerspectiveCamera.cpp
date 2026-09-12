@@ -1,5 +1,6 @@
 #include "Core/PreRequisites.h"
 #include "Camera/PerspectiveCamera.hpp"
+#include "Utils/Math/MathEngine.hpp"
 
 PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float nearClip, float farClip)
 {
@@ -9,17 +10,18 @@ PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float nearClip, fl
 
 void PerspectiveCamera::SetProjection(float fov, float aspect, float nearClip, float farClip)
 {
-    m_ProjectionMatrix = glm::perspective(glm::radians(fov), aspect, nearClip, farClip);
+    float fovRad = fov * (3.14159265358979323846f / 180.0f);
+    m_ProjectionMatrix = MathEngine::Get().GetActiveAPI()->Perspective(fovRad, aspect, nearClip, farClip);
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
 
-void PerspectiveCamera::SetPosition(const glm::vec3 &position)
+void PerspectiveCamera::SetPosition(const TEVector &position)
 {
     m_Position = position;
     RecalculateViewMatrix();
 }
 
-void PerspectiveCamera::SetRotation(const glm::vec3 &eulerDegrees)
+void PerspectiveCamera::SetRotation(const TEVector &eulerDegrees)
 {
     m_Rotation = eulerDegrees;
     RecalculateViewMatrix();
@@ -27,11 +29,13 @@ void PerspectiveCamera::SetRotation(const glm::vec3 &eulerDegrees)
 
 void PerspectiveCamera::RecalculateViewMatrix()
 {
-    glm::mat4 transform = glm::mat4(1.0f);
-    transform = glm::rotate(transform, glm::radians(m_Rotation.x), glm::vec3(1, 0, 0));
-    transform = glm::rotate(transform, glm::radians(m_Rotation.y), glm::vec3(0, 1, 0));
-    transform = glm::rotate(transform, glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
-    transform = glm::translate(transform, -m_Position);
+    float degToRad = 3.14159265358979323846f / 180.0f;
+    TEMatrix4 transform = TEMatrix4(1.0f);
+    transform = MathEngine::Get().GetActiveAPI()->Rotate(transform, m_Rotation.x * degToRad, TEVector(1, 0, 0));
+    transform = MathEngine::Get().GetActiveAPI()->Rotate(transform, m_Rotation.y * degToRad, TEVector(0, 1, 0));
+    transform = MathEngine::Get().GetActiveAPI()->Rotate(transform, m_Rotation.z * degToRad, TEVector(0, 0, 1));
+    transform =
+        MathEngine::Get().GetActiveAPI()->Translate(transform, TEVector(-m_Position.x, -m_Position.y, -m_Position.z));
 
     m_ViewMatrix = transform;
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;

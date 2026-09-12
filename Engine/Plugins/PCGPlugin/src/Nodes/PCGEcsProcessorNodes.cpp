@@ -1,8 +1,8 @@
 #include "Nodes/PCGEcsProcessorNodes.hpp"
+#include "Utils/MathUtils.hpp"
 #include <algorithm>
 #include <cmath>
 #include <queue>
-#include <vector>
 
 // =========================================================================
 // 1. Voronoi Partitioning Node
@@ -28,11 +28,11 @@ bool PCGVoronoiPartitionNode::Execute(PCGExecutionContext &ctx)
         return false;
 
     int siteCount = std::clamp(std::stoi(GetProperty("SiteCount", "8").c_str()), 2, 64);
-    TEArray<glm::vec2> sites;
+    TEArray<TEVector2> sites;
     for (int s = 0; s < siteCount; ++s)
     {
-        sites.emplace_back(ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
-                           ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y));
+        sites.Add(TEVector2(ctx.RandomFloat(ctx.BoundsMin.x, ctx.BoundsMax.x),
+                            ctx.RandomFloat(ctx.BoundsMin.y, ctx.BoundsMax.y)));
     }
 
     auto outData = CreateRef<PCGPointData>();
@@ -46,7 +46,7 @@ bool PCGVoronoiPartitionNode::Execute(PCGExecutionContext &ctx)
 
         for (int s = 0; s < siteCount; ++s)
         {
-            float dist = glm::distance(glm::vec2(pt.Position.x, pt.Position.y), sites[s]);
+            float dist = (TEVector2(pt.Position.x, pt.Position.y) - sites[s]).Length();
             if (dist < minDist)
             {
                 minDist = dist;
@@ -101,8 +101,8 @@ bool PCGDelaunayTriangulationNode::Execute(PCGExecutionContext &ctx)
         {
             if (i == j)
                 continue;
-            glm::vec3 diff = pt.Position - points[j].Position;
-            if (glm::dot(diff, diff) <= maxDistSq)
+            TEVector diff = pt.Position - points[j].Position;
+            if ((diff.x * diff.x + diff.y * diff.y + diff.z * diff.z) <= maxDistSq)
             {
                 connectionCount++;
             }
@@ -152,7 +152,7 @@ bool PCGPhysicsPointRelaxerNode::Execute(PCGExecutionContext &ctx)
     {
         for (size_t i = 0; i < points.Size(); ++i)
         {
-            glm::vec3 delta(0.0f);
+            TEVector delta(0.0f, 0.0f, 0.0f);
             int neighbors = 0;
 
             for (size_t j = 0; j < points.Size(); ++j)
@@ -160,8 +160,8 @@ bool PCGPhysicsPointRelaxerNode::Execute(PCGExecutionContext &ctx)
                 if (i == j)
                     continue;
 
-                glm::vec3 diff = points[i].Position - points[j].Position;
-                float d = glm::length(diff);
+                TEVector diff = points[i].Position - points[j].Position;
+                float d = diff.Length();
                 if (d > 0.001f && d < relaxDist)
                 {
                     float overlap = (relaxDist - d);
@@ -225,7 +225,7 @@ bool PCGRaycastProjectionNode::Execute(PCGExecutionContext &ctx)
 
         if (alignNormal)
         {
-            pt.SetAttribute("HitSurfaceNormal", PCGAttributeValue(glm::vec3(0.0f, 0.0f, 1.0f)));
+            pt.SetAttribute("HitSurfaceNormal", PCGAttributeValue(TEVector(0.0f, 0.0f, 1.0f)));
         }
 
         outData->AddPoint(pt);
@@ -265,15 +265,15 @@ bool PCGBoundsExclusionNode::Execute(PCGExecutionContext &ctx)
     float cy = std::stof(GetProperty("CenterY", "0.0").c_str());
     float rSq = r * r;
 
-    glm::vec2 center(cx, cy);
+    TEVector2 center(cx, cy);
     auto outData = CreateRef<PCGPointData>();
     const auto &points = inData->GetPoints();
 
     for (size_t i = 0; i < points.Size(); ++i)
     {
-        glm::vec2 p(points[i].Position.x, points[i].Position.y);
-        glm::vec2 diff = p - center;
-        if (glm::dot(diff, diff) > rSq)
+        TEVector2 p(points[i].Position.x, points[i].Position.y);
+        TEVector2 diff = p - center;
+        if ((diff.x * diff.x + diff.y * diff.y) > rSq)
         {
             outData->AddPoint(points[i]);
         }
@@ -410,22 +410,22 @@ bool PCGLSystemGeneratorNode::Execute(PCGExecutionContext &ctx)
 
     struct TurtleState
     {
-        glm::vec2 pos;
+        TEVector2 pos;
         float angle;
     };
 
     TEArray<TurtleState> stack;
-    TurtleState turtle{glm::vec2(ctx.Origin.x, ctx.Origin.y), 1.5707963f}; // pointing Up (+Y)
+    TurtleState turtle{TEVector2(ctx.Origin.x, ctx.Origin.y), 1.5707963f}; // pointing Up (+Y)
 
     auto outData = CreateRef<PCGPointData>();
-    outData->AddPoint(PCGPoint(glm::vec3(turtle.pos.x, turtle.pos.y, 0.0f), 1.0f, 0.5f));
+    outData->AddPoint(PCGPoint(TEVector(turtle.pos.x, turtle.pos.y, 0.0f), 1.0f, 0.5f));
 
     for (char c : current)
     {
         if (c == 'F')
         {
-            turtle.pos += glm::vec2(std::cos(turtle.angle), std::sin(turtle.angle)) * branchLen;
-            outData->AddPoint(PCGPoint(glm::vec3(turtle.pos.x, turtle.pos.y, 0.0f), 1.0f, 0.5f));
+            turtle.pos += TEVector2(std::cos(turtle.angle), std::sin(turtle.angle)) * branchLen;
+            outData->AddPoint(PCGPoint(TEVector(turtle.pos.x, turtle.pos.y, 0.0f), 1.0f, 0.5f));
         }
         else if (c == '+')
         {
@@ -437,11 +437,11 @@ bool PCGLSystemGeneratorNode::Execute(PCGExecutionContext &ctx)
         }
         else if (c == '[')
         {
-            stack.push_back(turtle);
+            stack.Add(turtle);
         }
-        else if (c == ']' && !stack.empty())
+        else if (c == ']' && !stack.IsEmpty())
         {
-            turtle = stack.back();
+            turtle = stack.Back();
             stack.pop_back();
         }
     }
@@ -488,8 +488,8 @@ bool PCGEdgeExtractorNode::Execute(PCGExecutionContext &ctx)
         {
             if (i == j)
                 continue;
-            glm::vec3 diff = points[i].Position - points[j].Position;
-            if (glm::dot(diff, diff) <= distSq)
+            TEVector diff = points[i].Position - points[j].Position;
+            if ((diff.x * diff.x + diff.y * diff.y + diff.z * diff.z) <= distSq)
             {
                 count++;
             }
@@ -538,25 +538,26 @@ bool PCGKMeansClusteringNode::Execute(PCGExecutionContext &ctx)
     if (points.IsEmpty())
         return true;
 
-    TEArray<glm::vec2> centroids;
+    TEArray<TEVector2> centroids;
     for (int i = 0; i < k; ++i)
     {
         size_t rIdx = ctx.RandomInt(0, static_cast<int>(points.Size()) - 1);
-        centroids.emplace_back(points[rIdx].Position.x, points[rIdx].Position.y);
+        centroids.Add(TEVector2(points[rIdx].Position.x, points[rIdx].Position.y));
     }
 
-    TEArray<int> assignments(points.Size(), 0);
+    TEArray<int> assignments;
+    assignments.Resize(points.Size(), 0);
 
     for (int it = 0; it < iters; ++it)
     {
         for (size_t i = 0; i < points.Size(); ++i)
         {
-            glm::vec2 p(points[i].Position.x, points[i].Position.y);
+            TEVector2 p(points[i].Position.x, points[i].Position.y);
             float minD = 1e9f;
             int bestC = 0;
             for (int c = 0; c < k; ++c)
             {
-                float d = glm::distance(p, centroids[c]);
+                float d = (p - centroids[c]).Length();
                 if (d < minD)
                 {
                     minD = d;
@@ -566,13 +567,15 @@ bool PCGKMeansClusteringNode::Execute(PCGExecutionContext &ctx)
             assignments[i] = bestC;
         }
 
-        TEArray<glm::vec2> sums(k, glm::vec2(0.0f));
-        TEArray<int> counts(k, 0);
+        TEArray<TEVector2> sums;
+        sums.Resize(k, TEVector2(0.0f, 0.0f));
+        TEArray<int> counts;
+        counts.Resize(k, 0);
 
         for (size_t i = 0; i < points.Size(); ++i)
         {
             int c = assignments[i];
-            sums[c] += glm::vec2(points[i].Position.x, points[i].Position.y);
+            sums[c] += TEVector2(points[i].Position.x, points[i].Position.y);
             counts[c]++;
         }
 
@@ -626,8 +629,8 @@ bool PCGAStarTraversalNode::Execute(PCGExecutionContext &ctx)
     float ex = std::stof(GetProperty("EndX", "40.0").c_str());
     float ey = std::stof(GetProperty("EndY", "40.0").c_str());
 
-    glm::vec2 start(sx, sy);
-    glm::vec2 goal(ex, ey);
+    TEVector2 start(sx, sy);
+    TEVector2 goal(ex, ey);
 
     const auto &points = inData->GetPoints();
     if (points.IsEmpty())
@@ -639,9 +642,9 @@ bool PCGAStarTraversalNode::Execute(PCGExecutionContext &ctx)
 
     for (size_t i = 0; i < points.Size(); ++i)
     {
-        glm::vec2 p(points[i].Position.x, points[i].Position.y);
-        float ds = glm::distance(p, start);
-        float dg = glm::distance(p, goal);
+        TEVector2 p(points[i].Position.x, points[i].Position.y);
+        float ds = (p - start).Length();
+        float dg = (p - goal).Length();
 
         if (ds < minStartD)
         {
@@ -697,11 +700,11 @@ bool PCGComponentProximityMutatorNode::Execute(PCGExecutionContext &ctx)
     for (size_t i = 0; i < points.Size(); ++i)
     {
         PCGPoint pt = points[i];
-        float distToCenter = glm::length(glm::vec2(pt.Position.x - ctx.Origin.x, pt.Position.y - ctx.Origin.y));
+        float distToCenter = (TEVector2(pt.Position.x - ctx.Origin.x, pt.Position.y - ctx.Origin.y)).Length();
         if (distToCenter < radius)
         {
             float t = distToCenter / radius;
-            float scaleMul = glm::mix(minScale, 1.0f, t);
+            float scaleMul = minScale + (1.0f - minScale) * t;
             pt.Scale *= scaleMul;
             pt.Density *= scaleMul;
         }

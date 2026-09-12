@@ -38,7 +38,7 @@ SpriteMode::SpriteMode()
     m_ColorHistory.Add(TEVector4(0.5f, 0.5f, 0.5f, 1.0f));
     m_ColorHistory.Add(TEVector4(0.75f, 0.75f, 0.75f, 1.0f));
 
-    // Initialize initial frame with default Layer 1
+    // Initialize initial pixel frame with default Layer 1
     PixelFrame initialFrame;
     PixelLayer initialLayer;
     initialLayer.Name = "Layer 1";
@@ -48,10 +48,28 @@ SpriteMode::SpriteMode()
     m_ActiveFrameIndex = 0;
     m_ActiveLayerIndex = 0;
 
+    // Initialize initial vector frame
+    VectorFrame initialVecFrame;
+    m_VectorFrames.Add(initialVecFrame);
+    m_ActiveVectorFrameIndex = 0;
+
     SaveUndoState();
 }
 
 SpriteMode::~SpriteMode() {}
+
+void SpriteMode::SwitchSubmode(int newIdx)
+{
+    if (newIdx < 0 || newIdx >= (int)m_Submodes.Size() || m_ActiveSubmodeIndex == newIdx)
+        return;
+
+    if (m_ActiveSubmodeIndex >= 0 && m_ActiveSubmodeIndex < (int)m_Submodes.Size())
+    {
+        m_Submodes[m_ActiveSubmodeIndex]->OnExit(this);
+    }
+    m_ActiveSubmodeIndex = newIdx;
+    m_Submodes[m_ActiveSubmodeIndex]->OnEnter(this);
+}
 
 void SpriteMode::OnEnter()
 {
@@ -94,6 +112,7 @@ void SpriteMode::OnTimeGUIRender()
     TimeGUI::PushStyleVar(TimeGUIStyleVar_FrameRounding, 6.0f);
     TimeGUI::PushStyleVar(TimeGUIStyleVar_ItemSpacing, TEVector2(8, 8));
 
+    TimeGUI::SetNextWindowDockID(TimeGUI::GetID("MyDockSpace"), TimeGUICond_Always);
     TimeGUI::Begin("Sprite Studio", nullptr, TimeGUIWindowFlags_NoCollapse | TimeGUIWindowFlags_NoMove);
 
     // ── Top Submode Navigation Header ──────────────────────────────────────────
@@ -111,18 +130,10 @@ void SpriteMode::OnTimeGUIRender()
         bool isActive = (m_ActiveSubmodeIndex == i);
         TimeGUI::PushStyleColor(TimeGUICol_Button, isActive ? activeCol : inactiveCol);
 
-        TEString btnText = TEString(submode->GetIcon()) + " " + submode->GetName();
+        TEString btnText = submode->GetName();
         if (TimeGUI::Button(btnText.c_str(), TEVector2(140, 30)))
         {
-            if (m_ActiveSubmodeIndex != i)
-            {
-                if (m_ActiveSubmodeIndex >= 0 && m_ActiveSubmodeIndex < (int)m_Submodes.Size())
-                {
-                    m_Submodes[m_ActiveSubmodeIndex]->OnExit(this);
-                }
-                m_ActiveSubmodeIndex = i;
-                submode->OnEnter(this);
-            }
+            SwitchSubmode(i);
         }
         TimeGUI::PopStyleColor();
         TimeGUI::SameLine();
@@ -209,6 +220,8 @@ void SpriteMode::SaveUndoState()
 
     SpriteModeState state;
     state.VectorElements = m_VectorElements;
+    state.VectorFrames = m_VectorFrames;
+    state.ActiveVectorFrameIndex = m_ActiveVectorFrameIndex;
     state.ProcBuffer = TEString(m_ProcBuffer);
     state.Keywords = m_Keywords;
     state.PixelFrames = m_PixelFrames;
@@ -231,6 +244,8 @@ void SpriteMode::Undo()
 
     auto &state = m_UndoStack.Last();
     m_VectorElements = state.VectorElements;
+    m_VectorFrames = state.VectorFrames;
+    m_ActiveVectorFrameIndex = state.ActiveVectorFrameIndex;
     m_ProcBuffer = state.ProcBuffer;
     m_Keywords = state.Keywords;
     m_PixelFrames = state.PixelFrames;
@@ -256,6 +271,8 @@ void SpriteMode::Redo()
     m_UndoStack.Add(state);
 
     m_VectorElements = state.VectorElements;
+    m_VectorFrames = state.VectorFrames;
+    m_ActiveVectorFrameIndex = state.ActiveVectorFrameIndex;
     m_ProcBuffer = state.ProcBuffer;
     m_Keywords = state.Keywords;
     m_PixelFrames = state.PixelFrames;
@@ -278,17 +295,35 @@ void SpriteMode::ExecuteProceduralCode(TimeGUI::TimeGUIDrawList dl, TEVector2 or
 {
     if (m_ScriptRuntime)
     {
+        int requestedFrames = m_ScriptRuntime->GetRequestedTotalFrames();
+        if (requestedFrames >= 1 && requestedFrames != m_ProcTotalFrames)
+        {
+            m_ProcTotalFrames = requestedFrames;
+            if (m_ProcAnimFrame >= m_ProcTotalFrames)
+                m_ProcAnimFrame = 0;
+        }
+
         m_ScriptRuntime->Execute(dl, origin, cellSize, m_ProcAnimTime, dt, m_ProcAnimFrame, m_ProcTotalFrames,
                                  m_PixelGridWidth, m_PixelGridHeight);
     }
 }
 
 void SpriteMode::RenderVectorShapes(TimeGUI::TimeGUIDrawList dl, TEVector2 origin, TEVector2 cellSize, float zoom,
-                                    TEVector2 pan, int hoveredIdx, int selectedIdx)
+                                    TEVector2 pan, int hoveredIdx, int selectedIdx, int frameIndex)
 {
-    for (int i = 0; i < (int)m_VectorElements.size(); i++)
+    const TEArray<VectorElement> *elementsToDraw = &m_VectorElements;
+    int idx = (frameIndex >= 0) ? frameIndex : m_ActiveVectorFrameIndex;
+    if (idx >= 0 && idx < (int)m_VectorFrames.Size())
     {
-        const auto &elem = m_VectorElements[i];
+        elementsToDraw = &m_VectorFrames[idx].Elements;
+    }
+
+    if (!elementsToDraw)
+        return;
+
+    for (int i = 0; i < (int)elementsToDraw->size(); i++)
+    {
+        const auto &elem = (*elementsToDraw)[i];
         unsigned int fillCol = TimeGUI::ColorConvertFloat4ToU32(elem.FillColor);
         unsigned int strokeCol = TimeGUI::ColorConvertFloat4ToU32(elem.StrokeColor);
 
@@ -310,6 +345,71 @@ void SpriteMode::RenderVectorShapes(TimeGUI::TimeGUIDrawList dl, TEVector2 origi
             dl.AddCircleFilled(center, r, fillCol);
             if (elem.StrokeThickness > 0.0f)
                 dl.AddCircle(center, r, strokeCol, 0, elem.StrokeThickness * zoom);
+        }
+        else if (elem.Type == VectorShapeType::Triangle && elem.Points.size() >= 3)
+        {
+            TEVector2 p1 = TEVector2(origin.x + (elem.Points[0].x * cellSize.x + pan.x) * zoom,
+                                     origin.y + (elem.Points[0].y * cellSize.y + pan.y) * zoom);
+            TEVector2 p2 = TEVector2(origin.x + (elem.Points[1].x * cellSize.x + pan.x) * zoom,
+                                     origin.y + (elem.Points[1].y * cellSize.y + pan.y) * zoom);
+            TEVector2 p3 = TEVector2(origin.x + (elem.Points[2].x * cellSize.x + pan.x) * zoom,
+                                     origin.y + (elem.Points[2].y * cellSize.y + pan.y) * zoom);
+            dl.AddTriangleFilled(p1, p2, p3, fillCol);
+            if (elem.StrokeThickness > 0.0f)
+            {
+                TEVector2 triPts[4] = {p1, p2, p3, p1};
+                dl.AddPolyline(triPts, 4, strokeCol, 0, elem.StrokeThickness * zoom);
+            }
+        }
+        else if (elem.Type == VectorShapeType::Semicircle && elem.Points.size() >= 1)
+        {
+            TEVector2 center = TEVector2(origin.x + (elem.Points[0].x * cellSize.x + pan.x) * zoom,
+                                         origin.y + (elem.Points[0].y * cellSize.y + pan.y) * zoom);
+            float r = elem.Radius * cellSize.x * zoom;
+            const int segs = 32;
+            TEArray<TEVector2> arcPts;
+            arcPts.reserve(segs + 2);
+            arcPts.push_back(center);
+            for (int s = 0; s <= segs; s++)
+            {
+                float a = 3.14159265f + (3.14159265f * (float)s / (float)segs);
+                arcPts.push_back(TEVector2(center.x + std::cos(a) * r, center.y + std::sin(a) * r));
+            }
+            dl.AddConvexPolyFilled(arcPts.data(), (int)arcPts.size(), fillCol);
+            if (elem.StrokeThickness > 0.0f)
+            {
+                arcPts.push_back(center);
+                dl.AddPolyline(arcPts.data(), (int)arcPts.size(), strokeCol, 0, elem.StrokeThickness * zoom);
+            }
+        }
+        else if (elem.Type == VectorShapeType::Pen && elem.Points.size() >= 2)
+        {
+            TEArray<TEVector2> screenPts;
+            screenPts.reserve(elem.Points.size());
+            for (const auto &pt : elem.Points)
+            {
+                screenPts.push_back(TEVector2(origin.x + (pt.x * cellSize.x + pan.x) * zoom,
+                                              origin.y + (pt.y * cellSize.y + pan.y) * zoom));
+            }
+            if (elem.FillColor.w > 0.01f && screenPts.size() >= 3)
+            {
+                dl.AddConvexPolyFilled(screenPts.data(), (int)screenPts.size(), fillCol);
+            }
+            if (elem.StrokeThickness > 0.0f)
+            {
+                dl.AddPolyline(screenPts.data(), (int)screenPts.size(), strokeCol, 0, elem.StrokeThickness * zoom);
+            }
+        }
+
+        if (i == selectedIdx)
+        {
+            // Draw selection halo
+            if (!elem.Points.empty())
+            {
+                TEVector2 p1 = TEVector2(origin.x + (elem.Points[0].x * cellSize.x + pan.x) * zoom,
+                                         origin.y + (elem.Points[0].y * cellSize.y + pan.y) * zoom);
+                dl.AddCircle(p1, 6.0f, IM_COL32(0, 200, 255, 255), 0, 2.0f);
+            }
         }
     }
 }

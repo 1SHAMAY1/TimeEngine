@@ -1,0 +1,24 @@
+﻿// PlayerSideScroller.tscript
+class PlayerSideScroller : TComponent
+
+    T_REGISTER_PROPERTY(float, speed_boost, 1.2)
+    T_REGISTER_PROPERTY(int, score, 0)
+
+    public:
+        int coins_collected = 0
+
+    on_ready() {
+        TE_CORE_INFO(2D SideScroller Player initialized!)
+    }
+
+    on_update(float dt) {
+        if (transform.position.y < -10.0) {
+            TE_CORE_WARN(Player fell out of bounds! Resetting position...)
+            transform.position.x = 0.0
+            transform.position.y = 2.0
+        }
+    }
+
+    on_collision(other) {
+        TE_CORE_INFO(Player collided with object:  + other)
+    }

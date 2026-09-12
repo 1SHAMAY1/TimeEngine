@@ -51,6 +51,7 @@ void ProjectHubLayer::OnAttach()
 {
     SetDarkThemeColors();
     LoadRecentProjects();
+    ScanTemplates();
 
     // Load Branding
     if (TEFileSystem::Exists("Resources/Branding/Icon.png"))
@@ -271,9 +272,123 @@ void ProjectHubLayer::UI_DrawProjectsList()
     }
 }
 
+static bool CopyDirectoryRecursive(const TEString &source, const TEString &destination)
+{
+    if (!TEFileSystem::Exists(source))
+        return false;
+
+    if (!TEFileSystem::Exists(destination))
+        TEFileSystem::CreateDirectories(destination);
+
+    auto dirs = TEFileSystem::GetDirectories(source, true);
+    for (const auto &d : dirs)
+    {
+        TEString rel = d;
+        if (rel.StartsWith(source))
+        {
+            rel = rel.Mid(source.Length());
+            if (rel.StartsWith("/") || rel.StartsWith("\\"))
+                rel = rel.Mid(1);
+        }
+        TEFileSystem::CreateDirectories(destination / rel);
+    }
+
+    auto files = TEFileSystem::GetFiles(source, "", true);
+    for (const auto &f : files)
+    {
+        TEString rel = f;
+        if (rel.StartsWith(source))
+        {
+            rel = rel.Mid(source.Length());
+            if (rel.StartsWith("/") || rel.StartsWith("\\"))
+                rel = rel.Mid(1);
+        }
+        TEFileSystem::CreateDirectories((destination / rel).GetParentPath());
+        TEFileSystem::CopyFile(f, destination / rel, true);
+    }
+
+    return true;
+}
+
+void ProjectHubLayer::ScanTemplates()
+{
+    m_DiscoveredTemplates.Clear();
+
+    TEArray<TEString> searchPaths = {"Resources/Templates", "e:/TimeEngine/Resources/Templates",
+                                     TEFileSystem::GetCurrentWorkingDirectory() / "Resources" / "Templates"};
+
+    TEString validTemplateRoot = "";
+    for (const auto &root : searchPaths)
+    {
+        if (TEFileSystem::Exists(root) && TEFileSystem::IsDirectory(root))
+        {
+            validTemplateRoot = root;
+            break;
+        }
+    }
+
+    if (validTemplateRoot.empty())
+        return;
+
+    auto subDirs = TEFileSystem::GetDirectories(validTemplateRoot, false);
+    for (const auto &dir : subDirs)
+    {
+        auto projFiles = TEFileSystem::GetFiles(dir, ".teproj", false);
+        if (!projFiles.IsEmpty())
+        {
+            ProjectTemplateInfo info;
+            info.Path = dir;
+            info.FolderName = dir.GetFilename();
+            info.Name = info.FolderName;
+
+            // Load template project to extract friendly name and start scene
+            TERef<Project> tempProj = Project::Load(projFiles[0]);
+            if (tempProj)
+            {
+                if (!tempProj->GetConfig().Name.IsEmpty())
+                    info.Name = tempProj->GetConfig().Name;
+                info.StartScene = tempProj->GetConfig().StartScene;
+            }
+
+            m_DiscoveredTemplates.Add(info);
+        }
+    }
+}
+
 void ProjectHubLayer::UI_DrawCreateProjectView()
 {
     TimeGUI::Text("Create New Project");
+    TimeGUI::Separator();
+    TimeGUI::Spacing();
+
+    // -- Template Selection --
+    TimeGUI::Text("Choose Template");
+    TimeGUI::Spacing();
+
+    // 0 = Empty Project
+    bool isEmpty = (m_SelectedTemplateIndex == 0);
+    if (TimeGUI::RadioButton("Empty Project (Blank Canvas)", isEmpty))
+    {
+        m_SelectedTemplateIndex = 0;
+        if (m_NewProjectName.StartsWith("2D_") || m_NewProjectName.EndsWith("_Game"))
+            m_NewProjectName = "NewProject";
+    }
+
+    // Dynamic discovered templates parsed directly from Resources/Templates/
+    for (size_t i = 0; i < m_DiscoveredTemplates.Num(); ++i)
+    {
+        const auto &tpl = m_DiscoveredTemplates[i];
+        bool isSelected = (m_SelectedTemplateIndex == (int)(i + 1));
+
+        TEString radioLabel = tpl.Name + " Template (" + tpl.FolderName + ")";
+        if (TimeGUI::RadioButton(radioLabel.c_str(), isSelected))
+        {
+            m_SelectedTemplateIndex = (int)(i + 1);
+            m_NewProjectName = tpl.FolderName + "_Game";
+        }
+    }
+
+    TimeGUI::Spacing();
     TimeGUI::Separator();
     TimeGUI::Spacing();
 
@@ -337,14 +452,51 @@ void ProjectHubLayer::UI_DrawCreateProjectView()
 
 void ProjectHubLayer::CreateProject(const TEString &name, const TEString &path, const TEString &thumbnailPath)
 {
-    // 1. Create Directories
     TEString projectPath = path / name;
     if (TEFileSystem::Exists(projectPath))
     {
-        TE_CORE_WARN("Project directory already exists!");
+        TE_CORE_WARN("Project directory already exists: {0}", projectPath.c_str());
         return;
     }
 
+    if (m_SelectedTemplateIndex > 0 && (size_t)(m_SelectedTemplateIndex - 1) < m_DiscoveredTemplates.Num())
+    {
+        const auto &selectedTpl = m_DiscoveredTemplates[m_SelectedTemplateIndex - 1];
+        TEString templateDir = selectedTpl.Path;
+
+        if (TEFileSystem::Exists(templateDir))
+        {
+            TE_CORE_INFO("Creating project from parsed template: {0} -> {1}", templateDir.c_str(), projectPath.c_str());
+            CopyDirectoryRecursive(templateDir, projectPath);
+
+            // Find copied .teproj file and rename to <name>.teproj
+            auto teprojFiles = TEFileSystem::GetFiles(projectPath, ".teproj", false);
+            TEString finalProjFile = projectPath / (name + ".teproj");
+            if (!teprojFiles.IsEmpty())
+            {
+                if (teprojFiles[0] != finalProjFile)
+                {
+                    TEFileSystem::CopyFile(teprojFiles[0], finalProjFile, true);
+                    TEFileSystem::Remove(teprojFiles[0]);
+                }
+            }
+
+            // Load project and update name & thumbnail
+            TERef<Project> loadedProj = Project::Load(finalProjFile);
+            if (loadedProj)
+            {
+                loadedProj->GetConfig().Name = name;
+                if (!thumbnailPath.empty())
+                    loadedProj->GetConfig().ThumbnailPath = thumbnailPath;
+                Project::SaveActive(finalProjFile);
+            }
+
+            m_ProjectToOpen = finalProjFile;
+            return;
+        }
+    }
+
+    // Default Blank Project fallback
     TEFileSystem::CreateDirectories(projectPath);
     TEFileSystem::CreateDirectories(projectPath / "Assets");
     TEFileSystem::CreateDirectories(projectPath / "Assets" / "Scenes");
@@ -359,7 +511,7 @@ void ProjectHubLayer::CreateProject(const TEString &name, const TEString &path, 
     SceneSerializer serializer(mainScene);
     serializer.Serialize(mainScenePath);
 
-    // 2. Create Project Object
+    // Create Project Object
     TERef<Project> newProject = Project::New();
     ProjectConfig &config = newProject->GetConfig();
     config.Name = name;
@@ -368,11 +520,11 @@ void ProjectHubLayer::CreateProject(const TEString &name, const TEString &path, 
     if (!thumbnailPath.empty())
         config.ThumbnailPath = thumbnailPath;
 
-    // 3. Save .teproj
+    // Save .teproj
     TEString projFile = projectPath / (name + ".teproj");
     Project::SaveActive(projFile);
 
-    // 4. Open It
+    // Open It
     m_ProjectToOpen = projFile;
 }
 

@@ -78,10 +78,10 @@ TERef<Shader> Material::GetShader() const { return m_Shader; }
 
 void Material::SetUniform(const TEString &name, float value) { m_FloatUniforms[name] = value; }
 void Material::SetUniform(const TEString &name, int value) { m_IntUniforms[name] = value; }
-void Material::SetUniform(const TEString &name, const glm::vec2 &value) { m_Vec2Uniforms[name] = value; }
-void Material::SetUniform(const TEString &name, const glm::vec3 &value) { m_Vec3Uniforms[name] = value; }
-void Material::SetUniform(const TEString &name, const glm::vec4 &value) { m_Vec4Uniforms[name] = value; }
-void Material::SetUniform(const TEString &name, const glm::mat4 &value) { m_Mat4Uniforms[name] = value; }
+void Material::SetUniform(const TEString &name, const TEVector2 &value) { m_Vec2Uniforms[name] = value; }
+void Material::SetUniform(const TEString &name, const TEVector &value) { m_Vec3Uniforms[name] = value; }
+void Material::SetUniform(const TEString &name, const TEVector4 &value) { m_Vec4Uniforms[name] = value; }
+void Material::SetUniform(const TEString &name, const TEMatrix4 &value) { m_Mat4Uniforms[name] = value; }
 
 void Material::ApplyUniforms()
 {

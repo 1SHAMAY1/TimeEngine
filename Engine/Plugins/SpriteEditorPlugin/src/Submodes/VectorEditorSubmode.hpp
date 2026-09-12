@@ -2,7 +2,6 @@
 
 #include "../SpriteEditorTypes.hpp"
 #include "ISubmode.hpp"
-#include <vector>
 
 class VectorEditorSubmode : public ISubmode
 {
@@ -20,6 +19,25 @@ public:
 
 private:
     void DrawToolSidebar(SpriteMode *mode);
+    void DrawAnimationFrameStrip(SpriteMode *mode);
     void DrawVectorCanvas(SpriteMode *mode);
     void DrawPropertiesSidebar(SpriteMode *mode);
+
+    // Interactive Drawing State
+    bool m_IsInteracting = false;
+    TEVector2 m_StartNormPos = TEVector2(0, 0);
+    VectorElement m_LivePreviewElem;
+    TEArray<TEVector2> m_PenCurrentPath;
+
+    // Animation / Playback
+    bool m_IsPlayingPreview = true;
+    int m_PreviewFPS = 8;
+    float m_AnimationTimer = 0.0f;
+    int m_PreviewFrameIndex = 0;
+
+    // Vector Onion Skinning State
+    bool m_EnableOnionSkin = true;
+    int m_OnionPastFrames = 1;
+    int m_OnionFutureFrames = 1;
+    float m_OnionOpacity = 0.35f;
 };

@@ -8,6 +8,12 @@
 #endif
 #include <Windows.h>
 #include <dxgi.h>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
+
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
 
 // Undefine polluting Windows.h macros
 #ifdef ERROR
@@ -60,27 +66,26 @@ void WindowsWindow::Init(const WindowProps &props)
         int success = glfwInit();
         if (!success)
         {
-            TE_CORE_ERROR("Could not initialize GLFW!");
+            TE_CORE_ERROR("Could not initialize GLFW for WindowsWindow!");
             return;
         }
-        TE_CORE_INFO("GLFW initialized successfully.");
+        TE_CORE_INFO("WindowsWindow (Win32/GLFW) initialized successfully.");
         s_GLFWInitialized = true;
     }
 
     switch (RendererContext::GetAPI())
     {
     case GraphicsAPI::OpenGL:
-#ifdef __APPLE__
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-#endif
+    case GraphicsAPI::OpenGLES:
+        // Default GLFW context creation
         break;
     case GraphicsAPI::Vulkan:
     case GraphicsAPI::DirectX11:
+        // Explicitly disable GLFW OpenGL context creation when using Vulkan / DirectX 11
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         break;
+    case GraphicsAPI::Metal:
+    case GraphicsAPI::None:
     default:
         break;
     }
@@ -100,6 +105,14 @@ void WindowsWindow::Init(const WindowProps &props)
         HWND hWnd = glfwGetWin32Window(m_Window);
         if (hWnd)
         {
+            // 1. Black background brush prevents white unpainted GDI flash
+            SetClassLongPtrW(hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)GetStockObject(BLACK_BRUSH));
+
+            // 2. Windows 10/11 Dark Mode Title Bar
+            BOOL darkMode = TRUE;
+            DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkMode, sizeof(darkMode));
+
+            // 3. Set Window Icons
             HICON hIconBig =
                 (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101), IMAGE_ICON, 48, 48, LR_SHARED);
             HICON hIconSmall =
@@ -144,10 +157,7 @@ void WindowsWindow::Init(const WindowProps &props)
         }
     }
 
-    // Now show the window with icon already attached
-    glfwShowWindow(m_Window);
-
-    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL || RendererContext::GetAPI() == GraphicsAPI::OpenGLES)
     {
         glfwMakeContextCurrent(m_Window);
     }
@@ -298,7 +308,7 @@ void WindowsWindow::Init(const WindowProps &props)
                                  data.EventCallback(event);
                              });
 
-    TE_CORE_INFO("Window successfully created: {0} ({1}x{2})", m_Data.Title, m_Data.Width, m_Data.Height);
+    TE_CORE_INFO("WindowsWindow successfully created: {0} ({1}x{2})", m_Data.Title, m_Data.Width, m_Data.Height);
 }
 
 void WindowsWindow::Shutdown()
@@ -307,7 +317,7 @@ void WindowsWindow::Shutdown()
     {
         glfwDestroyWindow(m_Window);
         m_Window = nullptr;
-        TE_CORE_INFO("GLFW window destroyed.");
+        TE_CORE_INFO("WindowsWindow destroyed.");
     }
 }
 
@@ -331,14 +341,15 @@ void WindowsWindow::SetVSync(bool enabled)
 
 bool WindowsWindow::IsVSync() const { return m_Data.VSync; }
 
-void IWindow::Terminate() { glfwTerminate(); }
-
-void *IWindow::GetCurrentContext() { return glfwGetCurrentContext(); }
-
-void IWindow::MakeContextCurrent(void *context) { glfwMakeContextCurrent(static_cast<GLFWwindow *>(context)); }
-
-void IWindow::SwapBuffers(void *nativeWindow)
+void WindowsWindow::ShowWindow()
 {
-    if (nativeWindow)
-        glfwSwapBuffers(static_cast<GLFWwindow *>(nativeWindow));
+    if (m_Window)
+        glfwShowWindow(m_Window);
+}
+
+bool WindowsWindow::IsVisible() const
+{
+    if (m_Window)
+        return glfwGetWindowAttrib(m_Window, GLFW_VISIBLE) == GLFW_TRUE;
+    return false;
 }

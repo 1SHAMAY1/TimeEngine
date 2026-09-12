@@ -24,7 +24,7 @@ template <typename T> struct EditorMenubarOverlayRegisterer
     EditorMenubarOverlayRegisterer() { EditorMenubarOverlayRegistry::RegisterOverlay(CreateRef<T>()); }
 };
 
-#define TE_REGISTER_MENUBAR_OVERLAY(Type) static EditorMenubarOverlayRegisterer<Type> Type##_MenubarOverlayReg;
+#define TE_REGISTER_MENUBAR_OVERLAY(Type) inline EditorMenubarOverlayRegisterer<Type> Type##_MenubarOverlayReg;
 
 // Standard Decentralized Menubar Overlays
 class TE_API FileMenubarOverlay : public IEditorMenubarOverlay
