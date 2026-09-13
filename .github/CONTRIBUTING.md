@@ -25,25 +25,43 @@ Join our community on **[GitHub Discussions](https://github.com/1SHAMAY1/TimeEng
 ```bash
 git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
 cd TimeEngine
-bash Scripts/SetupSubmodules.sh
+# On Windows:
+Scripts\Windows\SetupSubmodules.bat
+# On macOS:
+bash Scripts/Mac/SetupSubmodules.sh
+# On Linux:
+bash Scripts/Linux/SetupSubmodules.sh
 ```
 
-### 2. Generate Workspace & Project Files
+### 2. Linux Dependencies (Preinstalled locally)
+On Ubuntu/Debian, the required dependencies are:
+```bash
+sudo apt update && sudo apt install -y \
+    build-essential gcc g++ clang cmake make ninja-build git git-lfs pkg-config gdb mold \
+    libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev xorg-dev \
+    libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev vulkan-tools \
+    libasound2-dev libpulse-dev zenity
+```
+*(Note: `Scripts/Linux/SetupSubmodules.sh` will also auto-detect and prompt to install any missing packages).*
+
+### 3. Generate Workspace & Project Files
 Run the generator script for your specific platform and toolchain:
 - **Windows (Visual Studio / MSVC)**: `Scripts\Windows\MSVC\GenerateProjectFiles.bat`
 - **Windows (MinGW / GCC)**: `Scripts\Windows\MinGW\GenerateProjectFiles.bat`
 - **Windows (LLVM Clang-cl)**: `Scripts\Windows\Clang\GenerateProjectFiles.bat`
 - **macOS (Xcode)**: `bash Scripts/Mac/Xcode/GenerateProjectFiles.sh`
 - **macOS (Makefiles / Apple Clang)**: `bash Scripts/Mac/Makefiles/GenerateProjectFiles.sh`
-- **Linux (Makefiles / GCC & Clang)**: `bash Scripts/Linux/GenerateProjectFiles.sh`
+- **Linux (GCC)**: `bash Scripts/Linux/GCC/GenerateProjectFiles.sh`
+- **Linux (Clang)**: `bash Scripts/Linux/Clang/GenerateProjectFiles.sh`
 
-### 3. Build the Engine & Editor
+### 4. Build the Engine & Editor
 - **Windows (MSVC)**: `Scripts\Windows\MSVC\BuildDebug.bat`
 - **Windows (MinGW)**: `Scripts\Windows\MinGW\BuildDebug.bat`
 - **Windows (Clang)**: `Scripts\Windows\Clang\BuildDebug.bat`
 - **macOS (Xcode)**: `bash Scripts/Mac/Xcode/BuildDebug.sh`
 - **macOS (Makefiles)**: `bash Scripts/Mac/Makefiles/BuildDebug.sh`
-- **Linux (Makefiles)**: `bash Scripts/Linux/BuildDebug.sh`
+- **Linux (GCC)**: `bash Scripts/Linux/GCC/BuildDebug.sh`
+- **Linux (Clang)**: `bash Scripts/Linux/Clang/BuildDebug.sh`
 
 ---
 

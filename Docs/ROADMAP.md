@@ -167,7 +167,7 @@ This document outlines the current state and planned features of TimeEngine, str
 - **Description**: Kinematic character controller with `move_and_slide()` and overlap trigger zones.
 - **Sub-tasks**:
   - [x] Subissue: `CharacterBody2DComponent` with slope limits and `move_and_slide()` resolution
-  - [x] Subissue: `Area2DComponent` trigger zones and `RayCast2DComponent` hit tests
+  - [x] Subissue: `Area2DComponent` trigger zones and `SweepLine2DComponent` hit tests
   - [x] Subissue: `AudioSource2DComponent` and `AudioListenerComponent` spatial audio
 
 #### [Issue: "Hierarchical AI State Trees & Navigation" | Tags: AI Agents, ECS, Core | Status: completed]
