@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TimeEngine Project Schema (.teproj)",
+  "description": "Validation and IntelliSense schema for TimeEngine .teproj project files",
+  "type": "object",
+  "required": ["Project"],
+  "properties": {
+    "Project": {
+      "type": "object",
+      "required": ["Name"],
+      "properties": {
+        "Name": { "type": "string", "description": "Name of the TimeEngine project" },
+        "StartScene": { "type": "string", "description": "Path to default startup scene (.tescene)" },
+        "AssetDirectory": { "type": "string", "description": "Root assets directory" },
+        "ScriptModulePath": { "type": "string", "description": "Path to script module" },
+        "ThumbnailPath": { "type": "string", "description": "Project preview icon path" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

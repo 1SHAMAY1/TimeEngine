@@ -1,4 +1,9 @@
-# Binaries
+# ==============================================================================
+# TimeEngine Repository .gitignore
+# ==============================================================================
+
+# Centralized Build Outputs & Intermediates
+Artifacts/
 Bin/
 Bin-Intermediate/
 Build_Release/
@@ -6,14 +11,14 @@ Build_Development/
 **/build/
 **/bin/
 **/obj/
-*.exe
 
-# Premake Binaries (Downloaded by SetupSubmodules)
-Vendor/Premake/Windows/
-Vendor/Premake/Mac/
-Vendor/Premake/Linux/
+# Compiled Binaries & Libraries
+*.exe
 *.dll
+*.so
+*.dylib
 *.lib
+*.a
 *.pdb
 *.ilk
 *.exp
@@ -21,50 +26,59 @@ Vendor/Premake/Linux/
 *.idb
 *.tlog
 
-# GNU Make
+# Premake Standalone Binaries (Downloaded by SetupSubmodules)
+ThirdParty/Premake/Windows/
+ThirdParty/Premake/Mac/
+ThirdParty/Premake/Linux/
+Vendor/Premake/Windows/
+Vendor/Premake/Mac/
+Vendor/Premake/Linux/
+
+# GNU Make & Visual Studio / IDE Generated Files
 Makefile
 *.make
-
-
-# Visual Studio / IDE
-.vs/
-.vscode/
-*.user
-*.vcxproj.user
 *.sln
-*.sln.DotSettings.user
 *.vcxproj
 *.vcxproj.filters
+.vs/
+*.user
+*.vcxproj.user
+*.sln.DotSettings.user
 recent_projects.txt
 
-# JetBrains Rider
+# JetBrains IDEs
 .idea/
 .Rider*/
 
-# Xcode / Mac IDE
+# Xcode & macOS Metadata
 *.xcodeproj/
 *.xcworkspace/
 *.xe
-
-# Mac & Generated Manifests
 .DS_Store
 TimeEditor/Info.plist
-TimeEditor/src/TimeEditor.rc
-*.rc
 
-
-# Sandbox
-Sandbox/*
-!Sandbox/src/
-
-# Engine Logs
-**/*.json
-recent_projects.txt
-
-# Agents
-!.agents/
-!.agents/**
-
-# ImGui layout config
+# ImGui Layouts & Editor Runtime Temp Files
+Config/
+/Config/
 *.ini
 imgui.ini
+temp_viewport_capture.png
+*.bak
+
+# Engine Runtime Logs
+**/*_TimeEngineLog.json
+Client_TimeEngineLog.json
+Core_TimeEngineLog.json
+
+# Whitelist Critical Repository Folders
+!.agents/
+!.agents/**
+!.github/
+!.github/**
+!.vscode/
+!.vscode/**
+
+# Generated Reports & Python Cache (from local CI script testing)
+__pycache__/
+*.py[cod]
+.github/reports/

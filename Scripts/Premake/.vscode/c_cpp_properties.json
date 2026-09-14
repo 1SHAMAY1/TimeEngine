@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/Engine/Include",
+        "${workspaceFolder}/Engine/src",
+        "${workspaceFolder}/TimeEditor/src",
+        "${workspaceFolder}/TimeEditor/Include",
+        "${workspaceFolder}/Vendor/Customizable_Logger/Include",
+        "${workspaceFolder}/Vendor/GLFW/glfw/include",
+        "${workspaceFolder}/Vendor/GLAD/include",
+        "${workspaceFolder}/Vendor/IMGUI/ImGui",
+        "${workspaceFolder}/Vendor/GLM",
+        "${workspaceFolder}/Vendor/stb_image",
+        "${workspaceFolder}/Vendor/Velox/include",
+        "${workspaceFolder}/Vendor/Vulkan/include",
+        "${workspaceFolder}/Vendor/volk",
+        "${workspaceFolder}/Vendor/OpenGL-Registry/api",
+        "${workspaceFolder}/Vendor/ForgeUI/include"
+      ],
+      "defines": [
+        "TE_PLATFORM_WINDOWS",
+        "TE_DEBUG",
+        "TE_BUILD_DLL",
+        "IMGUI_ENABLE_DOCKING",
+        "IMGUI_ENABLE_VIEWPORTS",
+        "_CRT_SECURE_NO_WARNINGS"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "c++20",
+      "intelliSenseMode": "windows-msvc-x64",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/Engine/Include",
+          "${workspaceFolder}/Engine/src",
+          "${workspaceFolder}/TimeEditor",
+          "${workspaceFolder}/Vendor"
+        ],
+        "limitSymbolsToIncludedHeaders": false
+      }
+    }
+  ],
+  "version": 4
+}

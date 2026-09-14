@@ -1,8 +1,9 @@
 -- ==============================================================================
--- TimeEngine Master Premake5 Workspace
+-- TimeEngine Master Modular Premake5 Workspace
 -- ==============================================================================
 
 workspace "TimeEngine"
+    cppdialect "C++20"
     filter "system:not macosx"
         architecture "x64"
     filter {}
@@ -10,42 +11,36 @@ workspace "TimeEngine"
 
     configurations { "Debug", "Release", "Dist" }
 
--- Load Common Setup (Toolsets, Flags, Include Directories, IDE configs)
+-- Load Common Setup (Toolsets, Flags, Output paths, Include Directories)
 dofile "Scripts/Premake/Common.lua"
 
 -- Load Codebase Rule Checker ('premake5 check-rules')
 dofile "Scripts/Premake/Rules.lua"
 
--- Include Sub-Projects
-include "Vendor"
+-- Include Sub-Projects in Tiered Order
+include "ThirdParty"
 include "Engine"
+include "Plugins"
 include "TimeEditor"
 
--- ========== Docs / Misc Project (visibility only, not compiled) ==========
-
+-- ========== Docs Solution Project (in-IDE Markdown browsing) ==========
 project "Docs"
     location "Docs"
     kind "None"
     language "C++"
-    objdir "Bin-Intermediate/Docs"
+    objdir "Artifacts/Bin-Intermediate/Docs"
 
     files {
-        -- Root markdown & text docs
         "*.md",
         "LICENSE",
-
-        -- Config / meta files
         ".agentsrules",
         ".clang-format",
         ".gitattributes",
         ".gitignore",
         ".gitmodules",
-
-        -- .github and .agents folders
         ".github/**",
         ".agents/**",
-
-        -- Build scripts
+        "Docs/**",
         "Premake5.lua",
         "Scripts/**.bat",
         "Scripts/**.sh",
@@ -54,7 +49,7 @@ project "Docs"
     }
 
     vpaths {
-        ["Docs/*"] = { "*.md", "README*", "LICENSE*", "CONTRIBUTING*", "ROADMAP*", "SECURITY*", "llms*" },
+        ["Docs/*"] = { "Docs/**", "*.md", "README*", "LICENSE*", "CONTRIBUTING*", "ROADMAP*", "SECURITY*", "llms*" },
         ["Config/*"] = { ".agentsrules", ".clang-format", ".gitattributes", ".gitignore", ".gitmodules" },
         ["Scripts/*"] = { "Scripts/**.bat", "Scripts/**.sh", "Scripts/**.lua", "Scripts/**.py" },
         ["Build/*"] = { "Premake5.lua" },

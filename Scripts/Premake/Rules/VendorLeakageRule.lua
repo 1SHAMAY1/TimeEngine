@@ -10,7 +10,10 @@ local vendorRules = {
         id = "TE_VND01",
         headerPatterns = { "#%s*include%s*[<\"]velox/" },
         symbolPatterns = { "%f[%a]vx[A-Z]%w+", "%f[%a]Velox::" },
-        allowedPaths = { "Engine/src/Core/Physics/", "Engine/Include/Core/Physics/" },
+        allowedPaths = {
+            "Engine/src/Core/Physics/", "Engine/Include/Core/Physics/",
+            "Engine/Source/Runtime/Physics/", "Engine/Source/Runtime/Core/Include/Core/Physics/"
+        },
         msg = "Velox physics header/symbol leaked outside Physics subsystem. Must use TimeEngine Physics abstractions."
     },
     {
@@ -22,7 +25,9 @@ local vendorRules = {
             "Engine/src/Window/", "Engine/Include/Window/",
             "Engine/src/Platform/Windows/", "Engine/src/Platform/Linux/", "Engine/src/Platform/Mac/",
             "Engine/src/Utils/Platform/", "Engine/src/Utils/TimeGUI", "Engine/src/Core/Input/Input.cpp",
-            "Engine/src/UI/"
+            "Engine/src/UI/",
+            "Engine/Source/Runtime/Window/", "Engine/Source/Runtime/UI/",
+            "Engine/Source/Framework/Input/"
         },
         msg = "GLFW header/symbol leaked outside Window/Platform backend. Must use TimeEngine Window & Input abstractions."
     },
@@ -34,7 +39,13 @@ local vendorRules = {
         allowedPaths = {
             "Engine/src/Renderer/OpenGL/", "Engine/Include/Renderer/OpenGL/",
             "Engine/src/Renderer/OpenGLES/", "Engine/Include/Renderer/OpenGLES/",
-            "Engine/src/Renderer/Texture.cpp", "Engine/src/Renderer/ShaderLibrary.cpp"
+            "Engine/src/Renderer/Texture.cpp", "Engine/src/Renderer/ShaderLibrary.cpp",
+            "Engine/Source/Runtime/RHI/Source/Backends/OpenGL/",
+            "Engine/Source/Runtime/RHI/Source/Backends/OpenGLES/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/OpenGL/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/OpenGLES/",
+            "Engine/Source/Runtime/RHI/Source/Texture.cpp",
+            "Engine/Source/Runtime/RHI/Source/ShaderLibrary.cpp"
         },
         msg = "OpenGL/GLAD header/symbol leaked outside OpenGL/OpenGLES renderer backend. Must use TimeEngine Renderer2D/RenderCommand abstractions."
     },
@@ -46,7 +57,13 @@ local vendorRules = {
         allowedPaths = {
             "Engine/src/Renderer/OpenGLES/", "Engine/Include/Renderer/OpenGLES/",
             "Engine/src/Renderer/OpenGL/", "Engine/Include/Renderer/OpenGL/",
-            "Engine/src/Renderer/Texture.cpp", "Engine/src/Renderer/ShaderLibrary.cpp"
+            "Engine/src/Renderer/Texture.cpp", "Engine/src/Renderer/ShaderLibrary.cpp",
+            "Engine/Source/Runtime/RHI/Source/Backends/OpenGLES/",
+            "Engine/Source/Runtime/RHI/Source/Backends/OpenGL/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/OpenGLES/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/OpenGL/",
+            "Engine/Source/Runtime/RHI/Source/Texture.cpp",
+            "Engine/Source/Runtime/RHI/Source/ShaderLibrary.cpp"
         },
         msg = "OpenGL ES header/symbol leaked outside OpenGLES renderer backend. Must use TimeEngine Renderer abstractions."
     },
@@ -56,7 +73,9 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"]vulkan/", "#%s*include%s*[<\"]volk%.h" },
         symbolPatterns = { "%f[%a]Vk[A-Z]%w+", "%f[%a]vk[A-Z]%w+" },
         allowedPaths = {
-            "Engine/src/Renderer/Vulkan/", "Engine/Include/Renderer/Vulkan/"
+            "Engine/src/Renderer/Vulkan/", "Engine/Include/Renderer/Vulkan/",
+            "Engine/Source/Runtime/RHI/Source/Backends/Vulkan/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/Vulkan/"
         },
         msg = "Vulkan/Volk header/symbol leaked outside Vulkan renderer backend. Must use TimeEngine Renderer abstractions."
     },
@@ -68,7 +87,11 @@ local vendorRules = {
         allowedPaths = {
             "Engine/src/Renderer/DirectX11/", "Engine/Include/Renderer/DirectX11/",
             "Engine/src/Renderer/Texture.cpp", "Engine/src/Window/WindowsWindow.cpp",
-            "Engine/src/Platform/Windows/"
+            "Engine/src/Platform/Windows/",
+            "Engine/Source/Runtime/RHI/Source/Backends/DirectX11/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/DirectX11/",
+            "Engine/Source/Runtime/RHI/Source/Texture.cpp",
+            "Engine/Source/Runtime/Window/Source/WindowsWindow.cpp"
         },
         msg = "DirectX 11 header/symbol leaked outside DirectX11 renderer backend. Must use TimeEngine Renderer abstractions."
     },
@@ -78,7 +101,9 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"]Metal/Metal%.h", "#%s*include%s*[<\"]metal/" },
         symbolPatterns = { "%f[%a]MTL%w+" },
         allowedPaths = {
-            "Engine/src/Renderer/Metal/", "Engine/Include/Renderer/Metal/"
+            "Engine/src/Renderer/Metal/", "Engine/Include/Renderer/Metal/",
+            "Engine/Source/Runtime/RHI/Source/Backends/Metal/",
+            "Engine/Source/Runtime/RHI/Include/Renderer/Metal/"
         },
         msg = "Metal header/symbol leaked outside Metal renderer backend. Must use TimeEngine Renderer abstractions."
     },
@@ -88,9 +113,10 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"]imgui", "#%s*include%s*[<\"]backends/imgui", "#%s*include%s*[<\"]imconfig%.h" },
         symbolPatterns = { "%f[%a]ImGui::", "%f[%a]ImVec2%f[%A]", "%f[%a]ImVec4%f[%A]", "%f[%a]ImDrawList%f[%A]", "%f[%a]ImFont%f[%A]", "%f[%a]ImGuiContext%f[%A]", "%f[%a]ImDrawData%f[%A]" },
         allowedPaths = {
-            "Engine/src/UI/ImGui", "Engine/src/UI/ImGuiBackend.cpp"
+            "Engine/src/UI/ImGui", "Engine/src/UI/ImGuiBackend.cpp",
+            "Engine/Source/Runtime/UI/Source/ImGui", "Engine/Source/Runtime/UI/Source/UI/ImGui"
         },
-        msg = "ImGui header/symbol leaked outside UI subsystem backend (Engine/src/UI/ImGui/). TimeGUI and client code must NOT reference ImGui directly."
+        msg = "ImGui header/symbol leaked outside UI subsystem backend (Engine/Source/Runtime/UI/Source/ImGui/). TimeGUI and client code must NOT reference ImGui directly."
     },
     {
         name = "ForgeUI",
@@ -98,9 +124,10 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"]ForgeUI", "#%s*include%s*[<\"]ForgeUI/" },
         symbolPatterns = { "%f[%a]forge::", "%f[%a]ForgeContext%f[%A]", "%f[%a]ForgeDrawList%f[%A]" },
         allowedPaths = {
-            "Engine/src/UI/ForgeUI", "Engine/src/UI/ForgeUIBackend.cpp"
+            "Engine/src/UI/ForgeUI", "Engine/src/UI/ForgeUIBackend.cpp",
+            "Engine/Source/Runtime/UI/Source/ForgeUI", "Engine/Source/Runtime/UI/Source/UI/ForgeUI"
         },
-        msg = "ForgeUI header/symbol leaked outside UI subsystem backend (Engine/src/UI/ForgeUI/). TimeGUI and client code must NOT reference ForgeUI directly."
+        msg = "ForgeUI header/symbol leaked outside UI subsystem backend (Engine/Source/Runtime/UI/Source/ForgeUI/). TimeGUI and client code must NOT reference ForgeUI directly."
     },
     {
         name = "STB Libraries (stb_image, stb_truetype, stb_image_write, stb_rect_pack)",
@@ -115,7 +142,9 @@ local vendorRules = {
         symbolPatterns = { "%f[%a]stbi_%w+", "%f[%a]stbtt_%w+", "%f[%a]stbiw_%w+", "%f[%a]stbrp_%w+" },
         allowedPaths = {
             "Engine/src/Core/Asset/AssetManager.cpp",
-            "Engine/src/Renderer/Texture.cpp"
+            "Engine/src/Renderer/Texture.cpp",
+            "Engine/Source/Framework/Asset/Source/AssetManager.cpp",
+            "Engine/Source/Runtime/RHI/Source/Texture.cpp"
         },
         msg = "STB library header/symbol leaked directly. Must use TimeEngine AssetManager / Texture abstractions."
     },
@@ -125,7 +154,9 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"]Customizable_Logger" },
         symbolPatterns = { "%f[%a]Customizable_Logger::" },
         allowedPaths = {
-            "Engine/src/Utils/Logger", "Engine/Include/Utils/Logger", "Engine/src/Core/Log.cpp"
+            "Engine/src/Utils/Logger", "Engine/Include/Utils/Logger", "Engine/src/Core/Log.cpp",
+            "Engine/Source/Runtime/Core/Source/Log.cpp", "Engine/Source/Runtime/Core/Include/Log.h",
+            "Engine/Source/Runtime/Core/Include/Core/Log.h"
         },
         msg = "Customizable_Logger header/symbol leaked directly. Must use TimeEngine Logger and TE_LOG_* macros."
     },
@@ -135,9 +166,10 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"]glm/" },
         symbolPatterns = { "%f[%a]glm::", "%f[%a]glm::vec2%f[%A]", "%f[%a]glm::vec3%f[%A]", "%f[%a]glm::vec4%f[%A]", "%f[%a]glm::mat4%f[%A]", "%f[%a]glm::quat%f[%A]" },
         allowedPaths = {
-            "Engine/src/Utils/Math/GLM/"
+            "Engine/src/Utils/Math/GLM/",
+            "Engine/Source/Runtime/Math/"
         },
-        msg = "GLM header/symbol leaked outside Math Subsystem GLM backend (Engine/src/Utils/Math/GLM/). Must use TimeEngine Math abstractions (TEMatrix4, TEVector, TEQuat, etc.)."
+        msg = "GLM header/symbol leaked outside Math Subsystem GLM backend. Must use TimeEngine Math abstractions (TEMatrix4, TEVector, TEQuat, etc.)."
     },
     {
         name = "TimeGUI Anti-Cycle Rule",
@@ -145,7 +177,8 @@ local vendorRules = {
         headerPatterns = { "#%s*include%s*[<\"][^>\"]*TimeGUI" },
         symbolPatterns = { "%f[%a]TimeGUI::" },
         forbiddenPaths = {
-            "Engine/src/UI/ImGui", "Engine/src/UI/ForgeUI"
+            "Engine/src/UI/ImGui", "Engine/src/UI/ForgeUI",
+            "Engine/Source/Runtime/UI/Source/ImGui", "Engine/Source/Runtime/UI/Source/ForgeUI"
         },
         msg = "Cyclic dependency violation: TimeGUI facade cannot be called or included inside UI backend implementations (ImGui, ForgeUI, or Metal/OpenGL/DX11 UI backend glue). Architecture flow is TimeGUI -> UIEngine/UIAPI -> Backend (ImGui/ForgeUI)."
     }

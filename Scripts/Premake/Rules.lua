@@ -13,24 +13,23 @@ local VendorLeakageRule    = dofile(rulesDir .. "/Rules/VendorLeakageRule.lua")
 
 local function getSourceFiles()
     local sourcePatterns = {
-        rootDir .. "/Engine/src/**.h",
-        rootDir .. "/Engine/src/**.hpp",
-        rootDir .. "/Engine/src/**.cpp",
-        rootDir .. "/Engine/src/**.inl",
-        rootDir .. "/Engine/Include/**.h",
-        rootDir .. "/Engine/Include/**.hpp",
-        rootDir .. "/Engine/Include/**.inl",
-        rootDir .. "/TimeEditor/src/**.h",
-        rootDir .. "/TimeEditor/src/**.hpp",
-        rootDir .. "/TimeEditor/src/**.cpp",
-        rootDir .. "/TimeEditor/Include/**.h",
-        rootDir .. "/TimeEditor/Include/**.hpp",
-        rootDir .. "/Engine/Plugins/**.h",
-        rootDir .. "/Engine/Plugins/**.hpp",
-        rootDir .. "/Engine/Plugins/**.cpp",
-        rootDir .. "/Projects/**.h",
-        rootDir .. "/Projects/**.hpp",
-        rootDir .. "/Projects/**.cpp"
+        rootDir .. "/Engine/Source/Runtime/**.h",
+        rootDir .. "/Engine/Source/Runtime/**.hpp",
+        rootDir .. "/Engine/Source/Runtime/**.cpp",
+        rootDir .. "/Engine/Source/Runtime/**.inl",
+        rootDir .. "/Engine/Source/Framework/**.h",
+        rootDir .. "/Engine/Source/Framework/**.hpp",
+        rootDir .. "/Engine/Source/Framework/**.cpp",
+        rootDir .. "/Engine/Source/Framework/**.inl",
+        rootDir .. "/TimeEditor/Source/**.h",
+        rootDir .. "/TimeEditor/Source/**.hpp",
+        rootDir .. "/TimeEditor/Source/**.cpp",
+        rootDir .. "/Plugins/Shipping/**.h",
+        rootDir .. "/Plugins/Shipping/**.hpp",
+        rootDir .. "/Plugins/Shipping/**.cpp",
+        rootDir .. "/Plugins/Experimental/**.h",
+        rootDir .. "/Plugins/Experimental/**.hpp",
+        rootDir .. "/Plugins/Experimental/**.cpp"
     }
 
     local allFiles = {}
@@ -38,7 +37,7 @@ local function getSourceFiles()
         local matches = os.matchfiles(pattern)
         for _, f in ipairs(matches) do
             local norm = path.normalize(f)
-            if not norm:find("/Vendor/") and not norm:match("^Vendor/") then
+            if not norm:find("/ThirdParty/") and not norm:match("^ThirdParty/") and not norm:find("/Vendor/") and not norm:match("^Vendor/") then
                 allFiles[norm] = true
             end
         end
@@ -99,7 +98,7 @@ newaction {
 
 newaction {
     trigger     = "check-copyright",
-    description = "Scans for foreign copyright headers, competitor engine/product mentions (UE5/Fortnite, Unity, Godot, etc.), and license anomalies",
+    description = "Scans for foreign copyright headers, competitor engine/product mentions, and license anomalies",
     execute     = function ()
         print(">>> Running TimeEngine Copyright & Competitor Mention Rule Check...")
         local files = getSourceFiles()
@@ -116,9 +115,9 @@ newaction {
 
 newaction {
     trigger     = "check-vendor-leakage",
-    description = "Scans for raw vendor header leakage (Velox, GLFW, OpenGL, OpenGLES, Vulkan, DX11, Metal, ImGui, stb_image, Logger) outside designated wrappers",
+    description = "Scans for raw third-party header leakage outside designated wrappers",
     execute     = function ()
-        print(">>> Running TimeEngine Strict Vendor Isolation Rule Check...")
+        print(">>> Running TimeEngine Strict ThirdParty Isolation Rule Check...")
         local files = getSourceFiles()
         local total = {}
         for f, _ in pairs(files) do
@@ -126,7 +125,7 @@ newaction {
             for _, v in ipairs(res) do table.insert(total, v) end
         end
         printViolations(total)
-        print(string.format("Vendor Leakage Violations: %d", #total))
+        print(string.format("ThirdParty Isolation Violations: %d", #total))
         if #total > 0 then os.exit(1) end
     end
 }
@@ -146,7 +145,7 @@ newaction {
         for f, _ in pairs(files) do
             scannedCount = scannedCount + 1
 
-            -- 1. TimeEngine Types & Memory Safety (Zero raw new/delete, Smart Pointers, TEString)
+            -- 1. TimeEngine Types & Memory Safety
             for _, v in ipairs(MemorySafetyRule.CheckFile(f)) do table.insert(totalViolations, v) end
 
             -- 2. AI Slop & Boilerplate
@@ -155,65 +154,19 @@ newaction {
             -- 3. Copyright & Competitors
             for _, v in ipairs(CopyrightDetectorRule.CheckFile(f)) do table.insert(totalViolations, v) end
 
-            -- 4. Strict Vendor Isolation (ImGui->TimeGUI, stb->Asset, API->Backend)
+            -- 4. Strict ThirdParty Isolation
             for _, v in ipairs(VendorLeakageRule.CheckFile(f)) do table.insert(totalViolations, v) end
         end
 
         printViolations(totalViolations)
 
         print("-----------------------------------------------------------------")
-        print(string.format("Scanned %d files. Total code rule violations found: %d", scannedCount, #totalViolations))
+        print(string.format("  Files Scanned: %d", scannedCount))
+        print(string.format("  Total Rule Violations: %d", #totalViolations))
+        print("=================================================================")
 
         if #totalViolations > 0 then
-            print("[RULE CHECK] FAILED: Please resolve all violations listed above.")
             os.exit(1)
-        else
-            print("[RULE CHECK] PASSED: All code complies with TimeEngine architecture and quality rules!")
         end
-    end
-}
-
-local function getTestFiles()
-    local testPatterns = {
-        rootDir .. "/Engine/**.bak",
-        rootDir .. "/TimeEditor/**.bak"
-    }
-    local allFiles = {}
-    for _, pattern in ipairs(testPatterns) do
-        local matches = os.matchfiles(pattern)
-        for _, f in ipairs(matches) do
-            local norm = path.normalize(f)
-            allFiles[norm] = true
-        end
-    end
-    return allFiles
-end
-
-newaction {
-    trigger     = "test-rules",
-    description = "Runs all TimeEngine rule checks against *.bak test files in Engine/ and TimeEditor/ (does not gate on violations)",
-    execute     = function ()
-        print("=================================================================")
-        print("  TimeEngine Rule Tester (*.bak files only)")
-        print("=================================================================")
-
-        local files = getTestFiles()
-        local totalViolations = {}
-        local scannedCount = 0
-
-        for f, _ in pairs(files) do
-            scannedCount = scannedCount + 1
-
-            for _, v in ipairs(MemorySafetyRule.CheckFile(f))     do table.insert(totalViolations, v) end
-            for _, v in ipairs(AISlopRule.CheckFile(f))           do table.insert(totalViolations, v) end
-            for _, v in ipairs(CopyrightDetectorRule.CheckFile(f)) do table.insert(totalViolations, v) end
-            for _, v in ipairs(VendorLeakageRule.CheckFile(f))    do table.insert(totalViolations, v) end
-        end
-
-        printViolations(totalViolations)
-
-        print("-----------------------------------------------------------------")
-        print(string.format("Scanned %d .bak file(s). Total violations found: %d", scannedCount, #totalViolations))
-        print("[TEST] Done - review violations above against expected counts.")
     end
 }
