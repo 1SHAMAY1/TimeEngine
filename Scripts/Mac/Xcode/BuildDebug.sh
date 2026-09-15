@@ -15,6 +15,17 @@ if [ -z "$WORKSPACE_FILE" ]; then
     exit 1
 fi
 
+# Run TimeEngine code quality and architecture safety checks once upfront
+if command -v premake5 &> /dev/null; then
+    echo "[INFO] Running architecture and code safety rule check..."
+    premake5 --file="Premake5.lua" check-rules
+    if [ $? -ne 0 ]; then
+        echo "[ERROR] Rule check failed! Build aborted."
+        read -p "Press Enter to exit..."
+        exit 1
+    fi
+fi
+
 echo "[INFO] Running xcodebuild..."
 DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer" xcodebuild -workspace "$WORKSPACE_FILE" -scheme TimeEditor -configuration Debug -parallelizeTargets
 if [ $? -ne 0 ]; then
@@ -24,9 +35,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "[INFO] Packaging dylibs and resources into TimeEditor.app..."
-BUILD_DIR=$(find "$ROOT_DIR/Bin" -type d -path "*/Debug-*/TimeEditor" | head -n 1)
-ENGINE_DIR=$(find "$ROOT_DIR/Bin" -type d -path "*/Debug-*/Engine" | head -n 1)
-VELOX_DIR=$(find "$ROOT_DIR/Bin" -type d -path "*/Debug-*/Velox" | head -n 1)
+BUILD_DIR=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Debug-*/TimeEditor" | head -n 1)
+ENGINE_DIR=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Debug-*/Engine" | head -n 1)
+VELOX_DIR=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Debug-*/Velox" | head -n 1)
 
 if [ -d "$BUILD_DIR/TimeEditor.app" ]; then
     mkdir -p "$BUILD_DIR/TimeEditor.app/Contents/MacOS"

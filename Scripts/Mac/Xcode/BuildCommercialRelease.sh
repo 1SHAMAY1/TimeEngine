@@ -9,9 +9,29 @@ echo "[=== Building TimeEngine Commercial Release (Dist) ===]"
 cd "$ROOT_DIR"
 
 if [ -d "TimeEngine.xcworkspace" ]; then
+    # Run TimeEngine code quality and architecture safety checks once upfront
+    if command -v premake5 &> /dev/null; then
+        echo "[≡ Running architecture and code safety rule check...]"
+        premake5 --file="Premake5.lua" check-rules
+        if [ $? -ne 0 ]; then
+            echo "[✖ Rule check failed! Build aborted.]"
+            read -p "Press Enter to exit..."
+            exit 1
+        fi
+    fi
     echo "[≡ Building project using xcodebuild (workspace)...]"
     DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer" xcodebuild -workspace TimeEngine.xcworkspace -scheme TimeEditor -configuration Dist
 elif [ -d "TimeEngine.xcodeproj" ]; then
+    # Run TimeEngine code quality and architecture safety checks once upfront
+    if command -v premake5 &> /dev/null; then
+        echo "[≡ Running architecture and code safety rule check...]"
+        premake5 --file="Premake5.lua" check-rules
+        if [ $? -ne 0 ]; then
+            echo "[✖ Rule check failed! Build aborted.]"
+            read -p "Press Enter to exit..."
+            exit 1
+        fi
+    fi
     echo "[≡ Building project using xcodebuild (project)...]"
     DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer" xcodebuild -project TimeEngine.xcodeproj -scheme TimeEditor -configuration Dist
 else
@@ -36,9 +56,9 @@ rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
 # Find build output
-BUILD_OUTPUT="$ROOT_DIR/Bin/Dist-macosx-x86_64/TimeEditor"
+BUILD_OUTPUT="$ROOT_DIR/Artifacts/Artifacts/Bin/Dist-macosx-x86_64/TimeEditor"
 if [ ! -d "$BUILD_OUTPUT" ]; then
-    BUILD_OUTPUT=$(find "$ROOT_DIR/Bin" -type d -path "*/Dist-*/TimeEditor" | head -n 1)
+    BUILD_OUTPUT=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Dist-*/TimeEditor" | head -n 1)
 fi
 
 if [ -z "$BUILD_OUTPUT" ] || { [ ! -d "$BUILD_OUTPUT/TimeEditor.app" ] && [ ! -f "$BUILD_OUTPUT/TimeEditor" ]; }; then
@@ -63,8 +83,8 @@ if [ -d "$ROOT_DIR/Resources" ]; then
 fi
 
 # Ensure dylibs are inside TimeEditor.app/Contents/MacOS/ and rpath is correct
-ENGINE_DIR=$(find "$ROOT_DIR/Bin" -type d -path "*/Dist-*/Engine" | head -n 1)
-VELOX_DIR=$(find "$ROOT_DIR/Bin" -type d -path "*/Dist-*/Velox" | head -n 1)
+ENGINE_DIR=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Dist-*/Engine" | head -n 1)
+VELOX_DIR=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Dist-*/Velox" | head -n 1)
 
 if [ -d "$DIST_DIR/TimeEditor.app" ]; then
     if [ -n "$ENGINE_DIR" ] && [ -f "$ENGINE_DIR/libEngine.dylib" ]; then

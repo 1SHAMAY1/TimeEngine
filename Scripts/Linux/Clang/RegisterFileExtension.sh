@@ -1,8 +1,8 @@
 #!/bin/bash
-# RegisterFileExtension.sh (Linux)
+# RegisterFileExtension.sh (Linux Clang)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
+ROOT_DIR="$( cd "$SCRIPT_DIR/../../.." && pwd )"
 
 # Search for TimeEditor executable
 ENGINE_EXE=""

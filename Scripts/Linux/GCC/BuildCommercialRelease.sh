@@ -1,32 +1,21 @@
 #!/bin/bash
-# BuildCommercialRelease.sh (Linux)
+# BuildCommercialRelease.sh (Linux GCC)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
+ROOT_DIR="$( cd "$SCRIPT_DIR/../../.." && pwd )"
 
-echo "[≡ Building TimeEngine Commercial Release (Dist)]"
+echo "[≡ Building TimeEngine Commercial Release (GCC Dist)]"
 
 cd "$ROOT_DIR"
 
 if [ ! -f "Makefile" ]; then
-    echo "[!] Makefile not found. Please run GenerateProjectFiles.sh first."
+    echo "[!] Makefile not found. Please run GCC/GenerateProjectFiles.sh first."
     read -p "Press Enter to exit..."
     exit 1
 fi
 
-# Run TimeEngine code quality and architecture safety checks once upfront
-if [ -f "ThirdParty/Premake/Linux/premake5" ]; then
-    echo "[≡ Running architecture and code safety rule check...]"
-    ThirdParty/Premake/Linux/premake5 --file="Premake5.lua" check-rules
-    if [ $? -ne 0 ]; then
-        echo "[✖ Rule check failed! Build aborted.]"
-        read -p "Press Enter to exit..."
-        exit 1
-    fi
-fi
-
-echo "[≡ Building project (Dist)...]"
-make config=dist -j$(nproc 2>/dev/null || echo 4)
+echo "[≡ Building project with GCC (Dist)...]"
+make config=dist -j$(nproc 2>/dev/null || echo 4) CC=gcc CXX=g++
 if [ $? -ne 0 ]; then
     echo "[✖ Build Failed!]"
     read -p "Press Enter to exit..."

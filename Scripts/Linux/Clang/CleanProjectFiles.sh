@@ -1,8 +1,8 @@
 #!/bin/bash
-# CleanProjectFiles.sh (Linux)
+# CleanProjectFiles.sh (Linux Clang)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
+ROOT_DIR="$( cd "$SCRIPT_DIR/../../.." && pwd )"
 
 echo "[🧹 Cleaning TimeEngine build artifacts, CMake, and project files...]"
 
