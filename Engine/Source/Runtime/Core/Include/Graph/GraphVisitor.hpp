@@ -1,0 +1,13 @@
+#pragma once
+
+#include "Graph/GraphNode.hpp"
+#include "PreRequisites.h"
+
+class TE_API GraphVisitor
+{
+public:
+    virtual ~GraphVisitor() = default;
+    virtual void VisitNode(const TERef<GraphNode> &node) = 0;
+    virtual void BeginGraph(const class Graph &graph) {}
+    virtual void EndGraph(const class Graph &graph) {}
+};

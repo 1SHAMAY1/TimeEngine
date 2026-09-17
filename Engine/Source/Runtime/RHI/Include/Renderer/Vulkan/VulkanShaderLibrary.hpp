@@ -1,0 +1,100 @@
+#pragma once
+#include "ShaderLibrary.hpp"
+#include "Renderer/Vulkan/VulkanShader.hpp"
+#include <volk.h>
+
+class VulkanShaderLibrary : public ShaderLibrary
+{
+public:
+    // ===== Vulkan-Specific Shader Creation =====
+    static TERef<VulkanShader> CreateVulkanBasicShader();
+    static TERef<VulkanShader> CreateVulkanTextureShader();
+    static TERef<VulkanShader> CreateVulkanColorShader();
+    static TERef<VulkanShader> CreateVulkanStandardShader();
+    static TERef<VulkanShader> CreateVulkanLightingShader();
+    static TERef<VulkanShader> CreateVulkanParticleShader();
+    static TERef<VulkanShader> CreateVulkanPostProcessShader();
+    static TERef<VulkanShader> CreateVulkanUIShader();
+    static TERef<VulkanShader> CreateVulkanLight2DShader();
+    static TERef<VulkanShader> CreateVulkanComputeShader(const TEString &computeSource);
+
+    // ===== Vulkan-Specific Functions =====
+    static void SetUniform1i(VulkanShader *shader, const TEString &name, int value);
+    static void SetUniform1f(VulkanShader *shader, const TEString &name, float value);
+    static void SetUniform2f(VulkanShader *shader, const TEString &name, const TEVector2 &value);
+    static void SetUniform3f(VulkanShader *shader, const TEString &name, const TEVector &value);
+    static void SetUniform4f(VulkanShader *shader, const TEString &name, const TEVector4 &value);
+    static void SetUniformMat4(VulkanShader *shader, const TEString &name, const TEMatrix4 &value);
+    static void SetUniformMat4Array(VulkanShader *shader, const TEString &name, const TEArray<TEMatrix4> &values);
+
+    // ===== Vulkan State Management =====
+    static void EnableBlending();
+    static void DisableBlending();
+    static void SetBlendFunc(uint32_t srcFactor, uint32_t dstFactor);
+    static void EnableDepthTest();
+    static void DisableDepthTest();
+    static void SetDepthFunc(uint32_t func);
+    static void EnableStencilTest();
+    static void DisableStencilTest();
+    static void SetStencilFunc(uint32_t func, int ref, unsigned int mask);
+    static void SetStencilOp(uint32_t sfail, uint32_t dpfail, uint32_t dppass);
+    static void EnableCullFace();
+    static void DisableCullFace();
+    static void SetCullFace(uint32_t face);
+    static void SetFrontFace(uint32_t mode);
+
+    // ===== Vulkan Texture Functions =====
+    static void BindTexture2D(unsigned int textureID, int slot);
+    static void BindTextureCube(unsigned int textureID, int slot);
+    static void SetTextureFiltering(unsigned int textureID, uint32_t minFilter, uint32_t magFilter);
+    static void SetTextureWrapping(unsigned int textureID, uint32_t wrapS, uint32_t wrapT);
+    static void GenerateMipmaps(unsigned int textureID);
+
+    // ===== Vulkan Framebuffer Functions =====
+    static unsigned int CreateFramebuffer();
+    static void BindFramebuffer(unsigned int framebufferID);
+    static void AttachTexture2D(unsigned int framebufferID, unsigned int textureID, uint32_t attachment);
+    static void AttachRenderbuffer(unsigned int framebufferID, unsigned int renderbufferID, uint32_t attachment);
+    static void SetDrawBuffers(const TEArray<uint32_t> &attachments);
+    static bool CheckFramebufferStatus(unsigned int framebufferID);
+    static void DeleteFramebuffer(unsigned int framebufferID);
+
+    // ===== Vulkan Compute Shader Functions =====
+    static void DispatchCompute(unsigned int shaderID, unsigned int numGroupsX, unsigned int numGroupsY,
+                                unsigned int numGroupsZ);
+    static void MemoryBarrier(uint32_t barriers);
+    static void BindImageTexture(unsigned int unit, unsigned int textureID, int level, bool layered, int layer,
+                                 uint32_t access, uint32_t format);
+
+    // ===== Vulkan Uniform Buffer Functions =====
+    static unsigned int CreateUniformBuffer(const void *data, size_t size);
+    static void BindUniformBuffer(unsigned int uboID, unsigned int bindingPoint);
+    static void UpdateUniformBuffer(unsigned int uboID, const void *data, size_t offset, size_t size);
+    static void BindUniformBlock(VulkanShader *shader, const TEString &blockName, unsigned int bindingPoint);
+
+    // ===== Vulkan Vertex Array Functions =====
+    static void SetVertexAttribPointer(unsigned int index, int size, uint32_t type, bool normalized, int stride,
+                                       const void *pointer);
+    static void EnableVertexAttribArray(unsigned int index);
+    static void DisableVertexAttribArray(unsigned int index);
+    static void VertexAttribDivisor(unsigned int index, unsigned int divisor);
+
+    // ===== Vulkan Debug Functions =====
+    static void EnableDebugOutput();
+    static void SetDebugCallback();
+    static void PushDebugGroup(const TEString &message);
+    static void PopDebugGroup();
+    static void ObjectLabel(uint32_t identifier, unsigned int name, const TEString &label);
+
+    // ===== Vulkan Performance Functions =====
+    static void BeginQuery(uint32_t target, unsigned int id);
+    static void EndQuery(uint32_t target);
+    static int GetQueryObjecti(unsigned int id, uint32_t pname);
+    static void GetQueryObjectiv(unsigned int id, uint32_t pname, int *params);
+    static void GetQueryObjectuiv(unsigned int id, uint32_t pname, unsigned int *params);
+
+    // ===== Vulkan Synchronization =====
+    static void FenceSync(uint32_t condition, uint32_t flags);
+    static void ClientWaitSync(void *sync, uint32_t flags, uint64_t timeout);
+    static void DeleteSync(void *sync);
+};

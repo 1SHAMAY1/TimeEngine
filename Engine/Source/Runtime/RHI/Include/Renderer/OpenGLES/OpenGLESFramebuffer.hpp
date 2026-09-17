@@ -1,0 +1,24 @@
+#pragma once
+#include "Framebuffer.hpp"
+
+class OpenGLESFramebuffer : public Framebuffer
+{
+public:
+    OpenGLESFramebuffer(const FramebufferSpecification &spec);
+    virtual ~OpenGLESFramebuffer();
+
+    void Invalidate();
+
+    virtual void Bind() override;
+    virtual void Unbind() override;
+    virtual void Resize(uint32_t width, uint32_t height) override;
+
+    virtual uintptr_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; }
+    virtual const FramebufferSpecification &GetSpecification() const override { return m_Specification; }
+
+private:
+    uint32_t m_RendererID = 0;
+    uint32_t m_ColorAttachment = 0;
+    uint32_t m_DepthAttachment = 0;
+    FramebufferSpecification m_Specification;
+};

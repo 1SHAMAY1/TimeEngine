@@ -1,0 +1,69 @@
+#pragma once
+#include "PreRequisites.h"
+#include "GameplayUtils.hpp"
+#include "TimeGUI.hpp"
+
+#include <chrono>
+
+#include "Events/Event.h"
+#include "KeyCodes.hpp"
+#include "MouseCodes.hpp"
+
+struct TE_API InputState
+{
+    bool IsPressed = false;
+    int RepeatCount = 0;
+    float DurationHeld = 0.0f;
+    Event *LastEvent = nullptr;
+
+    std::chrono::steady_clock::time_point PressedTime;
+};
+
+struct TE_API MouseDelta
+{
+    float x = 0.0f;
+    float y = 0.0f;
+    MouseDelta() = default;
+    MouseDelta(float x, float y) : x(x), y(y) {}
+};
+
+class Input
+{
+public:
+    TE_API static void Init(void *nativeWindow);
+
+    TE_API static bool IsKeyPressed(KeyCode key);
+    TE_API static bool IsMouseButtonPressed(MouseCode button);
+    TE_API static float GetMouseX();
+    TE_API static float GetMouseY();
+    TE_API static std::pair<float, float> GetMousePosition();
+
+    TE_API static void OnKeyPressed(KeyCode key, Event *e, bool isRepeat);
+    TE_API static void OnKeyReleased(KeyCode key, Event *e);
+    TE_API static void OnMousePressed(MouseCode button, Event *e);
+    TE_API static void OnMouseReleased(MouseCode button, Event *e);
+
+    TE_API static const InputState &GetKeyState(KeyCode key);
+    TE_API static const InputState &GetMouseState(MouseCode button);
+    TE_API static void Update(float deltaTime);
+
+    // --- Mouse Scroll ---
+    TE_API static MouseDelta GetMouseScrollDelta(); // (x, y)
+    TE_API static void SetMouseScrollDelta(float x, float y);
+
+    // --- Mouse Buttons ---
+    TE_API static bool GetMouseButtonDown(int button); // 0=left, 1=right, 2=middle
+    TE_API static bool GetMouseButtonUp(int button);
+
+    // --- TimeGUI Key Mapping ---
+    TE_API static TimeGUIKey ToTimeGUIKey(KeyCode key);
+
+private:
+    static void *s_Window;
+    static TEMap<KeyCode, InputState> s_KeyStates;
+    static TEMap<MouseCode, InputState> s_MouseStates;
+    static float s_MouseScrollX;
+    static float s_MouseScrollY;
+    static bool s_MouseButtonDown[3];
+    static bool s_MouseButtonUp[3];
+};

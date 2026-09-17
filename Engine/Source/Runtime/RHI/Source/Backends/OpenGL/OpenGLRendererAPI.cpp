@@ -1,0 +1,154 @@
+#include "PreRequisites.h"
+#include "Renderer/OpenGL/OpenGLRendererAPI.hpp"
+#include "RendererContext.hpp"
+#include <glad/glad.h>
+
+// NOTE: RendererAPI::GetAPI() and RendererAPI::Create() are defined in
+// DirectX11RendererAPI.cpp so that all backends are visible in one place.
+
+void OpenGLRendererAPI::Init()
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    if (m_Vendor.IsEmpty())
+    {
+        const char *vendor = (const char *)glGetString(GL_VENDOR);
+        if (vendor)
+            m_Vendor = vendor;
+    }
+    if (m_Renderer.IsEmpty())
+    {
+        const char *renderer = (const char *)glGetString(GL_RENDERER);
+        if (renderer)
+            m_Renderer = renderer;
+    }
+    if (m_Version.IsEmpty())
+    {
+        const char *version = (const char *)glGetString(GL_VERSION);
+        if (version)
+            m_Version = version;
+    }
+}
+
+void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    glViewport(x, y, width, height);
+}
+
+void OpenGLRendererAPI::SetClearColor(const TEVector4 &color) { glClearColor(color.x, color.y, color.z, color.w); }
+
+void OpenGLRendererAPI::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+
+void OpenGLRendererAPI::DrawIndexed(uint32_t vao, uint32_t indexCount)
+{
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+}
+
+void OpenGLRendererAPI::SetBlendMode(int blendMode)
+{
+    glEnable(GL_BLEND);
+    if (blendMode == 1) // Additive
+    {
+        glBlendFunc(GL_ONE, GL_ONE);
+        glDisable(GL_DEPTH_TEST);
+    }
+    else if (blendMode == 2) // Multiplicative
+    {
+        glBlendFunc(GL_DST_COLOR, GL_ZERO);
+        glDisable(GL_DEPTH_TEST);
+    }
+    else // Normal
+    {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST);
+    }
+}
+
+bool OpenGLRendererAPI::LoadLoader(void *(*loadProc)(const char *))
+{
+    bool success = gladLoadGLLoader((GLADloadproc)loadProc);
+    if (success)
+    {
+        const char *vendor = (const char *)glGetString(GL_VENDOR);
+        if (vendor)
+            m_Vendor = vendor;
+        const char *renderer = (const char *)glGetString(GL_RENDERER);
+        if (renderer)
+            m_Renderer = renderer;
+        const char *version = (const char *)glGetString(GL_VERSION);
+        if (version)
+            m_Version = version;
+    }
+    return success;
+}
+
+TEString OpenGLRendererAPI::GetVersionString()
+{
+    if (!m_Version.IsEmpty())
+        return m_Version;
+    const char *version = (const char *)glGetString(GL_VERSION);
+    if (version)
+        m_Version = version;
+    return m_Version.IsEmpty() ? "Unknown" : m_Version;
+}
+
+TEString OpenGLRendererAPI::GetGPUVendor()
+{
+    if (!m_Vendor.IsEmpty())
+        return m_Vendor;
+    const char *vendor = (const char *)glGetString(GL_VENDOR);
+    if (vendor)
+        m_Vendor = vendor;
+    return m_Vendor.IsEmpty() ? "Unknown" : m_Vendor;
+}
+
+TEString OpenGLRendererAPI::GetGPURenderer()
+{
+    if (!m_Renderer.IsEmpty())
+        return m_Renderer;
+    const char *renderer = (const char *)glGetString(GL_RENDERER);
+    if (renderer)
+        m_Renderer = renderer;
+    return m_Renderer.IsEmpty() ? "Unknown" : m_Renderer;
+}
+
+static GLenum GetGLBlendFactor(BlendFactor factor)
+{
+    switch (factor)
+    {
+    case BlendFactor::Zero:
+        return GL_ZERO;
+    case BlendFactor::One:
+        return GL_ONE;
+    case BlendFactor::SrcAlpha:
+        return GL_SRC_ALPHA;
+    case BlendFactor::OneMinusSrcAlpha:
+        return GL_ONE_MINUS_SRC_ALPHA;
+    case BlendFactor::DstColor:
+        return GL_DST_COLOR;
+    }
+    return GL_ONE;
+}
+
+void OpenGLRendererAPI::GetViewport(int *viewport) { glGetIntegerv(GL_VIEWPORT, viewport); }
+
+void OpenGLRendererAPI::GetClearColor(float *color) { glGetFloatv(GL_COLOR_CLEAR_VALUE, color); }
+
+void OpenGLRendererAPI::ReadPixelsRGBA(int x, int y, int width, int height, void *outPixels)
+{
+    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, outPixels);
+}
+
+void OpenGLRendererAPI::SetBlendFunc(BlendFactor src, BlendFactor dst)
+{
+    glBlendFunc(GetGLBlendFactor(src), GetGLBlendFactor(dst));
+}
+
+void OpenGLRendererAPI::SetBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dstRGB, BlendFactor srcAlpha,
+                                             BlendFactor dstAlpha)
+{
+    glBlendFuncSeparate(GetGLBlendFactor(srcRGB), GetGLBlendFactor(dstRGB), GetGLBlendFactor(srcAlpha),
+                        GetGLBlendFactor(dstAlpha));
+}
