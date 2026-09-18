@@ -1,0 +1,11 @@
+PlayerControllerAsset: SideScrollerController
+MappingContextPath: Assets/Input/DefaultIMC.teimc
+EnableLookAtCursor: false
+Deadzone: 0.150000
+---BeginTScript---
+class SideScrollerController {
+    function OnBeginPlay() {
+        Log("SideScrollerController active.");
+    }
+}
+---EndTScript---

@@ -1,0 +1,10 @@
+GameManagerAsset: TopDownGameManager
+PlayerAsset: Assets/Game/TopDownPlayer.teplayer
+ControllerAsset: Assets/Game/TopDownController.tecontroller
+---BeginTScript---
+class TopDownGameManager {
+    function OnBeginPlay() {
+        Log("TopDownGameManager initialized.");
+    }
+}
+---EndTScript---

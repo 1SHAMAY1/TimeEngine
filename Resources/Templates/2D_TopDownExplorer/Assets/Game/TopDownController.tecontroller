@@ -1,0 +1,11 @@
+PlayerControllerAsset: TopDownController
+MappingContextPath: Assets/Input/DefaultIMC.teimc
+EnableLookAtCursor: true
+Deadzone: 0.150000
+---BeginTScript---
+class TopDownController {
+    function OnBeginPlay() {
+        Log("TopDownController active.");
+    }
+}
+---EndTScript---

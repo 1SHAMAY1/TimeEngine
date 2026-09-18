@@ -1,0 +1,5 @@
+Name: TextureUpscalerPlugin
+Version: 1.0.0
+Description: Cross-Platform Asset Super-Resolution & Texture 4x Upscaling Plugin
+Author: TimeEngine Team
+Enabled: true

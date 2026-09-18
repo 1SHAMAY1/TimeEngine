@@ -1,0 +1,5 @@
+Name: RichTextPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: Dynamic Rich Text formatting, TEString markup parser, RichTextTable style sheets, real-time vertex animators, layout engine, and TimeGUI/Renderer2D integration.
+Enabled: true

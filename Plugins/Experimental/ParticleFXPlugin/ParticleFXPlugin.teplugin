@@ -1,0 +1,5 @@
+Name: ParticleFXPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: High-performance 2D/3D Particle System & Modular Stack View FX Plugin with Physics Raycast Collision
+Enabled: true

@@ -1,0 +1,5 @@
+Name: TextToAudioPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: Offline Text-to-Audio and Speech Synthesis plugin with Acoustic RichText, GameplayTags, and MCP support.
+Enabled: true

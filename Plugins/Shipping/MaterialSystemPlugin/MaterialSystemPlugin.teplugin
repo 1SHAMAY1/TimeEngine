@@ -1,0 +1,5 @@
+Name: MaterialSystemPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: Graph-based node material and physical slab layering shading system plugin.
+Enabled: true

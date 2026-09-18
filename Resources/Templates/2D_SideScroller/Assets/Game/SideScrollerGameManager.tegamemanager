@@ -1,0 +1,10 @@
+GameManagerAsset: SideScrollerGameManager
+PlayerAsset: Assets/Game/SideScrollerPlayer.teplayer
+ControllerAsset: Assets/Game/SideScrollerController.tecontroller
+---BeginTScript---
+class SideScrollerGameManager {
+    function OnBeginPlay() {
+        Log("SideScrollerGameManager initialized.");
+    }
+}
+---EndTScript---

@@ -1,0 +1,5 @@
+Name: NeuralAIPlugin
+Version: 1.0.0
+Description: Neural Network StateTree Action Selection & Agent Inference Plugin
+Author: TimeEngine Team
+Enabled: true

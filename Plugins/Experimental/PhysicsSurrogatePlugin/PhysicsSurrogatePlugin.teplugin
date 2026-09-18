@@ -1,0 +1,5 @@
+Name: PhysicsSurrogatePlugin
+Version: 1.0.0
+Description: ML-Accelerated Physics Surrogate Model for Visual Secondary Motion
+Author: TimeEngine Team
+Enabled: true

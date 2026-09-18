@@ -1,0 +1,5 @@
+Name: AdaptiveDifficultyPlugin
+Version: 1.0.0
+Description: Dynamic Difficulty Adjustment (DDA) & Player Metric Control Plugin
+Author: TimeEngine Team
+Enabled: true

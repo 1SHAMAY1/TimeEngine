@@ -1,0 +1,5 @@
+Name: IKPlugin
+Version: 1.0.0
+Author: TimeEngine Team
+Description: 2D Inverse Kinematics (IK) Plugin with Analytical 2-Bone, FABRIK, CCD, Aim/LookAt, and Foot Grounding Solvers
+Enabled: true

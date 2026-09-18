@@ -1,0 +1,5 @@
+Name: MotionMatchingPlugin
+Version: 1.0.0
+Description: Unified 2D/3D Motion Matching & Trajectory Search Plugin
+Author: TimeEngine Team
+Enabled: true
