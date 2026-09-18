@@ -1,0 +1,141 @@
+#pragma once
+
+#include "PreRequisites.h"
+#include "Settings/GeneralEngineSettings.hpp"
+#include "Layers/Layer.hpp"
+#include "TimeGUI.hpp"
+
+/**
+ * EngineSettingsLayer - UI layer for managing engine settings
+ * Provides a comprehensive interface for controlling all engine settings
+ */
+class TE_API EngineSettingsLayer : public Layer
+{
+public:
+    EngineSettingsLayer(const TEString &name = "Engine Settings");
+    virtual ~EngineSettingsLayer();
+
+    virtual void OnAttach() override;
+    virtual void OnDetach() override;
+    virtual void OnUpdate() override;
+    virtual void OnTimeGUIRender() override;
+    virtual void OnEvent(Event &event) override;
+
+    // ===== UI Control Methods =====
+    void SetVisible(bool visible) { m_IsVisible = visible; }
+    bool IsVisible() const { return m_IsVisible; }
+    void ToggleVisibility() { m_IsVisible = !m_IsVisible; }
+
+    void SetWindowPosition(const TEVector2 &pos) { m_WindowPos = pos; }
+    void SetWindowSize(const TEVector2 &size) { m_WindowSize = size; }
+    void SetWindowTitle(const TEString &title) { m_WindowTitle = title; }
+
+private:
+    // ===== UI Rendering Methods =====
+    void RenderMainWindow();
+    void RenderFrameRateTab();
+    void RenderLoggingTab();
+    void RenderPerformanceTab();
+    void RenderDebugTab();
+    void RenderWindowTab();
+    void RenderRenderingTab();
+    void RenderInputTab();
+    void RenderAudioTab();
+    void RenderFileIOTab();
+    void RenderSettingsTab();
+
+    // ===== Helper Methods =====
+    void ApplyCurrentSettings();
+    void ResetToDefaults();
+    void LoadSettingsFromFile();
+    void SaveSettingsToFile();
+    void ValidateCurrentSettings();
+
+    // ===== UI State =====
+    bool m_IsVisible = true;
+    TEVector2 m_WindowPos = TEVector2(50, 50);
+    TEVector2 m_WindowSize = TEVector2(600, 500);
+    TEString m_WindowTitle = "Engine Settings";
+
+    // ===== Settings Cache =====
+    GeneralEngineSettings &m_Settings = GeneralEngineSettings::Get();
+
+    // ===== UI State Variables =====
+    bool m_ShowConfirmationDialog = false;
+    bool m_ShowValidationErrors = false;
+    TEString m_ValidationErrorText;
+    TEString m_SelectedSettingsFile = "EngineSettings.ini";
+
+    // ===== Temporary Settings (for UI) =====
+    struct TempSettings
+    {
+        // Frame Rate
+        float targetFrameRate = 60.0f;
+        bool unlimitedFrameRate = false;
+        bool vSyncEnabled = true;
+        float frameRateLimit = 60.0f;
+
+        // Logging
+        bool logToFile = true;
+        bool logToConsole = true;
+        TEString logLevel = "INFO";
+        bool logTimestamp = true;
+        TEString logFile = "TimeEngineLog.json";
+
+        // Performance
+        uint32_t maxDrawCalls = 10000;
+        uint32_t maxTriangles = 1000000;
+        uint32_t maxVertices = 2000000;
+        uint32_t maxTextures = 1000;
+        uint32_t maxShaders = 100;
+
+        // Debug
+        bool debugMode = false;
+        bool showFPS = true;
+        bool showPerformanceMetrics = true;
+        bool showDebugInfo = false;
+        bool showWireframe = false;
+        bool showBoundingBoxes = false;
+
+        // Window
+        TEString windowTitle = "TimeEngine";
+        uint32_t windowWidth = 1280;
+        uint32_t windowHeight = 720;
+        bool windowResizable = true;
+        bool windowFullscreen = false;
+        bool windowMaximized = false;
+
+        // Rendering
+        float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+        bool depthTest = true;
+        bool blending = true;
+        bool culling = true;
+        bool multisampling = false;
+
+        // Input
+        float mouseSensitivity = 1.0f;
+        bool keyboardRepeat = true;
+        bool mouseAcceleration = false;
+
+        // Audio
+        bool audioEnabled = true;
+        float audioVolume = 1.0f;
+        uint32_t audioSampleRate = 44100;
+        uint32_t audioChannels = 2;
+
+        // File I/O
+        TEString assetPath = "assets/";
+        TEString configPath = "config/";
+        TEString logPath = "logs/";
+        TEString savePath = "saves/";
+    };
+
+    TempSettings m_TempSettings;
+    bool m_SettingsChanged = false;
+
+    // ===== UI Colors =====
+    TEVector4 m_HeaderColor = TEVector4(0.2f, 0.6f, 1.0f, 1.0f);
+    TEVector4 m_WarningColor = TEVector4(1.0f, 0.5f, 0.0f, 1.0f);
+    TEVector4 m_ErrorColor = TEVector4(1.0f, 0.0f, 0.0f, 1.0f);
+    TEVector4 m_SuccessColor = TEVector4(0.0f, 1.0f, 0.0f, 1.0f);
+};
