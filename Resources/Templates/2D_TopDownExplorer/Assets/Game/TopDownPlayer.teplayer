@@ -1,0 +1,15 @@
+PlayerAsset: TopDownPlayer
+SpritePath: Assets/Sprites/Slime_Idle.tesprite
+MovementMode: TopDown
+MaxSpeed: 6.000000
+Acceleration: 20.000000
+Friction: 10.000000
+JumpForce: 0.000000
+ColliderSize: 1.000000, 1.000000
+---BeginTScript---
+class TopDownPlayer {
+    function OnBeginPlay() {
+        Log("TopDownPlayer spawned.");
+    }
+}
+---EndTScript---

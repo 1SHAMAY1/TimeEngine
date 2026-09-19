@@ -30,9 +30,8 @@ jobs:
         with:
           files: |
             **/*.{h,hpp,c,cpp}
-            !Vendor/**
-            !Bin/**
-            !Bin-Intermediate/**
+            !ThirdParty/**
+            !Artifacts/**
 
       - name: Install clang-format
         if: steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'

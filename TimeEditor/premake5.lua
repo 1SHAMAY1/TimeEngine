@@ -1,21 +1,8 @@
--- ========== TimeEditor Project ==========
+local scriptDir = path.getdirectory(_SCRIPT) or "."
 
--- Auto-generate TimeEditor/src/TimeEditor.rc on Windows
-if os.target() == "windows" and not os.isfile("src/TimeEditor.rc") then
-    local rcFile = io.open("src/TimeEditor.rc", "w")
-    if rcFile then
-        rcFile:write([[// TimeEngine TimeEditor Windows Resource Script
-#define IDI_ICON1 101
-
-IDI_ICON1 ICON "../../Resources/Branding/TimeEngineIcon.ico"
-]])
-        rcFile:close()
-    end
-end
-
--- Auto-generate TimeEditor/Info.plist on macOS if missing
-if os.target() == "macosx" and not os.isfile("Info.plist") then
-    local plistFile = io.open("Info.plist", "w")
+-- Generate macOS Info.plist dynamically for Xcode application bundle
+if os.target() == "macosx" or _ACTION == "xcode4" then
+    local plistFile = io.open(scriptDir .. "/Info.plist", "w")
     if plistFile then
         plistFile:write([[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -25,8 +12,10 @@ if os.target() == "macosx" and not os.isfile("Info.plist") then
     <string>en</string>
     <key>CFBundleExecutable</key>
     <string>TimeEditor</string>
+    <key>CFBundleIconFile</key>
+    <string>TimeEngineIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.timeengine.timeeditor</string>
+    <string>com.timeengine.editor</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -35,29 +24,18 @@ if os.target() == "macosx" and not os.isfile("Info.plist") then
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSMinimumSystemVersion</key>
-    <string>10.14</string>
+    <string>12.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
-    <key>CFBundleIconFile</key>
-    <string>TimeEngineIcon.png</string>
-    <key>CFBundleDocumentTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeExtensions</key>
-            <array>
-                <string>teproj</string>
-            </array>
-            <key>CFBundleTypeName</key>
-            <string>TimeEngine Project</string>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>LSHandlerRank</key>
-            <string>Owner</string>
-        </dict>
-    </array>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2026 TimeEngine. All rights reserved.</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
 </dict>
 </plist>
 ]])
@@ -65,11 +43,23 @@ if os.target() == "macosx" and not os.isfile("Info.plist") then
     end
 end
 
+-- Generate Windows Resource Script (.rc) dynamically
+if os.target() == "windows" or (_ACTION and string.startswith(_ACTION, "vs")) then
+    local rcFile = io.open(scriptDir .. "/TimeEditor.rc", "w")
+    if rcFile then
+        rcFile:write([[// TimeEngine TimeEditor Windows Resource Script (Auto-Generated)
+#define IDI_ICON1 101
+IDI_ICON1 ICON "../Resources/Branding/TimeEngineIcon.ico"
+]])
+        rcFile:close()
+    end
+end
+
 project "TimeEditor"
     location "."
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++latest"
+    cppdialect "C++20"
     staticruntime "off"
 
     filter { "system:macosx", "action:xcode*" }
@@ -89,110 +79,94 @@ project "TimeEditor"
             'cp -f "%{cfg.targetdir}/TimeEditor" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/TimeEditor"',
             'cp -f "%{wks.location}/TimeEditor/Info.plist" "%{cfg.targetdir}/TimeEditor.app/Contents/Info.plist" 2>/dev/null || true',
             'cp -f "%{wks.location}/Resources/Branding/TimeEngineIcon.png" "%{cfg.targetdir}/TimeEditor.app/Contents/Resources/" 2>/dev/null || true',
-            'cp -f "%{wks.location}/Bin/' .. outputdir .. '/Engine/libEngine.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/" 2>/dev/null || true',
-            'cp -f "%{wks.location}/Bin/' .. outputdir .. '/Velox/libVelox.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/" 2>/dev/null || true',
+            'cp -f "%{wks.location}/Artifacts/Bin/' .. outputdir .. '/Engine/libEngine.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/" 2>/dev/null || true',
+            'cp -f "%{wks.location}/Artifacts/Bin/' .. outputdir .. '/Velox/libVelox.dylib" "%{cfg.targetdir}/TimeEditor.app/Contents/MacOS/" 2>/dev/null || true',
             'codesign --force --deep --sign - "%{cfg.targetdir}/TimeEditor.app" 2>/dev/null || true'
         }
     filter {}
 
-    targetdir ("%{wks.location}/Bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
+    targetdir ("%{wks.location}/Artifacts/Bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("%{wks.location}/Artifacts/Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
 
     local rootDir = _MAIN_SCRIPT_DIR or _WORKING_DIR or "."
     local editorDeps = { "Engine", "Logger", "Velox" }
-    for _, pluginPath in ipairs(os.matchfiles(rootDir .. "/Engine/Plugins/*/*.teplugin")) do
-        table.insert(editorDeps, path.getbasename(pluginPath))
-        local pName = path.getbasename(pluginPath)
-        defines {
-            "TE_PLUGIN_" .. pName .. "_ENABLED=1",
-            "TE_HAS_PLUGIN_" .. string.upper(pName)
-        }
-    end
+
+    for _, p in ipairs(os.matchfiles(rootDir .. "/Plugins/Shipping/*/*.teplugin")) do table.insert(editorDeps, path.getbasename(p)) end
+    for _, p in ipairs(os.matchfiles(rootDir .. "/Plugins/Experimental/*/*.teplugin")) do table.insert(editorDeps, path.getbasename(p)) end
+
     dependson(editorDeps)
 
     files {
-        "src/**.h",
-        "src/**.cpp",
-        "Include/Layers/**.h",
-        "src/Core/Layers/**.cpp",
+        "Source/**.h",
+        "Source/**.hpp",
+        "Source/**.cpp",
 
-        -- ImGui core
-        "%{wks.location}/Vendor/IMGUI/ImGui/*.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/*.h",
-
-        -- ImGui backends
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h"
+        -- ThirdParty ImGui core & backends
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/*.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/*.h",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_glfw.h",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_opengl3.h"
     }
 
-    filter { "system:not macosx" }
-        removefiles {
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h"
-        }
-    filter {}
-
-    filter { "system:not windows" }
-        removefiles {
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h"
-        }
-    filter {}
-
-    filter { "system:macosx" }
-        removefiles {
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.*",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.*"
-        }
-    filter {}
-
     filter { "system:windows", "action:vs*" }
-        files { "src/**.rc" }
+        files { "TimeEditor.rc" }
     filter {}
 
     includedirs {
-        "%{IncludeDir.ImGui}",
-        "%{IncludeDir.Engine}",
-        "%{IncludeDir.Engine_Include}",
-        "%{IncludeDir.Logger}",
-        "%{IncludeDir.GLM}",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Velox}",
-        "%{IncludeDir.Vulkan}",
-        "%{IncludeDir.volk}"
+        "Source",
+        "%{IncludeDir.Engine_Source}",
+        "%{IncludeDir.Engine_Runtime}",
+        "%{IncludeDir.Engine_Framework}",
+        "%{IncludeDir.Engine_Core}",
+        "%{IncludeDir.Engine_Math}",
+        "%{IncludeDir.Engine_RHI}",
+        "%{IncludeDir.Engine_Renderer2D}",
+        "%{IncludeDir.Engine_Physics}",
+        "%{IncludeDir.Engine_Scripting}",
+        "%{IncludeDir.Engine_Scene}",
+        "%{IncludeDir.Engine_Testing}",
+        "%{IncludeDir.Engine_UI}",
+        "%{IncludeDir.Engine_Window}",
+        "%{IncludeDir.Engine_Asset}",
+        "%{IncludeDir.Engine_Input}",
+        "%{IncludeDir.Engine_Gameplay}",
+        "%{IncludeDir.Engine_App}",
+        "%{IncludeDir.ThirdParty_ImGui}",
+        "%{IncludeDir.ThirdParty_Logger}",
+        "%{IncludeDir.ThirdParty_GLM}",
+        "%{IncludeDir.ThirdParty_GLFW}",
+        "%{IncludeDir.ThirdParty_Velox}",
+        "%{IncludeDir.ThirdParty_Vulkan}",
+        "%{IncludeDir.ThirdParty_volk}"
     }
 
     externalincludedirs {
-        "%{IncludeDir.ImGui}",
-        "%{IncludeDir.Engine}",
-        "%{IncludeDir.Engine_Include}",
-        "%{IncludeDir.Logger}",
-        "%{IncludeDir.GLM}",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Velox}",
-        "%{IncludeDir.Vulkan}",
-        "%{IncludeDir.volk}"
+        "%{IncludeDir.ThirdParty_ImGui}",
+        "%{IncludeDir.ThirdParty_Logger}",
+        "%{IncludeDir.ThirdParty_GLM}",
+        "%{IncludeDir.ThirdParty_GLFW}",
+        "%{IncludeDir.ThirdParty_Velox}",
+        "%{IncludeDir.ThirdParty_Vulkan}",
+        "%{IncludeDir.ThirdParty_volk}"
     }
 
     filter "action:vs*"
         libdirs {
-            "%{wks.location}/Vendor/Customizable_Logger/build/lib",
-            "%{wks.location}/Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-            "%{wks.location}/Vendor/GLFW/build/src",
-            "%{wks.location}/Vendor/GLFW/build/src/%{cfg.buildcfg}",
-            "%{wks.location}/Bin/" .. outputdir .. "/Engine",
-            "%{wks.location}/Bin/" .. outputdir .. "/Velox"
+            "%{wks.location}/ThirdParty/Customizable_Logger/build/lib",
+            "%{wks.location}/ThirdParty/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+            "%{wks.location}/ThirdParty/GLFW/build/src",
+            "%{wks.location}/ThirdParty/GLFW/build/src/%{cfg.buildcfg}",
+            "%{wks.location}/Artifacts/Bin/" .. outputdir .. "/Engine",
+            "%{wks.location}/Artifacts/Bin/" .. outputdir .. "/Velox"
         }
     filter "action:gmake* or action:xcode*"
         libdirs {
-            "%{wks.location}/Vendor/Customizable_Logger/build/lib",
-            "%{wks.location}/Vendor/GLFW/build/src"
+            "%{wks.location}/ThirdParty/Customizable_Logger/build/lib",
+            "%{wks.location}/ThirdParty/GLFW/build/src",
+            "%{wks.location}/Artifacts/Bin/" .. outputdir .. "/Engine",
+            "%{wks.location}/Artifacts/Bin/" .. outputdir .. "/Velox"
         }
     filter {}
 
@@ -205,7 +179,6 @@ project "TimeEditor"
         }
 
     filter "system:macosx"
-        defines { "TE_PLATFORM_MACOS" }
         links {
             "Engine",
             "Customizable_Logger",
@@ -222,7 +195,6 @@ project "TimeEditor"
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
-        defines { "TE_PLATFORM_LINUX" }
         links { "GL" }
     filter {}
 
@@ -230,25 +202,6 @@ project "TimeEditor"
 
     filter "action:vs*"
         buildoptions { "/utf-8" }
-    filter {}
-
-    -- Force-run rule checker before any compilation begins
-    filter { "system:windows", "action:vs*" }
-        prebuildcommands {
-            '"$(SolutionDir)Vendor\\Premake\\Windows\\premake5.exe" --file="$(SolutionDir)Premake5.lua" check-rules'
-        }
-    filter { "system:windows", "action:gmake*" }
-        prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Windows/premake5.exe" --file="%{wks.location}/Premake5.lua" check-rules'
-        }
-    filter { "system:linux" }
-        prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
-        }
-    filter { "system:macosx", "action:gmake*" }
-        prebuildcommands {
-            'premake5 --file="%{wks.location}/Premake5.lua" check-rules'
-        }
     filter {}
 
     filter "system:windows"
@@ -262,7 +215,8 @@ project "TimeEditor"
             "gdi32",
             "comdlg32",
             "ole32",
-            "uuid"
+            "uuid",
+            "dwmapi"
         }
 
     filter "configurations:Debug"

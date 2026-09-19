@@ -48,8 +48,12 @@ Traditional game development forces creators to constantly context-switch betwee
 * **C++20 Compliant Compiler**:
   * **Windows**: MSVC (Visual Studio 2022 v143+), MinGW-w64 (GCC 13+), or LLVM Clang-cl (17+)
   * **macOS**: Apple Clang / Xcode 15+ (macOS 13+)
-  * **Linux**: GCC 13+ or Clang 17+
-* **Build Tools**: CMake 3.20+ and Git
+  * **Linux (Native or WSL2)**: GCC 11+ or Clang 14+
+* **Build Tools & Libraries (Linux)**:
+  * Compilers & Build Tools: `build-essential gcc g++ clang cmake make ninja-build git git-lfs pkg-config gdb mold`
+  * Windowing & Graphics: `libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev vulkan-tools`
+  * Audio & Desktop Utilities: `libasound2-dev libpulse-dev zenity`
+  *(Note: Running `Scripts/Linux/SetupSubmodules.sh` will automatically detect and install missing Linux packages on Debian/Ubuntu).*
 
 ---
 
@@ -96,9 +100,13 @@ Traditional game development forces creators to constantly context-switch betwee
      ```bash
      bash Scripts/Mac/Makefiles/GenerateProjectFiles.sh
      ```
-   * **Linux (Makefiles / GCC & Clang)**:
+   * **Linux (GCC)**:
      ```bash
-     bash Scripts/Linux/GenerateProjectFiles.sh
+     bash Scripts/Linux/GCC/GenerateProjectFiles.sh
+     ```
+   * **Linux (Clang)**:
+     ```bash
+     bash Scripts/Linux/Clang/GenerateProjectFiles.sh
      ```
 
 4. **Build the Engine & Editor**:
@@ -117,9 +125,14 @@ Traditional game development forces creators to constantly context-switch betwee
    * **macOS (Makefiles)**:
      * Debug: `bash Scripts/Mac/Makefiles/BuildDebug.sh`
      * Commercial Release: `bash Scripts/Mac/Makefiles/BuildCommercialRelease.sh`
-   * **Linux (Makefiles)**:
-     * Debug: `bash Scripts/Linux/BuildDebug.sh`
-     * Commercial Release: `bash Scripts/Linux/BuildCommercialRelease.sh`
+   * **Linux (GCC)**:
+     * Debug: `bash Scripts/Linux/GCC/BuildDebug.sh`
+     * Commercial Release: `bash Scripts/Linux/GCC/BuildCommercialRelease.sh`
+   * **Linux (Clang)**:
+     * Debug: `bash Scripts/Linux/Clang/BuildDebug.sh`
+     * Commercial Release: `bash Scripts/Linux/Clang/BuildCommercialRelease.sh`
+   * **Linux (Headless Automated Test Suite)**:
+     * Run Tests: `bash Scripts/Linux/RunTests.sh`
 
 5. **Clean & Maintenance Scripts**:
    * **Windows Clean**: `Scripts\Windows\CleanProjectFiles.bat`
@@ -129,6 +142,23 @@ Traditional game development forces creators to constantly context-switch betwee
      * Windows: `Scripts\Windows\RegisterFileExtension.bat`
      * macOS: `bash Scripts/Mac/Xcode/RegisterFileExtension.sh`
      * Linux: `bash Scripts/Linux/RegisterFileExtension.sh`
+
+---
+
+## ⚡ Performance Benchmarks & Stress Testing
+
+TimeEngine is architected for zero unnecessary allocations, high data locality, and native multithreaded scalability. The test harness runs automated headless stress suites and hardware benchmarks (`--stress-test`):
+
+| Benchmark Subsystem | Workload / Scale | Execution Time | Throughput |
+| :--- | :--- | :--- | :--- |
+| **ECS Iteration & Queries** | Query & Iterate 100,000 entities | **1.69 ms** | **59,084,195 ops/s** |
+| **ECS Direct Entity Spawning** | Spawn 100,000 entities with Pos & Vel | **1,231.33 ms** | **81,213 ops/s** |
+| **ECS Entity Destruction** | Destroy 100,000 entities | **430.23 ms** | **232,433 ops/s** |
+| **Event System Dispatch** | 1,000,000 dispatched keyboard/app events | **22.68 ms** | **44,097,155 ops/s** |
+| **Transform Hierarchy Mutations** | 200,000 transform node updates | **93.94 ms** | **2,129,084 ops/s** |
+| **Physics 2D Simulation** | Step 1,000 stacking bodies (60 ticks) | **853.98 ms** | **70 ticks/s (14.2 ms/tick)** |
+| **Drag & Drop Pipeline** | 50,000 window drop event dispatches | **180.27 ms** | **277,363 ops/s** |
+| **Binary Path Serialization** | 10,000 batch encode/decode (50 paths/batch) | **1,688.99 ms** | **5,921 ops/s** |
 
 ---
 

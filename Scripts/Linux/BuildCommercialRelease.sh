@@ -14,6 +14,17 @@ if [ ! -f "Makefile" ]; then
     exit 1
 fi
 
+# Run TimeEngine code quality and architecture safety checks once upfront
+if [ -f "ThirdParty/Premake/Linux/premake5" ]; then
+    echo "[≡ Running architecture and code safety rule check...]"
+    ThirdParty/Premake/Linux/premake5 --file="Premake5.lua" check-rules
+    if [ $? -ne 0 ]; then
+        echo "[✖ Rule check failed! Build aborted.]"
+        read -p "Press Enter to exit..."
+        exit 1
+    fi
+fi
+
 echo "[≡ Building project (Dist)...]"
 make config=dist -j$(nproc 2>/dev/null || echo 4)
 if [ $? -ne 0 ]; then
@@ -32,9 +43,9 @@ rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
 # Find build output
-BUILD_OUTPUT="$ROOT_DIR/Bin/Dist-linux-x86_64/TimeEditor"
+BUILD_OUTPUT="$ROOT_DIR/Artifacts/Artifacts/Bin/Dist-linux-x86_64/TimeEditor"
 if [ ! -d "$BUILD_OUTPUT" ]; then
-    BUILD_OUTPUT=$(find "$ROOT_DIR/Bin" -type d -path "*/Dist-*/TimeEditor" | head -n 1)
+    BUILD_OUTPUT=$(find "$ROOT_DIR/Artifacts/Bin" -type d -path "*/Dist-*/TimeEditor" | head -n 1)
 fi
 
 if [ -z "$BUILD_OUTPUT" ] || [ ! -f "$BUILD_OUTPUT/TimeEditor" ]; then

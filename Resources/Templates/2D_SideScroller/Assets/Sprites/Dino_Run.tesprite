@@ -1,6 +1,6 @@
-﻿Sprite: Dino_Run
+Sprite: Dino_Run
 TexturePath: Sprites/Dino_Run.png
-UVs: 0 0 1 1
-Pivot: 0.5 0.5
-PixelsPerUnit: 32
+UVs: 0.00 0.00 1.00 1.00
+Pivot: 0.50 0.50
+PixelsPerUnit: 32.00
 ColliderPoints: 0

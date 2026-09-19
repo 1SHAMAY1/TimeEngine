@@ -19,9 +19,17 @@ local exemptStdString = {
     "TEFileSystem.hpp",
     "TEFileSystem.cpp",
     "PreRequisites.h",
-    "GameplayUtils.hpp",
-    "GameplayUtils.cpp",
-    "EngineTypes.hpp"
+    "EngineTypes.hpp",
+    "TEArray.hpp",
+    "TEMap.hpp",
+    "TESet.hpp",
+    "SmartPointers.hpp",
+    "TEOption.hpp",
+    "TEResult.hpp",
+    "TESpan.hpp",
+    "TEArenaAllocator.hpp",
+    "TEPoolAllocator.hpp",
+    "TEReflection.hpp"
 }
 
 local exemptContainers = {
@@ -30,24 +38,42 @@ local exemptContainers = {
     "TEString.cpp",
     "TEFileSystem.hpp",
     "TEFileSystem.cpp",
-    "GameplayUtils.hpp",
-    "GameplayUtils.cpp",
-    "EngineTypes.hpp"
+    "EngineTypes.hpp",
+    "TEArray.hpp",
+    "TEMap.hpp",
+    "TESet.hpp",
+    "SmartPointers.hpp",
+    "TEOption.hpp",
+    "TEResult.hpp",
+    "TESpan.hpp",
+    "TEArenaAllocator.hpp",
+    "TEPoolAllocator.hpp",
+    "TEReflection.hpp"
 }
 
 local exemptNamespace = {
     "PreRequisites.h",
-    "GameplayUtils.hpp",
-    "EngineTypes.hpp"
+    "EngineTypes.hpp",
+    "SmartPointers.hpp",
+    "TEOption.hpp",
+    "TEResult.hpp",
+    "TESpan.hpp"
 }
 
 local exemptSmartPointers = {
     "PreRequisites.h",
-    "GameplayUtils.hpp",
-    "EngineTypes.hpp"
+    "EngineTypes.hpp",
+    "SmartPointers.hpp"
 }
 
-local exemptRawMemory = {}
+local exemptRawMemory = {
+    "TEArenaAllocator.hpp",
+    "TEPoolAllocator.hpp",
+    "TEArray.hpp",
+    "TEMap.hpp",
+    "TESet.hpp",
+    "TEReflection.hpp"
+}
 
 local function isFileInList(filepath, list)
     local norm = filepath:gsub("\\", "/")

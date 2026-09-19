@@ -2,10 +2,10 @@
 pushd %~dp0\..\..
 
 :: Search for TimeEditor.exe in common build locations
-set "ENGINE_EXE=Bin\Debug-windows-x86_64\TimeEditor\TimeEditor.exe"
-if not exist "%ENGINE_EXE%" set "ENGINE_EXE=Bin\Release-windows-x86_64\TimeEditor\TimeEditor.exe"
-if not exist "%ENGINE_EXE%" set "ENGINE_EXE=Bin\Debug-windows-x86_64\Engine\TimeEditor.exe"
-if not exist "%ENGINE_EXE%" set "ENGINE_EXE=Bin\Release-windows-x86_64\Engine\TimeEditor.exe"
+set "ENGINE_EXE=Artifacts\Bin\Debug-windows-x86_64\TimeEditor\TimeEditor.exe"
+if not exist "%ENGINE_EXE%" set "ENGINE_EXE=Artifacts\Bin\Release-windows-x86_64\TimeEditor\TimeEditor.exe"
+if not exist "%ENGINE_EXE%" set "ENGINE_EXE=Artifacts\Bin\Debug-windows-x86_64\Engine\TimeEditor.exe"
+if not exist "%ENGINE_EXE%" set "ENGINE_EXE=Artifacts\Bin\Release-windows-x86_64\Engine\TimeEditor.exe"
 
 if exist "%ENGINE_EXE%" (
     echo [TimeEngine] Registering .teproj file extension...

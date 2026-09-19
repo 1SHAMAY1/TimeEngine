@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TimeEngine Scene Schema (.tescene)",
+  "description": "Validation and IntelliSense schema for TimeEngine .tescene scene files",
+  "type": "object",
+  "required": ["Scene", "Entities"],
+  "properties": {
+    "Scene": { "type": "string", "description": "Name or filename of the active scene" },
+    "Entities": {
+      "type": "array",
+      "description": "List of alive scene entities and their active components",
+      "items": {
+        "type": "object",
+        "required": ["Entity", "Tag"],
+        "properties": {
+          "Entity": { "type": "integer", "description": "Unique 64-bit Entity identifier" },
+          "Tag": { "type": "string", "description": "Entity display tag name" },
+          "TransformComponent": {
+            "type": "object",
+            "properties": {
+              "Position": { "type": "string" },
+              "Rotation": { "type": "string" },
+              "Scale": { "type": "string" }
+            }
+          },
+          "SpriteComponent": {
+            "type": "object",
+            "properties": {
+              "Color": { "type": "string" },
+              "TexturePath": { "type": "string" },
+              "TilingFactor": { "type": "string" }
+            }
+          },
+          "BoxComponent": { "type": "object", "properties": { "Size": { "type": "string" }, "Color": { "type": "string" } } },
+          "CircleComponent": { "type": "object", "properties": { "Radius": { "type": "string" }, "Thickness": { "type": "string" }, "Fade": { "type": "string" }, "Color": { "type": "string" } } },
+          "TriangleComponent": { "type": "object", "properties": { "PointA": { "type": "string" }, "PointB": { "type": "string" }, "PointC": { "type": "string" }, "Color": { "type": "string" } } },
+          "LightComponent": { "type": "object", "properties": { "Color": { "type": "string" }, "Intensity": { "type": "string" }, "Radius": { "type": "string" } } },
+          "AmbientLightComponent": { "type": "object", "properties": { "Color": { "type": "string" }, "Intensity": { "type": "string" } } },
+          "ParallaxComponent": { "type": "object", "properties": { "ParallaxFactor": { "type": "string" } } }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

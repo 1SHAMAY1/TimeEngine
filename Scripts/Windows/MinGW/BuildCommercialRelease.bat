@@ -13,6 +13,17 @@ if not exist "Makefile" (
     exit /b 1
 )
 
+:: Run TimeEngine code quality and architecture safety checks once upfront
+if exist "ThirdParty\Premake\Windows\premake5.exe" (
+    echo [INFO] Running architecture and code safety rule check...
+    "ThirdParty\Premake\Windows\premake5.exe" --file="Premake5.lua" check-rules
+    if %errorlevel% neq 0 (
+        echo [ERROR] Rule check failed! Build aborted.
+        pause
+        exit /b 1
+    )
+)
+
 :: Build Solution using mingw32-make
 echo [=== Building Makefile (Dist)... ===]
 echo [Note: This may take a few minutes...]
@@ -34,8 +45,8 @@ if exist "%DIST_DIR%" rd /s /q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 
 :: Copy Exe and DLLs
-:: MinGW outputs to Bin/Dist-windows-x86_64/TimeEditor/
-set "BUILD_OUTPUT=%ROOT_DIR%\Bin\Dist-windows-x86_64\TimeEditor"
+:: MinGW outputs to Artifacts/Bin/Dist-windows-x86_64/TimeEditor/
+set "BUILD_OUTPUT=%ROOT_DIR%\Artifacts\Artifacts\Bin\Dist-windows-x86_64\TimeEditor"
 
 if not exist "%BUILD_OUTPUT%\TimeEditor.exe" (
     echo [ERROR] Build output not found at %BUILD_OUTPUT%\TimeEditor.exe

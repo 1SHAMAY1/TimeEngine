@@ -12,25 +12,25 @@ set "SCRIPT_DIR=%ROOT_DIR%\Scripts\Windows\MSVC"
 echo [INFO] Cleaning previous build artifacts, CMake, and Visual Studio files...
 
 :: === Root build folders ===
-rd /s /q "%ROOT_DIR%\Bin" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Bin-Intermediate" >nul 2>&1
+rd /s /q "%ROOT_DIR%\Artifacts\Bin" >nul 2>&1
+rd /s /q "%ROOT_DIR%\Artifacts\Bin-Intermediate" >nul 2>&1
 
 :: === Logger CMake cleanup ===
-rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\build" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\bin" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\lib" >nul 2>&1
-del /f /q "%ROOT_DIR%\Vendor\Customizable_Logger\CMakeCache.txt" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Vendor\Customizable_Logger\CMakeFiles" >nul 2>&1
-del /f /q "%ROOT_DIR%\Vendor\Customizable_Logger\Makefile" >nul 2>&1
-del /f /q "%ROOT_DIR%\Vendor\Customizable_Logger\cmake_install.cmake" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\build" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\bin" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\lib" >nul 2>&1
+del /f /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\CMakeCache.txt" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\CMakeFiles" >nul 2>&1
+del /f /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\Makefile" >nul 2>&1
+del /f /q "%ROOT_DIR%\ThirdParty\Customizable_Logger\cmake_install.cmake" >nul 2>&1
 
 :: === GLFW CMake cleanup ===
-rd /s /q "%ROOT_DIR%\Vendor\GLFW\build" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Vendor\bin" >nul 2>&1
-del /f /q "%ROOT_DIR%\Vendor\GLFW\CMakeCache.txt" >nul 2>&1
-rd /s /q "%ROOT_DIR%\Vendor\GLFW\CMakeFiles" >nul 2>&1
-del /f /q "%ROOT_DIR%\Vendor\GLFW\Makefile" >nul 2>&1
-del /f /q "%ROOT_DIR%\Vendor\GLFW\cmake_install.cmake" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\GLFW\build" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\bin" >nul 2>&1
+del /f /q "%ROOT_DIR%\ThirdParty\GLFW\CMakeCache.txt" >nul 2>&1
+rd /s /q "%ROOT_DIR%\ThirdParty\GLFW\CMakeFiles" >nul 2>&1
+del /f /q "%ROOT_DIR%\ThirdParty\GLFW\Makefile" >nul 2>&1
+del /f /q "%ROOT_DIR%\ThirdParty\GLFW\cmake_install.cmake" >nul 2>&1
 
 :: === Visual Studio generated files (from entire tree) ===
 for /r "%ROOT_DIR%" %%f in (*.sln) do del /f /q "%%f" >nul 2>&1
@@ -119,7 +119,7 @@ if not "%PlatformToolset%"=="" echo [INFO] Detected PlatformToolset: %PlatformTo
 
 :: ========== Logger ==========
 echo [=== CMake configure/build: Logger ===]
-cd "%ROOT_DIR%\Vendor\Customizable_Logger"
+cd "%ROOT_DIR%\ThirdParty\Customizable_Logger"
 if not exist build mkdir build
 cd build
 
@@ -145,7 +145,7 @@ cd "%ROOT_DIR%"
 
 :: ========== GLFW ==========
 echo [=== CMake configure/build: GLFW ===]
-cd "%ROOT_DIR%\Vendor\GLFW"
+cd "%ROOT_DIR%\ThirdParty\GLFW"
 if not exist build mkdir build
 cd build
 
@@ -171,7 +171,7 @@ cd "%ROOT_DIR%"
 
 :: ========== Premake ==========
 echo [=== Generating Visual Studio solution with Premake... ===]
-Vendor\Premake\Windows\premake5.exe vs2022
+ThirdParty\Premake\Windows\premake5.exe vs2022
 if %errorlevel% neq 0 (
     echo [ERROR] Premake generation failed.
     pause

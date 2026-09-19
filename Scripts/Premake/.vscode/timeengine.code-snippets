@@ -1,0 +1,79 @@
+{
+  "TimeEngine Component Skeleton": {
+    "prefix": "te-comp",
+    "body": [
+      "#pragma once",
+      "#include \"Core/Scene/TComponent.hpp\"",
+      "#include \"Core/Scene/ComponentRegistry.hpp\"",
+      "",
+      "namespace TE",
+      "{",
+      "",
+      "struct ${1:MyComponent} : public TComponent",
+      "{",
+      "    GENERATED_BODY(${1:MyComponent})",
+      "",
+      "    T_PROPERTY(${2:float}, ${3:Value}, \"${4:Display Name}\", ${5:0.0f});",
+      "};",
+      "",
+      "T_REGISTER_COMPONENT(${1:MyComponent}, \"${4:Display Name}\")",
+      "T_REGISTER_PROPERTY(${1:MyComponent}, ${2:float}, ${3:Value}, \"${4:Display Name}\")",
+      "",
+      "} // namespace TE"
+    ],
+    "description": "Create a new TimeEngine Component with reflection macros"
+  },
+  "TimeEngine Property Registration": {
+    "prefix": "te-prop",
+    "body": [
+      "T_PROPERTY(${1:float}, ${2:PropertyName}, \"${3:Display Name}\", ${4:0.0f});"
+    ],
+    "description": "Add a reflected TimeEngine property with default value and display label"
+  },
+  "TimeEngine Enum Registration": {
+    "prefix": "te-enum",
+    "body": [
+      "enum class ${1:MyEnum}",
+      "{",
+      "    ${2:OptionA},",
+      "    ${3:OptionB}",
+      "};",
+      "",
+      "T_ENUM(${1:MyEnum}, {",
+      "    {\"${2:OptionA}\", ${1:MyEnum}::${2:OptionA}},",
+      "    {\"${3:OptionB}\", ${1:MyEnum}::${3:OptionB}}",
+      "});"
+    ],
+    "description": "Declare and register an inspectable TimeEngine Enum"
+  },
+  "TimeEngine Entity Preset": {
+    "prefix": "te-preset",
+    "body": [
+      "T_REGISTER_PRESET(${1:PresetName}, \"${2:Display Name}\", \"${3:Category}\", [](EntityID id, EntityManager* em) {",
+      "    ${4:// Add and configure preset components here}",
+      "});"
+    ],
+    "description": "Register an entity creation preset in the Editor Add menu"
+  },
+  "TimeEngine Core Log": {
+    "prefix": "te-log",
+    "body": [
+      "TE_CORE_INFO(\"${1:Message}\"${2:, args});"
+    ],
+    "description": "TimeEngine Core log statement"
+  },
+  "TimeEngine Client Log": {
+    "prefix": "te-logclient",
+    "body": [
+      "TE_CLIENT_INFO(\"${1:Message}\"${2:, args});"
+    ],
+    "description": "TimeEngine Client log statement"
+  },
+  "TimeEngine Smart Pointer": {
+    "prefix": "te-ref",
+    "body": [
+      "Ref<${1:Type}> ${2:name} = CreateRef<${1:Type}>(${3:args});"
+    ],
+    "description": "Declare and allocate a TimeEngine smart pointer (Ref<T>)"
+  }
+}

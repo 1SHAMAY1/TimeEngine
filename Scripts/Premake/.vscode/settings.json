@@ -1,0 +1,15 @@
+{
+  "files.associations": {
+    "*.tescene": "yaml",
+    "*.teproj": "yaml",
+    "*.hpp": "cpp",
+    "*.h": "cpp"
+  },
+  "yaml.schemas": {
+    "./.vscode/schemas/tescene.schema.json": ["*.tescene"],
+    "./.vscode/schemas/teproj.schema.json": ["*.teproj"]
+  },
+  "C_Cpp.intelliSenseEngine": "default",
+  "C_Cpp.autocomplete": "default",
+  "C_Cpp.errorSquiggles": "enabled"
+}

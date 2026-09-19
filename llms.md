@@ -6,11 +6,11 @@
 - **Status**: Active development. Not all systems are complete. Do not assume a feature exists unless listed below.
 
 ## Core Architecture
-- **Language**: C++Latest
-- **Graphics API**: OpenGL 4.5+, Vulkan, DirectX 11, OpenGL ES, Metal
+- **Language**: Modern C++ (C++Latest / C++20)
+- **Graphics API**: OpenGL 4.5+ DSA, Vulkan 1.3, DirectX 11, OpenGL ES 3.0, Metal
 - **Architecture**: Entity-Component System (ECS)
-- **Build System**: Premake5 / MSBuild / GNU Make
-- **UI**: TimeGUI (Strict ImGui Abstraction Wrapper)
+- **Build System**: Premake5 / MSBuild / GNU Make (Tiered Parallel Pipeline)
+- **UI**: TimeGUI (Strict vendor-insulated abstraction wrapper)
 - **Documentation**: Root portal (`index.html`) & interactive docs reader (`Website/docs.html`)
 
 ## Key APIs & Systems
@@ -19,29 +19,14 @@
 - **Physics**: `PhysicsWorld` (Velox Physics Engine) — rigid body simulation and collision resolution via XPBD solver.
 - **Inbuilt 2D Sprite Editor & IDE**: Data-driven procedural scripting with recursive expression evaluation.
 - **Scene System**: `Scene` class manages entities and components via ECS.
-- **Serialization**: Scene and Project serialization (YAML).
+- **Serialization**: Scene (`.tescene`), Project (`.teproj`), Material (`.tematerial`), Texture (`.tetexture`), and Plugin (`.teplugin`) serializations.
 - **Events**: Event systems for windowing, user input (`ApplicationEvent`, `KeyEvent`, `MouseEvent`), and type-safe `EventDispatcher`.
 - **Input**: High-level action-based mapping contexts (`InputSystem`, `InputAction`, `InputMappingContext`).
 - **Plugins Settings Panel**: Built-in GUI panel (toggled via `Edit -> Plugins`) showing discovered plugins and enabling runtime load/unload DLL manipulation.
 - **MCP Automation & SSE Server**: Built-in server providing remote programmatic automation:
   - Port: `3000` (HTTP and SSE streams `/message`).
-  - Active Tools:
-    - *Metadata & Modes*: `get_engine_info`, `get_scene_hierarchy`, `get_editor_modes`, `set_editor_mode`.
-    - *Entities & ECS*: `create_entity`, `destroy_entity`, `add_component`, `set_entity_properties`.
-    - *Viewport Feedback*: `get_viewport_screenshot` (saves `temp_viewport_capture.png` locally).
-    - *Callback Deletion*: `delete_screenshot` (triggered explicitly by AI client to safely erase the temp screenshot file post-processing, avoiding race condition loss).
-    - *Simulated Input*: `send_editor_input` (simulates keys/clicks).
-    - *File I/O*: `create_directory`, `delete_file_or_directory`.
-  - Client shell wrapper script: `Scripts/MCP_Tools.sh`. Uses Python parsing script `Scripts/parse_json.py` to compile nested properties payload arguments safely on Windows.
-- **Ambient Light**: `AmbientLightComponent` exists (`Engine/Include/Core/Scene/AmbientLightComponent.hpp`) and supports gradient/multi-color ambient lighting.
-- **Console & Terminal Panel**: Toggled via `Window -> Console & Terminal` and docked at the bottom:
-  - Output Log Tab: Shows core and client log history with real-time level/category filters and search capabilities.
-  - Terminal Tab: Offers a CLI shell executing in the opened project's root folder (`Project::GetProjectDirectory()`), allowing engine-level commands (`help`, `fps`, `list_entities`, `create_entity`, `destroy_entity`) and native OS system commands.
-- **Advanced Performance Profiler**: Real-time profiler dashboard toggled via the Viewport menu:
-  - Timing Hooks: Tracks `GameTime` (Editor updates), `RenderTime` (batcher flush steps), `PhysicsTime` (simulation steps), and `UITime` (UI drawing).
-  - Memory & Stack Profiling: Tracks heap/stack allocations. Supports scoped function stack allocation tracking using RAII `StackProfileScope` and class allocations:
-    - Record allocation (e.g. in constructor): `ProfilingLayer::TrackClassAllocation("MyNewClass", sizeof(*this));`
-    - Record deallocation (e.g. in destructor): `ProfilingLayer::TrackClassDeallocation("MyNewClass", sizeof(*this));`
+  - Active Tools: `get_engine_info`, `get_scene_hierarchy`, `create_entity`, `destroy_entity`, `add_component`, `set_entity_properties`, `get_viewport_screenshot`, `delete_screenshot`, `send_editor_input`, `create_directory`, `delete_file_or_directory`.
+- **Automated Testing Suite**: Headless test runner (`HeadlessTestRunner`), unit, integration, and stress tests executed via `Scripts/Windows/RunTests.bat` and `Scripts/Windows/RunStressTests.bat`.
 
 ## Development Patterns & Engine Types
 - Use `TE_CORE_LOG` (`TE_CORE_INFO`, `TE_CORE_WARN`, `TE_CORE_ERROR`) for engine-side logging.
@@ -52,26 +37,20 @@
   - Use `TE::Ref<T>` / `CreateRef<T>(...)` for shared ownership (`std::shared_ptr`).
   - Use `TE::WeakRef<T>` for non-owning observers (`std::weak_ptr`).
 - **Engine Strings**:
-  - Always use `TEString` (from `Utils/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` instead of `std::string` or `const char*` across engine APIs, ECS components, and properties.
+  - Always use `TEString` (from `Core/TEString.hpp` via `Core/PreRequisites.h`) and `TEStringView` instead of `std::string` or `const char*` across engine APIs, ECS components, and properties.
 - **Gameplay Containers & Utilities**:
-  - Use `TEArray<T>`, `TEOption<T>`, `TESpan<T>`, and `TEResult<T, E>` (from `GameFrameWork/GameplayUtils.hpp`).
+  - Use `TEArray<T>`, `TEOption<T>`, `TESpan<T>`, and `TEResult<T, E>` (from `Framework/Gameplay/Include/GameplayUtils.hpp`).
 - **Math & Vectors**:
-  - Always use `TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` (from `Utils/MathUtils.hpp`) instead of raw GLM or vendor math structs.
+  - Always use `TEVector2`, `TEVector`, `TEVector4`, `TEMatrix4`, `TEQuat` (from `Runtime/Math/Include/MathUtils.hpp`) instead of raw GLM or vendor math structs.
 - All headers MUST include `#pragma once`.
 - Classes: `PascalCase`, variables: `camelCase` (`m_` prefix for private members), macros: `SCREAMING_SNAKE_CASE` (`TE_`).
-- Components live under `Engine/Include/Core/Scene/` and register via macros (e.g. `T_REGISTER_COMPONENT`).
+- Components live under `Engine/Source/Runtime/Scene/Include/` and register via macros (e.g. `T_REGISTER_COMPONENT`).
 
 ## Setup
 1. Run the workspace generation script in `Scripts/` (e.g. `Scripts/Windows/GenerateProjectFiles.bat` for Windows).
 2. Build with platform build scripts (e.g. `Scripts/Windows/MSVC/BuildDebug.bat`).
-3. Launch TimeEditor to access the Project Hub.
-
-## NOT yet implemented (do not hallucinate these)
-- Time Manipulation runtime (rewind, snapshots, branching) — design phase only
-- 3D physics
-- Audio system
-- Networking
-
+3. Output binaries are generated cleanly in `Artifacts/Bin/` and `Artifacts/Bin-Intermediate/`.
+4. Launch TimeEditor to access the Project Hub.
 
 | Pattern | Rule |
 |---|---|
@@ -85,69 +64,43 @@
 | Naming | PascalCase classes, camelCase variables (`m_` for privates), SCREAMING_SNAKE_CASE macros |
 | Formatting | `.clang-format` enforced, 4-space indent |
 
-## Vendor Wrapper Mapping
+## ThirdParty Wrapper Mapping
 All third-party libraries have strict wrappers that isolate raw vendor classes, headers, and APIs. Direct calls to vendor headers in engine code are prohibited.
 
-- **ImGui (UI/Editor Layouts)**:
-  - Wrapper Headers: [TimeGUI.hpp](file:///E:/TimeEngine/Engine/Include/Utils/TimeGUI.hpp)
-  - Wrapper Sources: [TimeGUI.cpp](file:///E:/TimeEngine/Engine/src/Utils/TimeGUI.cpp)
-  - Lifecycle Layer: [TimeGUILayer.cpp](file:///E:/TimeEngine/Engine/src/Core/Layers/TimeGUILayer.cpp)
-- **OpenGL/Glad/OpenGLES/Vulkan/DirectX11 (Graphics/Renderer)**:
-  - Batched renderer: [Renderer2D.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Renderer2D.hpp) / [Renderer2D.cpp](file:///E:/TimeEngine/Engine/src/Renderer/Renderer2D.cpp)
-  - Generic Renderer API: [RendererAPI.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/RendererAPI.hpp)
-  - Shaders: [Shader.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Shader.hpp)
-  - Textures: [Texture.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/Texture.hpp)
-  - Colors: [TEColor.hpp](file:///E:/TimeEngine/Engine/Include/Renderer/TEColor.hpp) / [TEColor.cpp](file:///E:/TimeEngine/Engine/src/Renderer/TEColor.cpp)
+- **ImGui / ForgeUI (UI/Editor Layouts)**:
+  - Wrapper Headers: [TimeGUI.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/UI/Include/TimeGUI.hpp)
+  - Wrapper Sources: [TimeGUI.cpp](file:///E:/TimeEngine/Engine/Source/Runtime/UI/Source/TimeGUI.cpp)
+- **OpenGL/Glad/OpenGLES/Vulkan/DirectX11/Metal (Graphics/Renderer)**:
+  - Batched renderer: [Renderer2D.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/Renderer2D/Include/Renderer2D.hpp)
+  - Generic Renderer API: [RendererAPI.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/RHI/Include/RendererAPI.hpp)
+  - Shaders: [Shader.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/RHI/Include/Shader.hpp)
+  - Textures: [Texture.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/RHI/Include/Texture.hpp)
+  - Colors: [TEColor.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/Math/Include/TEColor.hpp)
 - **Velox (Physics Engine)**:
-  - Abstraction: [PhysicsWorld.hpp](file:///E:/TimeEngine/Engine/Include/Core/Physics/PhysicsWorld.hpp) / [PhysicsWorld.cpp](file:///E:/TimeEngine/Engine/src/Core/Physics/PhysicsWorld.cpp)
+  - Abstraction: [PhysicsWorld.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/Physics/Include/PhysicsWorld.hpp)
 - **GLFW (Windowing & OS Input Integration)**:
-  - OS abstraction interface: [IWindow.hpp](file:///E:/TimeEngine/Engine/Include/Window/IWindow.hpp)
-  - Windows-specific implementation: [WindowsWindow.cpp](file:///E:/TimeEngine/Engine/src/Window/WindowsWindow.cpp)
+  - OS abstraction interface: [IWindow.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/Window/Include/IWindow.hpp)
+  - Windows implementation: [WindowsWindow.cpp](file:///E:/TimeEngine/Engine/Source/Runtime/Window/Source/WindowsWindow.cpp)
 - **Customizable Logger (Logging Backend)**:
-  - System logging interface: [Log.h](file:///E:/TimeEngine/Engine/src/Core/Log.h)
+  - System logging interface: [Log.h](file:///E:/TimeEngine/Engine/Source/Runtime/Core/Include/Log.h)
 - **GLM (Mathematics / Vectors / Matrices)**:
-  - Math & Vectors wrapper: [MathUtils.hpp](file:///E:/TimeEngine/Engine/Include/Utils/MathUtils.hpp)
+  - Math & Vectors wrapper: [MathUtils.hpp](file:///E:/TimeEngine/Engine/Source/Runtime/Math/Include/MathUtils.hpp)
 - **stb_image / Asset Importers (Image & Model Loaders)**:
-  - Asset Manager / Importers: [AssetManager.hpp](file:///E:/TimeEngine/Engine/Include/Core/Asset/AssetManager.hpp) / [AssetManager.cpp](file:///E:/TimeEngine/Engine/src/Core/Asset/AssetManager.cpp)
+  - Asset Manager: [AssetManager.hpp](file:///E:/TimeEngine/Engine/Source/Framework/Asset/Include/AssetManager.hpp)
 
-## File Layout (partial — extend as codebase grows)
+## Modular File Layout
 ```
-Engine/
-  Include/
-    Core/Scene/           # ECS components live here (e.g. AmbientLightComponent.hpp)
-    Renderer/             # Renderer API and backend headers (DirectX11, Vulkan, OpenGLES, OpenGL)
-    Layers/               # EditorLayer.hpp, etc.
-  src/
-    Core/Scene/           # Scene.cpp, SceneSerializer.cpp, EntityManager.cpp
-    Renderer/             # Renderer2D.cpp, and backend API source files
-    Core/Layers/          # EditorLayer.cpp, etc.
-Scripts/
-  Windows/
-    GenerateProjectFiles.bat  # Run first on Windows — generates .sln via Premake5
-  Linux/
-    GenerateProjectFiles.sh   # Run first on Linux — generates Makefiles via Premake5
-  Mac/
-    GenerateProjectFiles.sh   # Run first on macOS — generates Xcode project via Premake5
-TimeEditor/                 # Editor app, entry point for manual QA
+TimeEngine/
+├── Artifacts/              # Centralized build output (Bin/, Bin-Intermediate/)
+├── Docs/                   # Documentation & in-IDE Solution Project
+├── Engine/
+│   ├── Source/
+│   │   ├── Runtime/        # Core runtime modules (Core, Math, RHI, Renderer2D, Physics, Scripting, Scene, Testing, UI, Window)
+│   │   └── Framework/      # High-level engine systems (Asset, Input, Gameplay, Application)
+│   └── premake5.lua
+├── Plugins/                # Decoupled marketplace plugins (Shipping/ and Experimental/)
+├── Resources/              # Shared engine resources (Branding, Editor, Templates)
+├── Scripts/                # Cross-platform build & test scripts
+├── ThirdParty/             # Insulated vendor submodules (Velox, GLM, GLFW, ImGui, ForgeUI, Logger)
+└── TimeEditor/             # IGDE Application source & resources
 ```
-
-## Setup (exact steps)
-```bash
-git clone --recursive https://github.com/1SHAMAY1/TimeEngine.git
-cd TimeEngine
-# Run platform-specific script:
-Scripts/Windows/GenerateProjectFiles.bat  # Windows
-# OR
-Scripts/Linux/GenerateProjectFiles.sh    # Linux
-# OR
-Scripts/Mac/GenerateProjectFiles.sh      # macOS
-```
-If Premake errors: `git submodule update --init --recursive`
-
-## For LLMs — usage rules
-- **Do not invent components or systems** not listed under "Confirmed Systems."
-- **Cross-platform building**: Fully tested for development on **Windows** and **macOS** via script suites in `Scripts/Windows/` and `Scripts/Mac/`. Linux scripts (`Scripts/Linux/`) exist but are untested.
-- **Time Manipulation is a roadmap goal**, not a callable API.
-- When suggesting new components, follow the `Engine/Include/Core/Scene/` pattern and match naming conventions above.
-- When editing renderer code, check `Renderer2D.cpp` for the batch flush — that is where per-frame component reads happen.
-- **GUI and Editor Rendering Rule**: Never use raw `ImGui` or include `imgui.h`/`imgui_internal.h` outside of the wrapper layer. All engine layers and systems MUST use the clean non-vendor GUI wrapper namespace (`TE::TimeGUI`) and wrapper classes (`TimeGUIViewport`, `TimeGUIDrawList`, `TimeGUIFont`, etc.). Do not expose or return vendor types (like `ImVec4`, `ImDrawList*`, `ImFont*`) in function signatures or variables outside the wrapper implementation (`TimeGUI.cpp` / `TimeGUILayer.cpp`).

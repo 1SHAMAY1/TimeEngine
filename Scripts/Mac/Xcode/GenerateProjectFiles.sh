@@ -8,21 +8,21 @@ echo "[≡ Generating TimeEngine Xcode Workspace: Clean + CMake + Premake]"
 
 # Inline Clean
 echo "[🧹 Cleaning previous build artifacts, CMake, and project files...]"
-rm -rf "$ROOT_DIR/Bin"
-rm -rf "$ROOT_DIR/Bin-Intermediate"
-rm -rf "$ROOT_DIR/Vendor/Customizable_Logger/build"
-rm -rf "$ROOT_DIR/Vendor/Customizable_Logger/bin"
-rm -rf "$ROOT_DIR/Vendor/Customizable_Logger/lib"
-rm -f "$ROOT_DIR/Vendor/Customizable_Logger/CMakeCache.txt"
-rm -rf "$ROOT_DIR/Vendor/Customizable_Logger/CMakeFiles"
-rm -f "$ROOT_DIR/Vendor/Customizable_Logger/Makefile"
-rm -f "$ROOT_DIR/Vendor/Customizable_Logger/cmake_install.cmake"
-rm -rf "$ROOT_DIR/Vendor/GLFW/build"
-rm -rf "$ROOT_DIR/Vendor/bin"
-rm -f "$ROOT_DIR/Vendor/GLFW/CMakeCache.txt"
-rm -rf "$ROOT_DIR/Vendor/GLFW/CMakeFiles"
-rm -f "$ROOT_DIR/Vendor/GLFW/Makefile"
-rm -f "$ROOT_DIR/Vendor/GLFW/cmake_install.cmake"
+rm -rf "$ROOT_DIR/Artifacts/Bin"
+rm -rf "$ROOT_DIR/Artifacts/Bin-Intermediate"
+rm -rf "$ROOT_DIR/ThirdParty/Customizable_Logger/build"
+rm -rf "$ROOT_DIR/ThirdParty/Customizable_Logger/bin"
+rm -rf "$ROOT_DIR/ThirdParty/Customizable_Logger/lib"
+rm -f "$ROOT_DIR/ThirdParty/Customizable_Logger/CMakeCache.txt"
+rm -rf "$ROOT_DIR/ThirdParty/Customizable_Logger/CMakeFiles"
+rm -f "$ROOT_DIR/ThirdParty/Customizable_Logger/Makefile"
+rm -f "$ROOT_DIR/ThirdParty/Customizable_Logger/cmake_install.cmake"
+rm -rf "$ROOT_DIR/ThirdParty/GLFW/build"
+rm -rf "$ROOT_DIR/ThirdParty/bin"
+rm -f "$ROOT_DIR/ThirdParty/GLFW/CMakeCache.txt"
+rm -rf "$ROOT_DIR/ThirdParty/GLFW/CMakeFiles"
+rm -f "$ROOT_DIR/ThirdParty/GLFW/Makefile"
+rm -f "$ROOT_DIR/ThirdParty/GLFW/cmake_install.cmake"
 find "$ROOT_DIR" -type f \( -name "*.sln" -o -name "*.vcxproj" -o -name "*.vcxproj.filters" -o -name "*.vcxproj.user" -o -name "Makefile" -o -name "*.make" \) -delete
 rm -rf "$ROOT_DIR/.vs"
 rm -rf "$ROOT_DIR"/*.xcodeproj
@@ -32,8 +32,8 @@ echo "[✅ Cleanup complete.]"
 
 # Logger
 echo "[≡ CMake configure/build: Logger]"
-mkdir -p "$ROOT_DIR/Vendor/Customizable_Logger/build"
-cd "$ROOT_DIR/Vendor/Customizable_Logger/build"
+mkdir -p "$ROOT_DIR/ThirdParty/Customizable_Logger/build"
+cd "$ROOT_DIR/ThirdParty/Customizable_Logger/build"
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 if [ $? -ne 0 ]; then
     echo "[✖ Logger CMake configuration failed.]"
@@ -49,8 +49,8 @@ fi
 
 # GLFW
 echo "[≡ CMake configure/build: GLFW]"
-mkdir -p "$ROOT_DIR/Vendor/GLFW/build"
-cd "$ROOT_DIR/Vendor/GLFW/build"
+mkdir -p "$ROOT_DIR/ThirdParty/GLFW/build"
+cd "$ROOT_DIR/ThirdParty/GLFW/build"
 cmake ../glfw -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 if [ $? -ne 0 ]; then
     echo "[✖ GLFW CMake configuration failed.]"
@@ -69,10 +69,10 @@ echo "[≡ Generating Xcode workspace with Premake...]"
 cd "$ROOT_DIR"
 
 PREMAKE_BIN=""
-if [ -x "$ROOT_DIR/Vendor/Premake/Mac/premake5" ]; then
-    PREMAKE_BIN="$ROOT_DIR/Vendor/Premake/Mac/premake5"
-elif [ -x "$ROOT_DIR/Vendor/Premake/premake5" ]; then
-    PREMAKE_BIN="$ROOT_DIR/Vendor/Premake/premake5"
+if [ -x "$ROOT_DIR/ThirdParty/Premake/Mac/premake5" ]; then
+    PREMAKE_BIN="$ROOT_DIR/ThirdParty/Premake/Mac/premake5"
+elif [ -x "$ROOT_DIR/ThirdParty/Premake/premake5" ]; then
+    PREMAKE_BIN="$ROOT_DIR/ThirdParty/Premake/premake5"
 elif command -v premake5 &> /dev/null; then
     PREMAKE_BIN="premake5"
 fi
@@ -80,7 +80,7 @@ fi
 if [ -n "$PREMAKE_BIN" ]; then
     "$PREMAKE_BIN" xcode4 --file=Premake5.lua
 else
-    echo "[!] premake5 not found in Vendor/Premake/ or system PATH. Please install premake5 or ensure it is in your PATH."
+    echo "[!] premake5 not found in ThirdParty/Premake/ or system PATH. Please install premake5 or ensure it is in your PATH."
     read -p "Press Enter to exit..."
     exit 1
 fi

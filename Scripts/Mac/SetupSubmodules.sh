@@ -20,8 +20,8 @@ git submodule sync --recursive
 echo "[INFO] Initializing submodules..."
 git submodule init
 
-echo "[INFO] Updating submodules recursively from remote..."
-git submodule update --init --recursive --remote
+echo "[INFO] Updating submodules recursively..."
+git submodule update --init --recursive --force
 
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to update submodules. Please check your internet connection and git configuration."
@@ -32,10 +32,11 @@ fi
 echo "[SUCCESS] Git submodules updated successfully!"
 
 # Premake 5 macOS Binary Download
-PREMAKE_VER="v5.0.0-beta2"
-PREMAKE_DIR="$ROOT_DIR/Vendor/Premake/Mac"
+PREMAKE_TAG="v5.0.0-beta4"
+PREMAKE_VER="5.0.0-beta4"
+PREMAKE_DIR="$ROOT_DIR/ThirdParty/Premake/Mac"
 PREMAKE_EXE="$PREMAKE_DIR/premake5"
-URL="https://github.com/premake/premake-core/releases/download/${PREMAKE_VER}/premake-5.0.0-beta2-macosx.tar.gz"
+URL="https://github.com/premake/premake-core/releases/download/${PREMAKE_TAG}/premake-${PREMAKE_VER}-macosx.tar.gz"
 
 if [ ! -f "$PREMAKE_EXE" ]; then
     echo "[INFO] Downloading Premake 5 for macOS..."

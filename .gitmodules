@@ -1,37 +1,31 @@
-[submodule "Vendor/GLFW/vendor/GLFW"]
-	path = Vendor/GLFW/vendor/GLFW
-	url = https://github.com/glfw/glfw
-[submodule "Vendor/GLFW/glfw"]
-	path = Vendor/GLFW/glfw
+[submodule "ThirdParty/GLFW/glfw"]
+	path = ThirdParty/GLFW/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "Vendor/GLM"]
-	path = Vendor/GLM
+[submodule "ThirdParty/GLM"]
+	path = ThirdParty/GLM
 	url = https://github.com/g-truc/glm.git
-[submodule "Vendor/IMGUI/ImGui"]
-	path = Vendor/IMGUI/ImGui
+[submodule "ThirdParty/IMGUI/ImGui"]
+	path = ThirdParty/IMGUI/ImGui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
-[submodule "Logger/Customizable_Logger_new"]
-	path = Logger/Customizable_Logger_new
+[submodule "ThirdParty/Customizable_Logger"]
+	path = ThirdParty/Customizable_Logger
 	url = https://github.com/1SHAMAY1/Customizable_Logger
-[submodule "Vendor/Customizable_Logger"]
-	path = Vendor/Customizable_Logger
-	url = https://github.com/1SHAMAY1/Customizable_Logger
-[submodule "Vendor/Velox"]
-	path = Vendor/Velox
+[submodule "ThirdParty/Velox"]
+	path = ThirdParty/Velox
 	url = https://github.com/1SHAMAY1/Velox
-[submodule "Vendor/Vulkan"]
-	path = Vendor/Vulkan
+[submodule "ThirdParty/Vulkan"]
+	path = ThirdParty/Vulkan
 	url = https://github.com/KhronosGroup/Vulkan-Headers.git
-[submodule "Vendor/OpenGL-Registry"]
-	path = Vendor/OpenGL-Registry
+[submodule "ThirdParty/OpenGL-Registry"]
+	path = ThirdParty/OpenGL-Registry
 	url = https://github.com/KhronosGroup/OpenGL-Registry.git
-[submodule "Vendor/volk"]
-	path = Vendor/volk
+[submodule "ThirdParty/volk"]
+	path = ThirdParty/volk
 	url = https://github.com/zeux/volk.git
-[submodule "Vendor/miniaudio"]
-	path = Vendor/miniaudio
+[submodule "ThirdParty/miniaudio"]
+	path = ThirdParty/miniaudio
 	url = https://github.com/mackron/miniaudio.git
-[submodule "Vendor/ForgeUI"]
-	path = Vendor/ForgeUI
+[submodule "ThirdParty/ForgeUI"]
+	path = ThirdParty/ForgeUI
 	url = https://github.com/TimeEngineOrg/ForgeUI.git

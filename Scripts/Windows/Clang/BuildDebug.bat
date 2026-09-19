@@ -11,6 +11,17 @@ if not exist "TimeEngine.sln" (
     exit /b 1
 )
 
+:: Run TimeEngine code quality and architecture safety checks once upfront
+if exist "ThirdParty\Premake\Windows\premake5.exe" (
+    echo [INFO] Running architecture and code safety rule check...
+    "ThirdParty\Premake\Windows\premake5.exe" --file="Premake5.lua" check-rules
+    if %errorlevel% neq 0 (
+        echo [ERROR] Rule check failed! Build aborted.
+        pause
+        exit /b 1
+    )
+)
+
 :: Find MSBuild path using vswhere dynamically via environment, registry & mounted drives
 set "VSWHERE="
 if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"

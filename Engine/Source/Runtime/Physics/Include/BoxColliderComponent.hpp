@@ -1,0 +1,45 @@
+#pragma once
+#include "CollisionComponent.hpp"
+#include "ComponentRegistry.hpp"
+#include "Renderer2D.hpp"
+
+class BoxColliderComponent : public CollisionComponent
+{
+public:
+    GENERATED_BODY(BoxColliderComponent)
+
+    T_PROPERTY(TEVector2, Offset, "Offset", TEVector2(0.0f, 0.0f))
+    T_PROPERTY(TEVector2, Size, "Size", TEVector2(1.0f, 1.0f))
+
+    BoxColliderComponent() { shape.type = CollisionType::AABB; }
+
+    virtual TEString GetClassName() const override { return StaticClassName; }
+
+    virtual void OnUpdateShape(const TEMatrix4 &worldTransform) override
+    {
+        TEVector2 pos = {worldTransform[3].x + Offset.x, worldTransform[3].y + Offset.y};
+        TEVector2 halfSize = {Size.x * 0.5f * TEVector::Length(TEVector(worldTransform[0])),
+                              Size.y * 0.5f * TEVector::Length(TEVector(worldTransform[1]))};
+        shape.aabb.min = {pos.x - halfSize.x, pos.y - halfSize.y};
+        shape.aabb.max = {pos.x + halfSize.x, pos.y + halfSize.y};
+    }
+
+    virtual void OnRender(class Renderer2D *renderer, const TEMatrix4 &worldTransform,
+                          const TERef<class Material> &material) const override
+    {
+        if (!renderer)
+            return;
+        TEVector4 pos4 = worldTransform * TEVector4(Offset.x, Offset.y, 0.0f, 1.0f);
+        renderer->SubmitRectOutline(TEVector2(pos4.x, pos4.y), Size, 1.5f, TEColor(0.0f, 1.0f, 0.0f, 0.75f));
+    }
+};
+
+#ifdef TE_EDITOR
+T_REGISTER_COMPONENT(BoxColliderComponent, "Box Collider Component")
+T_REGISTER_PROPERTY(BoxColliderComponent, TEVector2, Offset, "Offset")
+T_REGISTER_PROPERTY(BoxColliderComponent, TEVector2, Size, "Size")
+T_REGISTER_PROPERTY(BoxColliderComponent, bool, isStatic, "Is Static")
+T_REGISTER_PROPERTY(BoxColliderComponent, bool, isTrigger, "Is Trigger")
+T_REGISTER_PRESET(BoxColliderComponent, "Box Collider 2D", "Physics & Collisions",
+                  [](EntityID id, EntityManager *em) { em->AddComponent<BoxColliderComponent>(id); })
+#endif

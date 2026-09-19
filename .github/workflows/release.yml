@@ -21,7 +21,7 @@ jobs:
       - name: Build Logger Dependency
         shell: cmd
         run: |
-          cd Vendor\Customizable_Logger
+          cd ThirdParty\Customizable_Logger
           if not exist build mkdir build
           cd build
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_C_FLAGS="/Z7" -DCMAKE_CXX_FLAGS="/Z7"
@@ -30,7 +30,7 @@ jobs:
       - name: Build GLFW Dependency
         shell: cmd
         run: |
-          cd Vendor\GLFW
+          cd ThirdParty\GLFW
           if not exist build mkdir build
           cd build
           cmake ../glfw -G "Visual Studio 17 2022" -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="/Z7 /FS" -DCMAKE_CXX_FLAGS="/Z7 /FS"
@@ -38,7 +38,7 @@ jobs:
 
       - name: Generate Solution with Premake
         shell: cmd
-        run: Vendor\Premake\premake5.exe vs2022
+        run: ThirdParty\Premake\Windows\premake5.exe vs2022
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
@@ -51,9 +51,10 @@ jobs:
         shell: pwsh
         run: |
              New-Item -ItemType Directory -Force -Path "TimeEngine-Release"
-             Copy-Item -Path "Bin/Release-windows-x86_64/TimeEditor/TimeEditor.exe" -Destination "TimeEngine-Release/"
-             Copy-Item -Path "Bin/Release-windows-x86_64/Engine/Engine.dll" -Destination "TimeEngine-Release/"
-             Copy-Item -Path "Bin/Release-windows-x86_64/Velox/Velox.dll" -Destination "TimeEngine-Release/"
+             Copy-Item -Path "Artifacts/Bin/Release-windows-x86_64/TimeEditor/TimeEditor.exe" -Destination "TimeEngine-Release/"
+             Copy-Item -Path "Artifacts/Bin/Release-windows-x86_64/Engine/Engine.dll" -Destination "TimeEngine-Release/"
+             Copy-Item -Path "Artifacts/Bin/Release-windows-x86_64/Velox/Velox.dll" -Destination "TimeEngine-Release/"
+             Copy-Item -Path "Artifacts/Bin/Release-windows-x86_64/TimeEditor/Plugins" -Destination "TimeEngine-Release/Plugins" -Recurse -ErrorAction SilentlyContinue
              Copy-Item -Path "Resources" -Destination "TimeEngine-Release/Resources" -Recurse
              Compress-Archive -Path "TimeEngine-Release/*" -DestinationPath "TimeEngine-Windows-x64.zip"
 

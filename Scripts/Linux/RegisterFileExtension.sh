@@ -7,8 +7,8 @@ ROOT_DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
 # Search for TimeEditor executable
 ENGINE_EXE=""
 for path in \
-    "Bin/Debug-linux-x86_64/TimeEditor/TimeEditor" \
-    "Bin/Release-linux-x86_64/TimeEditor/TimeEditor"; do
+    "Artifacts/Bin/Debug-linux-x86_64/TimeEditor/TimeEditor" \
+    "Artifacts/Bin/Release-linux-x86_64/TimeEditor/TimeEditor"; do
     if [ -f "$ROOT_DIR/$path" ]; then
         ENGINE_EXE="$ROOT_DIR/$path"
         break
@@ -16,7 +16,7 @@ for path in \
 done
 
 if [ -z "$ENGINE_EXE" ]; then
-    ENGINE_EXE=$(find "$ROOT_DIR/Bin" -type f -name "TimeEditor" | grep -v "Intermediate" | head -n 1)
+    ENGINE_EXE=$(find "$ROOT_DIR/Artifacts/Bin" -type f -name "TimeEditor" | grep -v "Intermediate" | head -n 1)
 fi
 
 if [ -n "$ENGINE_EXE" ] && [ -f "$ENGINE_EXE" ]; then

@@ -1,0 +1,457 @@
+#pragma once
+
+#include <cmath>
+
+#include "PreRequisites.h"
+
+class TEColor;
+
+// ===== TEVector2 =====
+struct TE_API TEVector2
+{
+    float x = 0.0f, y = 0.0f;
+
+    TEVector2() = default;
+    TEVector2(float x, float y) : x(x), y(y) {}
+    TEVector2(const struct TEVector4 &v);
+
+    static float Length(const TEVector2 &v) { return v.Length(); }
+    static TEVector2 Perpendicular(const TEVector2 &v) { return v.Perpendicular(); }
+
+    float Length() const { return std::sqrt(x * x + y * y); }
+    float LengthSquared() const { return x * x + y * y; }
+
+    TEVector2 Normalized() const
+    {
+        float len = Length();
+        return (len > 0.0f) ? TEVector2(x / len, y / len) : TEVector2();
+    }
+
+    TEVector2 Perpendicular() const { return {-y, x}; }
+
+    TEVector2 operator+(const TEVector2 &rhs) const { return {x + rhs.x, y + rhs.y}; }
+    TEVector2 operator-(const TEVector2 &rhs) const { return {x - rhs.x, y - rhs.y}; }
+    TEVector2 operator*(float scalar) const { return {x * scalar, y * scalar}; }
+    TEVector2 operator/(float scalar) const { return {x / scalar, y / scalar}; }
+    TEVector2 operator-() const { return {-x, -y}; }
+
+    TEVector2 &operator+=(const TEVector2 &rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        return *this;
+    }
+    TEVector2 &operator-=(const TEVector2 &rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+        return *this;
+    }
+    TEVector2 &operator*=(float scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        return *this;
+    }
+    TEVector2 &operator/=(float scalar)
+    {
+        x /= scalar;
+        y /= scalar;
+        return *this;
+    }
+
+    bool operator==(const TEVector2 &rhs) const { return x == rhs.x && y == rhs.y; }
+    bool operator!=(const TEVector2 &rhs) const { return !(*this == rhs); }
+};
+
+inline TEVector2 operator*(float scalar, const TEVector2 &v) { return v * scalar; }
+
+inline float Dot(const TEVector2 &a, const TEVector2 &b) { return a.x * b.x + a.y * b.y; }
+
+inline float Distance(const TEVector2 &a, const TEVector2 &b)
+{
+    float dx = a.x - b.x;
+    float dy = a.y - b.y;
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+inline float DistanceSquared(const TEVector2 &a, const TEVector2 &b)
+{
+    float dx = a.x - b.x;
+    float dy = a.y - b.y;
+    return dx * dx + dy * dy;
+}
+
+// ===== TEVector (3D) =====
+struct TE_API TEVector
+{
+    float x = 0.0f, y = 0.0f, z = 0.0f;
+
+    TEVector() = default;
+    TEVector(float x, float y, float z) : x(x), y(y), z(z) {}
+    TEVector(const struct TEVector4 &v);
+
+    static float Length(const TEVector &v) { return v.Length(); }
+
+    float Length() const { return std::sqrt(x * x + y * y + z * z); }
+    float LengthSquared() const { return x * x + y * y + z * z; }
+
+    TEVector Normalized() const
+    {
+        float len = Length();
+        return (len > 0.0f) ? TEVector(x / len, y / len, z / len) : TEVector();
+    }
+
+    TEVector operator+(const TEVector &rhs) const { return {x + rhs.x, y + rhs.y, z + rhs.z}; }
+    TEVector operator-(const TEVector &rhs) const { return {x - rhs.x, y - rhs.y, z - rhs.z}; }
+    TEVector operator*(float scalar) const { return {x * scalar, y * scalar, z * scalar}; }
+    TEVector operator/(float scalar) const { return {x / scalar, y / scalar, z / scalar}; }
+    TEVector operator-() const { return {-x, -y, -z}; }
+
+    TEVector &operator+=(const TEVector &rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        return *this;
+    }
+    TEVector &operator-=(const TEVector &rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+        return *this;
+    }
+    TEVector &operator*=(float scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+        return *this;
+    }
+    TEVector &operator/=(float scalar)
+    {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        return *this;
+    }
+
+    bool operator==(const TEVector &rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
+    bool operator!=(const TEVector &rhs) const { return !(*this == rhs); }
+
+    bool operator<(const TEVector &rhs) const { return LengthSquared() < rhs.LengthSquared(); }
+    bool operator<=(const TEVector &rhs) const { return LengthSquared() <= rhs.LengthSquared(); }
+    bool operator>(const TEVector &rhs) const { return LengthSquared() > rhs.LengthSquared(); }
+    bool operator>=(const TEVector &rhs) const { return LengthSquared() >= rhs.LengthSquared(); }
+};
+
+inline TEVector operator*(float scalar, const TEVector &v) { return v * scalar; }
+
+inline float Distance(const TEVector &a, const TEVector &b)
+{
+    float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+using TEVector3 = TEVector;
+
+inline float DistanceSquared(const TEVector &a, const TEVector &b)
+{
+    float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+    return dx * dx + dy * dy + dz * dz;
+}
+
+// ===== TEVector4 =====
+struct TE_API TEVector4
+{
+    float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
+
+    TEVector4() = default;
+    TEVector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+    TEVector4(const TEColor &c);
+
+    float &operator[](int index)
+    {
+        if (index == 0)
+            return x;
+        if (index == 1)
+            return y;
+        if (index == 2)
+            return z;
+        return w;
+    }
+    const float &operator[](int index) const
+    {
+        if (index == 0)
+            return x;
+        if (index == 1)
+            return y;
+        if (index == 2)
+            return z;
+        return w;
+    }
+
+    TEVector4 operator+(const TEVector4 &rhs) const { return {x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w}; }
+    TEVector4 operator-(const TEVector4 &rhs) const { return {x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w}; }
+    TEVector4 operator*(float scalar) const { return {x * scalar, y * scalar, z * scalar, w * scalar}; }
+    TEVector4 operator/(float scalar) const { return {x / scalar, y / scalar, z / scalar, w / scalar}; }
+    TEVector4 operator-() const { return {-x, -y, -z, -w}; }
+
+    TEVector4 &operator+=(const TEVector4 &rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        w += rhs.w;
+        return *this;
+    }
+    TEVector4 &operator-=(const TEVector4 &rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+        w -= rhs.w;
+        return *this;
+    }
+    TEVector4 &operator*=(float scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+        w *= scalar;
+        return *this;
+    }
+    TEVector4 &operator/=(float scalar)
+    {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        w /= scalar;
+        return *this;
+    }
+
+    bool operator==(const TEVector4 &rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
+    bool operator!=(const TEVector4 &rhs) const { return !(*this == rhs); }
+};
+
+inline TEVector4 operator*(float scalar, const TEVector4 &v) { return v * scalar; }
+
+inline TEVector2::TEVector2(const TEVector4 &v) : x(v.x), y(v.y) {}
+inline TEVector::TEVector(const TEVector4 &v) : x(v.x), y(v.y), z(v.z) {}
+
+// ===== TEMatrix4 =====
+struct TE_API TEMatrix4
+{
+    TEVector4 m[4];
+
+    TEMatrix4();
+    TEMatrix4(float diagonal);
+
+    TEMatrix4 operator*(const TEMatrix4 &other) const;
+    TEVector4 operator*(const TEVector4 &vec) const;
+
+    TEVector4 &operator[](int index) { return m[index]; }
+    const TEVector4 &operator[](int index) const { return m[index]; }
+
+    static TEMatrix4 Scale(const TEMatrix4 &mat, const TEVector &scale);
+    static TEMatrix4 Translate(const TEMatrix4 &mat, const TEVector &translation);
+    static TEMatrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar);
+};
+
+// ===== Forward Declare =====
+class TEQuat;
+
+// ===== TERotator =====
+class TE_API TERotator
+{
+public:
+    float Pitch = 0.0f;
+    float Yaw = 0.0f;
+    float Roll = 0.0f;
+
+    TERotator() = default;
+    TERotator(float pitch, float yaw, float roll) : Pitch(pitch), Yaw(yaw), Roll(roll) {}
+
+    void AddYaw(float d) { Yaw += d; }
+    void AddPitch(float d) { Pitch += d; }
+    void AddRoll(float d) { Roll += d; }
+
+    TEVector ToVec3() const { return {Pitch, Yaw, Roll}; }
+
+    TEString ToString() const
+    {
+        return TEString("Pitch: ") + TEString::FromFloat(Pitch, 2) + ", Yaw: " + TEString::FromFloat(Yaw, 2) +
+               ", Roll: " + TEString::FromFloat(Roll, 2);
+    }
+
+    bool operator==(const TERotator &other) const
+    {
+        return Pitch == other.Pitch && Yaw == other.Yaw && Roll == other.Roll;
+    }
+
+    bool operator!=(const TERotator &other) const { return !(*this == other); }
+
+    TEQuat ToQuat() const;
+};
+
+// ===== TEQuat =====
+class TE_API TEQuat
+{
+public:
+    float x = 0.0f, y = 0.0f, z = 0.0f, w = 1.0f;
+
+    TEQuat() = default;
+    TEQuat(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+
+    TEMatrix4 ToMatrix() const;
+    static TEQuat FromMatrix(const TEMatrix4 &m);
+    static TEQuat AngleAxis(float angleRadians, const TEVector &axis);
+
+    TEVector operator*(const TEVector &v) const;
+
+    bool operator==(const TEQuat &other) const { return x == other.x && y == other.y && z == other.z && w == other.w; }
+    bool operator!=(const TEQuat &other) const { return !(*this == other); }
+};
+
+// ===== TEScale =====
+class TE_API TEScale
+{
+public:
+    TEVector Scale = {1.0f, 1.0f, 1.0f};
+
+    TEScale() = default;
+    TEScale(float uniform) : Scale(uniform, uniform, uniform) {}
+    TEScale(float x, float y, float z) : Scale(x, y, z) {}
+    TEScale(const TEVector &s) : Scale(s) {}
+
+    TEVector Get() const { return Scale; }
+
+    bool operator==(const TEScale &other) const { return Scale == other.Scale; }
+    bool operator!=(const TEScale &other) const { return !(*this == other); }
+};
+
+// ===== TETransform =====
+class TE_API TETransform
+{
+public:
+    TEVector Position = {0.0f, 0.0f, 0.0f};
+    TERotator Rotation;
+    TEScale Scale = TEScale(1.0f);
+
+    TETransform() = default;
+
+    TEMatrix4 GetMatrix() const;
+
+    bool operator==(const TETransform &other) const
+    {
+        return Position == other.Position && Rotation == other.Rotation && Scale == other.Scale;
+    }
+
+    bool operator!=(const TETransform &other) const { return !(*this == other); }
+};
+
+// ===== General Utility Functions =====
+template <typename T> inline T Clamp(T value, T min, T max)
+{
+    if (value < min)
+        return min;
+    if (value > max)
+        return max;
+    return value;
+}
+
+template <typename T> inline T Clamp01(T value) { return Clamp(value, T(0), T(1)); }
+
+inline TEVector2 Normalize(const TEVector2 &v) { return v.Normalized(); }
+
+inline TEVector Normalize(const TEVector &v) { return v.Normalized(); }
+
+template <typename T> inline T Lerp(T a, T b, float t) { return a + (b - a) * t; }
+
+inline float Radians(float degrees) { return degrees * 0.0174532925f; }
+
+inline float Degrees(float radians) { return radians * 57.2957795f; }
+
+template <typename T> inline T Min(T a, T b) { return (a < b) ? a : b; }
+
+template <typename T> inline T Max(T a, T b) { return (a > b) ? a : b; }
+
+template <typename T> inline T Abs(T val) { return (val < 0) ? -val : val; }
+
+template <typename T> inline int Sign(T val)
+{
+    if (val > T(0))
+        return 1;
+    if (val < T(0))
+        return -1;
+    return 0;
+}
+
+template <typename T> inline T Step(T edge, T x) { return (x < edge) ? T(0) : T(1); }
+
+template <typename T> inline T SmoothStep(T edge0, T edge1, T x)
+{
+    if (Abs(edge1 - edge0) <= static_cast<T>(1e-6))
+        return (x >= edge1) ? T(1) : T(0);
+    T t = Clamp01((x - edge0) / (edge1 - edge0));
+    return t * t * (T(3) - T(2) * t);
+}
+
+inline float Sqrt(float val) { return std::sqrt(val); }
+inline double Sqrt(double val) { return std::sqrt(val); }
+
+inline float Sin(float radians) { return std::sin(radians); }
+inline float Cos(float radians) { return std::cos(radians); }
+inline float Tan(float radians) { return std::tan(radians); }
+inline float Atan2(float y, float x) { return std::atan2(y, x); }
+
+inline float Mod(float x, float y) { return std::fmod(x, y); }
+
+inline double Mod(double x, double y) { return std::fmod(x, y); }
+
+inline int Mod(int x, int y) { return x % y; }
+
+// ===== Vector Math Overloads =====
+
+inline float Dot(const TEVector &a, const TEVector &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+inline TEVector Cross(const TEVector &a, const TEVector &b)
+{
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+
+inline TEVector2 Min(const TEVector2 &a, const TEVector2 &b) { return {Min(a.x, b.x), Min(a.y, b.y)}; }
+inline TEVector2 Max(const TEVector2 &a, const TEVector2 &b) { return {Max(a.x, b.x), Max(a.y, b.y)}; }
+inline TEVector Min(const TEVector &a, const TEVector &b) { return {Min(a.x, b.x), Min(a.y, b.y), Min(a.z, b.z)}; }
+inline TEVector Max(const TEVector &a, const TEVector &b) { return {Max(a.x, b.x), Max(a.y, b.y), Max(a.z, b.z)}; }
+
+inline TEVector2 Clamp(const TEVector2 &v, const TEVector2 &min, const TEVector2 &max)
+{
+    return {Clamp(v.x, min.x, max.x), Clamp(v.y, min.y, max.y)};
+}
+inline TEVector Clamp(const TEVector &v, const TEVector &min, const TEVector &max)
+{
+    return {Clamp(v.x, min.x, max.x), Clamp(v.y, min.y, max.y), Clamp(v.z, min.z, max.z)};
+}
+
+inline TEVector2 Lerp(const TEVector2 &a, const TEVector2 &b, float t) { return a + (b - a) * t; }
+inline TEVector Lerp(const TEVector &a, const TEVector &b, float t) { return a + (b - a) * t; }
+
+inline TEVector2 Mod(const TEVector2 &x, const TEVector2 &y) { return {Mod(x.x, y.x), Mod(x.y, y.y)}; }
+inline TEVector Mod(const TEVector &x, const TEVector &y) { return {Mod(x.x, y.x), Mod(x.y, y.y), Mod(x.z, y.z)}; }
+
+inline TEVector2 Perpendicular(const TEVector2 &v) { return v.Perpendicular(); }
+
+template <typename T> inline float Angle(const T &a, const T &b)
+{
+    float lenProduct = a.Length() * b.Length();
+    if (lenProduct <= 0.0f)
+        return 0.0f;
+    float cosAngle = Clamp(Dot(a, b) / lenProduct, -1.0f, 1.0f);
+    return std::acos(cosAngle);
+}
+
+template <typename T> inline T Reflect(const T &inDirection, const T &inNormal)
+{
+    return inDirection - 2.0f * Dot(inDirection, inNormal) * inNormal;
+}

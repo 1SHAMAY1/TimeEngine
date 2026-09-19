@@ -4,63 +4,57 @@ project "Engine"
     location "."
     kind "SharedLib"
     language "C++"
-    cppdialect "C++latest"
+    cppdialect "C++20"
     staticruntime "off"
 
-    targetdir ("%{wks.location}/Bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
+    targetdir ("%{wks.location}/Artifacts/Bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("%{wks.location}/Artifacts/Bin-Intermediate/" .. outputdir .. "/%{prj.name}")
 
     filter "action:vs*"
-        pchheader "Core/PreRequisites.h"
-        pchsource "src/Core/PreRequisites.cpp"
+        pchheader "PreRequisites.h"
+        pchsource "Source/Runtime/Core/Source/PreRequisites.cpp"
     filter "action:xcode*"
-        pchheader "src/Core/PreRequisites.h"
+        pchheader "Source/Runtime/Core/Include/PreRequisites.h"
     filter "action:gmake*"
-        pchheader "src/Core/PreRequisites.h"
-        pchsource "src/Core/PreRequisites.cpp"
+        pchheader "PreRequisites.h"
+        pchsource "Source/Runtime/Core/Source/PreRequisites.cpp"
     filter {}
+
 
     filter "system:macosx"
         xcodebuildsettings {
             ["LD_DYLIB_INSTALL_NAME"] = "@rpath/libEngine.dylib"
         }
-        files { "src/**.mm" }
+        buildoptions { "-fobjc-arc" }
+        files {
+            "Source/**.mm",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_metal.mm",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        }
     filter {}
 
     files {
-        -- Core Engine
-        "src/**.h",
-        "src/**.cpp",
-        "Include/**.h",
-        "Include/**.hpp",
+        -- Core Runtime Subsystems
+        "Source/Runtime/**.h",
+        "Source/Runtime/**.hpp",
+        "Source/Runtime/**.cpp",
 
-        -- Editor & Profiling Layers
-        "Include/Layers/**.hpp",
-        "src/Core/Layers/**.cpp",
-        "src/Layers/**.cpp",
-        "src/Core/Project/**.cpp",
-        "Include/Core/Project/**.hpp",
-        "src/Utils/Platform/Windows/**.cpp",
+        -- Framework Subsystems
+        "Source/Framework/**.h",
+        "Source/Framework/**.hpp",
+        "Source/Framework/**.cpp",
 
-        -- GLAD
-        "%{wks.location}/Vendor/GLAD/src/glad.c",
-
-        -- ImGui core
-        "%{wks.location}/Vendor/IMGUI/ImGui/*.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/*.h",
-
-        -- ImGui backends
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_glfw.h",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
-        "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h",
-
-        -- volk
-        "%{wks.location}/Vendor/volk/volk.c"
+        -- ThirdParty Glue
+        "%{wks.location}/ThirdParty/GLAD/src/glad.c",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/*.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/*.h",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_glfw.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_glfw.h",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_opengl3.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_opengl3.h",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+        "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_dx11.h",
+        "%{wks.location}/ThirdParty/volk/volk.c"
     }
 
     filter "files:**.c"
@@ -69,127 +63,109 @@ project "Engine"
         buildoptions { "-x c++" }
     filter "files:**.mm"
         flags { "NoPCH" }
-    filter "files:**/Vendor/**"
+    filter "files:**/ThirdParty/**"
         flags { "NoPCH" }
-    filter "files:%{wks.location}/Vendor/**"
+    filter "files:%{wks.location}/ThirdParty/**"
         flags { "NoPCH" }
     filter {}
 
-    -- Exclude Windows and DirectX11 specific source files on non-Windows platforms
+    -- Platform-specific exclusions
     filter "system:not windows"
         removefiles {
-            "src/Renderer/DirectX11/**",
-            "Include/Renderer/DirectX11/**",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_dx11.h",
-            "src/Utils/Platform/Windows/**",
-            "src/Window/WindowsWindow.cpp",
-            "Include/Window/WindowsWindow.hpp"
+            "Source/Runtime/RHI/Source/Backends/DirectX11/**",
+            "Source/Runtime/Core/Source/Platform/Windows/**",
+            "Source/Runtime/Window/Source/WindowsWindow.cpp",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_dx11.cpp",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_dx11.h",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_win32.cpp",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_win32.h"
         }
     filter {}
 
-    -- Exclude Linux specific source files on non-Linux platforms
     filter "system:not linux"
         removefiles {
-            "src/Window/LinuxWindow.cpp",
-            "Include/Window/LinuxWindow.hpp"
+            "Source/Runtime/Core/Source/Platform/Linux/**",
+            "Source/Runtime/Window/Source/LinuxWindow.cpp"
         }
     filter {}
 
-    -- Exclude ForgeUI backend while in development
-    removefiles {
-        "src/UI/ForgeUI/**"
-    }
-
-    -- Exclude Metal and macOS specific source files on non-macOS platforms
     filter "system:not macosx"
         removefiles {
-            "src/Renderer/Metal/**",
-            "Include/Renderer/Metal/**",
-            "src/**.mm",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.mm",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_metal.h",
-            "src/Window/MacWindow.cpp",
-            "Include/Window/MacWindow.hpp"
+            "Source/Runtime/Core/Source/Platform/Mac/**",
+            "Source/Runtime/RHI/Source/Backends/Metal/**",
+            "Source/**.mm",
+            "Source/Runtime/Window/Source/MacWindow.cpp"
         }
     filter {}
-    
-    -- Exclude non-Metal renderers and OpenGL on macOS
+
     filter "system:macosx"
         removefiles {
-            "src/Renderer/OpenGL/**",
-            "Include/Renderer/OpenGL/**",
-            "src/Renderer/OpenGLES/**",
-            "Include/Renderer/OpenGLES/**",
-            "src/Renderer/Vulkan/**",
-            "Include/Renderer/Vulkan/**",
-            "%{wks.location}/Vendor/GLAD/**",
-            "%{wks.location}/Vendor/IMGUI/ImGui/backends/imgui_impl_opengl3.*",
-            "%{wks.location}/Vendor/volk/**"
+            "Source/Runtime/RHI/Source/Backends/OpenGLES/**",
+            "Source/Runtime/RHI/Source/Backends/Vulkan/**",
+            "Source/Runtime/UI/Source/ForgeUI/**",
+            "%{wks.location}/ThirdParty/volk/**"
         }
     filter {}
 
-    vpaths {
-        ["Header Files/*"] = {
-            "Include/**.h",
-            "Include/**.hpp"
-        },
-        ["Source Files/*"] = {
-            "src/**.cpp",
-            "%{wks.location}/Vendor/GLAD/src/glad.c"
-        },
-        ["Editor Layer/*"] = {
-            "src/Core/Layers/**.cpp",
-            "src/Layers/**.cpp",
-            "Include/Layers/**.hpp"
-        }
-    }
-
     includedirs {
-        "%{IncludeDir.ImGui}",
-        "%{IncludeDir.ForgeUI}",
-        "%{IncludeDir.Engine}",
-        "%{IncludeDir.Engine_Include}",
-        "%{IncludeDir.Logger}",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.GLAD}",
-        "%{IncludeDir.GLM}",
-        "%{IncludeDir.stb_image}",
-        "%{IncludeDir.Velox}",
-        "%{IncludeDir.Vulkan}",
-        "%{IncludeDir.volk}",
-        "%{IncludeDir.OpenGLES}",
-        "%{IncludeDir.miniaudio}"
+        "%{IncludeDir.Engine_Source}",
+        "%{IncludeDir.Engine_Runtime}",
+        "%{IncludeDir.Engine_Framework}",
+        "%{IncludeDir.Engine_Core}",
+        "%{IncludeDir.Engine_Math}",
+        "%{IncludeDir.Engine_RHI}",
+        "%{IncludeDir.Engine_Renderer2D}",
+        "%{IncludeDir.Engine_Physics}",
+        "%{IncludeDir.Engine_Scripting}",
+        "%{IncludeDir.Engine_Scene}",
+        "%{IncludeDir.Engine_Testing}",
+        "%{IncludeDir.Engine_UI}",
+        "%{IncludeDir.Engine_Window}",
+        "%{IncludeDir.Engine_Framework}",
+        "%{IncludeDir.Engine_Asset}",
+        "%{IncludeDir.Engine_Input}",
+        "%{IncludeDir.Engine_Gameplay}",
+        "%{IncludeDir.Engine_App}",
+        "%{IncludeDir.ThirdParty_ImGui}",
+        "%{IncludeDir.ThirdParty_ForgeUI}",
+        "%{IncludeDir.ThirdParty_Logger}",
+        "%{IncludeDir.ThirdParty_GLFW}",
+        "%{IncludeDir.ThirdParty_GLAD}",
+        "%{IncludeDir.ThirdParty_GLM}",
+        "%{IncludeDir.ThirdParty_stb}",
+        "%{IncludeDir.ThirdParty_Velox}",
+        "%{IncludeDir.ThirdParty_Vulkan}",
+        "%{IncludeDir.ThirdParty_volk}",
+        "%{IncludeDir.ThirdParty_OpenGLES}",
+        "%{IncludeDir.ThirdParty_miniaudio}"
     }
 
     externalincludedirs {
-        "%{IncludeDir.ImGui}",
-        "%{IncludeDir.ForgeUI}",
-        "%{IncludeDir.Engine}",
-        "%{IncludeDir.Engine_Include}",
-        "%{IncludeDir.Logger}",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.GLAD}",
-        "%{IncludeDir.GLM}",
-        "%{IncludeDir.stb_image}",
-        "%{IncludeDir.Velox}",
-        "%{IncludeDir.Vulkan}",
-        "%{IncludeDir.volk}",
-        "%{IncludeDir.OpenGLES}",
-        "%{IncludeDir.miniaudio}"
+        "%{IncludeDir.ThirdParty_ImGui}",
+        "%{IncludeDir.ThirdParty_ForgeUI}",
+        "%{IncludeDir.ThirdParty_Logger}",
+        "%{IncludeDir.ThirdParty_GLFW}",
+        "%{IncludeDir.ThirdParty_GLAD}",
+        "%{IncludeDir.ThirdParty_GLM}",
+        "%{IncludeDir.ThirdParty_stb}",
+        "%{IncludeDir.ThirdParty_Velox}",
+        "%{IncludeDir.ThirdParty_Vulkan}",
+        "%{IncludeDir.ThirdParty_volk}",
+        "%{IncludeDir.ThirdParty_OpenGLES}",
+        "%{IncludeDir.ThirdParty_miniaudio}"
     }
 
     filter "action:vs*"
         libdirs {
-            "%{wks.location}/Vendor/Customizable_Logger/build/lib",
-            "%{wks.location}/Vendor/Customizable_Logger/build/lib/%{cfg.buildcfg}",
-            "%{wks.location}/Vendor/GLFW/build/src",
-            "%{wks.location}/Vendor/GLFW/build/src/%{cfg.buildcfg}"
+            "%{wks.location}/ThirdParty/Customizable_Logger/build/lib",
+            "%{wks.location}/ThirdParty/Customizable_Logger/build/lib/%{cfg.buildcfg}",
+            "%{wks.location}/ThirdParty/GLFW/build/src",
+            "%{wks.location}/ThirdParty/GLFW/build/src/%{cfg.buildcfg}"
         }
     filter "action:gmake* or action:xcode*"
         libdirs {
-            "%{wks.location}/Vendor/Customizable_Logger/build/lib",
-            "%{wks.location}/Vendor/GLFW/build/src"
+            "%{wks.location}/ThirdParty/Customizable_Logger/build/lib",
+            "%{wks.location}/ThirdParty/GLFW/build/src"
         }
     filter {}
 
@@ -197,21 +173,18 @@ project "Engine"
         "Customizable_Logger",
         "Velox",
         "glfw3"
-        -- "ForgeUI"
     }
+
+    filter "system:not macosx"
+        links { "ForgeUI" }
+        dependson { "ForgeUI" }
+    filter {}
 
     filter "system:windows"
         links { "opengl32" }
     filter "system:linux"
-        defines {
-            "TE_PLATFORM_LINUX",
-            "IMGUI_IMPL_OPENGL_LOADER_GLAD"
-        }
         links { "GL" }
     filter "system:macosx"
-        defines {
-            "TE_PLATFORM_MACOS"
-        }
         links {
             "Cocoa.framework",
             "IOKit.framework",
@@ -222,33 +195,24 @@ project "Engine"
         }
     filter {}
 
-    dependson { "Logger", "Velox" } -- "ForgeUI"
-
-    local rootDir = _MAIN_SCRIPT_DIR or _WORKING_DIR or "."
-    for _, pluginPath in ipairs(os.matchfiles(rootDir .. "/Engine/Plugins/*/*.teplugin")) do
-        local pName = path.getbasename(pluginPath)
-        defines {
-            "TE_PLUGIN_" .. pName .. "_ENABLED=1",
-            "TE_HAS_PLUGIN_" .. string.upper(pName)
-        }
-    end
+    dependson { "Logger", "Velox" }
 
     filter "action:vs*"
         buildoptions { "/utf-8", "/FS", "/bigobj" }
     filter {}
 
-    -- Force-run rule checker before any compilation begins
+    -- Master rule checker runs once before Engine compiles (Engine is the core dependency for TimeEditor and all Plugins)
     filter { "system:windows", "action:vs*" }
         prebuildcommands {
-            '"$(SolutionDir)Vendor\\Premake\\Windows\\premake5.exe" --file="$(SolutionDir)Premake5.lua" check-rules'
+            '"$(SolutionDir)ThirdParty\\Premake\\Windows\\premake5.exe" --file="$(SolutionDir)Premake5.lua" check-rules'
         }
     filter { "system:windows", "action:gmake*" }
         prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Windows/premake5.exe" --file="%{wks.location}/Premake5.lua" check-rules'
+            '"%{wks.location}/ThirdParty/Premake/Windows/premake5.exe" --file="%{wks.location}/Premake5.lua" check-rules'
         }
     filter { "system:linux" }
         prebuildcommands {
-            '"%{wks.location}/Vendor/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
+            '"%{wks.location}/ThirdParty/Premake/Linux/premake5" --file="%{wks.location}/Premake5.lua" check-rules'
         }
     filter { "system:macosx", "action:gmake*" }
         prebuildcommands {
@@ -278,15 +242,14 @@ project "Engine"
 
     filter { "system:windows", "action:vs*" }
         postbuildcommands {
-            -- Copy DLL and LIB to TimeEditor
-            'xcopy /Y /D /Q "%{wks.location}\\Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "%{wks.location}\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul',
-            'xcopy /Y /D /Q "%{wks.location}\\Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "%{wks.location}\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul'
+            'xcopy /Y /D /Q "%{wks.location}\\Artifacts\\Bin\\' .. outputdir .. '\\Engine\\Engine.dll" "%{wks.location}\\Artifacts\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul',
+            'xcopy /Y /D /Q "%{wks.location}\\Artifacts\\Bin\\' .. outputdir .. '\\Engine\\Engine.lib" "%{wks.location}\\Artifacts\\Bin\\' .. outputdir .. '\\TimeEditor\\" > nul'
         }
 
     filter { "system:windows", "action:gmake*" }
         postbuildcommands {
-            '{COPY} "%{wks.location}/Bin/' .. outputdir .. '/Engine/Engine.dll" "%{wks.location}/Bin/' .. outputdir .. '/TimeEditor/"',
-            '{COPY} "%{wks.location}/Bin/' .. outputdir .. '/Engine/Engine.lib" "%{wks.location}/Bin/' .. outputdir .. '/TimeEditor/"'
+            '{COPY} "%{wks.location}/Artifacts/Bin/' .. outputdir .. '/Engine/Engine.dll" "%{wks.location}/Artifacts/Bin/' .. outputdir .. '/TimeEditor/"',
+            '{COPY} "%{wks.location}/Artifacts/Bin/' .. outputdir .. '/Engine/Engine.lib" "%{wks.location}/Artifacts/Bin/' .. outputdir .. '/TimeEditor/"'
         }
 
     filter "configurations:Debug"
@@ -303,6 +266,4 @@ project "Engine"
         
     filter "system:windows"
         icon "%{wks.location}/Resources/Branding/TimeEngineIcon.ico"
-
--- Load dynamic plugins
-include "Plugins"
+    filter {}

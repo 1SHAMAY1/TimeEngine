@@ -1,0 +1,15 @@
+PlayerAsset: SideScrollerPlayer
+SpritePath: Assets/Sprites/Dino_Run.tesprite
+MovementMode: SideScroller
+MaxSpeed: 8.000000
+Acceleration: 25.000000
+Friction: 12.000000
+JumpForce: 14.000000
+ColliderSize: 1.000000, 1.200000
+---BeginTScript---
+class SideScrollerPlayer {
+    function OnBeginPlay() {
+        Log("SideScrollerPlayer spawned and initialized.");
+    }
+}
+---EndTScript---
