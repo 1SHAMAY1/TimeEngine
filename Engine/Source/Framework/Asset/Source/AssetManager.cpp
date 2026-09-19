@@ -298,11 +298,13 @@ ImageData AssetManager::ImportImage(const TEString &filepath, int desiredChannel
             img.Pixels.Add(rawPixels[i]);
         }
         stbi_image_free(rawPixels);
-        TE_CORE_INFO("AssetManager::ImportImage: Imported '", filepath, "' (", w, "x", h, ", ", img.Channels, " channels, ", (totalBytes / 1024), " KB)");
+        TE_CORE_INFO("AssetManager::ImportImage: Imported '", filepath, "' (", w, "x", h, ", ", img.Channels,
+                     " channels, ", (totalBytes / 1024), " KB)");
     }
     else
     {
-        TE_CORE_WARN("AssetManager::ImportImage: Failed to import image '", filepath, "' (Reason: ", (stbi_failure_reason() ? stbi_failure_reason() : "Unknown"), ")");
+        TE_CORE_WARN("AssetManager::ImportImage: Failed to import image '", filepath,
+                     "' (Reason: ", (stbi_failure_reason() ? stbi_failure_reason() : "Unknown"), ")");
     }
     return img;
 }
@@ -533,8 +535,9 @@ bool AssetManager::ImportAsset(const AssetImportConfig &config, TEString &outCre
         {
             tex->SetName(targetName);
             tex->SetFilePath(copiedSourceName);
-            tex->SetFilterMode((config.TextureFilterMode == 1) ? TextureFilterMode::Nearest : TextureFilterMode::Linear);
-            
+            tex->SetFilterMode((config.TextureFilterMode == 1) ? TextureFilterMode::Nearest
+                                                               : TextureFilterMode::Linear);
+
             TextureWrapMode wrap = TextureWrapMode::Repeat;
             if (config.TextureWrapMode == 1)
                 wrap = TextureWrapMode::ClampToEdge;
@@ -548,7 +551,8 @@ bool AssetManager::ImportAsset(const AssetImportConfig &config, TEString &outCre
             TextureSerializer serializer(tex);
             if (!serializer.Serialize(outCreatedAssetPath))
             {
-                TE_CORE_ERROR("AssetManager::ImportAsset: Failed to serialize texture to '{0}'", outCreatedAssetPath.c_str());
+                TE_CORE_ERROR("AssetManager::ImportAsset: Failed to serialize texture to '{0}'",
+                              outCreatedAssetPath.c_str());
                 return false;
             }
         }
@@ -557,7 +561,9 @@ bool AssetManager::ImportAsset(const AssetImportConfig &config, TEString &outCre
         {
             // Direct write fallback
             TEString filterStr = (config.TextureFilterMode == 1) ? "Nearest" : "Linear";
-            TEString wrapStr = (config.TextureWrapMode == 1) ? "ClampToEdge" : ((config.TextureWrapMode == 2) ? "MirroredRepeat" : "Repeat");
+            TEString wrapStr = (config.TextureWrapMode == 1)
+                                   ? "ClampToEdge"
+                                   : ((config.TextureWrapMode == 2) ? "MirroredRepeat" : "Repeat");
             TEString content = "Texture2D: " + targetName + "\n";
             content += "ImagePath: " + copiedSourceName + "\n";
             content += "FilterMode: " + filterStr + "\n";
@@ -605,8 +611,8 @@ bool AssetManager::ImportAsset(const AssetImportConfig &config, TEString &outCre
         outCreatedAssetPath = config.TargetDirectory / (targetName + targetExt);
     }
 
-    TE_CORE_INFO("AssetManager::ImportAsset: Successfully imported '{0}' as '{1}'",
-                 config.SourceFilePath.c_str(), outCreatedAssetPath.c_str());
+    TE_CORE_INFO("AssetManager::ImportAsset: Successfully imported '{0}' as '{1}'", config.SourceFilePath.c_str(),
+                 outCreatedAssetPath.c_str());
     return true;
 }
 
@@ -653,7 +659,6 @@ bool AssetManager::ReimportAsset(const TEString &assetPath)
     return true;
 }
 
-
 bool AssetManager::ReimportAssetWithNewSource(const TEString &assetPath, const TEString &newSourcePath)
 {
     if (!TEFileSystem::Exists(assetPath) || !TEFileSystem::Exists(newSourcePath))
@@ -667,11 +672,10 @@ bool AssetManager::ReimportAssetWithNewSource(const TEString &assetPath, const T
     TEString targetSourcePath = assetDir / (assetStem + newSourceExt);
     if (!TEFileSystem::CopyFile(newSourcePath, targetSourcePath, true))
     {
-        TE_CORE_ERROR("AssetManager::ReimportAssetWithNewSource: Failed to copy '{0}' to '{1}'",
-                      newSourcePath.c_str(), targetSourcePath.c_str());
+        TE_CORE_ERROR("AssetManager::ReimportAssetWithNewSource: Failed to copy '{0}' to '{1}'", newSourcePath.c_str(),
+                      targetSourcePath.c_str());
         return false;
     }
 
     return ReimportAsset(assetPath);
 }
-

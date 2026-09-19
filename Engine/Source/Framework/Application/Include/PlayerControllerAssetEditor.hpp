@@ -13,7 +13,10 @@ public:
     virtual TEString GetAssetExtension() const override { return ".tecontroller"; }
     virtual TEArray<TEString> GetSupportedExtensions() const override { return {".tecontroller"}; }
     virtual TEString GetAssetCategory() const override { return "Gameplay"; }
-    virtual TEString GetAssetDescription() const override { return "Player Controller Asset: Defines input routing and action evaluation via InputMappingContext."; }
+    virtual TEString GetAssetDescription() const override
+    {
+        return "Player Controller Asset: Defines input routing and action evaluation via InputMappingContext.";
+    }
 
     virtual void DrawEditor(EditorTab &tab) override;
     virtual void DrawIcon(const TEVector2 &min, const TEVector2 &max) const override;

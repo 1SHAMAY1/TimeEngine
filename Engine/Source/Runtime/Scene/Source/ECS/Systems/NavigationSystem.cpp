@@ -6,9 +6,7 @@
 void UpdateNavigationSystem(EntityManager &manager, float dt)
 {
     ComponentQuery<NavigationAgent2DComponent> navQuery(manager);
-    navQuery.ForEach([dt](EntityID entityID, NavigationAgent2DComponent &nav) {
-        nav.Tick(dt);
-    });
+    navQuery.ForEach([dt](EntityID entityID, NavigationAgent2DComponent &nav) { nav.Tick(dt); });
 }
 
 struct NavigationSystemRegistrar

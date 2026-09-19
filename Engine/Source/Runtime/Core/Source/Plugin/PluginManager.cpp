@@ -91,7 +91,6 @@ static TEString ResolvePluginLibraryPath(const PluginInfo &info, const TEString 
     return descDir / libName;
 }
 
-
 using CreatePluginFn = void (*)(TERef<IPlugin> &);
 
 #include "AssetManager.hpp"
@@ -408,7 +407,8 @@ void PluginManager::DiscoverPlugins()
     {
         TE_CORE_INFO("Scanning plugins at: ", scanDir);
 
-        // Fast shallow subfolder inspection: each plugin is structured as scanDir/<PluginFolder>/<PluginFolder>.teplugin
+        // Fast shallow subfolder inspection: each plugin is structured as
+        // scanDir/<PluginFolder>/<PluginFolder>.teplugin
         auto subDirs = TEFileSystem::GetDirectories(scanDir, false);
         for (const auto &subDir : subDirs)
         {

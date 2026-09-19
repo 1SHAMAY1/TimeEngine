@@ -39,7 +39,6 @@ void DragDropRegistry::RegisterHandler(Ref<IDragDropHandler> handler)
 
     TE_CORE_DEBUG("DragDropRegistry: Registered handler for Context '{0}', Payload '{1}', Priority {2}",
                   handler->GetSupportedTargetContext(), handler->GetSupportedPayloadType(), handler->GetPriority());
-
 }
 
 void DragDropRegistry::UnregisterHandler(Ref<IDragDropHandler> handler)
@@ -58,10 +57,7 @@ void DragDropRegistry::UnregisterHandler(Ref<IDragDropHandler> handler)
     }
 }
 
-TEArray<Ref<IDragDropHandler>> DragDropRegistry::GetHandlers()
-{
-    return GetHandlersList();
-}
+TEArray<Ref<IDragDropHandler>> DragDropRegistry::GetHandlers() { return GetHandlersList(); }
 
 Ref<IDragDropHandler> DragDropRegistry::FindHandler(const DragDropContext &context, const DragDropPayload &payload)
 {
@@ -112,7 +108,4 @@ bool DragDropRegistry::HandleHover(const DragDropContext &context, const DragDro
     return false;
 }
 
-void DragDropRegistry::Clear()
-{
-    GetHandlersList().Clear();
-}
+void DragDropRegistry::Clear() { GetHandlersList().Clear(); }

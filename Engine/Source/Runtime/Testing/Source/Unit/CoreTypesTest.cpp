@@ -281,24 +281,18 @@ TE_TEST_CASE(SpatialSweep, SweepLineHitAndMiss)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -1.0f),
-        TEVector2( 1.0f,  1.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -1.0f), TEVector2(1.0f, 1.0f)));
     world.AddBody(&body);
 
     // Sweep along X — should hit
-    TESpatialHitResult hit = world.SweepLine(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f));
+    TESpatialHitResult hit = world.SweepLine(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f));
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
     TE_CHECK(hit.Fraction <= 1.0f);
     TE_CHECK(static_cast<bool>(hit));
 
     // Sweep above the box — should miss
-    TESpatialHitResult miss = world.SweepLine(
-        TEVector2(0.0f, 5.0f),
-        TEVector2(10.0f, 5.0f));
+    TESpatialHitResult miss = world.SweepLine(TEVector2(0.0f, 5.0f), TEVector2(10.0f, 5.0f));
     TE_CHECK(!miss.Hit);
     TE_CHECK(!static_cast<bool>(miss));
 }
@@ -311,23 +305,17 @@ TE_TEST_CASE(SpatialSweep, MultiSweepLineMultipleHits)
     RigidBody bodyA;
     bodyA.Position = TEVector2(3.0f, 0.0f);
     bodyA.IsStatic = true;
-    bodyA.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -0.5f),
-        TEVector2( 1.0f,  0.5f)));
+    bodyA.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -0.5f), TEVector2(1.0f, 0.5f)));
     world.AddBody(&bodyA);
 
     // Second box centred at Position=(7, 0) with extents [-1, 1]x[-0.5, 0.5] (spans x=6..8)
     RigidBody bodyB;
     bodyB.Position = TEVector2(7.0f, 0.0f);
     bodyB.IsStatic = true;
-    bodyB.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -0.5f),
-        TEVector2( 1.0f,  0.5f)));
+    bodyB.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -0.5f), TEVector2(1.0f, 0.5f)));
     world.AddBody(&bodyB);
 
-    TEArray<TESpatialHitResult> hits = world.MultiSweepLine(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f));
+    TEArray<TESpatialHitResult> hits = world.MultiSweepLine(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f));
 
     TE_CHECK(hits.Num() >= 2);
 
@@ -348,15 +336,11 @@ TE_TEST_CASE(SpatialSweep, MultiSweepLineMiss)
     RigidBody body;
     body.Position = TEVector2(5.0f, 10.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -1.0f),
-        TEVector2( 1.0f,  1.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -1.0f), TEVector2(1.0f, 1.0f)));
     world.AddBody(&body);
 
     // Sweep at y=0 — completely misses the box at y=10
-    TEArray<TESpatialHitResult> hits = world.MultiSweepLine(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f));
+    TEArray<TESpatialHitResult> hits = world.MultiSweepLine(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f));
 
     TE_CHECK(hits.IsEmpty());
 }
@@ -369,14 +353,11 @@ TE_TEST_CASE(SpatialSweep, SweepCircleHit)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsCircle(TEVector2(0.0f, 0.0f), 1.0f));
+    body.Shape = CollisionShape(BoundsCircle(TEVector2(0.0f, 0.0f), 1.0f));
     world.AddBody(&body);
 
     // Uniform circle sweep (radius 1) sweeping left-to-right
-    TESpatialHitResult hit = world.SweepCircle(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(1.0f, 1.0f));
+    TESpatialHitResult hit = world.SweepCircle(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(1.0f, 1.0f));
 
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
@@ -391,16 +372,11 @@ TE_TEST_CASE(SpatialSweep, SweepCircleEllipseHit)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -1.0f),
-        TEVector2( 1.0f,  1.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -1.0f), TEVector2(1.0f, 1.0f)));
     world.AddBody(&body);
 
     // Non-uniform (ellipse) radii — wider on X axis
-    TESpatialHitResult hit = world.SweepCircle(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(2.0f, 1.0f));
+    TESpatialHitResult hit = world.SweepCircle(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(2.0f, 1.0f));
 
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
@@ -414,19 +390,17 @@ TE_TEST_CASE(SpatialSweep, MultiSweepCircleAllHits)
     RigidBody bodyA;
     bodyA.Position = TEVector2(3.0f, 0.0f);
     bodyA.IsStatic = true;
-    bodyA.Shape    = CollisionShape(BoundsCircle(TEVector2(0.0f, 0.0f), 0.5f));
+    bodyA.Shape = CollisionShape(BoundsCircle(TEVector2(0.0f, 0.0f), 0.5f));
     world.AddBody(&bodyA);
 
     RigidBody bodyB;
     bodyB.Position = TEVector2(7.0f, 0.0f);
     bodyB.IsStatic = true;
-    bodyB.Shape    = CollisionShape(BoundsCircle(TEVector2(0.0f, 0.0f), 0.5f));
+    bodyB.Shape = CollisionShape(BoundsCircle(TEVector2(0.0f, 0.0f), 0.5f));
     world.AddBody(&bodyB);
 
-    TEArray<TESpatialHitResult> hits = world.MultiSweepCircle(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(0.5f, 0.5f));
+    TEArray<TESpatialHitResult> hits =
+        world.MultiSweepCircle(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(0.5f, 0.5f));
 
     TE_CHECK(hits.Num() >= 2);
 
@@ -443,17 +417,11 @@ TE_TEST_CASE(SpatialSweep, SweepBoxAxisAligned)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -1.0f),
-        TEVector2( 1.0f,  1.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -1.0f), TEVector2(1.0f, 1.0f)));
     world.AddBody(&body);
 
     // 0° rotation — pure AABB box sweep
-    TESpatialHitResult hit = world.SweepBox(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(0.5f, 0.5f),
-        0.0f);
+    TESpatialHitResult hit = world.SweepBox(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(0.5f, 0.5f), 0.0f);
 
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
@@ -467,17 +435,12 @@ TE_TEST_CASE(SpatialSweep, SweepBoxRotated45)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.5f, -1.5f),
-        TEVector2( 1.5f,  1.5f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.5f, -1.5f), TEVector2(1.5f, 1.5f)));
     world.AddBody(&body);
 
     constexpr float k45Rad = 0.7853981633974483f; // pi / 4
-    TESpatialHitResult hit = world.SweepBox(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(1.0f, 1.0f),
-        k45Rad);
+    TESpatialHitResult hit =
+        world.SweepBox(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(1.0f, 1.0f), k45Rad);
 
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
@@ -491,17 +454,12 @@ TE_TEST_CASE(SpatialSweep, SweepBoxRotated90)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -2.0f),
-        TEVector2( 1.0f,  2.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -2.0f), TEVector2(1.0f, 2.0f)));
     world.AddBody(&body);
 
     constexpr float k90Rad = 1.5707963267948966f; // pi / 2
-    TESpatialHitResult hit = world.SweepBox(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(2.0f, 0.5f),
-        k90Rad);
+    TESpatialHitResult hit =
+        world.SweepBox(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(2.0f, 0.5f), k90Rad);
 
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
@@ -515,24 +473,17 @@ TE_TEST_CASE(SpatialSweep, MultiSweepBoxAllHits)
     RigidBody bodyA;
     bodyA.Position = TEVector2(3.0f, 0.0f);
     bodyA.IsStatic = true;
-    bodyA.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-0.5f, -0.5f),
-        TEVector2( 0.5f,  0.5f)));
+    bodyA.Shape = CollisionShape(BoundsAABB(TEVector2(-0.5f, -0.5f), TEVector2(0.5f, 0.5f)));
     world.AddBody(&bodyA);
 
     RigidBody bodyB;
     bodyB.Position = TEVector2(7.0f, 0.0f);
     bodyB.IsStatic = true;
-    bodyB.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-0.5f, -0.5f),
-        TEVector2( 0.5f,  0.5f)));
+    bodyB.Shape = CollisionShape(BoundsAABB(TEVector2(-0.5f, -0.5f), TEVector2(0.5f, 0.5f)));
     world.AddBody(&bodyB);
 
-    TEArray<TESpatialHitResult> hits = world.MultiSweepBox(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        TEVector2(0.5f, 0.5f),
-        0.0f);
+    TEArray<TESpatialHitResult> hits =
+        world.MultiSweepBox(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), TEVector2(0.5f, 0.5f), 0.0f);
 
     TE_CHECK(hits.Num() >= 2);
 
@@ -551,14 +502,10 @@ TE_TEST_CASE(SpatialSweep, SweepHitResultFields)
     body.IsStatic = true;
     body.EntityName = "TargetEntity";
     body.EntityTag = "Enemy";
-    body.Shape    = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -1.0f),
-        TEVector2( 1.0f,  1.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -1.0f), TEVector2(1.0f, 1.0f)));
     world.AddBody(&body);
 
-    TESpatialHitResult hit = world.SweepLine(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f));
+    TESpatialHitResult hit = world.SweepLine(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f));
 
     TE_CHECK(hit.Hit);
     // Hit point must lie within the swept segment X range
@@ -583,23 +530,14 @@ TE_TEST_CASE(SpatialSweep, SweepCustomPolygon)
     RigidBody body;
     body.Position = TEVector2(5.0f, 0.0f);
     body.IsStatic = true;
-    body.Shape = CollisionShape(BoundsAABB(
-        TEVector2(-1.0f, -1.0f),
-        TEVector2( 1.0f,  1.0f)));
+    body.Shape = CollisionShape(BoundsAABB(TEVector2(-1.0f, -1.0f), TEVector2(1.0f, 1.0f)));
     world.AddBody(&body);
 
     // Create custom triangle shape
-    BoundsTriangle tri(
-        TEVector2(-0.5f, -0.5f),
-        TEVector2(0.5f, -0.5f),
-        TEVector2(0.0f, 0.5f));
+    BoundsTriangle tri(TEVector2(-0.5f, -0.5f), TEVector2(0.5f, -0.5f), TEVector2(0.0f, 0.5f));
     CollisionShape customShape(tri);
 
-    TESpatialHitResult hit = world.SweepCustom(
-        TEVector2(0.0f, 0.0f),
-        TEVector2(10.0f, 0.0f),
-        customShape,
-        0.0f);
+    TESpatialHitResult hit = world.SweepCustom(TEVector2(0.0f, 0.0f), TEVector2(10.0f, 0.0f), customShape, 0.0f);
 
     TE_CHECK(hit.Hit);
     TE_CHECK(hit.Fraction >= 0.0f);
@@ -615,14 +553,12 @@ TE_TEST_CASE(Rendering, TextureDefaultState)
     // CPU-side property checks only (no GPU / OpenGL context required).
     TERef<Texture> tex = CreateRef<Texture>();
 
-    TE_CHECK_EQ(tex->GetWidth(),    static_cast<uint32_t>(0));
-    TE_CHECK_EQ(tex->GetHeight(),   static_cast<uint32_t>(0));
+    TE_CHECK_EQ(tex->GetWidth(), static_cast<uint32_t>(0));
+    TE_CHECK_EQ(tex->GetHeight(), static_cast<uint32_t>(0));
     TE_CHECK_EQ(tex->GetChannels(), static_cast<uint32_t>(0));
 
-    TE_CHECK_EQ(static_cast<int>(tex->GetFilterMode()),
-                static_cast<int>(TextureFilterMode::Linear));
-    TE_CHECK_EQ(static_cast<int>(tex->GetWrapMode()),
-                static_cast<int>(TextureWrapMode::Repeat));
+    TE_CHECK_EQ(static_cast<int>(tex->GetFilterMode()), static_cast<int>(TextureFilterMode::Linear));
+    TE_CHECK_EQ(static_cast<int>(tex->GetWrapMode()), static_cast<int>(TextureWrapMode::Repeat));
 
     TE_CHECK(!tex->GetGenerateMipmaps());
     TE_CHECK(!tex->GetPremultipliedAlpha());
@@ -636,12 +572,10 @@ TE_TEST_CASE(Rendering, TexturePropertyMutators)
     TERef<Texture> tex = CreateRef<Texture>();
 
     tex->SetFilterMode(TextureFilterMode::Nearest);
-    TE_CHECK_EQ(static_cast<int>(tex->GetFilterMode()),
-                static_cast<int>(TextureFilterMode::Nearest));
+    TE_CHECK_EQ(static_cast<int>(tex->GetFilterMode()), static_cast<int>(TextureFilterMode::Nearest));
 
     tex->SetWrapMode(TextureWrapMode::ClampToEdge);
-    TE_CHECK_EQ(static_cast<int>(tex->GetWrapMode()),
-                static_cast<int>(TextureWrapMode::ClampToEdge));
+    TE_CHECK_EQ(static_cast<int>(tex->GetWrapMode()), static_cast<int>(TextureWrapMode::ClampToEdge));
 
     tex->SetPremultipliedAlpha(true);
     TE_CHECK(tex->GetPremultipliedAlpha());
@@ -650,10 +584,8 @@ TE_TEST_CASE(Rendering, TexturePropertyMutators)
     TE_CHECK(!tex->GetPremultipliedAlpha());
 
     tex->SetWrapMode(TextureWrapMode::MirroredRepeat);
-    TE_CHECK_EQ(static_cast<int>(tex->GetFilterMode()),
-                static_cast<int>(TextureFilterMode::Nearest));
-    TE_CHECK_EQ(static_cast<int>(tex->GetWrapMode()),
-                static_cast<int>(TextureWrapMode::MirroredRepeat));
+    TE_CHECK_EQ(static_cast<int>(tex->GetFilterMode()), static_cast<int>(TextureFilterMode::Nearest));
+    TE_CHECK_EQ(static_cast<int>(tex->GetWrapMode()), static_cast<int>(TextureWrapMode::MirroredRepeat));
 }
 
 // ==========================================
@@ -668,7 +600,7 @@ TE_TEST_CASE(Memory, ArenaAllocatorBasicLifecycle)
     TE_CHECK_EQ(arena.GetAllocatedBytes(), static_cast<size_t>(0));
 
     // Allocate integer
-    int* val = arena.New<int>(42);
+    int *val = arena.New<int>(42);
     TE_CHECK(val != nullptr);
     if (val)
     {
@@ -677,7 +609,7 @@ TE_TEST_CASE(Memory, ArenaAllocatorBasicLifecycle)
     TE_CHECK(arena.GetAllocatedBytes() >= sizeof(int));
 
     // Allocate aligned array
-    float* arr = arena.NewArray<float>(10);
+    float *arr = arena.NewArray<float>(10);
     TE_CHECK(arr != nullptr);
     if (arr)
     {
@@ -688,7 +620,7 @@ TE_TEST_CASE(Memory, ArenaAllocatorBasicLifecycle)
 
     // Rewind marker test
     auto marker = arena.GetMarker();
-    int* tempVal = arena.New<int>(999);
+    int *tempVal = arena.New<int>(999);
     TE_CHECK(tempVal != nullptr);
     TE_CHECK(arena.GetAllocatedBytes() > marker);
 
@@ -716,7 +648,7 @@ TE_TEST_CASE(Memory, PoolAllocatorBasicLifecycle)
     TE_CHECK_EQ(pool.GetAllocatedCount(), static_cast<size_t>(0));
     TE_CHECK_EQ(pool.GetFreeCount(), static_cast<size_t>(16));
 
-    TestComponent* c1 = pool.New<TestComponent>();
+    TestComponent *c1 = pool.New<TestComponent>();
     TE_CHECK(c1 != nullptr);
     if (c1)
     {
@@ -725,7 +657,7 @@ TE_TEST_CASE(Memory, PoolAllocatorBasicLifecycle)
     }
     TE_CHECK_EQ(pool.GetAllocatedCount(), static_cast<size_t>(1));
 
-    TestComponent* c2 = pool.New<TestComponent>();
+    TestComponent *c2 = pool.New<TestComponent>();
     TE_CHECK(c2 != nullptr);
     TE_CHECK_EQ(pool.GetAllocatedCount(), static_cast<size_t>(2));
 
@@ -738,7 +670,7 @@ TE_TEST_CASE(Memory, PoolAllocatorBasicLifecycle)
     // Templated Typed Pool Test
     TTypedPool<TestComponent, 8> typedPool;
     TE_CHECK_EQ(typedPool.GetCapacity(), static_cast<size_t>(8));
-    TestComponent* tc = typedPool.Allocate();
+    TestComponent *tc = typedPool.Allocate();
     TE_CHECK(tc != nullptr);
     TE_CHECK_EQ(typedPool.GetAllocatedCount(), static_cast<size_t>(1));
     typedPool.Free(tc);
@@ -798,7 +730,7 @@ TE_TEST_CASE(CoreTypes, TEMapOperations)
     TE_CHECK_EQ(scores["Player2"], 250);
     TE_CHECK_EQ(scores["Player3"], 500);
 
-    int* pVal = scores.Find("Player2");
+    int *pVal = scores.Find("Player2");
     TE_CHECK(pVal != nullptr);
     if (pVal)
     {
@@ -986,13 +918,15 @@ TE_TEST_CASE(Reflection, DynamicRegistrationAndPropertyInspection)
                       []() -> void * { return static_cast<void *>(s_ReflectTestArena.New<TestReflectedEntity>()); });
 
     entityCls.AddProperty(TEProperty("Health", "int", offsetof(TestReflectedEntity, Health), sizeof(int),
-                                     [](const void *inst) -> TEString {
+                                     [](const void *inst) -> TEString
+                                     {
                                          const auto *obj = reinterpret_cast<const TestReflectedEntity *>(inst);
                                          return TEString::FromInt(obj->Health);
                                      }));
 
     entityCls.AddProperty(TEProperty("Speed", "float", offsetof(TestReflectedEntity, Speed), sizeof(float),
-                                     [](const void *inst) -> TEString {
+                                     [](const void *inst) -> TEString
+                                     {
                                          const auto *obj = reinterpret_cast<const TestReflectedEntity *>(inst);
                                          return TEString::FromFloat(obj->Speed);
                                      }));
@@ -1087,4 +1021,3 @@ TE_TEST_CASE(GameplayUtils, SpatialSweepRouting)
     TE_CHECK(!hit.Hit);
     TE_CHECK_EQ(hit.Fraction, 1.0f);
 }
-

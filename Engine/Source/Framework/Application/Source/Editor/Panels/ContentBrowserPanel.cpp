@@ -14,7 +14,6 @@
 #include "TimeGUI.hpp"
 #include "Editor/DragDrop/DragDropManager.hpp"
 
-
 ContentBrowserPanel::ContentBrowserPanel() : IEditorPanel("Content Browser")
 {
     m_SearchBar = CreateRef<UISearchBar>("Search assets...", "##ContentBrowserSearchBar");
@@ -35,7 +34,6 @@ ContentBrowserPanel::ContentBrowserPanel() : IEditorPanel("Content Browser")
         }
     };
 }
-
 
 void ContentBrowserPanel::OnAttach() {}
 
@@ -222,7 +220,6 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     TimeGUI::PopStyleColor(3);
 
     TimeGUI::SameLine(0, 10);
-
 
     // Interactive & Editable Path Input Bar (Dynamically fitted with Search Bar)
     float searchBarWidth = 220.0f;
@@ -674,7 +671,6 @@ void ContentBrowserPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
                 }
             }
         }
-
 
         if (TimeGUI::BeginMenu("Create New"))
         {

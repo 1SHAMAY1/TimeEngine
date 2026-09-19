@@ -184,6 +184,4 @@ void DataTableAssetEditor::DrawImportSettings(AssetImportConfig &config)
     TimeGUI::Checkbox("Import as Data Table (.tedatatable)", &config.IsDataTable);
 }
 
-
 TE_REGISTER_ASSET_EDITOR(DataTableAssetEditor);
-

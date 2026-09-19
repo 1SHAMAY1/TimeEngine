@@ -17,21 +17,23 @@ void AdaptiveMusicPlugin::OnUnload()
 
 void AdaptiveMusicPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("AdaptiveMusic", "StemCrossfadeInterpolation", false, [](TestContext &ctx) {
-        float stemA_Vol = 1.0f;
-        float stemB_Vol = 0.0f;
-        float blendFactor = 0.5f;
+    TestRegistry::RegisterTest("AdaptiveMusic", "StemCrossfadeInterpolation", false,
+                               [](TestContext &ctx)
+                               {
+                                   float stemA_Vol = 1.0f;
+                                   float stemB_Vol = 0.0f;
+                                   float blendFactor = 0.5f;
 
-        // Equal-power crossfade calculation: cos and sin curves
-        float volA = std::cos(blendFactor * 1.5707963f);
-        float volB = std::sin(blendFactor * 1.5707963f);
+                                   // Equal-power crossfade calculation: cos and sin curves
+                                   float volA = std::cos(blendFactor * 1.5707963f);
+                                   float volB = std::sin(blendFactor * 1.5707963f);
 
-        TE_CHECK(volA > 0.6f && volA < 0.8f);
-        TE_CHECK(volB > 0.6f && volB < 0.8f);
-        // Energy conservation check (volA^2 + volB^2 approx 1.0)
-        float energy = volA * volA + volB * volB;
-        TE_CHECK(std::abs(energy - 1.0f) < 0.01f);
-    });
+                                   TE_CHECK(volA > 0.6f && volA < 0.8f);
+                                   TE_CHECK(volB > 0.6f && volB < 0.8f);
+                                   // Energy conservation check (volA^2 + volB^2 approx 1.0)
+                                   float energy = volA * volA + volB * volB;
+                                   TE_CHECK(std::abs(energy - 1.0f) < 0.01f);
+                               });
 }
 
 void AdaptiveMusicPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

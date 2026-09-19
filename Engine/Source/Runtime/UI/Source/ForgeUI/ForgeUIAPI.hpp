@@ -195,7 +195,6 @@ public:
     void EndDragDropTarget() override;
     const TimeGUIPayload *GetDragDropPayload() override;
 
-
     // Docking
     unsigned int DockSpace(unsigned int id, const TEVector2 &size = {0, 0}, int flags = 0) override;
     void DockBuilderRemoveNode(unsigned int nodeId) override;

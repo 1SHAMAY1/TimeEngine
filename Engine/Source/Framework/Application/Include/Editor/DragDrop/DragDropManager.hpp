@@ -20,8 +20,7 @@ public:
                                   int flags = 0);
     static bool BeginSourcePathArray(const TEArray<TEString> &paths, const TEString &tooltip = "", int flags = 0);
     static bool BeginSourceEntity(uint64_t entityId, const TEString &entityName = "", int flags = 0);
-    static bool BeginSourceEntityArray(const TEArray<uint64_t> &entityIds, const TEString &tooltip = "",
-                                       int flags = 0);
+    static bool BeginSourceEntityArray(const TEArray<uint64_t> &entityIds, const TEString &tooltip = "", int flags = 0);
 
     // -------------------------------------------------------------------------
     // Target Execution (Call when hovering over a drop target zone/window)

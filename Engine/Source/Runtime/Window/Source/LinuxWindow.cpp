@@ -35,9 +35,8 @@ void LinuxWindow::Init(const WindowProps &props)
 
     if (!s_GLFWInitialized)
     {
-        glfwSetErrorCallback([](int error, const char *description) {
-            TE_CORE_ERROR("GLFW Error ({0}): {1}", error, description ? description : "Unknown");
-        });
+        glfwSetErrorCallback([](int error, const char *description)
+                             { TE_CORE_ERROR("GLFW Error ({0}): {1}", error, description ? description : "Unknown"); });
 
         int success = glfwInit();
         if (!success)

@@ -112,7 +112,7 @@ template <typename... Args> TEString LogFormat(Args &&...args)
         TEString msg = LogFormat(__VA_ARGS__);                                                                         \
         if (Log::HasCoreLogger())                                                                                      \
             Log::GetCoreLogger().log("Core", msg, "DEBUG");                                                            \
-        if (Log::ShouldLog("Core", "DEBUG"))                                                                            \
+        if (Log::ShouldLog("Core", "DEBUG"))                                                                           \
             Log::AddMessage("Core", msg, "DEBUG");                                                                     \
     } while (0)
 #define TE_INPUT_DEBUG(...)                                                                                            \
@@ -183,7 +183,7 @@ template <typename... Args> TEString LogFormat(Args &&...args)
         TEString msg = LogFormat(__VA_ARGS__);                                                                         \
         if (Log::HasClientLogger())                                                                                    \
             Log::GetClientLogger().log("Client", msg, "CRITICAL");                                                     \
-        if (Log::ShouldLog("Client", "CRITICAL"))                                                                        \
+        if (Log::ShouldLog("Client", "CRITICAL"))                                                                      \
             Log::AddMessage("Client", msg, "CRITICAL");                                                                \
     } while (0)
 #define TE_CLIENT_ASSERT(x, msg)                                                                                       \

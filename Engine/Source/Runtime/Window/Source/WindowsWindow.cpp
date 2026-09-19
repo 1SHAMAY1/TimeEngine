@@ -326,7 +326,6 @@ void WindowsWindow::Init(const WindowProps &props)
                         });
 
     TE_CORE_INFO("WindowsWindow successfully created: {0} ({1}x{2})", m_Data.Title, m_Data.Width, m_Data.Height);
-
 }
 
 void WindowsWindow::Shutdown()

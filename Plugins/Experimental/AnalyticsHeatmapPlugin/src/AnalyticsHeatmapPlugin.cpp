@@ -17,26 +17,30 @@ void AnalyticsHeatmapPlugin::OnUnload()
 
 void AnalyticsHeatmapPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("AnalyticsHeatmap", "GridBinningAndDensity", false, [](TestContext &ctx) {
-        constexpr int GridSize = 10;
-        int grid[GridSize][GridSize] = {0};
+    TestRegistry::RegisterTest("AnalyticsHeatmap", "GridBinningAndDensity", false,
+                               [](TestContext &ctx)
+                               {
+                                   constexpr int GridSize = 10;
+                                   int grid[GridSize][GridSize] = {0};
 
-        TEArray<TEVector2> deathEvents = {
-            {25.0f, 25.0f}, {26.0f, 24.0f}, {25.5f, 25.2f}, // clustered
-            {80.0f, 80.0f}                                   // isolated
-        };
+                                   TEArray<TEVector2> deathEvents = {
+                                       {25.0f, 25.0f},
+                                       {26.0f, 24.0f},
+                                       {25.5f, 25.2f}, // clustered
+                                       {80.0f, 80.0f}  // isolated
+                                   };
 
-        for (const auto &pt : deathEvents)
-        {
-            int gx = std::clamp(static_cast<int>(pt.x / 10.0f), 0, GridSize - 1);
-            int gy = std::clamp(static_cast<int>(pt.y / 10.0f), 0, GridSize - 1);
-            grid[gy][gx]++;
-        }
+                                   for (const auto &pt : deathEvents)
+                                   {
+                                       int gx = std::clamp(static_cast<int>(pt.x / 10.0f), 0, GridSize - 1);
+                                       int gy = std::clamp(static_cast<int>(pt.y / 10.0f), 0, GridSize - 1);
+                                       grid[gy][gx]++;
+                                   }
 
-        TE_CHECK_EQ(grid[2][2], 3);
-        TE_CHECK_EQ(grid[8][8], 1);
-        TE_CHECK_EQ(grid[0][0], 0);
-    });
+                                   TE_CHECK_EQ(grid[2][2], 3);
+                                   TE_CHECK_EQ(grid[8][8], 1);
+                                   TE_CHECK_EQ(grid[0][0], 0);
+                               });
 }
 
 void AnalyticsHeatmapPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

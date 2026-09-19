@@ -152,9 +152,7 @@ TE_TEST_CASE(AssetImport, FileWatcherTimestampDetection)
     // Initialize watcher
     AssetFileWatcher::Init();
     bool changeDetected = false;
-    AssetFileWatcher::Watch(tempFile, [&](const TEString &path) {
-        changeDetected = true;
-    });
+    AssetFileWatcher::Watch(tempFile, [&](const TEString &path) { changeDetected = true; });
 
     // Advance time and update file
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

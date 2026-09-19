@@ -41,8 +41,9 @@ bool PlayerAsset::LoadFromFile(const TEString &path)
                                   else if (line.StartsWith("MovementMode: "))
                                   {
                                       TEString modeStr = line.Mid(14).Trim();
-                                      m_MovementMode = (modeStr == "SideScroller") ? EPlayerAssetMovementMode::SideScroller
-                                                                                   : EPlayerAssetMovementMode::TopDown;
+                                      m_MovementMode = (modeStr == "SideScroller")
+                                                           ? EPlayerAssetMovementMode::SideScroller
+                                                           : EPlayerAssetMovementMode::TopDown;
                                   }
                                   else if (line.StartsWith("MaxSpeed: "))
                                   {
@@ -84,12 +85,14 @@ bool PlayerAsset::SaveToFile(const TEString &path)
 {
     TEString content = "PlayerAsset: " + m_Name + "\n";
     content += "SpritePath: " + m_SpritePath + "\n";
-    content += "MovementMode: " + TEString((m_MovementMode == EPlayerAssetMovementMode::SideScroller) ? "SideScroller" : "TopDown") + "\n";
+    content += "MovementMode: " +
+               TEString((m_MovementMode == EPlayerAssetMovementMode::SideScroller) ? "SideScroller" : "TopDown") + "\n";
     content += "MaxSpeed: " + TEString::FromFloat(m_MaxSpeed) + "\n";
     content += "Acceleration: " + TEString::FromFloat(m_Acceleration) + "\n";
     content += "Friction: " + TEString::FromFloat(m_Friction) + "\n";
     content += "JumpForce: " + TEString::FromFloat(m_JumpForce) + "\n";
-    content += "ColliderSize: " + TEString::FromFloat(m_ColliderSize.x) + " " + TEString::FromFloat(m_ColliderSize.y) + "\n";
+    content +=
+        "ColliderSize: " + TEString::FromFloat(m_ColliderSize.x) + " " + TEString::FromFloat(m_ColliderSize.y) + "\n";
     content += "---BeginTScript---\n";
     content += m_SourceText;
     if (!m_SourceText.EndsWith("\n"))

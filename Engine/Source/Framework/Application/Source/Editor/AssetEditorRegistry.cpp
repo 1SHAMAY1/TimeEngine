@@ -274,7 +274,6 @@ static bool s_OpenImportPopupTriggered = false;
 static AssetImportConfig s_ActiveImportConfig;
 static TERef<AssetEditor> s_ActiveImportEditor = nullptr;
 
-
 void AssetEditorRegistry::OpenAssetPicker(const TEString &targetDirectory)
 {
     s_ShowAssetPickerModal = true;
@@ -565,7 +564,6 @@ void AssetEditorRegistry::OnTimeGUIRender()
             s_OpenImportPopupTriggered = false;
         }
 
-
         TEVector2 displaySize = TimeGUI::GetIO().DisplaySize;
         TEVector2 centerPos = TEVector2(displaySize.x * 0.5f, displaySize.y * 0.5f);
         TimeGUI::SetNextWindowPos(centerPos, TimeGUICond_Appearing, TEVector2(0.5f, 0.5f));
@@ -632,7 +630,6 @@ void AssetEditorRegistry::OnTimeGUIRender()
             }
 
             TimeGUI::EndPopup();
-
         }
     }
 }
@@ -696,7 +693,8 @@ void AssetEditorRegistry::OpenImportDialog(const TEString &targetDirectory, cons
     auto editor = GetEditorForImportExtension(ext);
     if (!editor)
     {
-        TE_CORE_WARN("AssetEditorRegistry::OpenImportDialog: No AssetEditor registered that supports importing '{0}'", ext.c_str());
+        TE_CORE_WARN("AssetEditorRegistry::OpenImportDialog: No AssetEditor registered that supports importing '{0}'",
+                     ext.c_str());
         return;
     }
 
@@ -715,7 +713,6 @@ void AssetEditorRegistry::OpenImportDialog(const TEString &targetDirectory, cons
     s_OpenImportPopupTriggered = true;
 }
 
-
 void AssetEditorRegistry::Clear()
 {
     auto &openTabs = GetOpenTabs();
@@ -727,4 +724,3 @@ void AssetEditorRegistry::Clear()
     GetOpenTabs().Clear();
     s_AssetPickerSearchBar.reset();
 }
-

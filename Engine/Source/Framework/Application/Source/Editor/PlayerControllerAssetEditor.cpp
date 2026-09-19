@@ -8,8 +8,7 @@
 
 TE_REGISTER_ASSET_EDITOR(PlayerControllerAssetEditor)
 
-PlayerControllerAssetEditor::PlayerControllerAssetEditor()
-    : m_CodeEdit("##PCCodeEdit")
+PlayerControllerAssetEditor::PlayerControllerAssetEditor() : m_CodeEdit("##PCCodeEdit")
 {
     m_CodeEdit.SetLanguage(ECodeLanguage::TScript);
 }
@@ -31,16 +30,14 @@ void PlayerControllerAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2
     float cy = (iMin.y + iMax.y) * 0.5f;
 
     // Gamepad body
-    dl.AddRectFilled(TEVector2(cx - 13.0f, cy - 7.5f), TEVector2(cx + 13.0f, cy + 7.5f),
-                     IM_COL32(200, 130, 255, 255), 3.5f);
+    dl.AddRectFilled(TEVector2(cx - 13.0f, cy - 7.5f), TEVector2(cx + 13.0f, cy + 7.5f), IM_COL32(200, 130, 255, 255),
+                     3.5f);
 
     // Left D-Pad cross
     float dx = cx - 6.5f;
     float ds = 3.5f;
-    dl.AddRectFilled(TEVector2(dx - 1.2f, cy - ds), TEVector2(dx + 1.2f, cy + ds),
-                     IM_COL32(28, 20, 36, 255), 0.5f);
-    dl.AddRectFilled(TEVector2(dx - ds, cy - 1.2f), TEVector2(dx + ds, cy + 1.2f),
-                     IM_COL32(28, 20, 36, 255), 0.5f);
+    dl.AddRectFilled(TEVector2(dx - 1.2f, cy - ds), TEVector2(dx + 1.2f, cy + ds), IM_COL32(28, 20, 36, 255), 0.5f);
+    dl.AddRectFilled(TEVector2(dx - ds, cy - 1.2f), TEVector2(dx + ds, cy + 1.2f), IM_COL32(28, 20, 36, 255), 0.5f);
 
     // Right Action Buttons (4 dots)
     float bx = cx + 6.5f;

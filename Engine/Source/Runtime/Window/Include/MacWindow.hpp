@@ -23,7 +23,7 @@ public:
     void ShowWindow() override;
     bool IsVisible() const override;
 
-    void *GetGLLoaderFunction() const;
+    void *GetGLLoaderFunction() const override;
 
 private:
     virtual void Init(const WindowProps &props);

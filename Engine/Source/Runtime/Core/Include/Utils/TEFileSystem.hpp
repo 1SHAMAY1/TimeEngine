@@ -32,4 +32,3 @@ public:
     static bool ForEachLine(const TEString &path, const std::function<bool(const TEString &line)> &callback);
     static uint64_t GetLastWriteTime(const TEString &path);
 };
-

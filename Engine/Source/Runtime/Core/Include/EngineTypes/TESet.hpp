@@ -79,6 +79,4 @@ public:
     const_iterator cend() const { return m_Set.cend(); }
 };
 
-template <typename KeyType>
-using TEOrderedSet = std::set<KeyType>;
-
+template <typename KeyType> using TEOrderedSet = std::set<KeyType>;

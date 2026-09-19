@@ -189,4 +189,3 @@ void FontAssetEditor::DrawImportSettings(AssetImportConfig &config)
 }
 
 TE_REGISTER_ASSET_EDITOR(FontAssetEditor);
-

@@ -25,7 +25,8 @@ public:
         // Render editor spawn point indicator circle and arrow
         TEVector2 worldPos = {worldModel.m[3][0], worldModel.m[3][1]};
         renderer->SubmitCircle(worldPos, 0.4f, TEColor(0.2f, 0.8f, 1.0f, 0.8f), material);
-        renderer->SubmitQuad(TEMatrix4::Scale(worldModel, TEVector(0.5f, 0.5f, 1.0f)), TEColor(0.2f, 0.8f, 1.0f, 0.5f), material);
+        renderer->SubmitQuad(TEMatrix4::Scale(worldModel, TEVector(0.5f, 0.5f, 1.0f)), TEColor(0.2f, 0.8f, 1.0f, 0.5f),
+                             material);
     }
 
     virtual TEString GetClassName() const override { return StaticClassName; }

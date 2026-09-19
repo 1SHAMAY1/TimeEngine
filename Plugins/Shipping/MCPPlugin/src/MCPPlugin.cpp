@@ -115,35 +115,39 @@ void MCPPlugin::OnUnload()
 
 void MCPPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("MCPPlugin", "JSONHelpersExtraction", false, [](TestContext &ctx) {
-        TEString json = "{\"name\":\"TestEntity\",\"id\":12345,\"nested\":{\"key\":\"value\"}}";
-        TEString name = MCPPlugin::ExtractString(json, "name");
-        TE_CHECK_EQ(name, "TestEntity");
+    TestRegistry::RegisterTest("MCPPlugin", "JSONHelpersExtraction", false,
+                               [](TestContext &ctx)
+                               {
+                                   TEString json =
+                                       "{\"name\":\"TestEntity\",\"id\":12345,\"nested\":{\"key\":\"value\"}}";
+                                   TEString name = MCPPlugin::ExtractString(json, "name");
+                                   TE_CHECK_EQ(name, "TestEntity");
 
-        int64_t id = MCPPlugin::ExtractInt(json, "id");
-        TE_CHECK_EQ(id, 12345);
+                                   int64_t id = MCPPlugin::ExtractInt(json, "id");
+                                   TE_CHECK_EQ(id, 12345);
 
-        TEString nested = MCPPlugin::ExtractObject(json, "nested");
-        TE_CHECK(nested.Contains("key"));
-    });
+                                   TEString nested = MCPPlugin::ExtractObject(json, "nested");
+                                   TE_CHECK(nested.Contains("key"));
+                               });
 
-    TestRegistry::RegisterTest("MCPPlugin", "ToolRegistryRegistration", false, [](TestContext &ctx) {
-        size_t initialCount = MCPToolRegistry::GetTools().Num();
-        MCPToolDefinition toolDef;
-        toolDef.Name = "test_tool";
-        toolDef.Description = "Description";
-        toolDef.InputSchemaJson = "{}";
-        toolDef.Handler = [](const TEString &args) -> TEString {
-            return "{\"result\":\"ok\"}";
-        };
-        MCPToolRegistry::RegisterTool(toolDef);
+    TestRegistry::RegisterTest("MCPPlugin", "ToolRegistryRegistration", false,
+                               [](TestContext &ctx)
+                               {
+                                   size_t initialCount = MCPToolRegistry::GetTools().Num();
+                                   MCPToolDefinition toolDef;
+                                   toolDef.Name = "test_tool";
+                                   toolDef.Description = "Description";
+                                   toolDef.InputSchemaJson = "{}";
+                                   toolDef.Handler = [](const TEString &args) -> TEString
+                                   { return "{\"result\":\"ok\"}"; };
+                                   MCPToolRegistry::RegisterTool(toolDef);
 
-        TE_CHECK(MCPToolRegistry::GetTools().Num() > initialCount);
-        TEString out;
-        bool success = MCPToolRegistry::ExecuteTool("test_tool", "{}", out);
-        TE_CHECK(success);
-        TE_CHECK(out.Contains("ok"));
-    });
+                                   TE_CHECK(MCPToolRegistry::GetTools().Num() > initialCount);
+                                   TEString out;
+                                   bool success = MCPToolRegistry::ExecuteTool("test_tool", "{}", out);
+                                   TE_CHECK(success);
+                                   TE_CHECK(out.Contains("ok"));
+                               });
 }
 
 void MCPPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

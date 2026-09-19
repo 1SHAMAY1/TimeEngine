@@ -20,8 +20,7 @@ struct ComponentTypeInfo
     void (*MoveConstructFn)(void *dest, void *src) = nullptr;
     void (*DestructFn)(void *dest) = nullptr;
 
-    template <typename T>
-    static ComponentTypeInfo Create()
+    template <typename T> static ComponentTypeInfo Create()
     {
         using CleanT = std::remove_cvref_t<T>;
         ComponentTypeInfo info;
@@ -29,21 +28,15 @@ struct ComponentTypeInfo
         info.Size = sizeof(CleanT);
         info.Alignment = alignof(CleanT);
 
-        info.ConstructFn = [](void *dest) {
-            new (dest) CleanT();
-        };
+        info.ConstructFn = [](void *dest) { new (dest) CleanT(); };
 
-        info.CopyConstructFn = [](void *dest, const void *src) {
-            new (dest) CleanT(*reinterpret_cast<const CleanT *>(src));
-        };
+        info.CopyConstructFn = [](void *dest, const void *src)
+        { new (dest) CleanT(*reinterpret_cast<const CleanT *>(src)); };
 
-        info.MoveConstructFn = [](void *dest, void *src) {
-            new (dest) CleanT(std::move(*reinterpret_cast<CleanT *>(src)));
-        };
+        info.MoveConstructFn = [](void *dest, void *src)
+        { new (dest) CleanT(std::move(*reinterpret_cast<CleanT *>(src))); };
 
-        info.DestructFn = [](void *dest) {
-            reinterpret_cast<CleanT *>(dest)->~CleanT();
-        };
+        info.DestructFn = [](void *dest) { reinterpret_cast<CleanT *>(dest)->~CleanT(); };
 
         return info;
     }
@@ -59,10 +52,7 @@ public:
         Allocate(m_Capacity);
     }
 
-    ~ComponentColumn()
-    {
-        Clear();
-    }
+    ~ComponentColumn() { Clear(); }
 
     ComponentColumn(const ComponentColumn &) = delete;
     ComponentColumn &operator=(const ComponentColumn &) = delete;
@@ -90,36 +80,20 @@ public:
         return *this;
     }
 
-    [[nodiscard]] void *GetRaw(size_t index)
-    {
-        return m_Buffer.GetData() + (index * m_Info.Size);
-    }
+    [[nodiscard]] void *GetRaw(size_t index) { return m_Buffer.GetData() + (index * m_Info.Size); }
 
-    [[nodiscard]] const void *GetRaw(size_t index) const
-    {
-        return m_Buffer.GetData() + (index * m_Info.Size);
-    }
+    [[nodiscard]] const void *GetRaw(size_t index) const { return m_Buffer.GetData() + (index * m_Info.Size); }
 
-    template <typename T>
-    [[nodiscard]] T *Get(size_t index)
-    {
-        return reinterpret_cast<T *>(GetRaw(index));
-    }
+    template <typename T> [[nodiscard]] T *Get(size_t index) { return reinterpret_cast<T *>(GetRaw(index)); }
 
-    template <typename T>
-    [[nodiscard]] const T *Get(size_t index) const
+    template <typename T> [[nodiscard]] const T *Get(size_t index) const
     {
         return reinterpret_cast<const T *>(GetRaw(index));
     }
 
-    template <typename T>
-    [[nodiscard]] T *GetTypedData()
-    {
-        return reinterpret_cast<T *>(m_Buffer.GetData());
-    }
+    template <typename T> [[nodiscard]] T *GetTypedData() { return reinterpret_cast<T *>(m_Buffer.GetData()); }
 
-    template <typename T>
-    [[nodiscard]] const T *GetTypedData() const
+    template <typename T> [[nodiscard]] const T *GetTypedData() const
     {
         return reinterpret_cast<const T *>(m_Buffer.GetData());
     }
@@ -256,8 +230,7 @@ public:
     size_t AddEntity(EntityID id);
     EntityID RemoveEntitySwapLast(size_t row);
 
-    template <typename T>
-    [[nodiscard]] T *GetComponent(size_t row)
+    template <typename T> [[nodiscard]] T *GetComponent(size_t row)
     {
         ComponentID id = ComponentTypeID::Get<T>();
         if (id < MaxComponentTypes && m_FastColumnMap[id] != static_cast<size_t>(-1))
@@ -267,8 +240,7 @@ public:
         return nullptr;
     }
 
-    template <typename T>
-    [[nodiscard]] const T *GetComponent(size_t row) const
+    template <typename T> [[nodiscard]] const T *GetComponent(size_t row) const
     {
         ComponentID id = ComponentTypeID::Get<T>();
         if (id < MaxComponentTypes && m_FastColumnMap[id] != static_cast<size_t>(-1))

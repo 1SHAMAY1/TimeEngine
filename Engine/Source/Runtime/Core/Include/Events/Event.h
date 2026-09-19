@@ -16,7 +16,6 @@ enum class EventType
     WindowMoved,
     WindowDrop,
 
-
     // Application Events
     AppTick,
     AppUpdate,

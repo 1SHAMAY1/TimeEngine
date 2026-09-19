@@ -174,8 +174,7 @@ void EditorAppearanceSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
                             colors[TimeGUICol_InputTextCursor].b, colors[TimeGUICol_InputTextCursor].a};
     if (TimeGUI::ColorEdit4("Text Caret / Cursor Color", cursorColor))
     {
-        colors[TimeGUICol_InputTextCursor] =
-            TEColor(cursorColor[0], cursorColor[1], cursorColor[2], cursorColor[3]);
+        colors[TimeGUICol_InputTextCursor] = TEColor(cursorColor[0], cursorColor[1], cursorColor[2], cursorColor[3]);
         s_SelectedThemePreset = s_PresetCount - 1;
     }
 
@@ -227,8 +226,7 @@ void EditorAppearanceSettings::OnDrawSettingsUI(Ref<EditorLayer> editor)
                              colors[TimeGUICol_ButtonActive].b, colors[TimeGUICol_ButtonActive].a};
     if (TimeGUI::ColorEdit4("Button Active / Pressed", buttonActive))
     {
-        colors[TimeGUICol_ButtonActive] =
-            TEColor(buttonActive[0], buttonActive[1], buttonActive[2], buttonActive[3]);
+        colors[TimeGUICol_ButtonActive] = TEColor(buttonActive[0], buttonActive[1], buttonActive[2], buttonActive[3]);
         s_SelectedThemePreset = s_PresetCount - 1;
     }
 

@@ -1,6 +1,6 @@
-#include "Core/PreRequisites.h"
-#include "UI/ImGui/ImGuiMetalBackend.hpp"
-#include "Core/Log.h"
+#include "PreRequisites.h"
+#include "ImGuiMetalBackend.hpp"
+#include "Log.h"
 
 #ifdef TE_SUPPORT_METAL
 

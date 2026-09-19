@@ -108,8 +108,8 @@ void SpriteAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     if (TimeGUI::Button("Reimport With New Source...", TEVector2(190.0f, 0.0f)))
     {
-        TEString filepath =
-            PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga;*.bmp)\0*.png;*.jpg;*.jpeg;*.tga;*.bmp\0All Files (*.*)\0*.*\0");
+        TEString filepath = PlatformUtils::OpenFile(
+            "Image Files (*.png;*.jpg;*.jpeg;*.tga;*.bmp)\0*.png;*.jpg;*.jpeg;*.tga;*.bmp\0All Files (*.*)\0*.*\0");
         if (!filepath.IsEmpty())
         {
             TEString tPath = sprite->GetTexturePath();

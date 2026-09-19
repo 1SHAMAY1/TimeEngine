@@ -73,18 +73,18 @@ TE_TEST_CASE(PureECS, ArchetypeEntityCreationAndQuery)
 
     size_t posCount = 0;
     ComponentQuery<TestPositionComponent> qPos(em);
-    qPos.ForEach([&](EntityID id, TestPositionComponent &pos) {
-        posCount++;
-    });
+    qPos.ForEach([&](EntityID id, TestPositionComponent &pos) { posCount++; });
     TE_CHECK_EQ(posCount, 2);
 
     size_t posVelCount = 0;
     ComponentQuery<TestPositionComponent, TestVelocityComponent> qPosVel(em);
-    qPosVel.ForEach([&](EntityID id, TestPositionComponent &pos, TestVelocityComponent &vel) {
-        pos.X += vel.Vx;
-        pos.Y += vel.Vy;
-        posVelCount++;
-    });
+    qPosVel.ForEach(
+        [&](EntityID id, TestPositionComponent &pos, TestVelocityComponent &vel)
+        {
+            pos.X += vel.Vx;
+            pos.Y += vel.Vy;
+            posVelCount++;
+        });
     TE_CHECK_EQ(posVelCount, 1);
     auto *checkPos = e1.GetComponent<TestPositionComponent>();
     TE_CHECK(checkPos != nullptr);
@@ -126,42 +126,53 @@ TE_STRESS_TEST_CASE(PureECS, MassiveEntityStress100K)
 
     TEArray<Entity> entities;
 
-    TE_BENCHMARK("Spawn 100k Entities with Position and Velocity", EntityCount, ([&]() {
-        for (size_t i = 0; i < EntityCount; ++i)
-        {
-            Entity e = em.CreateEntityWith<TestPositionComponent, TestVelocityComponent>();
-            auto *pos = e.GetComponent<TestPositionComponent>();
-            if (pos)
-            {
-                pos->X = static_cast<float>(i);
-                pos->Y = static_cast<float>(i * 2);
-            }
-            auto *vel = e.GetComponent<TestVelocityComponent>();
-            if (vel)
-            {
-                vel->Vx = 1.0f;
-                vel->Vy = 1.0f;
-            }
-            entities.Add(e);
-        }
-    }));
+    TE_BENCHMARK("Spawn 100k Entities with Position and Velocity", EntityCount,
+                 (
+                     [&]()
+                     {
+                         for (size_t i = 0; i < EntityCount; ++i)
+                         {
+                             Entity e = em.CreateEntityWith<TestPositionComponent, TestVelocityComponent>();
+                             auto *pos = e.GetComponent<TestPositionComponent>();
+                             if (pos)
+                             {
+                                 pos->X = static_cast<float>(i);
+                                 pos->Y = static_cast<float>(i * 2);
+                             }
+                             auto *vel = e.GetComponent<TestVelocityComponent>();
+                             if (vel)
+                             {
+                                 vel->Vx = 1.0f;
+                                 vel->Vy = 1.0f;
+                             }
+                             entities.Add(e);
+                         }
+                     }));
 
     TE_CHECK_EQ(em.GetAliveEntities().Num(), EntityCount);
 
-    TE_BENCHMARK("Query and Iterate 100k Entities in ECS", EntityCount, ([&]() {
-        ComponentQuery<TestPositionComponent, TestVelocityComponent> q(em);
-        q.ForEach([](EntityID id, TestPositionComponent &pos, TestVelocityComponent &vel) {
-            pos.X += vel.Vx;
-            pos.Y += vel.Vy;
-        });
-    }));
+    TE_BENCHMARK("Query and Iterate 100k Entities in ECS", EntityCount,
+                 (
+                     [&]()
+                     {
+                         ComponentQuery<TestPositionComponent, TestVelocityComponent> q(em);
+                         q.ForEach(
+                             [](EntityID id, TestPositionComponent &pos, TestVelocityComponent &vel)
+                             {
+                                 pos.X += vel.Vx;
+                                 pos.Y += vel.Vy;
+                             });
+                     }));
 
-    TE_BENCHMARK("Destroy 100k Entities in ECS", EntityCount, ([&]() {
-        for (auto &e : entities)
-        {
-            em.DestroyEntity(e);
-        }
-    }));
+    TE_BENCHMARK("Destroy 100k Entities in ECS", EntityCount,
+                 (
+                     [&]()
+                     {
+                         for (auto &e : entities)
+                         {
+                             em.DestroyEntity(e);
+                         }
+                     }));
 
     TE_CHECK_EQ(em.GetAliveEntities().Num(), 0);
 }

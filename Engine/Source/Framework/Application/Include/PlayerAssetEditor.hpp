@@ -13,7 +13,10 @@ public:
     virtual TEString GetAssetExtension() const override { return ".teplayer"; }
     virtual TEArray<TEString> GetSupportedExtensions() const override { return {".teplayer"}; }
     virtual TEString GetAssetCategory() const override { return "Gameplay"; }
-    virtual TEString GetAssetDescription() const override { return "Player Asset: Defines player appearance, physics attributes, and movement characteristics."; }
+    virtual TEString GetAssetDescription() const override
+    {
+        return "Player Asset: Defines player appearance, physics attributes, and movement characteristics.";
+    }
 
     virtual void DrawEditor(EditorTab &tab) override;
     virtual void DrawIcon(const TEVector2 &min, const TEVector2 &max) const override;

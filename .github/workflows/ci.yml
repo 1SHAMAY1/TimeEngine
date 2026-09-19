@@ -1,0 +1,358 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    name: "Stage 1: Static Checks & Gating"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      has_code_changes: ${{ steps.filter.outputs.code_any_changed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check for Code & Build Script Changes
+        id: filter
+        uses: tj-actions/changed-files@v44
+        with:
+          files_yaml: |
+            code:
+              - '**/*.h'
+              - '**/*.hpp'
+              - '**/*.cpp'
+              - '**/*.c'
+              - '**/*.m'
+              - '**/*.mm'
+              - '**/*.inl'
+              - '**/*.lua'
+              - '**/*.bat'
+              - '**/*.sh'
+              - '**/CMakeLists.txt'
+              - '.github/workflows/**'
+
+      - name: Resolve Author Email
+        id: author-info
+        run: |
+          AUTHOR_EMAIL="${{ github.event.pusher.email }}"
+          if [ -z "$AUTHOR_EMAIL" ] || [ "$AUTHOR_EMAIL" = "null" ]; then
+            AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          fi
+          echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+
+      - name: Run Commit Guidelines Validator
+        id: run-commit-check
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          CAUSER_EMAIL: ${{ steps.author-info.outputs.email }}
+          TRIGGER_CONTEXT: ${{ github.event_name }} on ${{ github.ref_name }}
+        run: |
+          mkdir -p .github/reports
+          BASE_REF="${{ github.event.pull_request.base.sha || github.event.before }}"
+          HEAD_REF="${{ github.event.pull_request.head.sha || github.sha }}"
+          if [ "$BASE_REF" = "0000000000000000000000000000000000000000" ] || [ -z "$BASE_REF" ]; then
+            BASE_REF="HEAD~1"
+          fi
+          python .github/scripts/commit_guidelines.py \
+            --base-ref "$BASE_REF" \
+            --head-ref "$HEAD_REF" \
+            --pr-title "$PR_TITLE" \
+            --pr-body "$PR_BODY" \
+            --causer-email "$CAUSER_EMAIL" \
+            --trigger-context "$TRIGGER_CONTEXT" \
+            --report-dir ".github/reports"
+
+      - name: Install Premake5 & Run Architecture Rules Check
+        run: |
+          mkdir -p ThirdParty/Premake/Linux
+          wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-linux.tar.gz
+          tar -xzf premake-5.0.0-beta4-linux.tar.gz -C ThirdParty/Premake/Linux
+          chmod +x ThirdParty/Premake/Linux/premake5
+          ThirdParty/Premake/Linux/premake5 --file=Premake5.lua check-rules
+
+      - name: Upload Audit Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commit-guidelines-audit-report
+          path: .github/reports/
+          retention-days: 7
+
+  build-linux:
+    name: "Linux Build (${{ matrix.name }})"
+    needs: [static-checks]
+    if: needs.static-checks.outputs.has_code_changes == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: GCC
+            cc: gcc
+            cxx: g++
+          - name: Clang
+            cc: clang
+            cxx: clang++
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.cc }} libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev xorg-dev libvulkan-dev libasound2-dev libpulse-dev zenity
+
+      - name: Install Premake5
+        run: |
+          mkdir -p ThirdParty/Premake/Linux
+          wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-linux.tar.gz
+          tar -xzf premake-5.0.0-beta4-linux.tar.gz -C ThirdParty/Premake/Linux
+          chmod +x ThirdParty/Premake/Linux/premake5
+          sudo ln -sf "$(pwd)/ThirdParty/Premake/Linux/premake5" /usr/local/bin/premake5
+
+      - name: Build Logger Dependency
+        run: |
+          mkdir -p ThirdParty/Customizable_Logger/build
+          cd ThirdParty/Customizable_Logger/build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=${{ matrix.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          cmake --build . --config Debug
+
+      - name: Build GLFW Dependency
+        run: |
+          mkdir -p ThirdParty/GLFW/build
+          cd ThirdParty/GLFW/build
+          cmake ../glfw -DGLFW_BUILD_WAYLAND=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=${{ matrix.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          cmake --build . --config Debug
+
+      - name: Patch ThirdParty Platform Compatibility
+        run: |
+          python3 -c "
+          import os
+          path = 'ThirdParty/Velox/src/core/Containers.h'
+          if os.path.exists(path):
+              with open(path, 'r', encoding='utf-8') as f:
+                  content = f.read()
+              content = content.replace('#include <immintrin.h>', '#if defined(__x86_64__) || defined(_M_X64)\n#include <immintrin.h>\n#endif')
+              content = content.replace('_aligned_malloc(newWordCount * sizeof(uint64_t), 32)', 'aligned_alloc(32, newWordCount * sizeof(uint64_t))')
+              content = content.replace('_aligned_malloc(m_capacity, 64)', 'aligned_alloc(64, m_capacity)')
+              content = content.replace('_aligned_free', 'free')
+              with open(path, 'w', encoding='utf-8') as f:
+                  f.write(content)
+          "
+
+      - name: Generate Makefiles with Premake
+        run: premake5 gmake2 --file=Premake5.lua
+
+      - name: Build Solution
+        run: make config=debug -j$(nproc) CC=${{ matrix.cc }} CXX=${{ matrix.cxx }}
+
+      - name: Run Headless Engine Tests
+        run: |
+          chmod -R +x Scripts/
+          ./Scripts/Linux/RunTests.sh
+
+  build-windows:
+    name: "Windows Build (${{ matrix.name }})"
+    needs: [static-checks]
+    if: needs.static-checks.outputs.has_code_changes == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MSVC
+            type: msvc
+          - name: ClangCL
+            type: clangcl
+          - name: MinGW
+            type: mingw
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Build Logger Dependency (MSVC/ClangCL)
+        if: matrix.type != 'mingw'
+        shell: cmd
+        run: |
+          cd ThirdParty\Customizable_Logger
+          if not exist build mkdir build
+          cd build
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_C_FLAGS="/Z7" -DCMAKE_CXX_FLAGS="/Z7"
+          cmake --build . --config Debug -- /m:1
+
+      - name: Build Logger Dependency (MinGW)
+        if: matrix.type == 'mingw'
+        shell: cmd
+        run: |
+          cd ThirdParty\Customizable_Logger
+          if not exist build mkdir build
+          cd build
+          cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+          mingw32-make SHELL=cmd.exe
+
+      - name: Build GLFW Dependency (MSVC/ClangCL)
+        if: matrix.type != 'mingw'
+        shell: cmd
+        run: |
+          cd ThirdParty\GLFW
+          if not exist build mkdir build
+          cd build
+          cmake ../glfw -G "Visual Studio 17 2022" -A x64 -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="/Z7 /FS" -DCMAKE_CXX_FLAGS="/Z7 /FS"
+          cmake --build . --config Debug -- /m:1
+
+      - name: Build GLFW Dependency (MinGW)
+        if: matrix.type == 'mingw'
+        shell: cmd
+        run: |
+          cd ThirdParty\GLFW
+          if not exist build mkdir build
+          cd build
+          cmake ../glfw -G "MinGW Makefiles" -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+          mingw32-make SHELL=cmd.exe
+
+      - name: Install Premake5
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "ThirdParty\Premake\Windows\premake5.exe")) {
+            Invoke-WebRequest -Uri "https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-windows.zip" -OutFile "premake5.zip"
+            Expand-Archive -Path "premake5.zip" -DestinationPath "ThirdParty\Premake\Windows" -Force
+          }
+          echo "$((Get-Item .).FullName)\ThirdParty\Premake\Windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Patch ThirdParty Platform Compatibility
+        shell: pwsh
+        run: |
+          $storagePath = "ThirdParty\ForgeUI\src\Core\ForgeStorage.cpp"
+          if (Test-Path $storagePath) {
+            $content = Get-Content $storagePath -Raw
+            $content = $content -replace '#include <cstdlib>', "#include <cstdlib>`n#if defined(_WIN32) || defined(_MSC_VER)`n#include <malloc.h>`n#endif"
+            $content = $content -replace '#if defined\(_MSC_VER\)', '#if defined(_WIN32) || defined(_MSC_VER)'
+            Set-Content -Path $storagePath -Value $content -NoNewline
+          }
+
+      - name: Generate Solution with Premake (VS2022)
+        if: matrix.type != 'mingw'
+        shell: cmd
+        run: ThirdParty\Premake\Windows\premake5.exe vs2022
+
+      - name: Generate Solution with Premake (MinGW)
+        if: matrix.type == 'mingw'
+        shell: cmd
+        run: ThirdParty\Premake\Windows\premake5.exe gmake2
+
+      - name: Setup MSBuild
+        if: matrix.type != 'mingw'
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Solution (MSVC)
+        if: matrix.type == 'msvc'
+        shell: cmd
+        run: msbuild TimeEngine.sln /p:Configuration=Debug /p:Platform=x64 /m
+
+      - name: Build Solution (ClangCL)
+        if: matrix.type == 'clangcl'
+        shell: cmd
+        run: msbuild TimeEngine.sln /p:Configuration=Debug /p:Platform=x64 /p:PlatformToolset=ClangCL /m
+
+      - name: Build Solution (MinGW)
+        if: matrix.type == 'mingw'
+        shell: cmd
+        run: mingw32-make config=debug -j4 SHELL=cmd.exe
+
+  build-macos:
+    name: "macOS Build (${{ matrix.name }})"
+    needs: [static-checks]
+    if: needs.static-checks.outputs.has_code_changes == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Apple Clang
+            action: make
+          - name: Xcode
+            action: xcode
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install Premake5
+        run: |
+          mkdir -p ThirdParty/Premake/Mac
+          wget -q https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/premake-5.0.0-beta4-macosx.tar.gz
+          tar -xzf premake-5.0.0-beta4-macosx.tar.gz -C ThirdParty/Premake/Mac
+          chmod +x ThirdParty/Premake/Mac/premake5
+          sudo ln -sf "$(pwd)/ThirdParty/Premake/Mac/premake5" /usr/local/bin/premake5
+
+      - name: Build Logger Dependency
+        run: |
+          mkdir -p ThirdParty/Customizable_Logger/build
+          cd ThirdParty/Customizable_Logger/build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build . --config Debug
+
+      - name: Build GLFW Dependency
+        run: |
+          mkdir -p ThirdParty/GLFW/build
+          cd ThirdParty/GLFW/build
+          cmake ../glfw -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build . --config Debug
+
+      - name: Patch ThirdParty Platform Compatibility
+        run: |
+          python3 -c "
+          import os
+          path = 'ThirdParty/Velox/src/core/Containers.h'
+          if os.path.exists(path):
+              with open(path, 'r', encoding='utf-8') as f:
+                  content = f.read()
+              content = content.replace('#include <immintrin.h>', '#if defined(__x86_64__) || defined(_M_X64)\n#include <immintrin.h>\n#endif')
+              content = content.replace('_aligned_malloc(newWordCount * sizeof(uint64_t), 32)', 'aligned_alloc(32, newWordCount * sizeof(uint64_t))')
+              content = content.replace('_aligned_malloc(m_capacity, 64)', 'aligned_alloc(64, m_capacity)')
+              content = content.replace('_aligned_free', 'free')
+              with open(path, 'w', encoding='utf-8') as f:
+                  f.write(content)
+          "
+
+      - name: Build with Makefiles (Apple Clang)
+        if: matrix.action == 'make'
+        run: |
+          chmod -R +x Scripts/
+          premake5 gmake2 --file=Premake5.lua
+          make config=debug -j$(sysctl -n hw.ncpu) CC=clang CXX=clang++
+
+      - name: Build with Xcode
+        if: matrix.action == 'xcode'
+        run: |
+          chmod -R +x Scripts/
+          premake5 xcode4 --file=Premake5.lua
+          xcodebuild -workspace TimeEngine.xcworkspace -scheme TimeEditor -configuration Debug -destination 'platform=macOS' build

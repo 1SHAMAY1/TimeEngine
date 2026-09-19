@@ -38,7 +38,7 @@ bool SweepLine2DComponent::PerformSweep(Scene *scene)
 }
 
 void SweepLine2DComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel,
-                                   const TERef<Material> &material) const
+                                    const TERef<Material> &material) const
 {
     if (!renderer || !Enabled)
         return;

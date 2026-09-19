@@ -36,4 +36,3 @@ T_REGISTER_PROPERTY(GameManagerComponent, TEString, GameManagerAssetPath, "Game 
 T_REGISTER_PRESET(GameManagerComponent, "Game Manager", "Gameplay & Managers",
                   [](EntityID id, EntityManager *em) { em->AddComponent<GameManagerComponent>(id); })
 #endif
-

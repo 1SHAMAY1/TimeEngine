@@ -5,8 +5,7 @@
 #include "Renderer2D.hpp"
 #include "Texture.hpp"
 
-void SpriteComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel,
-                               const TERef<Material> &material) const
+void SpriteComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel, const TERef<Material> &material) const
 {
     if (!renderer)
         return;
@@ -37,4 +36,3 @@ void SpriteComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel
     auto renderMat = material ? material : Material::GetDefault();
     renderer->SubmitQuad(worldModel, Color, renderMat);
 }
-

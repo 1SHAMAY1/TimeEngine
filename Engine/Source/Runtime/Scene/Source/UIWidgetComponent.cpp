@@ -36,7 +36,7 @@ bool UIWidgetComponent::LoadFromUIAsset(const TEString &path)
 #include "Renderer2D.hpp"
 
 void UIWidgetComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel,
-                                const TERef<Material> &material) const
+                                 const TERef<Material> &material) const
 {
     if (!Visible || !renderer)
         return;

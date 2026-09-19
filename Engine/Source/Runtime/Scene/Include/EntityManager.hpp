@@ -70,24 +70,18 @@ public:
     const TESet<EntityID> &GetAliveEntities() const { return m_AliveEntities; }
 
     // Direct Archetype Instantiation (Fast-Path for Multi-Component Spawning)
-    template <typename... Components>
-    Entity CreateEntityWith();
+    template <typename... Components> Entity CreateEntityWith();
 
     // Pure ECS Component Management
-    template <typename Component, typename... Args>
-    Component *AddComponent(EntityID entityID, Args &&...args);
+    template <typename Component, typename... Args> Component *AddComponent(EntityID entityID, Args &&...args);
 
-    template <typename Component>
-    Component *GetComponent(EntityID entityID) const;
+    template <typename Component> Component *GetComponent(EntityID entityID) const;
 
-    template <typename Component>
-    bool HasComponent(EntityID entityID) const;
+    template <typename Component> bool HasComponent(EntityID entityID) const;
 
-    template <typename Component>
-    TEArray<Component *> GetComponents(EntityID entityID) const;
+    template <typename Component> TEArray<Component *> GetComponents(EntityID entityID) const;
 
-    template <typename Component>
-    void RemoveComponent(EntityID entityID);
+    template <typename Component> void RemoveComponent(EntityID entityID);
 
     void RemoveComponentInstance(EntityID entityID, TComponent *component);
     void RemoveAllComponents(EntityID entityID);
@@ -95,12 +89,9 @@ public:
     template <typename Component> TEArray<Component *> GetAllComponents() const;
 
     // Global component registration for presets & factories
-    template <typename T>
-    void RegisterComponent(const TEString &name)
+    template <typename T> void RegisterComponent(const TEString &name)
     {
-        m_ComponentFactories[name] = [this](EntityID id) -> TComponent * {
-            return this->AddComponent<T>(id);
-        };
+        m_ComponentFactories[name] = [this](EntityID id) -> TComponent * { return this->AddComponent<T>(id); };
     }
 
     const TEMap<TEString, std::function<TComponent *(EntityID)>> &GetRegisteredComponents() const
@@ -136,13 +127,9 @@ private:
 
 // --- Template Implementations ---
 
-inline bool Entity::IsValid() const
-{
-    return m_Manager && m_Manager->IsValid(m_ID);
-}
+inline bool Entity::IsValid() const { return m_Manager && m_Manager->IsValid(m_ID); }
 
-template <typename... Components>
-Entity EntityManager::CreateEntityWith()
+template <typename... Components> Entity EntityManager::CreateEntityWith()
 {
     EntityID id = m_NextEntityID++;
     m_AliveEntities.insert(id);
@@ -162,51 +149,37 @@ Entity EntityManager::CreateEntityWith()
 
     if constexpr (sizeof...(Components) > 0)
     {
-        ([&]() {
-            if constexpr (std::is_base_of_v<TComponent, Components>)
+        (
+            [&]()
             {
-                Components *c = m_Archetypes[archIdx].template GetComponent<Components>(row);
-                if (c)
+                if constexpr (std::is_base_of_v<TComponent, Components>)
                 {
-                    c->SetOwner(reinterpret_cast<TObject *>(id));
-                    c->SetEntityManager(this);
+                    Components *c = m_Archetypes[archIdx].template GetComponent<Components>(row);
+                    if (c)
+                    {
+                        c->SetOwner(reinterpret_cast<TObject *>(id));
+                        c->SetEntityManager(this);
+                    }
                 }
-            }
-        }(), ...);
+            }(),
+            ...);
     }
 
     return Entity(id, this);
 }
 
-template <typename T, typename... Args>
-T *Entity::AddComponent(Args &&...args)
+template <typename T, typename... Args> T *Entity::AddComponent(Args &&...args)
 {
     return m_Manager->AddComponent<T>(m_ID, std::forward<Args>(args)...);
 }
 
-template <typename T>
-T *Entity::GetComponent() const
-{
-    return m_Manager->GetComponent<T>(m_ID);
-}
+template <typename T> T *Entity::GetComponent() const { return m_Manager->GetComponent<T>(m_ID); }
 
-template <typename T>
-bool Entity::HasComponent() const
-{
-    return m_Manager->HasComponent<T>(m_ID);
-}
+template <typename T> bool Entity::HasComponent() const { return m_Manager->HasComponent<T>(m_ID); }
 
-template <typename T>
-TEArray<T *> Entity::GetComponents() const
-{
-    return m_Manager->GetComponents<T>(m_ID);
-}
+template <typename T> TEArray<T *> Entity::GetComponents() const { return m_Manager->GetComponents<T>(m_ID); }
 
-template <typename T>
-void Entity::RemoveComponent()
-{
-    m_Manager->RemoveComponent<T>(m_ID);
-}
+template <typename T> void Entity::RemoveComponent() { m_Manager->RemoveComponent<T>(m_ID); }
 
 template <typename Component, typename... Args>
 Component *EntityManager::AddComponent(EntityID entityID, Args &&...args)
@@ -256,8 +229,7 @@ Component *EntityManager::AddComponent(EntityID entityID, Args &&...args)
     return comp;
 }
 
-template <typename Component>
-Component *EntityManager::GetComponent(EntityID entityID) const
+template <typename Component> Component *EntityManager::GetComponent(EntityID entityID) const
 {
     auto locIt = m_EntityLocations.find(entityID);
     if (locIt == m_EntityLocations.end())
@@ -270,8 +242,7 @@ Component *EntityManager::GetComponent(EntityID entityID) const
     return const_cast<Archetype &>(m_Archetypes[loc.ArchetypeIndex]).GetComponent<Component>(loc.Row);
 }
 
-template <typename Component>
-bool EntityManager::HasComponent(EntityID entityID) const
+template <typename Component> bool EntityManager::HasComponent(EntityID entityID) const
 {
     auto locIt = m_EntityLocations.find(entityID);
     if (locIt == m_EntityLocations.end())
@@ -284,8 +255,7 @@ bool EntityManager::HasComponent(EntityID entityID) const
     return m_Archetypes[loc.ArchetypeIndex].HasComponent(ComponentTypeID::Get<Component>());
 }
 
-template <typename Component>
-TEArray<Component *> EntityManager::GetComponents(EntityID entityID) const
+template <typename Component> TEArray<Component *> EntityManager::GetComponents(EntityID entityID) const
 {
     TEArray<Component *> results;
     Component *c = GetComponent<Component>(entityID);
@@ -294,8 +264,7 @@ TEArray<Component *> EntityManager::GetComponents(EntityID entityID) const
     return results;
 }
 
-template <typename Component>
-void EntityManager::RemoveComponent(EntityID entityID)
+template <typename Component> void EntityManager::RemoveComponent(EntityID entityID)
 {
     if (!IsValid(entityID))
         return;
@@ -325,8 +294,7 @@ void EntityManager::RemoveComponent(EntityID entityID)
     MoveEntity(entityID, targetArchIdx);
 }
 
-template <typename Component>
-inline TEArray<Component *> EntityManager::GetAllComponents() const
+template <typename Component> inline TEArray<Component *> EntityManager::GetAllComponents() const
 {
     TEArray<Component *> results;
     ComponentID id = ComponentTypeID::Get<Component>();
@@ -353,8 +321,7 @@ ComponentQuery<Components...>::ComponentQuery(EntityManager &manager)
 {
 }
 
-template <typename... Components>
-TEArray<Archetype *> &ComponentQuery<Components...>::GetMatchingArchetypes()
+template <typename... Components> TEArray<Archetype *> &ComponentQuery<Components...>::GetMatchingArchetypes()
 {
     static thread_local TEArray<Archetype *> s_Matches;
     s_Matches.Clear();
@@ -372,10 +339,10 @@ TEArray<Archetype *> &ComponentQuery<Components...>::GetMatchingArchetypes()
 
 namespace std
 {
-    template <> struct hash<Entity>
-    {
-        size_t operator()(const Entity &entity) const noexcept { return static_cast<size_t>(entity.GetID()); }
-    };
+template <> struct hash<Entity>
+{
+    size_t operator()(const Entity &entity) const noexcept { return static_cast<size_t>(entity.GetID()); }
+};
 } // namespace std
 
 template <typename T>

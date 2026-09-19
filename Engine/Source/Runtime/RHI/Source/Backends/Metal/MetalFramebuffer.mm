@@ -1,5 +1,5 @@
 #include "Renderer/Metal/MetalFramebuffer.hpp"
-#include "Core/Log.h"
+#include "Log.h"
 
 #ifdef TE_SUPPORT_METAL
 #import <Metal/Metal.h>

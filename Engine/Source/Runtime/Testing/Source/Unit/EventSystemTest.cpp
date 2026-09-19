@@ -18,10 +18,12 @@ TE_TEST_CASE(EventSystem, EventDispatcherDispatch)
 
     bool handledByDispatcher = false;
     EventDispatcher dispatcher(keyEvent);
-    dispatcher.Dispatch<KeyPressedEvent>([&](KeyPressedEvent &e) -> bool {
-        handledByDispatcher = true;
-        return true;
-    });
+    dispatcher.Dispatch<KeyPressedEvent>(
+        [&](KeyPressedEvent &e) -> bool
+        {
+            handledByDispatcher = true;
+            return true;
+        });
 
     TE_CHECK(handledByDispatcher);
     TE_CHECK(keyEvent.Handled());
@@ -37,11 +39,13 @@ TE_TEST_CASE(EventSystem, WindowResizeEventHandling)
     int receivedWidth = 0;
     int receivedHeight = 0;
     EventDispatcher dispatcher(resizeEvent);
-    dispatcher.Dispatch<WindowResizeEvent>([&](WindowResizeEvent &e) -> bool {
-        receivedWidth = e.GetWidth();
-        receivedHeight = e.GetHeight();
-        return true;
-    });
+    dispatcher.Dispatch<WindowResizeEvent>(
+        [&](WindowResizeEvent &e) -> bool
+        {
+            receivedWidth = e.GetWidth();
+            receivedHeight = e.GetHeight();
+            return true;
+        });
 
     TE_CHECK_EQ(receivedWidth, 1920);
     TE_CHECK_EQ(receivedHeight, 1080);

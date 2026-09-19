@@ -82,10 +82,7 @@ bool PlatformUtils::RegisterFileAssociation(const TEString &extension, const TES
     return true;
 }
 
-bool PlatformUtils::IsFileAssociationRegistered(const TEString &extension, const TEString &appPath)
-{
-    return true;
-}
+bool PlatformUtils::IsFileAssociationRegistered(const TEString &extension, const TEString &appPath) { return true; }
 
 TEString PlatformUtils::GetExecutablePath()
 {

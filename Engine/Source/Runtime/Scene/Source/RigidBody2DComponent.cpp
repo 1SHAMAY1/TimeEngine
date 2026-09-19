@@ -121,7 +121,4 @@ void RigidBody2DComponent::WakeTouching(PhysicsWorld *physicsWorld)
     }
 }
 
-bool RigidBody2DComponent::IsSleeping() const
-{
-    return m_InternalBody.IsSleeping;
-}
+bool RigidBody2DComponent::IsSleeping() const { return m_InternalBody.IsSleeping; }

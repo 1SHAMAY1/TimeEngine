@@ -104,18 +104,18 @@ public:
     TESpatialHitResult SweepLine(const TEVector2 &start, const TEVector2 &end);
     TEArray<TESpatialHitResult> MultiSweepLine(const TEVector2 &start, const TEVector2 &end);
 
-    TESpatialHitResult SweepCircle(const TEVector2 &start, const TEVector2 &end,
-                                   const TEVector2 &radius = {1.0f, 1.0f}, float angleRadians = 0.0f);
+    TESpatialHitResult SweepCircle(const TEVector2 &start, const TEVector2 &end, const TEVector2 &radius = {1.0f, 1.0f},
+                                   float angleRadians = 0.0f);
     TEArray<TESpatialHitResult> MultiSweepCircle(const TEVector2 &start, const TEVector2 &end,
                                                  const TEVector2 &radius = {1.0f, 1.0f}, float angleRadians = 0.0f);
 
-    TESpatialHitResult SweepBox(const TEVector2 &start, const TEVector2 &end,
-                                const TEVector2 &halfExtents, float angleRadians = 0.0f);
+    TESpatialHitResult SweepBox(const TEVector2 &start, const TEVector2 &end, const TEVector2 &halfExtents,
+                                float angleRadians = 0.0f);
     TEArray<TESpatialHitResult> MultiSweepBox(const TEVector2 &start, const TEVector2 &end,
                                               const TEVector2 &halfExtents, float angleRadians = 0.0f);
 
-    TESpatialHitResult SweepCustom(const TEVector2 &start, const TEVector2 &end,
-                                   const CollisionShape &shape, float angleRadians = 0.0f);
+    TESpatialHitResult SweepCustom(const TEVector2 &start, const TEVector2 &end, const CollisionShape &shape,
+                                   float angleRadians = 0.0f);
     TEArray<TESpatialHitResult> MultiSweepCustom(const TEVector2 &start, const TEVector2 &end,
                                                  const CollisionShape &shape, float angleRadians = 0.0f);
 

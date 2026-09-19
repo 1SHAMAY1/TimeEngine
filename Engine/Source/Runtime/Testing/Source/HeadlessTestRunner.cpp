@@ -11,10 +11,7 @@
 
 static int s_RunnerExitCode = 0;
 
-int HeadlessTestRunner::GetLastExitCode()
-{
-    return s_RunnerExitCode;
-}
+int HeadlessTestRunner::GetLastExitCode() { return s_RunnerExitCode; }
 
 bool HeadlessTestRunner::ShouldRunTests(int argc, char **argv)
 {
@@ -108,14 +105,16 @@ int HeadlessTestRunner::Run(int argc, char **argv)
             continue;
         }
 
-        if (!MatchesFilter(fullName, filter) && !MatchesFilter(test.Category, filter) && !MatchesFilter(test.Name, filter))
+        if (!MatchesFilter(fullName, filter) && !MatchesFilter(test.Category, filter) &&
+            !MatchesFilter(test.Name, filter))
         {
             skippedCount++;
             continue;
         }
 
         totalRun++;
-        std::cout << "[ RUN      ] " << fullName.c_str() << (test.IsStressTest ? " (STRESS BENCHMARK)" : "") << "\n" << std::flush;
+        std::cout << "[ RUN      ] " << fullName.c_str() << (test.IsStressTest ? " (STRESS BENCHMARK)" : "") << "\n"
+                  << std::flush;
 
         TestContext ctx;
         auto start = std::chrono::high_resolution_clock::now();
@@ -139,14 +138,16 @@ int HeadlessTestRunner::Run(int argc, char **argv)
             passedCount++;
             TE_CORE_INFO("[TEST PASSED] {0} ({1} ms)", fullName.c_str(), ctx.CurrentResult.ExecutionTimeMs);
             std::cout << "[       OK ] " << fullName.c_str() << " (" << std::fixed << std::setprecision(2)
-                      << ctx.CurrentResult.ExecutionTimeMs << " ms)\n" << std::flush;
+                      << ctx.CurrentResult.ExecutionTimeMs << " ms)\n"
+                      << std::flush;
         }
         else
         {
             failedCount++;
             TE_CORE_ERROR("[TEST FAILED] {0} ({1} ms)", fullName.c_str(), ctx.CurrentResult.ExecutionTimeMs);
             std::cout << "[  FAILED  ] " << fullName.c_str() << " (" << std::fixed << std::setprecision(2)
-                      << ctx.CurrentResult.ExecutionTimeMs << " ms)\n" << std::flush;
+                      << ctx.CurrentResult.ExecutionTimeMs << " ms)\n"
+                      << std::flush;
             for (size_t f = 0; f < ctx.CurrentResult.FailureMessages.Num(); ++f)
             {
                 TE_CORE_ERROR("    {0}", ctx.CurrentResult.FailureMessages[f].c_str());
@@ -158,10 +159,11 @@ int HeadlessTestRunner::Run(int argc, char **argv)
         {
             const auto &bench = ctx.Benchmarks[b];
             allBenchmarks.Add(bench);
-            std::cout << "    * Benchmark [" << bench.Name.c_str() << "]: "
-                      << bench.Iterations << " ops in " << std::fixed << std::setprecision(2) << bench.TotalTimeMs << " ms ("
-                      << std::fixed << std::setprecision(3) << bench.AvgTimePerOpUs << " us/op, "
-                      << std::fixed << std::setprecision(0) << bench.OpsPerSecond << " ops/sec)\n" << std::flush;
+            std::cout << "    * Benchmark [" << bench.Name.c_str() << "]: " << bench.Iterations << " ops in "
+                      << std::fixed << std::setprecision(2) << bench.TotalTimeMs << " ms (" << std::fixed
+                      << std::setprecision(3) << bench.AvgTimePerOpUs << " us/op, " << std::fixed
+                      << std::setprecision(0) << bench.OpsPerSecond << " ops/sec)\n"
+                      << std::flush;
         }
 
         if (!jsonOutputFile.IsEmpty())
@@ -172,8 +174,11 @@ int HeadlessTestRunner::Run(int argc, char **argv)
             jsonContent += "    {\n";
             jsonContent += "      \"name\": \"" + fullName + "\",\n";
             jsonContent += "      \"passed\": " + TEString(ctx.CurrentResult.Passed ? "true" : "false") + ",\n";
-            jsonContent += "      \"time_ms\": " + TEString::FromFloat(static_cast<float>(ctx.CurrentResult.ExecutionTimeMs)) + ",\n";
-            jsonContent += "      \"assertions\": " + TEString::FromInt(static_cast<int>(ctx.CurrentResult.AssertionCount)) + "\n";
+            jsonContent +=
+                "      \"time_ms\": " + TEString::FromFloat(static_cast<float>(ctx.CurrentResult.ExecutionTimeMs)) +
+                ",\n";
+            jsonContent +=
+                "      \"assertions\": " + TEString::FromInt(static_cast<int>(ctx.CurrentResult.AssertionCount)) + "\n";
             jsonContent += "    }";
         }
     }
@@ -181,11 +186,11 @@ int HeadlessTestRunner::Run(int argc, char **argv)
     auto suiteEndTime = std::chrono::high_resolution_clock::now();
     double totalDurationMs = std::chrono::duration<double, std::milli>(suiteEndTime - suiteStartTime).count();
 
-    TE_CORE_INFO("Test Summary: {0} run, {1} passed, {2} failed, {3} skipped ({4} ms)", totalRun, passedCount, failedCount, skippedCount, totalDurationMs);
+    TE_CORE_INFO("Test Summary: {0} run, {1} passed, {2} failed, {3} skipped ({4} ms)", totalRun, passedCount,
+                 failedCount, skippedCount, totalDurationMs);
     std::cout << "======================================================================\n";
-    std::cout << "Test Summary: " << totalRun << " run, " << passedCount << " passed, "
-              << failedCount << " failed, " << skippedCount << " skipped ("
-              << std::fixed << std::setprecision(2) << totalDurationMs << " ms)\n";
+    std::cout << "Test Summary: " << totalRun << " run, " << passedCount << " passed, " << failedCount << " failed, "
+              << skippedCount << " skipped (" << std::fixed << std::setprecision(2) << totalDurationMs << " ms)\n";
 
     if (!allBenchmarks.IsEmpty())
     {
@@ -194,10 +199,10 @@ int HeadlessTestRunner::Run(int argc, char **argv)
         for (size_t b = 0; b < allBenchmarks.Num(); ++b)
         {
             const auto &bench = allBenchmarks[b];
-            std::cout << "  - " << std::left << std::setw(32) << bench.Name.c_str()
-                      << " : " << std::right << std::setw(10) << bench.Iterations << " iters | "
-                      << std::fixed << std::setprecision(2) << std::setw(8) << bench.TotalTimeMs << " ms | "
-                      << std::fixed << std::setprecision(0) << std::setw(12) << bench.OpsPerSecond << " ops/s\n";
+            std::cout << "  - " << std::left << std::setw(32) << bench.Name.c_str() << " : " << std::right
+                      << std::setw(10) << bench.Iterations << " iters | " << std::fixed << std::setprecision(2)
+                      << std::setw(8) << bench.TotalTimeMs << " ms | " << std::fixed << std::setprecision(0)
+                      << std::setw(12) << bench.OpsPerSecond << " ops/s\n";
         }
     }
     std::cout << "======================================================================\n\n" << std::flush;

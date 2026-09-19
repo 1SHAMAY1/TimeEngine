@@ -174,10 +174,7 @@ void GameplayUtils::Destroy(Scene &scene, Entity entity)
     }
 }
 
-void GameplayUtils::QuitGame()
-{
-    Application::Get().Close();
-}
+void GameplayUtils::QuitGame() { Application::Get().Close(); }
 
 Entity GameplayUtils::SpawnControllableGameObject(Scene &scene, const TEString &name, const TEVector2 &position)
 {
@@ -222,9 +219,8 @@ static void DrawDebugSweepInternal(const TEVector2 &start, const TEVector2 &end,
 }
 } // namespace
 
-TESpatialHitResult GameplayUtils::SweepLine(const TEVector2 &start, const TEVector2 &end, Scene *scene,
-                                            bool drawDebug, float debugDuration,
-                                            const TEColor &traceColor, const TEColor &hitColor)
+TESpatialHitResult GameplayUtils::SweepLine(const TEVector2 &start, const TEVector2 &end, Scene *scene, bool drawDebug,
+                                            float debugDuration, const TEColor &traceColor, const TEColor &hitColor)
 {
     TESpatialHitResult result{};
     if (scene && scene->GetPhysicsWorld())
@@ -259,9 +255,8 @@ TEArray<TESpatialHitResult> GameplayUtils::MultiSweepLine(const TEVector2 &start
     return results;
 }
 
-TESpatialHitResult GameplayUtils::SweepCircle(const TEVector2 &start, const TEVector2 &end,
-                                              const TEVector2 &radius, float angleRadians, Scene *scene,
-                                              bool drawDebug, float debugDuration,
+TESpatialHitResult GameplayUtils::SweepCircle(const TEVector2 &start, const TEVector2 &end, const TEVector2 &radius,
+                                              float angleRadians, Scene *scene, bool drawDebug, float debugDuration,
                                               const TEColor &traceColor, const TEColor &hitColor)
 {
     TESpatialHitResult result{};
@@ -278,9 +273,9 @@ TESpatialHitResult GameplayUtils::SweepCircle(const TEVector2 &start, const TEVe
 }
 
 TEArray<TESpatialHitResult> GameplayUtils::MultiSweepCircle(const TEVector2 &start, const TEVector2 &end,
-                                                           const TEVector2 &radius, float angleRadians, Scene *scene,
-                                                           bool drawDebug, float debugDuration,
-                                                           const TEColor &traceColor, const TEColor &hitColor)
+                                                            const TEVector2 &radius, float angleRadians, Scene *scene,
+                                                            bool drawDebug, float debugDuration,
+                                                            const TEColor &traceColor, const TEColor &hitColor)
 {
     TEArray<TESpatialHitResult> results{};
     if (scene && scene->GetPhysicsWorld())
@@ -298,9 +293,8 @@ TEArray<TESpatialHitResult> GameplayUtils::MultiSweepCircle(const TEVector2 &sta
     return results;
 }
 
-TESpatialHitResult GameplayUtils::SweepBox(const TEVector2 &start, const TEVector2 &end,
-                                           const TEVector2 &halfExtents, float angleRadians, Scene *scene,
-                                           bool drawDebug, float debugDuration,
+TESpatialHitResult GameplayUtils::SweepBox(const TEVector2 &start, const TEVector2 &end, const TEVector2 &halfExtents,
+                                           float angleRadians, Scene *scene, bool drawDebug, float debugDuration,
                                            const TEColor &traceColor, const TEColor &hitColor)
 {
     TESpatialHitResult result{};
@@ -317,9 +311,9 @@ TESpatialHitResult GameplayUtils::SweepBox(const TEVector2 &start, const TEVecto
 }
 
 TEArray<TESpatialHitResult> GameplayUtils::MultiSweepBox(const TEVector2 &start, const TEVector2 &end,
-                                                        const TEVector2 &halfExtents, float angleRadians, Scene *scene,
-                                                        bool drawDebug, float debugDuration,
-                                                        const TEColor &traceColor, const TEColor &hitColor)
+                                                         const TEVector2 &halfExtents, float angleRadians, Scene *scene,
+                                                         bool drawDebug, float debugDuration, const TEColor &traceColor,
+                                                         const TEColor &hitColor)
 {
     TEArray<TESpatialHitResult> results{};
     if (scene && scene->GetPhysicsWorld())
@@ -337,9 +331,8 @@ TEArray<TESpatialHitResult> GameplayUtils::MultiSweepBox(const TEVector2 &start,
     return results;
 }
 
-TESpatialHitResult GameplayUtils::SweepCustom(const TEVector2 &start, const TEVector2 &end,
-                                              const CollisionShape &shape, float angleRadians, Scene *scene,
-                                              bool drawDebug, float debugDuration,
+TESpatialHitResult GameplayUtils::SweepCustom(const TEVector2 &start, const TEVector2 &end, const CollisionShape &shape,
+                                              float angleRadians, Scene *scene, bool drawDebug, float debugDuration,
                                               const TEColor &traceColor, const TEColor &hitColor)
 {
     TESpatialHitResult result{};
@@ -356,9 +349,9 @@ TESpatialHitResult GameplayUtils::SweepCustom(const TEVector2 &start, const TEVe
 }
 
 TEArray<TESpatialHitResult> GameplayUtils::MultiSweepCustom(const TEVector2 &start, const TEVector2 &end,
-                                                           const CollisionShape &shape, float angleRadians, Scene *scene,
-                                                           bool drawDebug, float debugDuration,
-                                                           const TEColor &traceColor, const TEColor &hitColor)
+                                                            const CollisionShape &shape, float angleRadians,
+                                                            Scene *scene, bool drawDebug, float debugDuration,
+                                                            const TEColor &traceColor, const TEColor &hitColor)
 {
     TEArray<TESpatialHitResult> results{};
     if (scene && scene->GetPhysicsWorld())

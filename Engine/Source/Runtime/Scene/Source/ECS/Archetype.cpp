@@ -87,4 +87,3 @@ const ComponentColumn *Archetype::GetColumn(ComponentID id) const
     }
     return nullptr;
 }
-

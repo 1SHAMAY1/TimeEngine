@@ -8,8 +8,7 @@
 
 TE_REGISTER_ASSET_EDITOR(GameManagerAssetEditor)
 
-GameManagerAssetEditor::GameManagerAssetEditor()
-    : m_CodeEdit("##GMCodeEdit")
+GameManagerAssetEditor::GameManagerAssetEditor() : m_CodeEdit("##GMCodeEdit")
 {
     m_CodeEdit.SetLanguage(ECodeLanguage::TScript);
 }
@@ -31,14 +30,14 @@ void GameManagerAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max
     float cy = (iMin.y + iMax.y) * 0.5f;
 
     // Base bar of crown
-    dl.AddRectFilled(TEVector2(cx - 10.0f, cy + 2.0f), TEVector2(cx + 10.0f, cy + 6.0f),
-                     IM_COL32(245, 195, 45, 255), 1.0f);
+    dl.AddRectFilled(TEVector2(cx - 10.0f, cy + 2.0f), TEVector2(cx + 10.0f, cy + 6.0f), IM_COL32(245, 195, 45, 255),
+                     1.0f);
 
     // Crown peaks (3 triangles)
     dl.AddTriangleFilled(TEVector2(cx - 10.0f, cy + 2.0f), TEVector2(cx - 9.0f, cy - 6.0f),
                          TEVector2(cx - 3.0f, cy + 2.0f), IM_COL32(245, 195, 45, 255));
-    dl.AddTriangleFilled(TEVector2(cx - 4.5f, cy + 2.0f), TEVector2(cx, cy - 9.0f),
-                         TEVector2(cx + 4.5f, cy + 2.0f), IM_COL32(255, 225, 90, 255));
+    dl.AddTriangleFilled(TEVector2(cx - 4.5f, cy + 2.0f), TEVector2(cx, cy - 9.0f), TEVector2(cx + 4.5f, cy + 2.0f),
+                         IM_COL32(255, 225, 90, 255));
     dl.AddTriangleFilled(TEVector2(cx + 3.0f, cy + 2.0f), TEVector2(cx + 9.0f, cy - 6.0f),
                          TEVector2(cx + 10.0f, cy + 2.0f), IM_COL32(245, 195, 45, 255));
 }

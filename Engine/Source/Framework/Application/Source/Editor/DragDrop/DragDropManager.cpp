@@ -7,7 +7,6 @@
 #include "TransformComponent.hpp"
 #include "Log.h"
 
-
 // -----------------------------------------------------------------------------
 // DragDropPayload Member Implementations
 // -----------------------------------------------------------------------------
@@ -84,8 +83,7 @@ bool DragDropManager::BeginSource(const TEString &type, const void *data, size_t
     return false;
 }
 
-bool DragDropManager::BeginSourceString(const TEString &type, const TEString &str, const TEString &tooltip,
-                                        int flags)
+bool DragDropManager::BeginSourceString(const TEString &type, const TEString &str, const TEString &tooltip, int flags)
 {
     return BeginSource(type, str.c_str(), str.Length() + 1, tooltip.empty() ? str : tooltip, flags);
 }
@@ -112,8 +110,7 @@ bool DragDropManager::BeginSourceEntity(uint64_t entityId, const TEString &entit
     return BeginSource(TE_DND_ENTITY_ID, &entityId, sizeof(uint64_t), tooltip, flags);
 }
 
-bool DragDropManager::BeginSourceEntityArray(const TEArray<uint64_t> &entityIds, const TEString &tooltip,
-                                            int flags)
+bool DragDropManager::BeginSourceEntityArray(const TEArray<uint64_t> &entityIds, const TEString &tooltip, int flags)
 {
     if (entityIds.IsEmpty())
         return false;
@@ -175,8 +172,10 @@ bool DragDropManager::ExecuteTarget(const TEString &targetContextId, void *userD
                         payload.Data = accepted->Data;
                         payload.DataSize = accepted->DataSize;
                         payload.IsDelivery = true;
-                        TE_CORE_INFO("DragDropManager: Delivered payload '{0}' (Size: {1} B) to target '{2}' (Supported Type: '{3}')",
-                                     payload.PayloadType, payload.DataSize, targetContextId, handler->GetSupportedPayloadType());
+                        TE_CORE_INFO("DragDropManager: Delivered payload '{0}' (Size: {1} B) to target '{2}' "
+                                     "(Supported Type: '{3}')",
+                                     payload.PayloadType, payload.DataSize, targetContextId,
+                                     handler->GetSupportedPayloadType());
                         bool handled = handler->OnDrop(context, payload);
                         TimeGUI::EndDragDropTarget();
                         return handled;
@@ -192,8 +191,7 @@ bool DragDropManager::ExecuteTarget(const TEString &targetContextId, void *userD
 // -----------------------------------------------------------------------------
 // UI Feedback Helpers
 // -----------------------------------------------------------------------------
-void DragDropManager::DrawDropTargetHighlight(const TEVector2 &min, const TEVector2 &max, bool isValid,
-                                              float rounding)
+void DragDropManager::DrawDropTargetHighlight(const TEVector2 &min, const TEVector2 &max, bool isValid, float rounding)
 {
     TimeGUIDrawList dl = TimeGUI::GetWindowDrawList();
     unsigned int fillColor = isValid ? 0x254A88E8 : 0x25E84A4A;
@@ -319,7 +317,6 @@ TEArray<uint64_t> DragDropManager::DecodeEntityArray(const void *data, size_t si
     return result;
 }
 
-
 bool DragDropManager::ValidateExtension(const TEString &path, const TEString &expectedExtensions)
 {
     if (expectedExtensions.empty() || expectedExtensions == "*")
@@ -367,4 +364,3 @@ bool DragDropManager::IsDescendantOf(Ref<Scene> scene, uint64_t candidateChildId
 
     return false;
 }
-

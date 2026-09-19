@@ -109,7 +109,7 @@ void ProjectHubLayer::OnTimeGUIRender()
         TimeGUI::Image((TimeGUITextureID)(uint64_t)m_LogoIcon->GetRendererID(), TEVector2(48, 48));
         TimeGUI::SameLine(0, 12.0f);
     }
-    
+
     TimeGUI::TextColored(TEVector4(0.95f, 0.96f, 0.98f, 1.0f), "TIME ENGINE");
 
     TimeGUI::Unindent(18.0f);
@@ -157,8 +157,9 @@ void ProjectHubLayer::OnTimeGUIRender()
         if (active)
         {
             auto dl = TimeGUI::GetWindowDrawList();
-            dl.AddRectFilled(TEVector2(btnPos.x, btnPos.y + 4.0f), TEVector2(btnPos.x + 3.0f, btnPos.y + btnHeight - 4.0f),
-                             IM_COL32(100, 160, 240, 255), 2.0f);
+            dl.AddRectFilled(TEVector2(btnPos.x, btnPos.y + 4.0f),
+                             TEVector2(btnPos.x + 3.0f, btnPos.y + btnHeight - 4.0f), IM_COL32(100, 160, 240, 255),
+                             2.0f);
         }
 
         TimeGUI::PopStyleVar();
@@ -248,7 +249,8 @@ void ProjectHubLayer::UI_DrawProjectsList()
 
     if (m_RecentProjects.empty())
     {
-        TimeGUI::TextDisabled("No recent projects found. Click '+ New Project' or 'Browse Directory...' to get started.");
+        TimeGUI::TextDisabled(
+            "No recent projects found. Click '+ New Project' or 'Browse Directory...' to get started.");
     }
     else
     {
@@ -264,7 +266,8 @@ void ProjectHubLayer::UI_DrawProjectsList()
         for (const auto &path : m_RecentProjects)
         {
             TEString filename = path.GetStem();
-            if (!filterLower.empty() && !filename.ToLower().Contains(filterLower) && !path.ToLower().Contains(filterLower))
+            if (!filterLower.empty() && !filename.ToLower().Contains(filterLower) &&
+                !path.ToLower().Contains(filterLower))
                 continue;
 
             if (currentX + cardWidth > panelWidth && currentX > 0.0f)
@@ -328,8 +331,8 @@ void ProjectHubLayer::UI_DrawProjectsList()
             TEVector2 badgeSize(96.0f, 20.0f);
             drawList.AddRectFilled(badgePos, TEVector2(badgePos.x + badgeSize.x, badgePos.y + badgeSize.y),
                                    IM_COL32(32, 40, 52, 220), 4.0f);
-            drawList.AddText(TEVector2(badgePos.x + 8.0f, badgePos.y + 3.0f),
-                             IM_COL32(120, 160, 210, 255), "TimeEngine 2D");
+            drawList.AddText(TEVector2(badgePos.x + 8.0f, badgePos.y + 3.0f), IM_COL32(120, 160, 210, 255),
+                             "TimeEngine 2D");
 
             drawList.PopClipRect();
 
@@ -670,7 +673,6 @@ void ProjectHubLayer::SaveRecentProjects()
     TEFileSystem::WriteAllText("Config/recent_projects.txt", content);
 }
 
-
 void ProjectHubLayer::SetDarkThemeColors()
 {
     auto &colors = TimeGUI::GetStyle().Colors;
@@ -705,7 +707,7 @@ void ProjectHubLayer::SetDarkThemeColors()
     colors[TimeGUICol_HeaderHovered] = TEVector4{0.26f, 0.30f, 0.38f, 0.75f};
     colors[TimeGUICol_HeaderActive] = TEVector4{0.20f, 0.24f, 0.30f, 0.90f};
 
-    colors[TimeGUICol_Button] = TEVector4{0.0f, 0.0f, 0.0f, 0.0f}; // Transparent idle
+    colors[TimeGUICol_Button] = TEVector4{0.0f, 0.0f, 0.0f, 0.0f};            // Transparent idle
     colors[TimeGUICol_ButtonHovered] = TEVector4{0.24f, 0.28f, 0.35f, 0.65f}; // Slate highlight on hover
     colors[TimeGUICol_ButtonActive] = TEVector4{0.18f, 0.22f, 0.28f, 0.90f};
 

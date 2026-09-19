@@ -84,14 +84,16 @@ public:
 
         {
             std::unique_lock<std::mutex> lock(m_Mutex);
-            m_PendingTasks.Add([&task, &completed, &taskMutex, &taskCV]() {
-                task();
+            m_PendingTasks.Add(
+                [&task, &completed, &taskMutex, &taskCV]()
                 {
-                    std::lock_guard<std::mutex> lk(taskMutex);
-                    completed = true;
-                }
-                taskCV.notify_one();
-            });
+                    task();
+                    {
+                        std::lock_guard<std::mutex> lk(taskMutex);
+                        completed = true;
+                    }
+                    taskCV.notify_one();
+                });
         }
         m_WorkCV.notify_one();
 

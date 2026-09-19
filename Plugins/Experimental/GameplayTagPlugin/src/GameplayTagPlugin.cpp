@@ -28,24 +28,26 @@ void GameplayTagPlugin::OnUnload()
 
 void GameplayTagPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("GameplayTag", "HierarchicalTagMatching", false, [](TestContext &ctx) {
-        GameplayTag tagEnemy("Actor.Enemy.Boss.Dragon");
-        GameplayTag tagParent("Actor.Enemy");
-        GameplayTag tagUnrelated("Actor.Player");
+    TestRegistry::RegisterTest("GameplayTag", "HierarchicalTagMatching", false,
+                               [](TestContext &ctx)
+                               {
+                                   GameplayTag tagEnemy("Actor.Enemy.Boss.Dragon");
+                                   GameplayTag tagParent("Actor.Enemy");
+                                   GameplayTag tagUnrelated("Actor.Player");
 
-        TE_CHECK(tagEnemy.IsValid());
-        TE_CHECK(tagEnemy.MatchesTag(tagParent));
-        TE_CHECK(!tagEnemy.MatchesTag(tagUnrelated));
-        TE_CHECK_EQ(tagEnemy.GetLeafName(), "Dragon");
-        TE_CHECK_EQ(tagEnemy.GetRootName(), "Actor");
-        TE_CHECK_EQ(tagEnemy.GetDepth(), 4);
+                                   TE_CHECK(tagEnemy.IsValid());
+                                   TE_CHECK(tagEnemy.MatchesTag(tagParent));
+                                   TE_CHECK(!tagEnemy.MatchesTag(tagUnrelated));
+                                   TE_CHECK_EQ(tagEnemy.GetLeafName(), "Dragon");
+                                   TE_CHECK_EQ(tagEnemy.GetRootName(), "Actor");
+                                   TE_CHECK_EQ(tagEnemy.GetDepth(), 4);
 
-        GameplayTagContainer container;
-        container.AddTag(tagEnemy);
-        TE_CHECK(container.HasTag(tagEnemy));
-        TE_CHECK(container.HasTag(tagParent));
-        TE_CHECK(!container.HasTag(tagUnrelated));
-    });
+                                   GameplayTagContainer container;
+                                   container.AddTag(tagEnemy);
+                                   TE_CHECK(container.HasTag(tagEnemy));
+                                   TE_CHECK(container.HasTag(tagParent));
+                                   TE_CHECK(!container.HasTag(tagUnrelated));
+                               });
 }
 
 void GameplayTagPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

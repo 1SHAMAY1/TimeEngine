@@ -109,6 +109,7 @@ for _, pluginDescriptor in ipairs(allPlugins) do
         filter "system:windows"
             systemversion "latest"
             defines { "TE_PLATFORM_WINDOWS", "TE_BUILD_PLUGIN" }
+            links { "ws2_32", "ole32", "uuid", "oleaut32" }
 
         filter { "system:windows", "action:vs*" }
             postbuildcommands {

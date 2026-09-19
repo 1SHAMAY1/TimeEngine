@@ -41,25 +41,29 @@ void MaterialSystemPlugin::OnUnload()
 
 void MaterialSystemPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("MaterialSystem", "MaterialAssetCreationAndDefaults", false, [](TestContext &ctx) {
-        MaterialAsset mat("TestPBRMaterial");
-        TE_CHECK_EQ(mat.GetName(), "TestPBRMaterial");
-        TE_CHECK_EQ(mat.GetType(), "MaterialAsset");
-        TE_CHECK_EQ(mat.GetDefaultExtension(), ".tematerial");
+    TestRegistry::RegisterTest("MaterialSystem", "MaterialAssetCreationAndDefaults", false,
+                               [](TestContext &ctx)
+                               {
+                                   MaterialAsset mat("TestPBRMaterial");
+                                   TE_CHECK_EQ(mat.GetName(), "TestPBRMaterial");
+                                   TE_CHECK_EQ(mat.GetType(), "MaterialAsset");
+                                   TE_CHECK_EQ(mat.GetDefaultExtension(), ".tematerial");
 
-        auto &graph = mat.GetGraph();
-        TE_CHECK_EQ(graph.GetNodes().Num(), 0);
+                                   auto &graph = mat.GetGraph();
+                                   TE_CHECK_EQ(graph.GetNodes().Num(), 0);
 
-        mat.CreateDefaultGraph();
-        TE_CHECK(graph.GetNodes().Num() > 0);
-    });
+                                   mat.CreateDefaultGraph();
+                                   TE_CHECK(graph.GetNodes().Num() > 0);
+                               });
 
-    TestRegistry::RegisterTest("MaterialSystem", "MaterialInstanceParameters", false, [](TestContext &ctx) {
-        MaterialInstanceAsset inst("TestInstance");
-        TE_CHECK_EQ(inst.GetName(), "TestInstance");
-        TE_CHECK_EQ(inst.GetType(), "MaterialInstanceAsset");
-        TE_CHECK_EQ(inst.GetDefaultExtension(), ".tematinst");
-    });
+    TestRegistry::RegisterTest("MaterialSystem", "MaterialInstanceParameters", false,
+                               [](TestContext &ctx)
+                               {
+                                   MaterialInstanceAsset inst("TestInstance");
+                                   TE_CHECK_EQ(inst.GetName(), "TestInstance");
+                                   TE_CHECK_EQ(inst.GetType(), "MaterialInstanceAsset");
+                                   TE_CHECK_EQ(inst.GetDefaultExtension(), ".tematinst");
+                               });
 }
 
 void MaterialSystemPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

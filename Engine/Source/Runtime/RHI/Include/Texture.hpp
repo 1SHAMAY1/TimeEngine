@@ -84,7 +84,6 @@ public:
     void SetName(const TEString &name) { m_Name = name; }
     void SetFilePath(const TEString &path) { m_FilePath = path; }
 
-
 private:
     uint32_t m_RendererID = 0;
     uint32_t m_Width = 0;

@@ -31,10 +31,7 @@ public:
     TestCaseResult CurrentResult;
     TEArray<BenchmarkResult> Benchmarks;
 
-    void RecordPass()
-    {
-        CurrentResult.AssertionCount++;
-    }
+    void RecordPass() { CurrentResult.AssertionCount++; }
 
     void RecordFail(const TEString &msg, const char *file, int line)
     {
@@ -60,13 +57,13 @@ public:
 #define TE_TEST_CASE(Category, Name)                                                                                   \
     void TE_TEST_##Category##_##Name(TestContext &ctx);                                                                \
     static bool s_Registered_##Category##_##Name =                                                                     \
-        TestRegistry::RegisterTest(#Category, #Name, false, &TE_TEST_##Category##_##Name);                            \
+        TestRegistry::RegisterTest(#Category, #Name, false, &TE_TEST_##Category##_##Name);                             \
     void TE_TEST_##Category##_##Name(TestContext &ctx)
 
 #define TE_STRESS_TEST_CASE(Category, Name)                                                                            \
     void TE_TEST_##Category##_##Name(TestContext &ctx);                                                                \
     static bool s_Registered_##Category##_##Name =                                                                     \
-        TestRegistry::RegisterTest(#Category, #Name, true, &TE_TEST_##Category##_##Name);                             \
+        TestRegistry::RegisterTest(#Category, #Name, true, &TE_TEST_##Category##_##Name);                              \
     void TE_TEST_##Category##_##Name(TestContext &ctx)
 
 #define TE_CHECK(cond)                                                                                                 \
@@ -78,7 +75,7 @@ public:
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            ctx.RecordFail("Condition failed: " #cond, __FILE__, __LINE__);                                           \
+            ctx.RecordFail("Condition failed: " #cond, __FILE__, __LINE__);                                            \
         }                                                                                                              \
     } while (false)
 
@@ -114,6 +111,6 @@ public:
         auto benchStart = std::chrono::high_resolution_clock::now();                                                   \
         Func();                                                                                                        \
         auto benchEnd = std::chrono::high_resolution_clock::now();                                                     \
-        double elapsedMs = std::chrono::duration<double, std::milli>(benchEnd - benchStart).count();                  \
+        double elapsedMs = std::chrono::duration<double, std::milli>(benchEnd - benchStart).count();                   \
         ctx.RecordBenchmark(Name, Iterations, elapsedMs);                                                              \
     } while (false)

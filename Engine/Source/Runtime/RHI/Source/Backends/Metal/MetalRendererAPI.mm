@@ -1,6 +1,6 @@
 #include "Renderer/Metal/MetalRendererAPI.hpp"
-#include "Renderer/RendererContext.hpp"
-#include "Core/Log.h"
+#include "RendererContext.hpp"
+#include "Log.h"
 
 #ifdef TE_SUPPORT_METAL
 #import <Metal/Metal.h>

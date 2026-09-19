@@ -23,7 +23,8 @@ public:
 
     virtual const TEString &GetHoverDescription() const override
     {
-        static TEString s_Desc = "Game Manager Asset: Defines gameplay rules, player spawning, and controller bindings.";
+        static TEString s_Desc =
+            "Game Manager Asset: Defines gameplay rules, player spawning, and controller bindings.";
         return s_Desc;
     }
 
@@ -57,5 +58,6 @@ private:
     TEString m_Name = "NewGameManager";
     TEString m_PlayerAssetPath = "";
     TEString m_ControllerAssetPath = "";
-    TEString m_SourceText = "// TimeEngine Game Manager Script\nfunction OnGameStart() {\n    // Initialize score, rules & spawns\n}\n\nfunction OnUpdate(dt) {\n}\n";
+    TEString m_SourceText = "// TimeEngine Game Manager Script\nfunction OnGameStart() {\n    // Initialize score, "
+                            "rules & spawns\n}\n\nfunction OnUpdate(dt) {\n}\n";
 };

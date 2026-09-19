@@ -30,7 +30,8 @@ public:
 
     virtual const TEString &GetHoverDescription() const override
     {
-        static TEString s_Desc = "Player Asset: Defines player appearance, physics attributes, and movement characteristics.";
+        static TEString s_Desc =
+            "Player Asset: Defines player appearance, physics attributes, and movement characteristics.";
         return s_Desc;
     }
 
@@ -89,5 +90,6 @@ private:
     float m_Friction = 12.0f;
     float m_JumpForce = 10.0f;
     TEVector2 m_ColliderSize = {1.0f, 1.0f};
-    TEString m_SourceText = "// TimeEngine Player Script\nfunction OnPlayerReady() {\n}\n\nfunction OnUpdate(dt) {\n}\n";
+    TEString m_SourceText =
+        "// TimeEngine Player Script\nfunction OnPlayerReady() {\n}\n\nfunction OnUpdate(dt) {\n}\n";
 };

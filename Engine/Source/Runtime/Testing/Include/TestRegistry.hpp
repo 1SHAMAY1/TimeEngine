@@ -16,7 +16,8 @@ struct TestEntry
 class TE_API TestRegistry
 {
 public:
-    static bool RegisterTest(const TEString &category, const TEString &name, bool isStress, std::function<void(TestContext &)> func);
+    static bool RegisterTest(const TEString &category, const TEString &name, bool isStress,
+                             std::function<void(TestContext &)> func);
     static TEArray<TestEntry> &GetTests();
     static void Clear();
 };

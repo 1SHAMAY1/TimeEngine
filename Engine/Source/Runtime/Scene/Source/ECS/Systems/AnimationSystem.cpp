@@ -6,9 +6,7 @@
 void UpdateAnimationSystem(EntityManager &manager, float dt)
 {
     ComponentQuery<AnimatedSpriteComponent> query(manager);
-    query.ForEach([dt](EntityID entityID, AnimatedSpriteComponent &anim) {
-        anim.Tick(dt);
-    });
+    query.ForEach([dt](EntityID entityID, AnimatedSpriteComponent &anim) { anim.Tick(dt); });
 }
 
 struct AnimationSystemRegistrar

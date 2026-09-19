@@ -15,7 +15,6 @@ class EntityManager;
 class TComponent;
 class TObject;
 
-
 // ==========================================
 // Managed Memory Allocation & Lifetime Helpers
 // ==========================================
@@ -111,8 +110,8 @@ public:
                               const TEVector2 &position = {0.0f, 0.0f});
 
     template <typename T, typename... Args>
-    static Entity Spawn(Scene &scene, const TEString &name = "SpawnedEntity",
-                        const TEVector2 &position = {0.0f, 0.0f}, Args &&...args)
+    static Entity Spawn(Scene &scene, const TEString &name = "SpawnedEntity", const TEVector2 &position = {0.0f, 0.0f},
+                        Args &&...args)
     {
         Entity entity = SpawnEntity(scene, name, position);
         if constexpr (!std::is_same_v<T, void>)
@@ -134,8 +133,9 @@ public:
                                         bool drawDebug = false, float debugDuration = 0.0f,
                                         const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                         const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
-    static TEArray<TESpatialHitResult> MultiSweepLine(const TEVector2 &start, const TEVector2 &end, Scene *scene = nullptr,
-                                                      bool drawDebug = false, float debugDuration = 0.0f,
+    static TEArray<TESpatialHitResult> MultiSweepLine(const TEVector2 &start, const TEVector2 &end,
+                                                      Scene *scene = nullptr, bool drawDebug = false,
+                                                      float debugDuration = 0.0f,
                                                       const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                                       const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
 
@@ -145,19 +145,21 @@ public:
                                           const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                           const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
     static TEArray<TESpatialHitResult> MultiSweepCircle(const TEVector2 &start, const TEVector2 &end,
-                                                        const TEVector2 &radius = {1.0f, 1.0f}, float angleRadians = 0.0f,
-                                                        Scene *scene = nullptr, bool drawDebug = false, float debugDuration = 0.0f,
+                                                        const TEVector2 &radius = {1.0f, 1.0f},
+                                                        float angleRadians = 0.0f, Scene *scene = nullptr,
+                                                        bool drawDebug = false, float debugDuration = 0.0f,
                                                         const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                                         const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
 
-    static TESpatialHitResult SweepBox(const TEVector2 &start, const TEVector2 &end,
-                                       const TEVector2 &halfExtents, float angleRadians = 0.0f,
-                                       Scene *scene = nullptr, bool drawDebug = false, float debugDuration = 0.0f,
+    static TESpatialHitResult SweepBox(const TEVector2 &start, const TEVector2 &end, const TEVector2 &halfExtents,
+                                       float angleRadians = 0.0f, Scene *scene = nullptr, bool drawDebug = false,
+                                       float debugDuration = 0.0f,
                                        const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                        const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
     static TEArray<TESpatialHitResult> MultiSweepBox(const TEVector2 &start, const TEVector2 &end,
                                                      const TEVector2 &halfExtents, float angleRadians = 0.0f,
-                                                     Scene *scene = nullptr, bool drawDebug = false, float debugDuration = 0.0f,
+                                                     Scene *scene = nullptr, bool drawDebug = false,
+                                                     float debugDuration = 0.0f,
                                                      const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                                      const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
 
@@ -168,13 +170,16 @@ public:
                                           const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
     static TEArray<TESpatialHitResult> MultiSweepCustom(const TEVector2 &start, const TEVector2 &end,
                                                         const struct CollisionShape &shape, float angleRadians = 0.0f,
-                                                        Scene *scene = nullptr, bool drawDebug = false, float debugDuration = 0.0f,
+                                                        Scene *scene = nullptr, bool drawDebug = false,
+                                                        float debugDuration = 0.0f,
                                                         const TEColor &traceColor = TEColor(0.0f, 1.0f, 0.0f, 1.0f),
                                                         const TEColor &hitColor = TEColor(1.0f, 0.0f, 0.0f, 1.0f));
 };
 
 // Aliases for convenience
-class TFSpatialQuery : public GameplayUtils {};
+class TFSpatialQuery : public GameplayUtils
+{
+};
 
 #define TE_PLUGIN_ENABLED(PluginName)                                                                                  \
     (defined(TE_PLUGIN_##PluginName##_ENABLED) && (TE_PLUGIN_##PluginName##_ENABLED == 1))

@@ -54,12 +54,14 @@ TE_STRESS_TEST_CASE(Stress, PhysicsRigidBodiesBenchmark)
     }
 
     const size_t dynamicSteps = 60;
-    TE_BENCHMARK("Physics Dynamic Collisions (1,000 Bodies - 60 ticks)", dynamicSteps, [&]() {
-        for (size_t step = 0; step < dynamicSteps; ++step)
-        {
-            world.Step(1.0f / 60.0f);
-        }
-    });
+    TE_BENCHMARK("Physics Dynamic Collisions (1,000 Bodies - 60 ticks)", dynamicSteps,
+                 [&]()
+                 {
+                     for (size_t step = 0; step < dynamicSteps; ++step)
+                     {
+                         world.Step(1.0f / 60.0f);
+                     }
+                 });
 
     TE_CHECK(bodies[0].Position.y <= 700.0f);
 
@@ -70,12 +72,14 @@ TE_STRESS_TEST_CASE(Stress, PhysicsRigidBodiesBenchmark)
     }
 
     const size_t sleepingSteps = 60;
-    TE_BENCHMARK("Physics Settled Sleep Islands (1,000 Bodies - 60 ticks)", sleepingSteps, [&]() {
-        for (size_t step = 0; step < sleepingSteps; ++step)
-        {
-            world.Step(1.0f / 60.0f);
-        }
-    });
+    TE_BENCHMARK("Physics Settled Sleep Islands (1,000 Bodies - 60 ticks)", sleepingSteps,
+                 [&]()
+                 {
+                     for (size_t step = 0; step < sleepingSteps; ++step)
+                     {
+                         world.Step(1.0f / 60.0f);
+                     }
+                 });
 
     // Test wake propagation on contact
     world.WakeTouching(bodies[0].m_VeloxEntityID);

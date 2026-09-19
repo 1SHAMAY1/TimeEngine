@@ -13,10 +13,7 @@ void AssetFileWatcher::Init()
     s_CheckInterval = 0.5f;
 }
 
-void AssetFileWatcher::Shutdown()
-{
-    s_WatchedFiles.Clear();
-}
+void AssetFileWatcher::Shutdown() { s_WatchedFiles.Clear(); }
 
 void AssetFileWatcher::Watch(const TEString &path, const FileChangeCallback &callback)
 {
@@ -31,15 +28,9 @@ void AssetFileWatcher::Watch(const TEString &path, const FileChangeCallback &cal
     s_WatchedFiles[path] = wf;
 }
 
-void AssetFileWatcher::Unwatch(const TEString &path)
-{
-    s_WatchedFiles.Remove(path);
-}
+void AssetFileWatcher::Unwatch(const TEString &path) { s_WatchedFiles.Remove(path); }
 
-void AssetFileWatcher::Clear()
-{
-    s_WatchedFiles.Clear();
-}
+void AssetFileWatcher::Clear() { s_WatchedFiles.Clear(); }
 
 void AssetFileWatcher::Update(float deltaTime)
 {

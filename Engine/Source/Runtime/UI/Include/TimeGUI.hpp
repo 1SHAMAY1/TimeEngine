@@ -881,7 +881,6 @@ TE_API const TimeGUIPayload *AcceptDragDropPayload(const TEString &type, int fla
 TE_API void EndDragDropTarget();
 TE_API const TimeGUIPayload *GetDragDropPayload();
 
-
 TE_API unsigned int DockSpace(unsigned int id, const TEVector2 &size = {0, 0}, int flags = 0);
 TE_API void DockBuilderRemoveNode(unsigned int nodeId);
 TE_API void DockBuilderAddNode(unsigned int nodeId, int flags = 0);

@@ -20,36 +20,38 @@ void SpriteEditorPlugin::OnUnload()
 
 void SpriteEditorPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("SpriteEditor", "GridSlicingUVMath", false, [](TestContext &ctx) {
-        // Test slicing a 64x64 texture into 16x16 tiles (4x4 grid = 16 frames)
-        uint32_t texW = 64;
-        uint32_t texH = 64;
-        uint32_t frameW = 16;
-        uint32_t frameH = 16;
+    TestRegistry::RegisterTest("SpriteEditor", "GridSlicingUVMath", false,
+                               [](TestContext &ctx)
+                               {
+                                   // Test slicing a 64x64 texture into 16x16 tiles (4x4 grid = 16 frames)
+                                   uint32_t texW = 64;
+                                   uint32_t texH = 64;
+                                   uint32_t frameW = 16;
+                                   uint32_t frameH = 16;
 
-        uint32_t cols = texW / frameW;
-        uint32_t rows = texH / frameH;
-        TE_CHECK_EQ(cols, 4);
-        TE_CHECK_EQ(rows, 4);
-        TE_CHECK_EQ(cols * rows, 16);
+                                   uint32_t cols = texW / frameW;
+                                   uint32_t rows = texH / frameH;
+                                   TE_CHECK_EQ(cols, 4);
+                                   TE_CHECK_EQ(rows, 4);
+                                   TE_CHECK_EQ(cols * rows, 16);
 
-        // Frame index 5 = row 1, col 1
-        uint32_t frameIdx = 5;
-        uint32_t r = frameIdx / cols;
-        uint32_t c = frameIdx % cols;
-        TE_CHECK_EQ(r, 1);
-        TE_CHECK_EQ(c, 1);
+                                   // Frame index 5 = row 1, col 1
+                                   uint32_t frameIdx = 5;
+                                   uint32_t r = frameIdx / cols;
+                                   uint32_t c = frameIdx % cols;
+                                   TE_CHECK_EQ(r, 1);
+                                   TE_CHECK_EQ(c, 1);
 
-        float uMin = static_cast<float>(c * frameW) / static_cast<float>(texW);
-        float vMin = static_cast<float>(r * frameH) / static_cast<float>(texH);
-        float uMax = static_cast<float>((c + 1) * frameW) / static_cast<float>(texW);
-        float vMax = static_cast<float>((r + 1) * frameH) / static_cast<float>(texH);
+                                   float uMin = static_cast<float>(c * frameW) / static_cast<float>(texW);
+                                   float vMin = static_cast<float>(r * frameH) / static_cast<float>(texH);
+                                   float uMax = static_cast<float>((c + 1) * frameW) / static_cast<float>(texW);
+                                   float vMax = static_cast<float>((r + 1) * frameH) / static_cast<float>(texH);
 
-        TE_CHECK_EQ(uMin, 0.25f);
-        TE_CHECK_EQ(vMin, 0.25f);
-        TE_CHECK_EQ(uMax, 0.50f);
-        TE_CHECK_EQ(vMax, 0.50f);
-    });
+                                   TE_CHECK_EQ(uMin, 0.25f);
+                                   TE_CHECK_EQ(vMin, 0.25f);
+                                   TE_CHECK_EQ(uMax, 0.50f);
+                                   TE_CHECK_EQ(vMax, 0.50f);
+                               });
 }
 
 void SpriteEditorPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

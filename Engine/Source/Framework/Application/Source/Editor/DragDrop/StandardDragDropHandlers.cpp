@@ -89,7 +89,8 @@ bool Sprite2DViewportDropHandler::CanHandle(const DragDropContext &context, cons
     return DragDropManager::ValidateExtension(path, ".png,.jpg,.jpeg,.tga,.bmp");
 }
 
-TEString Sprite2DViewportDropHandler::GetTooltipText(const DragDropContext &context, const DragDropPayload &payload) const
+TEString Sprite2DViewportDropHandler::GetTooltipText(const DragDropContext &context,
+                                                     const DragDropPayload &payload) const
 {
     TEString path = payload.AsString();
     return "Spawn Sprite: " + path.GetFilename();
@@ -174,7 +175,8 @@ bool HierarchyReparentDropHandler::CanHandle(const DragDropContext &context, con
     return true;
 }
 
-TEString HierarchyReparentDropHandler::GetTooltipText(const DragDropContext &context, const DragDropPayload &payload) const
+TEString HierarchyReparentDropHandler::GetTooltipText(const DragDropContext &context,
+                                                      const DragDropPayload &payload) const
 {
     uint64_t targetEntityId = (uint64_t)(uintptr_t)context.TargetUserData;
     if (targetEntityId == 0)
@@ -205,8 +207,8 @@ bool HierarchyReparentDropHandler::OnDrop(const DragDropContext &context, const 
         scene->SetParent(dragged, target);
     }
 
-    TE_CORE_INFO("HierarchyReparentDropHandler: Reparented {0} entity/entities under target {1}",
-                 entityList.Size(), targetEntityId);
+    TE_CORE_INFO("HierarchyReparentDropHandler: Reparented {0} entity/entities under target {1}", entityList.Size(),
+                 targetEntityId);
     return true;
 }
 
@@ -267,7 +269,8 @@ TE_REGISTER_DRAG_DROP_HANDLER(FolderAssetMoveDropHandler)
 // =============================================================================
 bool FolderAssetMoveDropHandler::CanHandle(const DragDropContext &context, const DragDropPayload &payload) const
 {
-    if (!payload.IsType(TE_DND_ASSET_PATH) && !payload.IsType(TE_DND_CONTENT_BROWSER_ITEMS) && !payload.IsType(TE_DND_OS_FILES))
+    if (!payload.IsType(TE_DND_ASSET_PATH) && !payload.IsType(TE_DND_CONTENT_BROWSER_ITEMS) &&
+        !payload.IsType(TE_DND_OS_FILES))
         return false;
 
     if (!context.TargetUserData)
@@ -292,7 +295,8 @@ bool FolderAssetMoveDropHandler::CanHandle(const DragDropContext &context, const
     return true;
 }
 
-TEString FolderAssetMoveDropHandler::GetTooltipText(const DragDropContext &context, const DragDropPayload &payload) const
+TEString FolderAssetMoveDropHandler::GetTooltipText(const DragDropContext &context,
+                                                    const DragDropPayload &payload) const
 {
     TEString targetFolder = context.TargetUserData ? *(const TEString *)context.TargetUserData : "";
     return "Move into " + targetFolder.GetFilename();
@@ -354,4 +358,3 @@ bool FolderAssetMoveDropHandler::OnDrop(const DragDropContext &context, const Dr
 
     return true;
 }
-

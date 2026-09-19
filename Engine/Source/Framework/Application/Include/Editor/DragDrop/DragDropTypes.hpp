@@ -17,14 +17,14 @@
 // Standard Context Type Identifiers
 namespace DragDropTargetContext
 {
-    inline const TEString Viewport = "Viewport";
-    inline const TEString Inspector = "Inspector";
-    inline const TEString SceneHierarchy = "SceneHierarchy";
-    inline const TEString ContentBrowser = "ContentBrowser";
-    inline const TEString ContentBrowserFolder = "ContentBrowserFolder";
-    inline const TEString AssetEditor = "AssetEditor";
-    inline const TEString Universal = "*";
-}
+inline const TEString Viewport = "Viewport";
+inline const TEString Inspector = "Inspector";
+inline const TEString SceneHierarchy = "SceneHierarchy";
+inline const TEString ContentBrowser = "ContentBrowser";
+inline const TEString ContentBrowserFolder = "ContentBrowserFolder";
+inline const TEString AssetEditor = "AssetEditor";
+inline const TEString Universal = "*";
+} // namespace DragDropTargetContext
 
 class EditorLayer;
 class Scene;
@@ -47,10 +47,7 @@ struct TE_API DragDropPayload
     bool IsPreview = false;
     bool IsDelivery = false;
 
-    bool IsType(const TEString &type) const
-    {
-        return PayloadType == type;
-    }
+    bool IsType(const TEString &type) const { return PayloadType == type; }
 
     TEString AsString() const
     {

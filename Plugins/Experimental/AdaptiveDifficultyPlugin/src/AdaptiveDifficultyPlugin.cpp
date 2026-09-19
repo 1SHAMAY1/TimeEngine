@@ -17,22 +17,25 @@ void AdaptiveDifficultyPlugin::OnUnload()
 
 void AdaptiveDifficultyPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("AdaptiveDifficulty", "DDAScalingCurves", false, [](TestContext &ctx) {
-        float playerSkill = 0.85f; // high performance
-        float targetDifficulty = 0.5f;
-        float adjustmentSpeed = 0.1f;
+    TestRegistry::RegisterTest("AdaptiveDifficulty", "DDAScalingCurves", false,
+                               [](TestContext &ctx)
+                               {
+                                   float playerSkill = 0.85f; // high performance
+                                   float targetDifficulty = 0.5f;
+                                   float adjustmentSpeed = 0.1f;
 
-        float delta = playerSkill - targetDifficulty;
-        float newDifficulty = targetDifficulty + delta * adjustmentSpeed;
-        TE_CHECK(newDifficulty > targetDifficulty);
-        TE_CHECK(newDifficulty <= 1.0f);
+                                   float delta = playerSkill - targetDifficulty;
+                                   float newDifficulty = targetDifficulty + delta * adjustmentSpeed;
+                                   TE_CHECK(newDifficulty > targetDifficulty);
+                                   TE_CHECK(newDifficulty <= 1.0f);
 
-        // Negative score clamping
-        float lowSkill = 0.1f;
-        float adjustedLow = std::max(0.0f, targetDifficulty + (lowSkill - targetDifficulty) * adjustmentSpeed);
-        TE_CHECK(adjustedLow < targetDifficulty);
-        TE_CHECK(adjustedLow >= 0.0f);
-    });
+                                   // Negative score clamping
+                                   float lowSkill = 0.1f;
+                                   float adjustedLow = std::max(0.0f, targetDifficulty + (lowSkill - targetDifficulty) *
+                                                                                             adjustmentSpeed);
+                                   TE_CHECK(adjustedLow < targetDifficulty);
+                                   TE_CHECK(adjustedLow >= 0.0f);
+                               });
 }
 
 void AdaptiveDifficultyPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

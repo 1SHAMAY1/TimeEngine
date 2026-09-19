@@ -14,7 +14,7 @@ project "Engine"
         pchheader "PreRequisites.h"
         pchsource "Source/Runtime/Core/Source/PreRequisites.cpp"
     filter "action:xcode*"
-        pchheader "PreRequisites.h"
+        pchheader "Source/Runtime/Core/Include/PreRequisites.h"
     filter "action:gmake*"
         pchheader "PreRequisites.h"
         pchsource "Source/Runtime/Core/Source/PreRequisites.cpp"
@@ -25,7 +25,12 @@ project "Engine"
         xcodebuildsettings {
             ["LD_DYLIB_INSTALL_NAME"] = "@rpath/libEngine.dylib"
         }
-        files { "Source/**.mm" }
+        buildoptions { "-fobjc-arc" }
+        files {
+            "Source/**.mm",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_metal.mm",
+            "%{wks.location}/ThirdParty/IMGUI/ImGui/backends/imgui_impl_metal.h"
+        }
     filter {}
 
     files {

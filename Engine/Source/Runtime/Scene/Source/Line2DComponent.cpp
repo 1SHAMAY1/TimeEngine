@@ -8,8 +8,7 @@ Line2DComponent::Line2DComponent()
     m_Points.Add(TEVector2(1.0f, 0.0f));
 }
 
-void Line2DComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel,
-                              const TERef<Material> &material) const
+void Line2DComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &worldModel, const TERef<Material> &material) const
 {
     if (!Visible || !renderer || m_Points.Num() < 2)
         return;

@@ -38,86 +38,96 @@ void DialogueRunnerPlugin::OnUnload()
 
 void DialogueRunnerPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("DialogueRunner", "NarrativeValueOperations", false, [](TestContext &ctx) {
-        NarrativeValue vInt = 42;
-        NarrativeValue vFloat = 3.14f;
-        NarrativeValue vBool = true;
-        NarrativeValue vStr = TEString("Hero");
+    TestRegistry::RegisterTest("DialogueRunner", "NarrativeValueOperations", false,
+                               [](TestContext &ctx)
+                               {
+                                   NarrativeValue vInt = 42;
+                                   NarrativeValue vFloat = 3.14f;
+                                   NarrativeValue vBool = true;
+                                   NarrativeValue vStr = TEString("Hero");
 
-        TE_CHECK_EQ(vInt.GetType(), NarrativeValueType::Int);
-        TE_CHECK_EQ(vInt.AsInt(), 42);
+                                   TE_CHECK_EQ(vInt.GetType(), NarrativeValueType::Int);
+                                   TE_CHECK_EQ(vInt.AsInt(), 42);
 
-        TE_CHECK_EQ(vFloat.GetType(), NarrativeValueType::Float);
-        TE_CHECK(std::abs(vFloat.AsFloat() - 3.14f) < 0.001f);
+                                   TE_CHECK_EQ(vFloat.GetType(), NarrativeValueType::Float);
+                                   TE_CHECK(std::abs(vFloat.AsFloat() - 3.14f) < 0.001f);
 
-        TE_CHECK_EQ(vBool.GetType(), NarrativeValueType::Bool);
-        TE_CHECK_EQ(vBool.AsBool(), true);
+                                   TE_CHECK_EQ(vBool.GetType(), NarrativeValueType::Bool);
+                                   TE_CHECK_EQ(vBool.AsBool(), true);
 
-        TE_CHECK_EQ(vStr.GetType(), NarrativeValueType::String);
-        TE_CHECK_EQ(vStr.AsString(), "Hero");
-    });
+                                   TE_CHECK_EQ(vStr.GetType(), NarrativeValueType::String);
+                                   TE_CHECK_EQ(vStr.AsString(), "Hero");
+                               });
 
-    TestRegistry::RegisterTest("DialogueRunner", "BlackboardMutationsAndConditions", false, [](TestContext &ctx) {
-        NarrativeBlackboard bb;
-        bb.Set("gold", 100);
-        bb.Set("player_name", TEString("Alex"));
-        bb.Set("is_champion", false);
+    TestRegistry::RegisterTest("DialogueRunner", "BlackboardMutationsAndConditions", false,
+                               [](TestContext &ctx)
+                               {
+                                   NarrativeBlackboard bb;
+                                   bb.Set("gold", 100);
+                                   bb.Set("player_name", TEString("Alex"));
+                                   bb.Set("is_champion", false);
 
-        TE_CHECK(bb.Has("gold"));
-        TE_CHECK_EQ(bb.Get("gold").AsInt(), 100);
+                                   TE_CHECK(bb.Has("gold"));
+                                   TE_CHECK_EQ(bb.Get("gold").AsInt(), 100);
 
-        // Conditions
-        TE_CHECK(bb.EvaluateCondition("gold", ComparisonOp::GreaterEqual, 50));
-        TE_CHECK(!bb.EvaluateCondition("gold", ComparisonOp::LessThan, 100));
-        TE_CHECK(bb.EvaluateCondition("player_name", ComparisonOp::Equal, TEString("Alex")));
+                                   // Conditions
+                                   TE_CHECK(bb.EvaluateCondition("gold", ComparisonOp::GreaterEqual, 50));
+                                   TE_CHECK(!bb.EvaluateCondition("gold", ComparisonOp::LessThan, 100));
+                                   TE_CHECK(bb.EvaluateCondition("player_name", ComparisonOp::Equal, TEString("Alex")));
 
-        // Mutation Add
-        bb.ApplyMutation("gold", MutationOp::Add, 50);
-        TE_CHECK_EQ(bb.Get("gold").AsInt(), 150);
+                                   // Mutation Add
+                                   bb.ApplyMutation("gold", MutationOp::Add, 50);
+                                   TE_CHECK_EQ(bb.Get("gold").AsInt(), 150);
 
-        // Mutation Subtract
-        bb.ApplyMutation("gold", MutationOp::Subtract, 25);
-        TE_CHECK_EQ(bb.Get("gold").AsInt(), 125);
+                                   // Mutation Subtract
+                                   bb.ApplyMutation("gold", MutationOp::Subtract, 25);
+                                   TE_CHECK_EQ(bb.Get("gold").AsInt(), 125);
 
-        // Mutation Set
-        bb.ApplyMutation("is_champion", MutationOp::Set, true);
-        TE_CHECK_EQ(bb.Get("is_champion").AsBool(), true);
-    });
+                                   // Mutation Set
+                                   bb.ApplyMutation("is_champion", MutationOp::Set, true);
+                                   TE_CHECK_EQ(bb.Get("is_champion").AsBool(), true);
+                               });
 
-    TestRegistry::RegisterTest("DialogueRunner", "QuestLifecycleAndFlags", false, [](TestContext &ctx) {
-        QuestManager qm;
-        QuestData q;
-        q.ID = "slay_dragon";
-        q.Title = "Slay the Dragon";
-        q.Description = "Defeat the ancient dragon in the mountains";
-        q.Status = QuestStatus::NotStarted;
-        qm.RegisterQuest(q);
+    TestRegistry::RegisterTest("DialogueRunner", "QuestLifecycleAndFlags", false,
+                               [](TestContext &ctx)
+                               {
+                                   QuestManager qm;
+                                   QuestData q;
+                                   q.ID = "slay_dragon";
+                                   q.Title = "Slay the Dragon";
+                                   q.Description = "Defeat the ancient dragon in the mountains";
+                                   q.Status = QuestStatus::NotStarted;
+                                   qm.RegisterQuest(q);
 
-        TE_CHECK(qm.HasQuest("slay_dragon"));
-        TE_CHECK_EQ(qm.GetQuestStatus("slay_dragon"), QuestStatus::NotStarted);
+                                   TE_CHECK(qm.HasQuest("slay_dragon"));
+                                   TE_CHECK_EQ(qm.GetQuestStatus("slay_dragon"), QuestStatus::NotStarted);
 
-        qm.SetQuestStatus("slay_dragon", QuestStatus::Active);
-        TE_CHECK_EQ(qm.GetQuestStatus("slay_dragon"), QuestStatus::Active);
+                                   qm.SetQuestStatus("slay_dragon", QuestStatus::Active);
+                                   TE_CHECK_EQ(qm.GetQuestStatus("slay_dragon"), QuestStatus::Active);
 
-        qm.SetObjectiveProgress("slay_dragon", "reach_mountain", 1);
-        qm.SetQuestStatus("slay_dragon", QuestStatus::Completed);
-        TE_CHECK_EQ(qm.GetQuestStatus("slay_dragon"), QuestStatus::Completed);
-    });
+                                   qm.SetObjectiveProgress("slay_dragon", "reach_mountain", 1);
+                                   qm.SetQuestStatus("slay_dragon", QuestStatus::Completed);
+                                   TE_CHECK_EQ(qm.GetQuestStatus("slay_dragon"), QuestStatus::Completed);
+                               });
 
-    TestRegistry::RegisterTest("DialogueRunner", "DialogueGraphTraversal", false, [](TestContext &ctx) {
-        DialogueGraph graph;
-        graph.Clear();
-        DialogueGraphNode *rootNode = graph.AddNode(NarrativeNodeType::Entry, {0.0f, 0.0f}, "Start");
-        DialogueGraphNode *speechNode = graph.AddNode(NarrativeNodeType::Dialogue, {100.0f, 0.0f}, "Greeting");
+    TestRegistry::RegisterTest("DialogueRunner", "DialogueGraphTraversal", false,
+                               [](TestContext &ctx)
+                               {
+                                   DialogueGraph graph;
+                                   graph.Clear();
+                                   DialogueGraphNode *rootNode =
+                                       graph.AddNode(NarrativeNodeType::Entry, {0.0f, 0.0f}, "Start");
+                                   DialogueGraphNode *speechNode =
+                                       graph.AddNode(NarrativeNodeType::Dialogue, {100.0f, 0.0f}, "Greeting");
 
-        TE_CHECK(rootNode != nullptr);
-        TE_CHECK(speechNode != nullptr);
-        TE_CHECK_EQ(graph.GetNodes().Num(), 2);
+                                   TE_CHECK(rootNode != nullptr);
+                                   TE_CHECK(speechNode != nullptr);
+                                   TE_CHECK_EQ(graph.GetNodes().Num(), 2);
 
-        StoryInstance story;
-        bool loaded = story.LoadFromGraph(graph);
-        TE_CHECK(loaded);
-    });
+                                   StoryInstance story;
+                                   bool loaded = story.LoadFromGraph(graph);
+                                   TE_CHECK(loaded);
+                               });
 }
 
 void DialogueRunnerPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

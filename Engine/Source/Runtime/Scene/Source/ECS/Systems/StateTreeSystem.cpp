@@ -6,9 +6,7 @@
 void UpdateStateTreeSystem(EntityManager &manager, float dt)
 {
     ComponentQuery<StateTreeComponent> stQuery(manager);
-    stQuery.ForEach([dt](EntityID entityID, StateTreeComponent &st) {
-        st.Tick(dt);
-    });
+    stQuery.ForEach([dt](EntityID entityID, StateTreeComponent &st) { st.Tick(dt); });
 }
 
 struct StateTreeSystemRegistrar

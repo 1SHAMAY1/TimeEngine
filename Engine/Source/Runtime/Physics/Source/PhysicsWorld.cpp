@@ -46,7 +46,8 @@ void PhysicsWorld::AddBody(RigidBody *body)
     Velox_SetVelocity((VeloxWorld *)m_VeloxWorld, id, body->Velocity.x, body->Velocity.y);
 
     // 5. Add Physical Material Component
-    Velox_AddPhysicalMaterial((VeloxWorld *)m_VeloxWorld, id, body->StaticFriction, body->DynamicFriction, body->Restitution);
+    Velox_AddPhysicalMaterial((VeloxWorld *)m_VeloxWorld, id, body->StaticFriction, body->DynamicFriction,
+                              body->Restitution);
 
     // 6. Add Collider Component depending on shape
     if (body->Shape.type == CollisionType::AABB)
@@ -117,7 +118,8 @@ void PhysicsWorld::Step(float dt)
             if (body->Mass > 0.0f)
             {
                 body->Velocity += (body->Force / body->Mass) * dt;
-                Velox_SetVelocity((VeloxWorld *)m_VeloxWorld, body->m_VeloxEntityID, body->Velocity.x, body->Velocity.y);
+                Velox_SetVelocity((VeloxWorld *)m_VeloxWorld, body->m_VeloxEntityID, body->Velocity.x,
+                                  body->Velocity.y);
             }
             body->Force = {0.0f, 0.0f};
         }
@@ -259,7 +261,8 @@ void PhysicsWorld::AddProjectile(uint32_t entityID, bool faceVelocity, float spe
     }
 }
 
-void PhysicsWorld::AddPhysicalMaterial(uint32_t entityID, float staticFriction, float dynamicFriction, float restitution)
+void PhysicsWorld::AddPhysicalMaterial(uint32_t entityID, float staticFriction, float dynamicFriction,
+                                       float restitution)
 {
     if (m_VeloxWorld)
     {
@@ -361,15 +364,9 @@ bool PhysicsWorld::Raycast(const TEVector2 &start, const TEVector2 &direction, f
     return false;
 }
 
-static inline float Cross2D(const TEVector2 &a, const TEVector2 &b)
-{
-    return a.x * b.y - a.y * b.x;
-}
+static inline float Cross2D(const TEVector2 &a, const TEVector2 &b) { return a.x * b.y - a.y * b.x; }
 
-static inline float Dot2D(const TEVector2 &a, const TEVector2 &b)
-{
-    return a.x * b.x + a.y * b.y;
-}
+static inline float Dot2D(const TEVector2 &a, const TEVector2 &b) { return a.x * b.x + a.y * b.y; }
 
 static inline TEVector2 RotateVec2(const TEVector2 &v, float rad)
 {
@@ -378,8 +375,8 @@ static inline TEVector2 RotateVec2(const TEVector2 &v, float rad)
     return {v.x * c - v.y * s, v.x * s + v.y * c};
 }
 
-static bool RaycastSegment(const TEVector2 &p, const TEVector2 &d, const TEVector2 &a, const TEVector2 &b,
-                           float &outT, TEVector2 &outNormal)
+static bool RaycastSegment(const TEVector2 &p, const TEVector2 &d, const TEVector2 &a, const TEVector2 &b, float &outT,
+                           TEVector2 &outNormal)
 {
     TEVector2 edge = {b.x - a.x, b.y - a.y};
     float denom = Cross2D(d, edge);
@@ -405,8 +402,8 @@ static bool RaycastSegment(const TEVector2 &p, const TEVector2 &d, const TEVecto
     return false;
 }
 
-static bool RaycastCircle(const TEVector2 &p, const TEVector2 &d, const TEVector2 &center, float radius,
-                          float &outT, TEVector2 &outNormal, bool &outPenetrating)
+static bool RaycastCircle(const TEVector2 &p, const TEVector2 &d, const TEVector2 &center, float radius, float &outT,
+                          TEVector2 &outNormal, bool &outPenetrating)
 {
     TEVector2 f = {p.x - center.x, p.y - center.y};
     float a = Dot2D(d, d);
@@ -545,15 +542,14 @@ TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepLine(const TEVector2 &start,
         }
     }
 
-    std::sort(hits.begin(), hits.end(), [](const TESpatialHitResult &a, const TESpatialHitResult &b) {
-        return a.Fraction < b.Fraction;
-    });
+    std::sort(hits.begin(), hits.end(),
+              [](const TESpatialHitResult &a, const TESpatialHitResult &b) { return a.Fraction < b.Fraction; });
 
     return hits;
 }
 
-TESpatialHitResult PhysicsWorld::SweepCircle(const TEVector2 &start, const TEVector2 &end,
-                                             const TEVector2 &radius, float angleRadians)
+TESpatialHitResult PhysicsWorld::SweepCircle(const TEVector2 &start, const TEVector2 &end, const TEVector2 &radius,
+                                             float angleRadians)
 {
     auto results = MultiSweepCircle(start, end, radius, angleRadians);
     if (!results.IsEmpty())
@@ -562,7 +558,7 @@ TESpatialHitResult PhysicsWorld::SweepCircle(const TEVector2 &start, const TEVec
 }
 
 TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepCircle(const TEVector2 &start, const TEVector2 &end,
-                                                          const TEVector2 &radius, float angleRadians)
+                                                           const TEVector2 &radius, float angleRadians)
 {
     TEArray<TESpatialHitResult> hits;
     TEVector2 delta = end - start;
@@ -654,15 +650,14 @@ TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepCircle(const TEVector2 &star
         }
     }
 
-    std::sort(hits.begin(), hits.end(), [](const TESpatialHitResult &a, const TESpatialHitResult &b) {
-        return a.Fraction < b.Fraction;
-    });
+    std::sort(hits.begin(), hits.end(),
+              [](const TESpatialHitResult &a, const TESpatialHitResult &b) { return a.Fraction < b.Fraction; });
 
     return hits;
 }
 
-TESpatialHitResult PhysicsWorld::SweepBox(const TEVector2 &start, const TEVector2 &end,
-                                         const TEVector2 &halfExtents, float angleRadians)
+TESpatialHitResult PhysicsWorld::SweepBox(const TEVector2 &start, const TEVector2 &end, const TEVector2 &halfExtents,
+                                          float angleRadians)
 {
     auto results = MultiSweepBox(start, end, halfExtents, angleRadians);
     if (!results.IsEmpty())
@@ -671,18 +666,17 @@ TESpatialHitResult PhysicsWorld::SweepBox(const TEVector2 &start, const TEVector
 }
 
 TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepBox(const TEVector2 &start, const TEVector2 &end,
-                                                       const TEVector2 &halfExtents, float angleRadians)
+                                                        const TEVector2 &halfExtents, float angleRadians)
 {
     TEArray<TESpatialHitResult> hits;
     TEVector2 delta = end - start;
     float totalDist = std::sqrt(delta.x * delta.x + delta.y * delta.y);
 
     // Construct oriented box vertices relative to center
-    TEVector2 localVerts[4] = {
-        RotateVec2({-halfExtents.x, -halfExtents.y}, angleRadians),
-        RotateVec2({halfExtents.x, -halfExtents.y}, angleRadians),
-        RotateVec2({halfExtents.x, halfExtents.y}, angleRadians),
-        RotateVec2({-halfExtents.x, halfExtents.y}, angleRadians)};
+    TEVector2 localVerts[4] = {RotateVec2({-halfExtents.x, -halfExtents.y}, angleRadians),
+                               RotateVec2({halfExtents.x, -halfExtents.y}, angleRadians),
+                               RotateVec2({halfExtents.x, halfExtents.y}, angleRadians),
+                               RotateVec2({-halfExtents.x, halfExtents.y}, angleRadians)};
 
     for (size_t bIdx = 0; bIdx < m_Bodies.Num(); ++bIdx)
     {
@@ -778,15 +772,14 @@ TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepBox(const TEVector2 &start, 
         }
     }
 
-    std::sort(hits.begin(), hits.end(), [](const TESpatialHitResult &a, const TESpatialHitResult &b) {
-        return a.Fraction < b.Fraction;
-    });
+    std::sort(hits.begin(), hits.end(),
+              [](const TESpatialHitResult &a, const TESpatialHitResult &b) { return a.Fraction < b.Fraction; });
 
     return hits;
 }
 
-TESpatialHitResult PhysicsWorld::SweepCustom(const TEVector2 &start, const TEVector2 &end,
-                                             const CollisionShape &shape, float angleRadians)
+TESpatialHitResult PhysicsWorld::SweepCustom(const TEVector2 &start, const TEVector2 &end, const CollisionShape &shape,
+                                             float angleRadians)
 {
     auto results = MultiSweepCustom(start, end, shape, angleRadians);
     if (!results.IsEmpty())
@@ -795,7 +788,7 @@ TESpatialHitResult PhysicsWorld::SweepCustom(const TEVector2 &start, const TEVec
 }
 
 TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepCustom(const TEVector2 &start, const TEVector2 &end,
-                                                          const CollisionShape &shape, float angleRadians)
+                                                           const CollisionShape &shape, float angleRadians)
 {
     if (shape.type == CollisionType::Circle)
     {
@@ -903,9 +896,8 @@ TEArray<TESpatialHitResult> PhysicsWorld::MultiSweepCustom(const TEVector2 &star
         }
     }
 
-    std::sort(hits.begin(), hits.end(), [](const TESpatialHitResult &a, const TESpatialHitResult &b) {
-        return a.Fraction < b.Fraction;
-    });
+    std::sort(hits.begin(), hits.end(),
+              [](const TESpatialHitResult &a, const TESpatialHitResult &b) { return a.Fraction < b.Fraction; });
 
     return hits;
 }

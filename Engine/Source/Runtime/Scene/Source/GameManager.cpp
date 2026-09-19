@@ -32,4 +32,3 @@ void GameManager::RegisterGameplayComponents()
 void GameManager::Init() { RegisterGameplayComponents(); }
 
 void GameManager::Update(float dt) { InputSystem::Get().Update(dt); }
-

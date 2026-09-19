@@ -126,10 +126,7 @@ public:
         }
     }
 
-    explicit TEArray(size_t count)
-    {
-        Resize(count);
-    }
+    explicit TEArray(size_t count) { Resize(count); }
 
     TEArray(size_t count, const T &value)
     {
@@ -182,8 +179,7 @@ public:
         }
     }
 
-    TEArray(TEArray &&other) noexcept
-        : m_Data(other.m_Data), m_Size(other.m_Size), m_Capacity(other.m_Capacity)
+    TEArray(TEArray &&other) noexcept : m_Data(other.m_Data), m_Size(other.m_Size), m_Capacity(other.m_Capacity)
     {
         other.m_Data = nullptr;
         other.m_Size = 0;
@@ -313,7 +309,10 @@ public:
 
     void assign(size_t count, const T &value) { Assign(count, value); }
     template <typename InputIt, typename = std::enable_if_t<!std::is_integral_v<InputIt>>>
-    void assign(InputIt first, InputIt last) { Assign(first, last); }
+    void assign(InputIt first, InputIt last)
+    {
+        Assign(first, last);
+    }
     void assign(std::initializer_list<T> ilist) { Assign(ilist); }
 
     // Add & Insert
@@ -358,10 +357,7 @@ public:
         return ref;
     }
 
-    template <typename... Args> reference emplace_back(Args &&...args)
-    {
-        return Emplace(std::forward<Args>(args)...);
-    }
+    template <typename... Args> reference emplace_back(Args &&...args) { return Emplace(std::forward<Args>(args)...); }
 
     void Insert(size_t index, const T &element)
     {
@@ -624,5 +620,3 @@ public:
 
     bool operator!=(const TEArray<T> &other) const { return !(*this == other); }
 };
-
-

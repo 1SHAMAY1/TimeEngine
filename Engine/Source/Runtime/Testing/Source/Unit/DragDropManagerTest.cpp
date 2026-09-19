@@ -13,7 +13,9 @@ class MockTestDropHandler : public IDragDropHandler
 {
 public:
     MockTestDropHandler(const TEString &pType, const TEString &ctx, int priority = 0)
-        : m_PayloadType(pType), m_Context(ctx), m_Priority(priority) {}
+        : m_PayloadType(pType), m_Context(ctx), m_Priority(priority)
+    {
+    }
 
     TEString GetSupportedPayloadType() const override { return m_PayloadType; }
     TEString GetSupportedTargetContext() const override { return m_Context; }
@@ -115,7 +117,6 @@ TE_TEST_CASE(DragDropManager, RegistryWildcardMatching)
     DragDropRegistry::Clear();
 }
 
-
 TE_TEST_CASE(DragDropManager, SinglePathEncodingDecoding)
 {
     TEArray<TEString> paths;
@@ -180,7 +181,6 @@ TE_TEST_CASE(DragDropManager, EmptyAndNullPayloadHandling)
     TE_CHECK(decodedEntityNull.IsEmpty());
 }
 
-
 TE_TEST_CASE(DragDropManager, ExtensionValidationSingleAndMulti)
 {
     TE_CHECK(DragDropManager::ValidateExtension("Player.png", ".png"));
@@ -210,12 +210,14 @@ TE_TEST_CASE(DragDropManager, WindowDropEventDispatching)
 
     bool handled = false;
     EventDispatcher dispatcher(dropEvent);
-    dispatcher.Dispatch<WindowDropEvent>([&](WindowDropEvent &e) -> bool {
-        handled = true;
-        TE_CHECK_EQ(e.GetPathCount(), 2);
-        TE_CHECK_EQ(e.GetPaths()[0], "C:/Users/User/Desktop/CoolTexture.png");
-        return true;
-    });
+    dispatcher.Dispatch<WindowDropEvent>(
+        [&](WindowDropEvent &e) -> bool
+        {
+            handled = true;
+            TE_CHECK_EQ(e.GetPathCount(), 2);
+            TE_CHECK_EQ(e.GetPaths()[0], "C:/Users/User/Desktop/CoolTexture.png");
+            return true;
+        });
 
     TE_CHECK(handled);
     TE_CHECK(dropEvent.Handled());

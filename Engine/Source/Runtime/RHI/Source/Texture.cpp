@@ -138,34 +138,45 @@ bool Texture::LoadImageSource(const TEString &path)
         else
 #endif
 #ifdef TE_SUPPORT_OPENGL
-        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+            if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
         {
-            TaskSystem::ExecuteOnRenderThreadBlocking([this, &img, &path]() {
-                GLenum internalFormat = (img.Channels == 4) ? GL_RGBA8 : (img.Channels == 3) ? GL_RGB8 : (img.Channels == 2) ? GL_RG8 : GL_R8;
-                GLenum dataFormat     = (img.Channels == 4) ? GL_RGBA  : (img.Channels == 3) ? GL_RGB  : (img.Channels == 2) ? GL_RG  : GL_RED;
-
-                // Clear any prior unhandled OpenGL errors safely (bounded loop)
-                for (int i = 0; i < 16 && glGetError() != GL_NO_ERROR; ++i);
-
-                glGenTextures(1, &m_RendererID);
-                glBindTexture(GL_TEXTURE_2D, m_RendererID);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.Width, img.Height, 0, dataFormat, GL_UNSIGNED_BYTE, img.Data());
-
-                GLenum glErr = glGetError();
-                if (glErr != GL_NO_ERROR)
+            TaskSystem::ExecuteOnRenderThreadBlocking(
+                [this, &img, &path]()
                 {
-                    TE_CORE_ERROR("Texture [OpenGL]: Allocation failed for '", path, "' (GL Error: 0x", glErr, ")");
-                }
-                else
-                {
-                    TE_CORE_INFO("Texture [OpenGL]: Allocated texture '", path, "' -> Handle ID: ", m_RendererID, " (", img.Width, "x", img.Height, ", ", img.Channels, " channels)");
-                }
-            });
+                    GLenum internalFormat = (img.Channels == 4)   ? GL_RGBA8
+                                            : (img.Channels == 3) ? GL_RGB8
+                                            : (img.Channels == 2) ? GL_RG8
+                                                                  : GL_R8;
+                    GLenum dataFormat = (img.Channels == 4)   ? GL_RGBA
+                                        : (img.Channels == 3) ? GL_RGB
+                                        : (img.Channels == 2) ? GL_RG
+                                                              : GL_RED;
+
+                    // Clear any prior unhandled OpenGL errors safely (bounded loop)
+                    for (int i = 0; i < 16 && glGetError() != GL_NO_ERROR; ++i)
+                        ;
+
+                    glGenTextures(1, &m_RendererID);
+                    glBindTexture(GL_TEXTURE_2D, m_RendererID);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.Width, img.Height, 0, dataFormat,
+                                 GL_UNSIGNED_BYTE, img.Data());
+
+                    GLenum glErr = glGetError();
+                    if (glErr != GL_NO_ERROR)
+                    {
+                        TE_CORE_ERROR("Texture [OpenGL]: Allocation failed for '", path, "' (GL Error: 0x", glErr, ")");
+                    }
+                    else
+                    {
+                        TE_CORE_INFO("Texture [OpenGL]: Allocated texture '", path, "' -> Handle ID: ", m_RendererID,
+                                     " (", img.Width, "x", img.Height, ", ", img.Channels, " channels)");
+                    }
+                });
         }
 #else
         {
@@ -216,40 +227,42 @@ void Texture::UpdateGPUParameters()
 #ifdef TE_SUPPORT_OPENGL
     if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
-        TaskSystem::ExecuteOnRenderThreadBlocking([this]() {
-            glBindTexture(GL_TEXTURE_2D, m_RendererID);
-
-            GLenum minFilter = GL_LINEAR;
-            GLenum magFilter = GL_LINEAR;
-
-            if (m_FilterMode == TextureFilterMode::Nearest)
+        TaskSystem::ExecuteOnRenderThreadBlocking(
+            [this]()
             {
-                minFilter = m_GenerateMipmaps ? GL_NEAREST_MIPMAP_NEAREST : GL_NEAREST;
-                magFilter = GL_NEAREST;
-            }
-            else
-            {
-                minFilter = m_GenerateMipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
-                magFilter = GL_LINEAR;
-            }
+                glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+                GLenum minFilter = GL_LINEAR;
+                GLenum magFilter = GL_LINEAR;
 
-            GLenum wrap = GL_REPEAT;
-            if (m_WrapMode == TextureWrapMode::ClampToEdge)
-                wrap = GL_CLAMP_TO_EDGE;
-            else if (m_WrapMode == TextureWrapMode::MirroredRepeat)
-                wrap = GL_MIRRORED_REPEAT;
+                if (m_FilterMode == TextureFilterMode::Nearest)
+                {
+                    minFilter = m_GenerateMipmaps ? GL_NEAREST_MIPMAP_NEAREST : GL_NEAREST;
+                    magFilter = GL_NEAREST;
+                }
+                else
+                {
+                    minFilter = m_GenerateMipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+                    magFilter = GL_LINEAR;
+                }
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 
-            if (m_GenerateMipmaps)
-            {
-                glGenerateMipmap(GL_TEXTURE_2D);
-            }
-        });
+                GLenum wrap = GL_REPEAT;
+                if (m_WrapMode == TextureWrapMode::ClampToEdge)
+                    wrap = GL_CLAMP_TO_EDGE;
+                else if (m_WrapMode == TextureWrapMode::MirroredRepeat)
+                    wrap = GL_MIRRORED_REPEAT;
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+
+                if (m_GenerateMipmaps)
+                {
+                    glGenerateMipmap(GL_TEXTURE_2D);
+                }
+            });
     }
 #endif
 }
@@ -261,9 +274,7 @@ Texture::~Texture()
     {
         uint32_t id = m_RendererID;
         m_RendererID = 0;
-        TaskSystem::ExecuteOnRenderThreadBlocking([id]() {
-            glDeleteTextures(1, &id);
-        });
+        TaskSystem::ExecuteOnRenderThreadBlocking([id]() { glDeleteTextures(1, &id); });
     }
 #endif
 #ifdef TE_SUPPORT_DIRECTX11
@@ -299,7 +310,7 @@ void Texture::Bind(uint32_t slot) const
     else
 #endif
 #ifdef TE_SUPPORT_OPENGL
-    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
@@ -325,7 +336,7 @@ void Texture::Unbind() const
     else
 #endif
 #ifdef TE_SUPPORT_OPENGL
-    if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
+        if (RendererContext::GetAPI() == GraphicsAPI::OpenGL)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);

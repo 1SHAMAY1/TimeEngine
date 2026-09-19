@@ -119,7 +119,4 @@ public:
     const_iterator cend() const { return m_Map.cend(); }
 };
 
-
-
-template <typename KeyType, typename ValueType>
-using TEOrderedMap = std::map<KeyType, ValueType>;
+template <typename KeyType, typename ValueType> using TEOrderedMap = std::map<KeyType, ValueType>;

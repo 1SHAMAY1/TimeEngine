@@ -7,9 +7,7 @@
 void UpdateMovementSystem(EntityManager &manager, float dt)
 {
     ComponentQuery<CharacterBody2DComponent> cbQuery(manager);
-    cbQuery.ForEach([dt](EntityID entityID, CharacterBody2DComponent &cb) {
-        cb.Tick(dt);
-    });
+    cbQuery.ForEach([dt](EntityID entityID, CharacterBody2DComponent &cb) { cb.Tick(dt); });
 }
 
 struct MovementSystemRegistrar

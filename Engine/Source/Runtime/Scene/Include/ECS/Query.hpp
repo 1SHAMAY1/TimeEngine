@@ -6,14 +6,12 @@
 
 class EntityManager;
 
-template <typename... Components>
-class ComponentQuery
+template <typename... Components> class ComponentQuery
 {
 public:
     explicit ComponentQuery(EntityManager &manager);
 
-    template <typename Func>
-    void ForEach(Func &&func)
+    template <typename Func> void ForEach(Func &&func)
     {
         auto &archetypes = GetMatchingArchetypes();
         for (Archetype *arch : archetypes)
@@ -24,9 +22,11 @@ public:
             size_t count = arch->EntityCount();
             const EntityID *entityData = arch->GetEntities().GetData();
 
-            auto colTuple = std::make_tuple(arch->GetColumn(ComponentTypeID::Get<Components>())->template GetTypedData<Components>()...);
+            auto colTuple = std::make_tuple(
+                arch->GetColumn(ComponentTypeID::Get<Components>())->template GetTypedData<Components>()...);
 
-            [&]<size_t... Is>(std::index_sequence<Is...>) {
+            [&]<size_t... Is>(std::index_sequence<Is...>)
+            {
                 for (size_t row = 0; row < count; ++row)
                 {
                     if constexpr (std::is_invocable_v<Func, EntityID, Components &...>)

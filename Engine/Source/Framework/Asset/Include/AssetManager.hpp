@@ -57,8 +57,8 @@ struct AssetImportConfig
     TEString AssetType;
 
     // Texture Specific Options
-    int TextureFilterMode = 0;   // 0: Linear, 1: Nearest
-    int TextureWrapMode = 0;     // 0: Repeat, 1: ClampToEdge, 2: MirroredRepeat
+    int TextureFilterMode = 0; // 0: Linear, 1: Nearest
+    int TextureWrapMode = 0;   // 0: Repeat, 1: ClampToEdge, 2: MirroredRepeat
     bool GenerateMipmaps = false;
     bool PremultipliedAlpha = false;
 
@@ -123,7 +123,6 @@ public:
 private:
     static TEMap<AssetHandle, TERef<Asset>> s_LoadedAssets;
 };
-
 
 #define TE_REGISTER_ASSET(type)                                                                                        \
     static struct TEAssetRegistrar_##type                                                                              \

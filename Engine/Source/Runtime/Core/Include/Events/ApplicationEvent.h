@@ -3,7 +3,6 @@
 #include "Events/Event.h"
 #include "MathUtils.hpp"
 
-
 class TE_API WindowResizeEvent : public Event
 {
 public:
@@ -81,7 +80,9 @@ class TE_API WindowDropEvent : public Event
 {
 public:
     WindowDropEvent(const TEArray<TEString> &paths, const TEVector2 &dropPos = {0.0f, 0.0f})
-        : m_Paths(paths), m_DropPos(dropPos) {}
+        : m_Paths(paths), m_DropPos(dropPos)
+    {
+    }
 
     const TEArray<TEString> &GetPaths() const { return m_Paths; }
     const TEVector2 &GetDropPos() const { return m_DropPos; }
@@ -99,4 +100,3 @@ private:
     TEArray<TEString> m_Paths;
     TEVector2 m_DropPos;
 };
-

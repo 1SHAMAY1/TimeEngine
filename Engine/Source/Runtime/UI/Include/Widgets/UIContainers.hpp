@@ -36,10 +36,8 @@ protected:
 class TE_API UIBorder : public UIWidget
 {
 public:
-    UIBorder(const TEOption<TEVector4> &bgColor = {},
-             const TEOption<TEVector4> &borderColor = {},
-             const TEOption<float> &rounding = {},
-             const TEString &id = "##UIBorder")
+    UIBorder(const TEOption<TEVector4> &bgColor = {}, const TEOption<TEVector4> &borderColor = {},
+             const TEOption<float> &rounding = {}, const TEString &id = "##UIBorder")
         : UIWidget(id), m_BgColor(bgColor), m_BorderColor(borderColor), m_Rounding(rounding)
     {
     }
@@ -240,7 +238,11 @@ public:
     void SetValue(float val) { m_Value = val; }
     float GetValue() const { return m_Value; }
 
-    void SetRange(float minVal, float maxVal) { m_Min = minVal; m_Max = maxVal; }
+    void SetRange(float minVal, float maxVal)
+    {
+        m_Min = minVal;
+        m_Max = maxVal;
+    }
 
     // Per-Instance Style Overrides
     void SetCustomFrameBg(const TEOption<TEVector4> &col) { m_CustomFrameBg = col; }

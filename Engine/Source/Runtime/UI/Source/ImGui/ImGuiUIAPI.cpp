@@ -10,7 +10,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #endif
 #ifdef TE_SUPPORT_METAL
-#include "ImGui/ImGuiMetalBackend.hpp"
+#include "ImGuiMetalBackend.hpp"
 #endif
 #if defined(TE_SUPPORT_DIRECTX11) && defined(TE_PLATFORM_WINDOWS)
 #include "backends/imgui_impl_dx11.h"
@@ -714,13 +714,15 @@ bool ImGuiUIAPI::Selectable(const TEString &label, bool *selected, int flags, co
 void ImGuiUIAPI::Image(void *userTextureId, const TEVector2 &size, const TEVector2 &uv0, const TEVector2 &uv1,
                        const TEVector4 &tintCol)
 {
-    ImGui::ImageWithBg((ImTextureID)(size_t)userTextureId, ToImVec2(size), ToImVec2(uv0), ToImVec2(uv1), ImVec4(0, 0, 0, 0), ToImVec4(tintCol));
+    ImGui::ImageWithBg((ImTextureID)(size_t)userTextureId, ToImVec2(size), ToImVec2(uv0), ToImVec2(uv1),
+                       ImVec4(0, 0, 0, 0), ToImVec4(tintCol));
 }
 
 bool ImGuiUIAPI::ImageButton(const TEString &strId, void *userTextureId, const TEVector2 &size, const TEVector2 &uv0,
                              const TEVector2 &uv1)
 {
-    return ImGui::ImageButton(strId.c_str(), (ImTextureID)(size_t)userTextureId, ToImVec2(size), ToImVec2(uv0), ToImVec2(uv1));
+    return ImGui::ImageButton(strId.c_str(), (ImTextureID)(size_t)userTextureId, ToImVec2(size), ToImVec2(uv0),
+                              ToImVec2(uv1));
 }
 
 // -------------------------------------------------------------------------
@@ -853,10 +855,7 @@ bool ImGuiUIAPI::SetDragDropPayload(const TEString &type, const void *data, size
 }
 void ImGuiUIAPI::EndDragDropSource() { ImGui::EndDragDropSource(); }
 
-bool ImGuiUIAPI::BeginDragDropTarget()
-{
-    return ImGui::BeginDragDropTarget();
-}
+bool ImGuiUIAPI::BeginDragDropTarget() { return ImGui::BeginDragDropTarget(); }
 
 const TimeGUIPayload *ImGuiUIAPI::AcceptDragDropPayload(const TEString &type, int flags)
 {
@@ -872,10 +871,7 @@ const TimeGUIPayload *ImGuiUIAPI::AcceptDragDropPayload(const TEString &type, in
     return &m_CurrentPayload;
 }
 
-void ImGuiUIAPI::EndDragDropTarget()
-{
-    ImGui::EndDragDropTarget();
-}
+void ImGuiUIAPI::EndDragDropTarget() { ImGui::EndDragDropTarget(); }
 
 const TimeGUIPayload *ImGuiUIAPI::GetDragDropPayload()
 {
@@ -890,7 +886,6 @@ const TimeGUIPayload *ImGuiUIAPI::GetDragDropPayload()
     m_CurrentPayload.IsDelivery = payload->IsDelivery();
     return &m_CurrentPayload;
 }
-
 
 // -------------------------------------------------------------------------
 // Docking

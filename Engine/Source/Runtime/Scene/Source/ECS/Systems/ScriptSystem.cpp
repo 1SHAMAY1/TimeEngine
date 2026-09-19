@@ -6,17 +6,12 @@
 void UpdateScriptSystem(EntityManager &manager, float dt)
 {
     ComponentQuery<ScriptComponent> scriptQuery(manager);
-    scriptQuery.ForEach([dt](EntityID entityID, ScriptComponent &scriptComp) {
-        scriptComp.DispatchScriptUpdate(dt);
-    });
+    scriptQuery.ForEach([dt](EntityID entityID, ScriptComponent &scriptComp) { scriptComp.DispatchScriptUpdate(dt); });
 }
 
 struct ScriptSystemRegistrar
 {
-    ScriptSystemRegistrar()
-    {
-        SystemScheduler::Register("ScriptSystem", ESystemPhase::Logic, UpdateScriptSystem);
-    }
+    ScriptSystemRegistrar() { SystemScheduler::Register("ScriptSystem", ESystemPhase::Logic, UpdateScriptSystem); }
 };
 
 static ScriptSystemRegistrar s_ScriptSysReg;

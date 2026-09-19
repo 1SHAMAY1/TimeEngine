@@ -20,10 +20,7 @@ private:
 
 template <typename T> struct DragDropHandlerAutoRegister
 {
-    DragDropHandlerAutoRegister()
-    {
-        DragDropRegistry::RegisterHandler(CreateRef<T>());
-    }
+    DragDropHandlerAutoRegister() { DragDropRegistry::RegisterHandler(CreateRef<T>()); }
 };
 
 #define TE_REGISTER_DRAG_DROP_HANDLER(HandlerClass)                                                                    \

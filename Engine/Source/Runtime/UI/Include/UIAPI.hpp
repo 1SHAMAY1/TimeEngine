@@ -250,7 +250,6 @@ public:
     virtual void EndDragDropTarget() = 0;
     virtual const TimeGUIPayload *GetDragDropPayload() = 0;
 
-
     // -------------------------------------------------------------------------
     // Docking
     // -------------------------------------------------------------------------

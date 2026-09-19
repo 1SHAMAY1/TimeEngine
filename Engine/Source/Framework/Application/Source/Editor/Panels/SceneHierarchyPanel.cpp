@@ -15,7 +15,6 @@
 #include "TimeGUI.hpp"
 #include "Editor/DragDrop/DragDropManager.hpp"
 
-
 static Entity s_ContextEntity = Entity();
 static bool s_ShouldOpenHierarchyContextMenu = false;
 
@@ -215,7 +214,6 @@ void SceneHierarchyPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
     DragDropManager::ExecuteTarget(DragDropTargetContext::SceneHierarchy, (void *)0, editor);
 
     TimeGUI::PopStyleVar(2);
-
 
     if (entityToDelete.IsValid())
     {

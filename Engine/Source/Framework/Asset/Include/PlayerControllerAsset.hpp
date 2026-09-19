@@ -23,7 +23,8 @@ public:
 
     virtual const TEString &GetHoverDescription() const override
     {
-        static TEString s_Desc = "Player Controller Asset: Defines input routing and action evaluation via InputMappingContext.";
+        static TEString s_Desc =
+            "Player Controller Asset: Defines input routing and action evaluation via InputMappingContext.";
         return s_Desc;
     }
 
@@ -62,5 +63,6 @@ private:
     TEString m_MappingContextPath = "";
     bool m_bEnableLookAtCursor = false;
     float m_Deadzone = 0.15f;
-    TEString m_SourceText = "// TimeEngine Player Controller Script\nfunction OnInputUpdate(dt) {\n    // Custom input combos and reactions\n}\n";
+    TEString m_SourceText = "// TimeEngine Player Controller Script\nfunction OnInputUpdate(dt) {\n    // Custom input "
+                            "combos and reactions\n}\n";
 };

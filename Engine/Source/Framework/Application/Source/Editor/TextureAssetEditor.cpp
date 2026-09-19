@@ -103,8 +103,8 @@ void TextureAssetEditor::DrawEditor(EditorTab &tab)
     TimeGUI::SameLine();
     if (TimeGUI::Button("Reimport With New Source...", TEVector2(180.0f, 0.0f)))
     {
-        TEString filepath =
-            PlatformUtils::OpenFile("Image Files (*.png;*.jpg;*.jpeg;*.tga;*.bmp)\0*.png;*.jpg;*.jpeg;*.tga;*.bmp\0All Files (*.*)\0*.*\0");
+        TEString filepath = PlatformUtils::OpenFile(
+            "Image Files (*.png;*.jpg;*.jpeg;*.tga;*.bmp)\0*.png;*.jpg;*.jpeg;*.tga;*.bmp\0All Files (*.*)\0*.*\0");
         if (!filepath.IsEmpty())
         {
             if (AssetManager::ReimportAssetWithNewSource(tab.AssetPath, filepath))
@@ -120,7 +120,6 @@ void TextureAssetEditor::DrawEditor(EditorTab &tab)
     }
 
     TimeGUI::EndChild();
-
 
     TimeGUI::NextColumn();
 
@@ -183,8 +182,10 @@ void TextureAssetEditor::DrawEditor(EditorTab &tab)
             {
                 float bx1 = canvasPos.x + x;
                 float by1 = canvasPos.y + y;
-                float bx2 = (bx1 + tileSize > canvasPos.x + displaySize.x) ? canvasPos.x + displaySize.x : bx1 + tileSize;
-                float by2 = (by1 + tileSize > canvasPos.y + displaySize.y) ? canvasPos.y + displaySize.y : by1 + tileSize;
+                float bx2 =
+                    (bx1 + tileSize > canvasPos.x + displaySize.x) ? canvasPos.x + displaySize.x : bx1 + tileSize;
+                float by2 =
+                    (by1 + tileSize > canvasPos.y + displaySize.y) ? canvasPos.y + displaySize.y : by1 + tileSize;
                 drawList.AddRectFilled(TEVector2(bx1, by1), TEVector2(bx2, by2), colLight);
             }
         }
@@ -225,10 +226,8 @@ void TextureAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) co
 
 bool TextureAssetEditor::CanImportExtension(const TEString &sourceExt) const
 {
-    return sourceExt.Equals(".png", ESearchCase::IgnoreCase) ||
-           sourceExt.Equals(".jpg", ESearchCase::IgnoreCase) ||
-           sourceExt.Equals(".jpeg", ESearchCase::IgnoreCase) ||
-           sourceExt.Equals(".tga", ESearchCase::IgnoreCase) ||
+    return sourceExt.Equals(".png", ESearchCase::IgnoreCase) || sourceExt.Equals(".jpg", ESearchCase::IgnoreCase) ||
+           sourceExt.Equals(".jpeg", ESearchCase::IgnoreCase) || sourceExt.Equals(".tga", ESearchCase::IgnoreCase) ||
            sourceExt.Equals(".bmp", ESearchCase::IgnoreCase);
 }
 
@@ -258,4 +257,3 @@ void TextureAssetEditor::DrawImportSettings(AssetImportConfig &config)
 }
 
 TE_REGISTER_ASSET_EDITOR(TextureAssetEditor);
-

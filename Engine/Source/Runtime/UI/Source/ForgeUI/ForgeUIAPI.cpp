@@ -1170,7 +1170,6 @@ const TimeGUIPayload *ForgeUIAPI::AcceptDragDropPayload(const TEString &type, in
 void ForgeUIAPI::EndDragDropTarget() {}
 const TimeGUIPayload *ForgeUIAPI::GetDragDropPayload() { return nullptr; }
 
-
 // -------------------------------------------------------------------------
 // Docking (No-op in ForgeUI)
 // -------------------------------------------------------------------------

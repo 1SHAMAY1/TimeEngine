@@ -27,10 +27,8 @@ TEMatrix4 CustomMathAPI::MultiplyMat4(const TEMatrix4 &a, const TEMatrix4 &b) co
         __m128 e2 = _mm_set1_ps(b.m[i][2]);
         __m128 e3 = _mm_set1_ps(b.m[i][3]);
 
-        __m128 res = _mm_add_ps(
-            _mm_add_ps(_mm_mul_ps(colA0, e0), _mm_mul_ps(colA1, e1)),
-            _mm_add_ps(_mm_mul_ps(colA2, e2), _mm_mul_ps(colA3, e3))
-        );
+        __m128 res = _mm_add_ps(_mm_add_ps(_mm_mul_ps(colA0, e0), _mm_mul_ps(colA1, e1)),
+                                _mm_add_ps(_mm_mul_ps(colA2, e2), _mm_mul_ps(colA3, e3)));
 
         _mm_storeu_ps(&out.m[i].x, res);
     }
@@ -39,10 +37,7 @@ TEMatrix4 CustomMathAPI::MultiplyMat4(const TEMatrix4 &a, const TEMatrix4 &b) co
     {
         for (int j = 0; j < 4; ++j)
         {
-            out.m[i][j] = a.m[0][j] * b.m[i][0] +
-                          a.m[1][j] * b.m[i][1] +
-                          a.m[2][j] * b.m[i][2] +
-                          a.m[3][j] * b.m[i][3];
+            out.m[i][j] = a.m[0][j] * b.m[i][0] + a.m[1][j] * b.m[i][1] + a.m[2][j] * b.m[i][2] + a.m[3][j] * b.m[i][3];
         }
     }
 #endif
@@ -62,21 +57,17 @@ TEVector4 CustomMathAPI::MultiplyMat4Vec4(const TEMatrix4 &m, const TEVector4 &v
     __m128 vz = _mm_set1_ps(v.z);
     __m128 vw = _mm_set1_ps(v.w);
 
-    __m128 res = _mm_add_ps(
-        _mm_add_ps(_mm_mul_ps(col0, vx), _mm_mul_ps(col1, vy)),
-        _mm_add_ps(_mm_mul_ps(col2, vz), _mm_mul_ps(col3, vw))
-    );
+    __m128 res = _mm_add_ps(_mm_add_ps(_mm_mul_ps(col0, vx), _mm_mul_ps(col1, vy)),
+                            _mm_add_ps(_mm_mul_ps(col2, vz), _mm_mul_ps(col3, vw)));
 
     alignas(16) float r[4];
     _mm_store_ps(r, res);
     return {r[0], r[1], r[2], r[3]};
 #else
-    return {
-        m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + m.m[3][0] * v.w,
-        m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + m.m[3][1] * v.w,
-        m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + m.m[3][2] * v.w,
-        m.m[0][3] * v.x + m.m[1][3] * v.y + m.m[2][3] * v.z + m.m[3][3] * v.w
-    };
+    return {m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + m.m[3][0] * v.w,
+            m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + m.m[3][1] * v.w,
+            m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + m.m[3][2] * v.w,
+            m.m[0][3] * v.x + m.m[1][3] * v.y + m.m[2][3] * v.z + m.m[3][3] * v.w};
 #endif
 }
 
@@ -177,12 +168,8 @@ TEQuat CustomMathAPI::RotatorToQuat(float pitch, float yaw, float roll) const
     const float sinY = std::sin(y), cosY = std::cos(y);
     const float sinR = std::sin(r), cosR = std::cos(r);
 
-    return TEQuat(
-        cosY * sinP * cosR + sinY * cosP * sinR,
-        sinY * cosP * cosR - cosY * sinP * sinR,
-        cosY * cosP * sinR - sinY * sinP * cosR,
-        cosY * cosP * cosR + sinY * sinP * sinR
-    );
+    return TEQuat(cosY * sinP * cosR + sinY * cosP * sinR, sinY * cosP * cosR - cosY * sinP * sinR,
+                  cosY * cosP * sinR - sinY * sinP * cosR, cosY * cosP * cosR + sinY * sinP * sinR);
 }
 
 TEMatrix4 CustomMathAPI::QuatToMatrix(const TEQuat &q) const
@@ -219,35 +206,26 @@ TEQuat CustomMathAPI::QuatFromMatrix(const TEMatrix4 &m) const
     if (trace > 0.0f)
     {
         const float s = 0.5f / std::sqrt(trace + 1.0f);
-        return TEQuat((m.m[1][2] - m.m[2][1]) * s,
-                      (m.m[2][0] - m.m[0][2]) * s,
-                      (m.m[0][1] - m.m[1][0]) * s,
-                      0.25f / s);
+        return TEQuat((m.m[1][2] - m.m[2][1]) * s, (m.m[2][0] - m.m[0][2]) * s, (m.m[0][1] - m.m[1][0]) * s, 0.25f / s);
     }
     else
     {
         if (m.m[0][0] > m.m[1][1] && m.m[0][0] > m.m[2][2])
         {
             const float s = 2.0f * std::sqrt(1.0f + m.m[0][0] - m.m[1][1] - m.m[2][2]);
-            return TEQuat(0.25f * s,
-                          (m.m[0][1] + m.m[1][0]) / s,
-                          (m.m[0][2] + m.m[2][0]) / s,
+            return TEQuat(0.25f * s, (m.m[0][1] + m.m[1][0]) / s, (m.m[0][2] + m.m[2][0]) / s,
                           (m.m[1][2] - m.m[2][1]) / s);
         }
         else if (m.m[1][1] > m.m[2][2])
         {
             const float s = 2.0f * std::sqrt(1.0f + m.m[1][1] - m.m[0][0] - m.m[2][2]);
-            return TEQuat((m.m[0][1] + m.m[1][0]) / s,
-                          0.25f * s,
-                          (m.m[1][2] + m.m[2][1]) / s,
+            return TEQuat((m.m[0][1] + m.m[1][0]) / s, 0.25f * s, (m.m[1][2] + m.m[2][1]) / s,
                           (m.m[2][0] - m.m[0][2]) / s);
         }
         else
         {
             const float s = 2.0f * std::sqrt(1.0f + m.m[2][2] - m.m[0][0] - m.m[1][1]);
-            return TEQuat((m.m[0][2] + m.m[2][0]) / s,
-                          (m.m[1][2] + m.m[2][1]) / s,
-                          0.25f * s,
+            return TEQuat((m.m[0][2] + m.m[2][0]) / s, (m.m[1][2] + m.m[2][1]) / s, 0.25f * s,
                           (m.m[0][1] - m.m[1][0]) / s);
         }
     }

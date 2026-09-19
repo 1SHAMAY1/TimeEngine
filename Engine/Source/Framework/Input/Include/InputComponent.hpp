@@ -13,8 +13,8 @@ public:
     InputComponent();
     virtual ~InputComponent() override;
 
-    void OnAttach();
-    void OnDetach();
+    void OnAttach() override;
+    void OnDetach() override;
 
     using ActionBinding = std::function<void(const InputActionValue &)>;
 

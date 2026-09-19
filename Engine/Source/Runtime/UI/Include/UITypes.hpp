@@ -132,19 +132,20 @@ struct TE_API UIStyle
 
 enum TimeGUIDragDropFlags_
 {
-    TimeGUIDragDropFlags_None                         = 0,
+    TimeGUIDragDropFlags_None = 0,
     // Source flags
-    TimeGUIDragDropFlags_SourceNoPreviewTooltip       = 1 << 0,
-    TimeGUIDragDropFlags_SourceNoDisableHover         = 1 << 1,
-    TimeGUIDragDropFlags_SourceNoHoldToOpenOthers     = 1 << 2,
-    TimeGUIDragDropFlags_SourceAllowNullID            = 1 << 3,
-    TimeGUIDragDropFlags_SourceExtern                 = 1 << 4,
-    TimeGUIDragDropFlags_SourceAutoExpirePayload      = 1 << 5,
+    TimeGUIDragDropFlags_SourceNoPreviewTooltip = 1 << 0,
+    TimeGUIDragDropFlags_SourceNoDisableHover = 1 << 1,
+    TimeGUIDragDropFlags_SourceNoHoldToOpenOthers = 1 << 2,
+    TimeGUIDragDropFlags_SourceAllowNullID = 1 << 3,
+    TimeGUIDragDropFlags_SourceExtern = 1 << 4,
+    TimeGUIDragDropFlags_SourceAutoExpirePayload = 1 << 5,
     // Target flags
-    TimeGUIDragDropFlags_AcceptBeforeDelivery         = 1 << 10,
-    TimeGUIDragDropFlags_AcceptNoDrawDefaultRect      = 1 << 11,
-    TimeGUIDragDropFlags_AcceptNoPreviewTooltip       = 1 << 12,
-    TimeGUIDragDropFlags_AcceptPeekOnly               = TimeGUIDragDropFlags_AcceptBeforeDelivery | TimeGUIDragDropFlags_AcceptNoDrawDefaultRect
+    TimeGUIDragDropFlags_AcceptBeforeDelivery = 1 << 10,
+    TimeGUIDragDropFlags_AcceptNoDrawDefaultRect = 1 << 11,
+    TimeGUIDragDropFlags_AcceptNoPreviewTooltip = 1 << 12,
+    TimeGUIDragDropFlags_AcceptPeekOnly =
+        TimeGUIDragDropFlags_AcceptBeforeDelivery | TimeGUIDragDropFlags_AcceptNoDrawDefaultRect
 };
 typedef int TimeGUIDragDropFlags;
 
@@ -156,9 +157,5 @@ struct TE_API TimeGUIPayload
     bool IsPreview = false;
     bool IsDelivery = false;
 
-    bool IsDataType(const TEString &type) const
-    {
-        return DataType == type;
-    }
+    bool IsDataType(const TEString &type) const { return DataType == type; }
 };
-

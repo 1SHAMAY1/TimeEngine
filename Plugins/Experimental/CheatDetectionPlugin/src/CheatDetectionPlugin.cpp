@@ -17,20 +17,22 @@ void CheatDetectionPlugin::OnUnload()
 
 void CheatDetectionPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("CheatDetection", "SpeedHackAndTeleportationValidation", false, [](TestContext &ctx) {
-        constexpr float MaxAllowedSpeed = 15.0f; // units / sec
-        constexpr float DeltaTime = 0.01667f;    // ~60 FPS
+    TestRegistry::RegisterTest("CheatDetection", "SpeedHackAndTeleportationValidation", false,
+                               [](TestContext &ctx)
+                               {
+                                   constexpr float MaxAllowedSpeed = 15.0f; // units / sec
+                                   constexpr float DeltaTime = 0.01667f;    // ~60 FPS
 
-        TEVector2 posPrevious = {0.0f, 0.0f};
-        TEVector2 posLegit = {0.2f, 0.0f}; // speed = 12 units/sec (legit)
-        TEVector2 posCheater = {10.0f, 0.0f}; // speed = 600 units/sec (teleport)
+                                   TEVector2 posPrevious = {0.0f, 0.0f};
+                                   TEVector2 posLegit = {0.2f, 0.0f};    // speed = 12 units/sec (legit)
+                                   TEVector2 posCheater = {10.0f, 0.0f}; // speed = 600 units/sec (teleport)
 
-        float speedLegit = (posLegit - posPrevious).Length() / DeltaTime;
-        float speedCheater = (posCheater - posPrevious).Length() / DeltaTime;
+                                   float speedLegit = (posLegit - posPrevious).Length() / DeltaTime;
+                                   float speedCheater = (posCheater - posPrevious).Length() / DeltaTime;
 
-        TE_CHECK(speedLegit <= MaxAllowedSpeed);
-        TE_CHECK(speedCheater > MaxAllowedSpeed);
-    });
+                                   TE_CHECK(speedLegit <= MaxAllowedSpeed);
+                                   TE_CHECK(speedCheater > MaxAllowedSpeed);
+                               });
 }
 
 void CheatDetectionPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const

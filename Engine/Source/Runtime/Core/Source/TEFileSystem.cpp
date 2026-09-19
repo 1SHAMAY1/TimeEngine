@@ -279,4 +279,3 @@ uint64_t TEFileSystem::GetLastWriteTime(const TEString &path)
     auto duration = ftime.time_since_epoch();
     return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 }
-

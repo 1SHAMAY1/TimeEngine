@@ -30,7 +30,6 @@ private:
     static TEArray<EditorTab> &GetOpenTabs();
 };
 
-
 template <typename T> struct AssetEditorAutoRegister
 {
     AssetEditorAutoRegister() { AssetEditorRegistry::Register(CreateRef<T>()); }

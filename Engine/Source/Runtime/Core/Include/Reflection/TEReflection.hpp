@@ -48,74 +48,74 @@ public:
         return "";
     }
 
- bool FromString(void *instance, const TEString &str) const
- {
- if (m_FromStringFn)
- return m_FromStringFn(instance, str);
- return false;
- }
+    bool FromString(void *instance, const TEString &str) const
+    {
+        if (m_FromStringFn)
+            return m_FromStringFn(instance, str);
+        return false;
+    }
 
 private:
- TEString m_Name;
- TEString m_TypeName;
- size_t m_Offset = 0;
- size_t m_Size = 0;
- std::function<TEString(const void *)> m_ToStringFn;
- std::function<bool(void *, const TEString &)> m_FromStringFn;
+    TEString m_Name;
+    TEString m_TypeName;
+    size_t m_Offset = 0;
+    size_t m_Size = 0;
+    std::function<TEString(const void *)> m_ToStringFn;
+    std::function<bool(void *, const TEString &)> m_FromStringFn;
 };
 
 class TE_API TEClass
 {
 public:
- TEClass() = default;
- TEClass(const TEString &name, const TEString &parentName, size_t size,
- std::function<void *()> defaultConstructor = nullptr)
- : m_Name(name), m_ParentName(parentName), m_Size(size), m_Constructor(defaultConstructor)
- {
- }
+    TEClass() = default;
+    TEClass(const TEString &name, const TEString &parentName, size_t size,
+            std::function<void *()> defaultConstructor = nullptr)
+        : m_Name(name), m_ParentName(parentName), m_Size(size), m_Constructor(defaultConstructor)
+    {
+    }
 
- const TEString &GetName() const { return m_Name; }
- const TEString &GetParentName() const { return m_ParentName; }
- size_t GetSize() const { return m_Size; }
+    const TEString &GetName() const { return m_Name; }
+    const TEString &GetParentName() const { return m_ParentName; }
+    size_t GetSize() const { return m_Size; }
 
- void AddProperty(const TEProperty &prop) { m_Properties.Add(prop); }
+    void AddProperty(const TEProperty &prop) { m_Properties.Add(prop); }
 
- const TEArray<TEProperty> &GetProperties() const { return m_Properties; }
+    const TEArray<TEProperty> &GetProperties() const { return m_Properties; }
 
- const TEProperty *FindProperty(const TEString &name) const
- {
- for (size_t i = 0; i < m_Properties.Num(); ++i)
- {
- if (m_Properties[i].GetName() == name)
- {
- return &m_Properties[i];
- }
- }
- return nullptr;
- }
+    const TEProperty *FindProperty(const TEString &name) const
+    {
+        for (size_t i = 0; i < m_Properties.Num(); ++i)
+        {
+            if (m_Properties[i].GetName() == name)
+            {
+                return &m_Properties[i];
+            }
+        }
+        return nullptr;
+    }
 
- bool IsChildOf(const TEString &parentClassName) const
- {
- if (m_ParentName.IsEmpty())
- return false;
- if (m_ParentName == parentClassName)
- return true;
- return false;
- }
+    bool IsChildOf(const TEString &parentClassName) const
+    {
+        if (m_ParentName.IsEmpty())
+            return false;
+        if (m_ParentName == parentClassName)
+            return true;
+        return false;
+    }
 
- void *Instantiate() const
- {
- if (m_Constructor)
- return m_Constructor();
- return nullptr;
- }
+    void *Instantiate() const
+    {
+        if (m_Constructor)
+            return m_Constructor();
+        return nullptr;
+    }
 
 private:
- TEString m_Name;
- TEString m_ParentName;
- size_t m_Size = 0;
- TEArray<TEProperty> m_Properties;
- std::function<void *()> m_Constructor;
+    TEString m_Name;
+    TEString m_ParentName;
+    size_t m_Size = 0;
+    TEArray<TEProperty> m_Properties;
+    std::function<void *()> m_Constructor;
 };
 
 class TE_API TEReflectionRegistry
@@ -147,23 +147,27 @@ private:
     {                                                                                                                  \
         ClassType##_Reflector()                                                                                        \
         {                                                                                                              \
-            TEClass cls(#ClassType, "", sizeof(ClassType), []() -> void * { return static_cast<void*>(new ClassType()); });
+            TEClass cls(#ClassType, "", sizeof(ClassType),                                                             \
+                        []() -> void * { return static_cast<void *>(new ClassType()); });
 
 #define TE_REGISTER_CLASS_BEGIN_DERIVED(ClassType, ParentType)                                                         \
     struct ClassType##_Reflector                                                                                       \
     {                                                                                                                  \
         ClassType##_Reflector()                                                                                        \
         {                                                                                                              \
-            TEClass cls(#ClassType, #ParentType, sizeof(ClassType), []() -> void * { return static_cast<void*>(new ClassType()); });
+            TEClass cls(#ClassType, #ParentType, sizeof(ClassType),                                                    \
+                        []() -> void * { return static_cast<void *>(new ClassType()); });
 
 #define TE_REGISTER_PROPERTY(ClassType, MemberName, MemberType)                                                        \
     cls.AddProperty(TEProperty(                                                                                        \
         #MemberName, #MemberType, offsetof(ClassType, MemberName), sizeof(MemberType),                                 \
-        [](const void *inst) -> TEString {                                                                             \
-            const ClassType *obj = reinterpret_cast<const ClassType *>(inst);                                         \
+        [](const void *inst) -> TEString                                                                               \
+        {                                                                                                              \
+            const ClassType *obj = reinterpret_cast<const ClassType *>(inst);                                          \
             return TEString::Format("{0}", obj->MemberName);                                                           \
         },                                                                                                             \
-        [](void *inst, const TEString &str) -> bool {                                                                  \
+        [](void *inst, const TEString &str) -> bool                                                                    \
+        {                                                                                                              \
             ClassType *obj = reinterpret_cast<ClassType *>(inst);                                                      \
             return true;                                                                                               \
         }));
@@ -174,5 +178,3 @@ private:
     }                                                                                                                  \
     ;                                                                                                                  \
     static inline ClassType##_Reflector s_##ClassType##_Reflector_Instance;
-
-

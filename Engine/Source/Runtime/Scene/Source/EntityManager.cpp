@@ -4,10 +4,7 @@
 #include "TransformComponent.hpp"
 #include "ECS/ScriptComponent.hpp"
 
-Entity TComponent::GetOwnerEntity() const
-{
-    return Entity((EntityID)Owner, Manager);
-}
+Entity TComponent::GetOwnerEntity() const { return Entity((EntityID)Owner, Manager); }
 
 EntityManager::EntityManager()
 {

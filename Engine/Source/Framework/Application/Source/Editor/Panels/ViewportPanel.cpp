@@ -13,7 +13,6 @@
 #include "TimeGUI.hpp"
 #include "Editor/DragDrop/DragDropManager.hpp"
 
-
 void ViewportPanel::OnTimeGUIRender(Ref<EditorLayer> editor)
 {
     if (!editor || !m_Visible)

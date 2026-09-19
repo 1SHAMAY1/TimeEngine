@@ -199,5 +199,3 @@ void AnimatedSpriteComponent::OnRender(Renderer2D *renderer, const TEMatrix4 &wo
     auto renderMat = material ? material : Material::GetDefault();
     renderer->SubmitQuad(worldModel, Color, renderMat);
 }
-
-

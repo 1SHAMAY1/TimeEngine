@@ -33,4 +33,3 @@ public:
     virtual void DrawImportSettings(AssetImportConfig &config) override;
     virtual bool SupportsReimport() const override { return true; }
 };
-

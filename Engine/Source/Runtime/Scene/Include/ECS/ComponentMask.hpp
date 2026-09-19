@@ -6,8 +6,7 @@
 constexpr size_t MaxComponentTypes = 256;
 using ComponentMask = std::bitset<MaxComponentTypes>;
 
-template <typename... Components>
-inline ComponentMask MakeComponentMask()
+template <typename... Components> inline ComponentMask MakeComponentMask()
 {
     ComponentMask mask;
     if constexpr (sizeof...(Components) > 0)

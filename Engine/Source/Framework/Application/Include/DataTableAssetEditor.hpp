@@ -24,11 +24,7 @@ public:
     }
     virtual TEArray<TEString> GetSupportedImportExtensions() const override { return {".csv"}; }
     virtual TEString GetImportTargetExtension(const TEString &sourceExt) const override { return ".tedatatable"; }
-    virtual void OnInitImportConfig(AssetImportConfig &config) const override
-    {
-        config.IsDataTable = true;
-    }
+    virtual void OnInitImportConfig(AssetImportConfig &config) const override { config.IsDataTable = true; }
     virtual void DrawImportSettings(AssetImportConfig &config) override;
     virtual bool SupportsReimport() const override { return true; }
 };
-

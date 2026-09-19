@@ -9,8 +9,7 @@
 
 TE_REGISTER_ASSET_EDITOR(PlayerAssetEditor)
 
-PlayerAssetEditor::PlayerAssetEditor()
-    : m_CodeEdit("##PlayerCodeEdit")
+PlayerAssetEditor::PlayerAssetEditor() : m_CodeEdit("##PlayerCodeEdit")
 {
     m_CodeEdit.SetLanguage(ECodeLanguage::TScript);
 }
@@ -35,8 +34,8 @@ void PlayerAssetEditor::DrawIcon(const TEVector2 &min, const TEVector2 &max) con
     dl.AddCircleFilled(TEVector2(cx, cy - 5.0f), 6.0f, IM_COL32(75, 225, 175, 255));
 
     // Torso / Shoulders
-    dl.AddRectFilled(TEVector2(cx - 10.0f, cy + 3.0f), TEVector2(cx + 10.0f, cy + 10.0f),
-                     IM_COL32(50, 195, 150, 255), 3.5f);
+    dl.AddRectFilled(TEVector2(cx - 10.0f, cy + 3.0f), TEVector2(cx + 10.0f, cy + 10.0f), IM_COL32(50, 195, 150, 255),
+                     3.5f);
 }
 
 void PlayerAssetEditor::DrawEditor(EditorTab &tab)
@@ -149,7 +148,8 @@ void PlayerAssetEditor::DrawEditor(EditorTab &tab)
     const char *modeNames[] = {"Top-Down (4-Way / 8-Way)", "Side-Scroller (Platformer Run & Jump)"};
     if (TimeGUI::Combo("Movement Mode", &modeIdx, modeNames, 2))
     {
-        playerAsset->SetMovementMode((modeIdx == 1) ? EPlayerAssetMovementMode::SideScroller : EPlayerAssetMovementMode::TopDown);
+        playerAsset->SetMovementMode((modeIdx == 1) ? EPlayerAssetMovementMode::SideScroller
+                                                    : EPlayerAssetMovementMode::TopDown);
         AssetEditorRegistry::MarkAssetDirty(tab.AssetPath, true);
     }
 
@@ -209,12 +209,15 @@ void PlayerAssetEditor::DrawEditor(EditorTab &tab)
 
     TimeGUI::Spacing();
     TimeGUI::Text("Collider Bounds: (%.2f x %.2f)", colliderSize.x, colliderSize.y);
-    TimeGUI::Text("Mode: %s", (playerAsset->GetMovementMode() == EPlayerAssetMovementMode::SideScroller) ? "Side-Scroller" : "Top-Down");
+    TimeGUI::Text("Mode: %s", (playerAsset->GetMovementMode() == EPlayerAssetMovementMode::SideScroller)
+                                  ? "Side-Scroller"
+                                  : "Top-Down");
 
     // Interactive canvas box
     TimeGUI::BeginChild("CanvasBox", TEVector2(0.0f, 260.0f), true);
     TimeGUI::TextColored(TEColor(0.2f, 0.8f, 1.0f, 1.0f), "[ Character Preview ]");
-    TimeGUI::TextDisabled("Sprite: %s", playerAsset->GetSpritePath().empty() ? "(No Sprite Assigned - Default Quad)" : playerAsset->GetSpritePath().c_str());
+    TimeGUI::TextDisabled("Sprite: %s", playerAsset->GetSpritePath().empty() ? "(No Sprite Assigned - Default Quad)"
+                                                                             : playerAsset->GetSpritePath().c_str());
     TimeGUI::EndChild();
 
     TimeGUI::EndChild();

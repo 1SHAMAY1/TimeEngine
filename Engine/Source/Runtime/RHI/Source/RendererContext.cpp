@@ -13,8 +13,8 @@ extern "C"
 
 #if defined(__APPLE__)
 GraphicsAPI RendererContext::s_API = GraphicsAPI::Metal;
-//#elif defined(TE_PLATFORM_WINDOWS)
-//GraphicsAPI RendererContext::s_API = GraphicsAPI::DirectX11;
+// #elif defined(TE_PLATFORM_WINDOWS)
+// GraphicsAPI RendererContext::s_API = GraphicsAPI::DirectX11;
 #else
 GraphicsAPI RendererContext::s_API = GraphicsAPI::OpenGL;
 #endif

@@ -19,33 +19,37 @@ void Lighting2DPlugin::OnUnload()
 
 void Lighting2DPlugin::RegisterTests()
 {
-    TestRegistry::RegisterTest("Lighting2D", "Light2DDataDefaultAndBounds", false, [](TestContext &ctx) {
-        Light2DData light;
-        TE_CHECK_EQ(light.Type, ELight2DType::Point);
-        TE_CHECK_EQ(light.Position.x, 0.0f);
-        TE_CHECK_EQ(light.Position.y, 0.0f);
-        TE_CHECK(light.Radius > 0.0f);
-        TE_CHECK(light.Intensity > 0.0f);
+    TestRegistry::RegisterTest("Lighting2D", "Light2DDataDefaultAndBounds", false,
+                               [](TestContext &ctx)
+                               {
+                                   Light2DData light;
+                                   TE_CHECK_EQ(light.Type, ELight2DType::Point);
+                                   TE_CHECK_EQ(light.Position.x, 0.0f);
+                                   TE_CHECK_EQ(light.Position.y, 0.0f);
+                                   TE_CHECK(light.Radius > 0.0f);
+                                   TE_CHECK(light.Intensity > 0.0f);
 
-        // Spot light parameters
-        light.Type = ELight2DType::Spot;
-        light.InnerAngle = 30.0f;
-        light.OuterAngle = 60.0f;
-        TE_CHECK(light.InnerAngle < light.OuterAngle);
+                                   // Spot light parameters
+                                   light.Type = ELight2DType::Spot;
+                                   light.InnerAngle = 30.0f;
+                                   light.OuterAngle = 60.0f;
+                                   TE_CHECK(light.InnerAngle < light.OuterAngle);
 
-        // Attenuation calculation safety
-        float dist = 4.0f;
-        float atten = 1.0f - (dist / light.Radius);
-        TE_CHECK(atten >= 0.0f && atten <= 1.0f);
-    });
+                                   // Attenuation calculation safety
+                                   float dist = 4.0f;
+                                   float atten = 1.0f - (dist / light.Radius);
+                                   TE_CHECK(atten >= 0.0f && atten <= 1.0f);
+                               });
 
-    TestRegistry::RegisterTest("Lighting2D", "ShadowCasterConfiguration", false, [](TestContext &ctx) {
-        EShadowCasterType caster = EShadowCasterType::PolygonPoints;
-        TE_CHECK_EQ(caster, EShadowCasterType::PolygonPoints);
+    TestRegistry::RegisterTest("Lighting2D", "ShadowCasterConfiguration", false,
+                               [](TestContext &ctx)
+                               {
+                                   EShadowCasterType caster = EShadowCasterType::PolygonPoints;
+                                   TE_CHECK_EQ(caster, EShadowCasterType::PolygonPoints);
 
-        ELightingTechnique tech = ELightingTechnique::SDFRayTracing;
-        TE_CHECK_EQ(tech, ELightingTechnique::SDFRayTracing);
-    });
+                                   ELightingTechnique tech = ELightingTechnique::SDFRayTracing;
+                                   TE_CHECK_EQ(tech, ELightingTechnique::SDFRayTracing);
+                               });
 }
 
 void Lighting2DPlugin::DrawThumbnail(TimeGUIDrawList &dl, const TEVector2 &min, const TEVector2 &max) const
